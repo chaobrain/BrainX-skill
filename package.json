@@ -12,6 +12,7 @@
     "installation-code/",
     "skills/brainx-install/",
     "skills/brainunit/",
+    "skills/brainstate/",
     "manifest.json",
     "README.md",
     "LICENSE"

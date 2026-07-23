@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "skills": [
     "brainx-install",
-    "brainunit"
+    "brainunit",
+    "brainstate"
   ]
 }
