@@ -1,0 +1,37 @@
+{
+  "name": "brainx-skill",
+  "version": "1.0.3",
+  "description": "Portable BrainX Agent Skills for Claude Code, Codex, and Cursor",
+  "license": "Apache-2.0",
+  "type": "commonjs",
+  "bin": {
+    "brainx": "installation-code/bin/brainx.js"
+  },
+  "files": [
+    "adapters/",
+    "installation-code/",
+    "skills/brainx-install/",
+    "skills/brainunit/",
+    "manifest.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "enquirer": "^2.4.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chaobrain/BrainX-skill.git"
+  },
+  "keywords": [
+    "agent-skills",
+    "brainx",
+    "brainunit",
+    "claude-code",
+    "codex",
+    "cursor"
+  ]
+}
