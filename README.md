@@ -1,4 +1,5 @@
-# BrainX Agent Skills
+# BrainX Skill
+make your coding agent understand the power of BrainX
 
 ## Requirements
 
