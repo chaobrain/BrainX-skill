@@ -1,4 +1,4 @@
-# Array Creation
+# Array creation
 
 Use this reference for specialized unit-aware ranges, grids, filled arrays, template-shaped arrays, matrix patterns, index constructors, and tree-shaped arrays. Basic `Quantity`, `asarray()`, and `arange()` construction remains in the parent skill.
 
@@ -21,7 +21,7 @@ import jax.numpy as jnp
 - [Cross-family gotchas](#cross-family-gotchas)
 - [Sources mirrored](#sources-mirrored)
 
-## Choose Interval Values
+## Choose interval values
 
 ### `linspace`
 
@@ -35,7 +35,7 @@ import jax.numpy as jnp
 |---|---|---|---|
 | `logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None)` | Generate values whose exponents are evenly spaced. | Return numbers spaced evenly on a log scale. | `u.math.logspace(0, 2, 3)`<br>`# Array([  1.,  10., 100.], dtype=float32)` |
 
-## Build Coordinate And Power Grids
+## Build coordinate and power grids
 
 ### `meshgrid`
 
@@ -49,7 +49,7 @@ import jax.numpy as jnp
 |---|---|---|---|
 | `vander(x, N=None, increasing=False, unit=Unit('1'))` | Build a Vandermonde matrix from powers of a 1-D vector. | Generate a Vandermonde matrix. | `u.math.vander(jnp.array([1, 2]), N=3)`<br>`# Array([[1, 1, 1], [4, 2, 1]], dtype=int32)` |
 
-## Fill A New Shape
+## Fill a new shape
 
 ### Initialized arrays
 
@@ -65,7 +65,7 @@ import jax.numpy as jnp
 |---|---|---|---|
 | `empty(shape, dtype=None, unit=Unit('1'))` | Allocate a shape when every entry will be overwritten before it is read. | Return a new quantity or array of given shape and type, without initializing entries. | `buffer = u.math.empty((2, 2), unit=u.second); buffer.shape`<br>`# (2, 2); entry values are unspecified` |
 
-## Follow An Existing Shape
+## Follow an existing shape
 
 ### `full_like`
 
@@ -79,14 +79,14 @@ import jax.numpy as jnp
 |---|---|---|---|
 | `empty_like(prototype, dtype=None, shape=None, unit=Unit('1'))` | Allocate an uninitialized buffer shaped and typed like a prototype. | Return a new quantity or array with the same shape and type as a given array. | `prototype = jnp.ones(3) * u.second; buffer = u.math.empty_like(prototype); buffer.shape`<br>`# (3,); unit: second; entry values are unspecified` |
 
-### Create One or zero arrays
+### Create one or zero arrays
 
 | API | Description & result |
 |---|---|
 | `ones_like(a, dtype=None, shape=None, unit=Unit('1'))` | Create ones with `a`'s shape and dtype. A `Quantity` prototype preserves its unit by default; a non-trivial `unit` attaches a unit to a plain prototype or requests a compatible conversion. |
 | `zeros_like(a, dtype=None, shape=None, unit=Unit('1'))` | Create zeros with `a`'s shape and dtype. A `Quantity` prototype preserves its unit by default; a non-trivial `unit` attaches a unit to a plain prototype or requests a compatible conversion. |
 
-## Build Matrices And Masks
+## Build matrices and masks
 
 ### Identity-like and triangular constructors
 
@@ -115,7 +115,7 @@ import jax.numpy as jnp
 |---|---|---|---|
 | `fill_diagonal(a, val, wrap=False, inplace=False)` | Replace the main diagonal of an existing array with one value. | Fill the main diagonal of the given array of any dimensionality. | `q = jnp.zeros((2, 2)) * u.second; filled = u.math.fill_diagonal(q, 500 * u.ms)`<br>`# Quantity([[0.5 0. ] [0.  0.5]], "s")` |
 
-## Locate Triangular Entries
+## Locate triangular entries
 
 ### Lower and upper triangle indices
 
@@ -126,7 +126,7 @@ import jax.numpy as jnp
 | `tril_indices_from(arr, k=0)` | Derive lower-triangle row and column indices from a 2-D array's shape. Returns two plain integer arrays; an input `Quantity` does not give the indices a unit. |
 | `triu_indices_from(arr, k=0)` | Derive upper-triangle row and column indices from a 2-D array's shape. Returns two plain integer arrays; an input `Quantity` does not give the indices a unit. |
 
-## Mirror Pytrees
+## Mirror pytrees
 
 ### One or zero in every leaf
 
@@ -135,7 +135,7 @@ import jax.numpy as jnp
 | `tree_ones_like(tree)` | Replace every pytree leaf with ones while preserving structure, leaf shape, dtype, and unit; plain leaves remain plain and quantity leaves remain quantities. |
 | `tree_zeros_like(tree)` | Replace every pytree leaf with zeros while preserving structure, leaf shape, dtype, and unit; plain leaves remain plain and quantity leaves remain quantities. |
 
-## Convert NumPy Input
+## Convert NumPy input
 
 | API | Description & result |
 |---|---|
@@ -147,12 +147,12 @@ import jax.numpy as jnp
 
 Backend extraction and `as_numpy()` belong in `array-mechanics.md` because they cross an existing array boundary rather than create a scientific quantity from source values.
 
-## Cross-Family Gotchas
+## Cross-family gotchas
 
 - For constructors with `unit=Unit('1')`, the unitless default produces a plain JAX array unless a quantity input supplies a unit; pass a non-trivial `Unit` to request a `Quantity`.
 - The `dtype` and `shape` arguments on `*_like` functions override the prototype; otherwise its dtype and shape are retained.
 
-## Sources Mirrored
+## Sources mirrored
 
 - https://brainx.chaobrain.com/brainunit/unit_operations/array_creation.html
 - https://brainx.chaobrain.com/brainunit/apis/brainunit.math.html

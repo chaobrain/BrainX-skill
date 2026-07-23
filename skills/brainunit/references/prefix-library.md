@@ -1,4 +1,4 @@
-# Prefix Library
+# Prefix library
 
 Use this reference to look up supported SI prefix symbols and scales, inspect the official base/derived unit spellings shown by the standard-units page, or create a prefixed custom unit.
 
@@ -10,7 +10,7 @@ Use this reference to look up supported SI prefix symbols and scales, inspect th
 - [Creating scaled units](#creating-scaled-units)
 - [Source-backed gotchas](#source-backed-gotchas)
 
-## Supported Prefixes
+## Supported prefixes
 
 | Symbol | Prefix | Value |
 |---|---|---:|
@@ -37,7 +37,7 @@ Use this reference to look up supported SI prefix symbols and scales, inspect th
 
 BrainUnit uses ASCII `u` for the micro prefix in API names and `create_scaled_unit()` calls.
 
-## Base-Unit Spelling Lookup
+## Base-unit spelling lookup
 
 The standard-units page creates these named objects:
 
@@ -53,7 +53,7 @@ The standard-units page creates these named objects:
 
 This is a spelling and symbol lookup. The conceptual role of the fundamental dimensions remains in the main skill.
 
-## Derived-Unit Lookup
+## Derived-unit lookup
 
 The official page constructs these derived named units with `Unit.create(get_or_create_dimension(...), name, symbol)`:
 
@@ -76,7 +76,7 @@ The official page constructs these derived named units with `Unit.create(get_or_
 | `sievert` | `Sv` | `m=2, s=-2` |
 | `katal` | `kat` | `s=-1, mol=1` |
 
-## Creating Scaled Units
+## Creating scaled units
 
 The page constructs every supported prefix variant of a local `metre` object with `Unit.create_scaled_unit()`:
 
@@ -103,7 +103,7 @@ assert micrometre.scale == -6
 # Expected: all assertions pass.
 ```
 
-## Source-Backed Gotchas
+## Source-backed gotchas
 
 - Prefix symbols are case-sensitive: `M` is mega while `m` is milli.
 - `da` is the two-character deka/deca prefix.
@@ -111,6 +111,6 @@ assert micrometre.scale == -6
 - The page says BrainUnit provides almost all units with prefixes. Do not infer that every conceivable unit-prefix combination is predefined without checking the package namespace.
 - The source uses `metre` as a local variable but assigns the full unit name `"meter"`; distinguish Python variable spelling from `Unit.name`.
 
-## Sources Mirrored
+## Sources mirrored
 
 - https://brainx.chaobrain.com/brainunit/physical_units/standard_units.html

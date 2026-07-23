@@ -1,4 +1,4 @@
-# Unit Structure And Definition
+# Unit structure and definition
 
 Use this reference to inspect scale encoding, distinguish dimension from magnitude, compare units, combine existing units, or define a named, factored, or prefixed custom unit.
 
@@ -10,7 +10,7 @@ Use this reference to inspect scale encoding, distinguish dimension from magnitu
 - [Defining units](#defining-units)
 - [Source-backed gotchas](#source-backed-gotchas)
 
-## Unit Anatomy
+## Unit anatomy
 
 The official API represents a unit with dimension, scale, base, factor, and naming metadata:
 
@@ -33,7 +33,7 @@ Unit(dim=None, scale=0, base=10.0, factor=1.0,
 
 `unit.factorless()` returns an equivalent unit with factor `1`; when a registered unit with the same dimension and scale exists, that standard unit may be returned. `unit.reverse()` returns the reciprocal unit.
 
-## Comparison Methods
+## Comparison methods
 
 | Exact signature | Comparison |
 |---|---|
@@ -52,7 +52,7 @@ u.mvolt.has_same_magnitude(u.mamp)    # True
 u.mvolt.has_same_magnitude(u.volt)    # False
 ```
 
-## Combining Units
+## Combining units
 
 Units and quantities use normal Python numeric operators. The official tutorial constructs volt from component units and compares it to the predefined unit:
 
@@ -73,7 +73,7 @@ inverse_length = u.metre.reverse()
 # Unit("1 / m")
 ```
 
-## Defining Units
+## Defining units
 
 Exact constructors:
 
@@ -126,7 +126,7 @@ ratio = 1 * kilometre / (1 * metre)
 
 See `prefix-library.md` for the complete prefix symbol and exponent table.
 
-## Source-Backed Gotchas
+## Source-backed gotchas
 
 - `Unit.create()` supports only base `10`; other values raise `ValueError`.
 - Use `factor` for conversions such as calorie-to-joule; use `scale` for powers of `base`.
@@ -134,7 +134,7 @@ See `prefix-library.md` for the complete prefix symbol and exponent table.
 - `factorless()` intentionally avoids blindly replacing every alias, because that could rename units such as becquerel to hertz or steradian to radian.
 - `create_scaled_unit(baseunit, scalefactor)` takes a prefix string such as `'u'` or `'k'`, not a numeric multiplier.
 
-## Sources Mirrored
+## Sources mirrored
 
 - https://brainunit.readthedocs.io/apis/generated/brainunit.Unit.html
 - https://brainunit.readthedocs.io/advanced_tutorials/combining_and_defining.html

@@ -1,4 +1,4 @@
-# Physical Constant Library
+# Physical constant library
 
 Use this reference to select the exact predefined constant name, inspect its displayed unit, and avoid replacing a unit-aware constant with a bare numeric literal.
 
@@ -10,7 +10,7 @@ from brainunit import constants
 
 Each listed object is displayed by the official page as a `Quantity`.
 
-## Constant Lookup
+## Constant lookup
 
 | API | Official role | Displayed value and unit |
 |---|---|---|
@@ -27,7 +27,7 @@ Each listed object is displayed by the official page as a `Quantity`.
 
 The values and units mirror the constants page. Use the constant object in calculations so BrainUnit retains its physical dimensions.
 
-## Selection Cues
+## Selection cues
 
 - Statistical mechanics energy per temperature: `constants.boltzmann`.
 - Per-mole ideal-gas calculations: `constants.gas`.
@@ -37,7 +37,7 @@ The values and units mirror the constants page. Use the constant object in calcu
 - Electromagnetic vacuum properties: `constants.electric` and `constants.magnetic`.
 - Celsius offset handling: `constants.zero_celsius`; see `Convert Celsius At Affine Boundaries` in the parent skill for the affine conversion functions.
 
-## Unit-Aware Use
+## Unit-aware use
 
 ```python
 import brainunit as u
@@ -53,6 +53,6 @@ pressure = R * T / V
 
 This reference is a lookup catalog. Physical-constant arithmetic and the basic constants workflow remain in the main skill.
 
-## Sources Mirrored
+## Sources mirrored
 
 - https://brainx.chaobrain.com/brainunit/physical_units/constants.html

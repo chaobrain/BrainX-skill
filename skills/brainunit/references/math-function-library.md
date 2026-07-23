@@ -1,4 +1,4 @@
-# Math Function Library
+# Math function library
 
 Use this reference after the basic `brainunit.math` workflow is known. Route a function by what it requires from input units and what it does to output units. Array creation and purely structural manipulation are owned by `array-creation.md` and `array-mechanics.md`.
 
@@ -16,7 +16,7 @@ Use this reference after the basic `brainunit.math` workflow is known. Route a f
 
 
 
-## Activation Functions
+## Activation functions
 
 Activation functions do not have one shared unit rule. `relu()` and `leaky_relu()` preserve physical units; sigmoid-, exponential-, and gating-style functions evaluate dimensionless magnitudes and return plain arrays.
 
@@ -34,7 +34,7 @@ Key rules:
 - `glu()` requires the selected axis length to be divisible by two.
 - `silu()` and `swish()` are aliases at the activation-family level; do not create separate decision paths for them.
 
-### Quick Reference
+### Quick reference
 
 | API | Description and result |
 |---|---|
@@ -55,7 +55,7 @@ Key rules:
 | `squareplus(x, b=4, unit_to_scale=None)` | Use when applying a square-root-based smooth ReLU alternative with configurable `b`. Returns a plain array. |
 | `mish(x, unit_to_scale=None)` | Use when applying the Mish activation to dimensionless or explicitly scaled input. Returns a plain array. |
 
-## Dimensionless Evaluation
+## Dimensionless evaluation
 
 These functions evaluate mathematical operations whose arguments must be dimensionless.
 
@@ -72,7 +72,7 @@ Do not invent arguments for `**kwargs`; forward only backend arguments documente
 
 For `corrcoef()` and `cov()`, `rowvar=True` treats each row as a variable and columns as observations; use `rowvar=False` when variables are stored in columns. `unit_to_scale` controls the dimensionless magnitudes evaluated, so it also fixes the numerical scale of `cov()`.
 
-### Quick Reference
+### Quick reference
 
 | API | Description and result |
 |---|---|
@@ -114,7 +114,7 @@ For `corrcoef()` and `cov()`, `rowvar=True` treats each row as a variable and co
 | `left_shift(x, y, **kwargs)` | Use when shifting dimensionless integer bits left by `y`. Returns a plain integer array. |
 | `right_shift(x, y, **kwargs)` | Use when shifting dimensionless integer bits right by `y`. Returns a plain integer array. |
 
-## Unit-Changing Operations
+## Unit-changing operations
 
 These functions change physical dimensions because they invert, multiply, divide, power, integrate, or contract values.
 
@@ -162,7 +162,7 @@ Key rules:
 | `nancumprod(x, axis=None, dtype=None, **kwargs)` | Use when accumulating products while treating NaNs as one. Returns cumulative values with corresponding cumulative unit powers. |
 | `nanvar(x, axis=None, dtype=None, ddof=0, keepdims=False, where=None, **kwargs)` | Use when computing variance while ignoring NaNs. Returns a quantity whose unit is the square of the input unit. |
 
-## Unit-Preserving Operations
+## Unit-preserving operations
 
 These functions return values of the same physical kind as their primary input. Bounds, branches, interpolation coordinates, and replacement values must still be compatible with the quantities they constrain.
 
@@ -182,7 +182,7 @@ Key rules:
 - `interp()` requires increasing `xp`; `x`, `xp`, and any `period` must be coordinate-compatible, while `left` and `right` must match `fp`.
 - `histogram()` returns plain counts when unweighted; quantity weights or `density=True` change histogram-value semantics, while physical bin edges remain compatible with `x`.
 
-### Quick Reference
+### Quick reference
 
 | API | Description and result |
 |---|---|
@@ -250,7 +250,7 @@ Key rules:
 | `unique(a, return_index=False, return_inverse=False, return_counts=False, axis=None, *, equal_nan=False, size=None, fill_value=None, **kwargs)` | Use when deduplicating physical values. Returns sorted unique values with the input unit plus requested plain index/count arrays. |
 | `gather(input, dim, index, **kwargs)` | Use when gathering values along `dim` with an index array. Returns a quantity with the input unit and the index shape. |
 
-## Unit-Removing Operations
+## Unit-removing operations
 
 These functions return booleans, indices, counts, signs, or inspection metadata. Some accept physical input and remove its unit because the result is not a physical magnitude. Logical reductions such as `all()` and `any()` are different: their inputs must already be dimensionless.
 
@@ -274,7 +274,7 @@ Key rules:
 - `all()` and `any()` reject physical input with `TypeError`; they do not interpret nonzero physical magnitudes as truth values.
 - `size` on `nonzero()` fixes result length for compiled code; `fill_value` supplies padding indices, not physical values.
 
-### Quick Reference
+### Quick reference
 
 | API | Description and result |
 |---|---|
@@ -305,7 +305,7 @@ Key rules:
 | `diag_indices_from(arr, **kwargs)` | Use when obtaining indices for the main diagonal of an array. Returns a tuple of plain integer index arrays. |
 | `bincount(x, weights=None, minlength=0, *, length=None, **kwargs)` | Use when counting occurrences of dimensionless non-negative integers. Returns a plain count or weighted-sum array indexed by input value. |
 
-## Reductions And Contractions
+## Reductions and contractions
 
 Choose a reduction by the physical question, then choose axes and shape retention.
 
@@ -360,7 +360,7 @@ matrix_product = u.math.matmul(matrix, column)
 # Expected: shape (1, 1), value [[11]] m s.
 ```
 
-## Einstein Operations
+## Einstein operations
 
 ### `einreduce`
 
@@ -414,7 +414,7 @@ product = u.math.einsum('ij,jk->ik', a, b)
 
 Use `einrearrange()` and `einrepeat()` through `array-mechanics.md` when element count is preserved or increased rather than reduced.
 
-## Source-Backed Gotchas
+## Source-backed gotchas
 
 - `all()` and `any()` require dimensionless input and raise `TypeError` for physical units.
 - `power()` requires a dimensionless exponent.
@@ -424,7 +424,7 @@ Use `einrearrange()` and `einrepeat()` through `array-mechanics.md` when element
 - `isclose()` and `allclose()` return booleans, not quantities; use a dimension-compatible absolute tolerance.
 - Exact generated signatures include `**kwargs` for backend forwarding. Pass only arguments documented by the active backend; arbitrary keyword values are not valid.
 
-## Sources Mirrored
+## Sources mirrored
 
 - https://brainunit.readthedocs.io/apis/brainunit.math.html
 - https://brainunit.readthedocs.io/unit_operations/einstein_operations.html

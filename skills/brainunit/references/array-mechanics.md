@@ -1,4 +1,4 @@
-# Array Mechanics
+# Array mechanics
 
 Use this reference for array metadata, indexing, functional updates, shape and axis transformations, joins and splits, repetition, named-axis transformations, and backend conversion of an existing `Quantity`.
 
@@ -12,7 +12,7 @@ Use this reference for array metadata, indexing, functional updates, shape and a
 - [Backend conversion](#backend-conversion)
 - [Source-backed gotchas](#source-backed-gotchas)
 
-## Metadata And Identity
+## Metadata and identity
 
 | Property | Official meaning |
 |---|---|
@@ -27,7 +27,7 @@ Use this reference for array metadata, indexing, functional updates, shape and a
 
 Use `u.math.ndim(x)`, `u.math.shape(x)`, and `u.math.size(x)` when a functional query is preferable to a property lookup.
 
-## Indexing And Functional Updates
+## Indexing and functional updates
 
 Ordinary indexing preserves the unit. `q.at` provides a functionally pure update interface:
 
@@ -58,7 +58,7 @@ The documented update mappings are:
 
 None of these expressions modifies the original object; each returns a modified copy. Inside `jit()`, assignments such as `x = x.at[idx].set(y)` are documented as being applied in place.
 
-## Quantity Methods
+## Quantity methods
 
 | Exact signature | One-line description | Example & result |
 |---|---|---|
@@ -78,7 +78,7 @@ None of these expressions modifies the original object; each returns a modified 
 | `trace(offset=0, axis1=0, axis2=1)` | Sum along diagonals of the array, preserving units. | `q = u.Quantity(jnp.eye(3), unit=u.mV); q.trace()`<br>`# Quantity(3., "mV")` |
 | `astype(dtype)` | Return a copy of this quantity with the mantissa cast to `dtype`. | `q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV); q.astype(jnp.float64).dtype`<br>`# float64` |
 
-## Functional Structural API
+## Functional structural API
 
 Use these `brainunit.math` functions when composing transformations without binding the operation to a method:
 
@@ -106,7 +106,7 @@ parts = u.math.array_split(joined, 2)
 # Expected: two Quantity arrays, [1, 2] s and [3, 4] s.
 ```
 
-## Named-Axis Transformations
+## Named-axis transformations
 
 `einrearrange(x, pattern, **axes_lengths)` covers transpose, reshape, squeeze, unsqueeze, stack, and concatenate. Composition uses C-order enumeration.
 
@@ -134,7 +134,7 @@ tiled = u.math.einrepeat(x, 'h w c -> (2 h) (2 w) c')
 
 Use `einshape(x, pattern)` to map named axes to lengths. Use `einreduce()` and `einsum()` through `math-function-library.md` when axes are reduced or contracted.
 
-## Backend Conversion
+## Backend conversion
 
 All `Quantity` backend methods retain the wrapper and attached unit:
 
@@ -149,7 +149,7 @@ All `Quantity` backend methods retain the wrapper and attached unit:
 
 `u.math.as_numpy(x)` is different: for a `Quantity`, it returns the underlying mantissa in the current unit scale as a NumPy array.
 
-## Source-Backed Gotchas
+## Source-backed gotchas
 
 - `q.at` supports NumPy, JAX, CuPy, Torch, and Dask mantissas. The ndonnx backend raises `BackendError`; the API recommends `.to_numpy()` first.
 - Repeated-index update semantics differ by backend. JAX, NumPy, and CuPy accumulate documented operations; some Torch and Dask operations use last-write-wins behavior.
@@ -158,7 +158,7 @@ All `Quantity` backend methods retain the wrapper and attached unit:
 - `u.math.as_numpy(q)` drops the `Quantity` wrapper; `q.to_numpy()` keeps it.
 - In Einstein patterns, axis order inside parentheses changes element order. A literal `1` or `()` creates a length-one axis, and either can be removed in the inverse pattern.
 
-## Sources Mirrored
+## Sources mirrored
 
 - https://brainx.chaobrain.com/brainunit/apis/generated/brainunit.Quantity.html
 - https://brainunit.readthedocs.io/apis/brainunit.math.html

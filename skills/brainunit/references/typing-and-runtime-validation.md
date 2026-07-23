@@ -1,8 +1,8 @@
-# Typing And Runtime Validation
+# Typing and runtime validation
 
 Use this reference when a BrainUnit interface needs precise annotations, reusable physical-type aliases, runtime `isinstance` checks, or annotation-driven unit validation. The canonical `QuantityLike`, `UnitLike`, `Quantity[...]`, and `validate_units` workflow remains in the parent skill.
 
-## Annotation Selection
+## Annotation selection
 
 | Form | Expresses | Use when |
 |---|---|---|
@@ -25,7 +25,7 @@ def normalize(values: QuantityLike, unit: UnitLike = None):
     return u.math.asarray(values, unit=unit)
 ```
 
-## Array And Structural Aliases
+## Array and structural aliases
 
 `brainunit.typing` re-exports these aliases for signatures shared with JAX and NumPy code.
 
@@ -48,7 +48,7 @@ The unit-specific core aliases are:
 - `UnitLike = Unit | str | None`; `None` means unitless or no requested target unit.
 - `DimensionLike = Dimension | str`; strings use a known physical-type name.
 
-## Unit And Physical-Type Annotations
+## Unit and physical-type annotations
 
 `Quantity[item]` accepts a `Unit` or a physical-type string. Both forms create a type usable in annotations and runtime checks.
 
@@ -71,7 +71,7 @@ For a unit item, the runtime type checks physical dimension rather than exact sc
 
 Unknown physical-type strings raise `ValueError`; non-`Unit`, non-string items inside `Quantity[...]` raise `TypeError`.
 
-## Physical-Type Names
+## Physical-type names
 
 The seven base dimensions and their accepted names are:
 
@@ -96,7 +96,7 @@ Derived and compound physical-type strings are:
 
 Names are normalized with surrounding whitespace removed and case lowered before lookup.
 
-## Pre-Built Physical-Type Aliases
+## Pre-built physical-type aliases
 
 Use pre-built aliases when the physical type is common and a short annotation improves a repeated signature.
 
@@ -117,7 +117,7 @@ def displacement(speed: SPEED, duration: TIME) -> LENGTH:
 
 The accepted string catalog is larger than the pre-built alias catalog. Use `Quantity["momentum"]`, `Quantity["angular velocity"]`, or `Quantity["torque"]` when no named alias is exported.
 
-## Runtime Type Helpers
+## Runtime type helpers
 
 `PhysicalType(name)` returns a runtime-checkable type whose `isinstance` behavior compares a quantity's dimension. `is_physical_type(obj)` reports whether an object is a type created by `PhysicalType`.
 
@@ -140,7 +140,7 @@ assert is_physical_type(speed_type)
 
 All three positive checks are dimension-based. `quantity_type(u.meter)` does not require the stored scale to be exactly meters.
 
-## Annotation-Driven Runtime Validation
+## Annotation-driven runtime validation
 
 `validate_units` inspects `Quantity[...]` argument annotations and validates each constrained argument on every call. It also recognizes legacy `typing.Annotated[Quantity, unit_or_physical_type]` metadata.
 
@@ -179,7 +179,7 @@ Validation behavior:
 
 Use `@validate_units` when annotations should own the runtime contract. Use `@u.check_units(...)` when the existing keyword-driven declaration is clearer. Do not stack them by default.
 
-## Common Gotchas
+## Common gotchas
 
 - Do not use `QuantityLike` to claim an argument is unit-bearing; the alias includes plain numbers and arrays.
 - Do not assume `u.Quantity[u.meter]` means exact meters during `isinstance` or default validation; it means the meter dimension.
@@ -188,7 +188,7 @@ Use `@validate_units` when annotations should own the runtime contract. Use `@u.
 - The current BrainUnit compatibility package re-exports `saiunit.typing`, so generated documentation may display the underlying `saiunit` module or exception names. BrainUnit-facing code in this bundle uses the public `brainunit` namespace.
 - Some released BrainUnit wheels may lag the official site and lack `brainunit.typing`. Upgrade BrainUnit together with its exact SaiUnit dependency; do not mix a legacy `brainunit.Quantity` with `saiunit.typing` objects from another release.
 
-## Sources Mirrored
+## Sources mirrored
 
 - https://brainx.chaobrain.com/brainunit/apis/brainunit.typing.html
 - https://brainx.chaobrain.com/brainunit/apis/generated/brainunit.typing.PhysicalType.html

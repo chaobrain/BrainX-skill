@@ -1,4 +1,4 @@
-# Quantity Inspection And Conversion
+# Quantity inspection and conversion
 
 Use this reference after the basic `Quantity` workflow is known. Open it when diagnosing scale or dimension issues, choosing an extraction boundary, formatting a value, or converting across compatible SI and non-SI units.
 
@@ -10,7 +10,7 @@ Use this reference after the basic `Quantity` workflow is known. Open it when di
 - [Boundary patterns](#boundary-patterns)
 - [Source-backed gotchas](#source-backed-gotchas)
 
-## Inspection Map
+## Inspection map
 
 | API | Official meaning | Use when |
 |---|---|---|
@@ -24,7 +24,7 @@ Use this reference after the basic `Quantity` workflow is known. Open it when di
 
 Despite its name, `Quantity.has_same_unit(other)` is documented as a dimension check: values in `mV` and `V` pass because their physical dimensions match.
 
-## Conversion And Extraction Choices
+## Conversion and extraction choices
 
 | Signature | Return | Behavior |
 |---|---|---|
@@ -59,7 +59,7 @@ rebuilt = mantissa * unit
 # Expected: equivalent to q, [1, 2, 3] mV.
 ```
 
-## Compatibility Probes
+## Compatibility probes
 
 The conversion tutorial uses these package-level checks:
 
@@ -78,7 +78,7 @@ u.is_dimensionless((5.0 * u.meter) / (2.0 * u.meter))      # True
 
 An incompatible target raises an error rather than silently reinterpreting the mantissa.
 
-## Boundary Patterns
+## Boundary patterns
 
 Convert to the unit expected by an external system before removing the wrapper:
 
@@ -90,7 +90,7 @@ payload_in_volts = voltage.to_decimal(u.volt)
 
 Conversions are not limited to SI prefixes. The official tutorial demonstrates `mile` to `meter`, `kmeter`, and `foot`; `atmosphere` to `pascal`, `bar`, and `mmHg`; and `joule` to `calorie`, `electron_volt`, and `erg`.
 
-## Source-Backed Gotchas
+## Source-backed gotchas
 
 - Dividing quantities with the same dimension produces a dimensionless result; depending on the input, the result is a plain numeric scalar or array rather than a unit-bearing `Quantity`.
 - `float()` and `int()` accept dimensionless values. Direct `float()` on a unit-bearing `Quantity` raises `TypeError`; convert with `to_decimal(target_unit)` first.
@@ -98,7 +98,7 @@ Conversions are not limited to SI prefixes. The official tutorial demonstrates `
 - `q.to_decimal()` validates that its argument is a `Unit` and raises on a dimension mismatch.
 - `q.in_unit()` accepts `err_msg` for a custom dimension-mismatch message; `q.to()` does not expose that parameter.
 
-## Sources Mirrored
+## Sources mirrored
 
 - https://brainunit.readthedocs.io/physical_units/conversion.html
 - https://brainunit.readthedocs.io/apis/generated/brainunit.Quantity.html

@@ -1,4 +1,4 @@
-# Functional Structural API
+# Functional structural API
 
 Open this second-level reference from `../array-mechanics.md` when selecting a `brainunit.math` function for joining, stacking, splitting, broadcasting, reshaping, repeating, or selecting values. The module API categorizes these as functions that keep units.
 
@@ -18,7 +18,7 @@ Examples use concise `Quantity(..., "unit")` results; the exact displayed repres
 - [Repetition](#repetition)
 - [Selection](#selection)
 
-## Joining And Stacking
+## Joining and stacking
 
 | Exact signature | One-line description | Example & result |
 |---|---|---|
@@ -44,7 +44,7 @@ Examples use concise `Quantity(..., "unit")` results; the exact displayed repres
 | `hsplit(a, indices_or_sections, **kwargs)` | Split a quantity or an array into multiple sub-arrays horizontally (column-wise). | `a = jnp.arange(16.0).reshape(4, 4) * u.meter; parts = u.math.hsplit(a, 2); [x.shape for x in parts]`<br>`# [(4, 2), (4, 2)]` |
 | `vsplit(a, indices_or_sections, **kwargs)` | Split a quantity or an array into multiple sub-arrays vertically (row-wise). | `a = jnp.arange(16.0).reshape(4, 4) * u.meter; parts = u.math.vsplit(a, 2); [x.shape for x in parts]`<br>`# [(2, 4), (2, 4)]` |
 
-## Minimum Rank And Broadcasting
+## Minimum rank and broadcasting
 
 | Exact signature | One-line description | Example & result |
 |---|---|---|
@@ -54,7 +54,7 @@ Examples use concise `Quantity(..., "unit")` results; the exact displayed repres
 | `broadcast_arrays(*args, **kwargs)` | Broadcast any number of arrays against each other. | `a = [1, 2, 3] * u.second; b = [[4], [5]] * u.second; result = u.math.broadcast_arrays(a, b); [x.shape for x in result]`<br>`# [(2, 3), (2, 3)]` |
 | `broadcast_to(array, shape, **kwargs)` | Broadcast an array to a new shape. | `a = [1, 2, 3] * u.meter; u.math.broadcast_to(a, (2, 3))`<br>`# Quantity([[1 2 3] [1 2 3]], "m")` |
 
-## Shape And Axis Operations
+## Shape and axis operations
 
 | Exact signature | One-line description | Example & result |
 |---|---|---|
@@ -84,7 +84,7 @@ Examples use concise `Quantity(..., "unit")` results; the exact displayed repres
 | `compress(condition, a, axis=None, *, size=None, fill_value=None, **kwargs)` | Return selected slices of a quantity or an array along given axis. | `a = [1, 2, 3, 4] * u.meter; u.math.compress(jnp.array([0, 1, 1, 0]), a)`<br>`# Quantity([2 3], "m")` |
 | `extract(condition, arr, *, size=None, fill_value=None, **kwargs)` | Return the elements of an array that satisfy some condition. | `a = jnp.array([1, 2, 3]) * u.meter; u.math.extract(a.mantissa > 1, a)`<br>`# Quantity([2 3], "m")` |
 
-## Sources Mirrored
+## Sources mirrored
 
 - https://brainunit.readthedocs.io/apis/brainunit.math.html
 - Generated function pages linked from the module index: `https://brainunit.readthedocs.io/apis/generated/brainunit.math.<function>.html`
