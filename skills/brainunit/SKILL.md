@@ -69,8 +69,6 @@ import brainunit as u
 import jax
 import jax.numpy as jnp
 import numpy as np
-from brainunit import constants
-from brainunit.typing import QuantityLike, UnitLike, validate_units
 ```
 
 ## Create quantities
@@ -165,24 +163,24 @@ ordered = u.math.sort(jnp.array([3.0, 1.0, 2.0]) * u.volt)
 
 ## Constants
 
-Do not confuse a unit constant with a quantity constant. A unit constant such as `u.minute` is a `Unit`: it defines a dimension and conversion scale but has no mantissa or physical amount until combined with a number. A value from `brainunit.constants` such as `constants.minute` or `constants.boltzmann` is already a `Quantity` with both a numerical mantissa and a unit.
+Do not confuse a unit constant with a quantity constant. A unit constant such as `u.minute` is a `Unit`: it defines a dimension and conversion scale but has no mantissa or physical amount until combined with a number. A value from `brainunit.constants` such as `u.constants.minute` or `u.constants.boltzmann` is already a `Quantity` with both a numerical mantissa and a unit.
 
 ```python
 minute_unit = u.minute
 assert isinstance(minute_unit, u.Unit)
 
-one_minute = constants.minute
+one_minute = u.constants.minute
 assert isinstance(one_minute, u.Quantity)
 # 60. s
 
 five_minutes = 5 * minute_unit
 # 5. min
 
-avogadro = constants.avogadro
+avogadro = u.constants.avogadro
 # 6.02214076e+23 1 / mol
-boltzmann = constants.boltzmann
+boltzmann = u.constants.boltzmann
 # 1.380649e-23 J / K
-elementary_charge = constants.elementary_charge
+elementary_charge = u.constants.elementary_charge
 # 1.60217663e-19 C
 ```
 
@@ -212,14 +210,14 @@ Do not strip units before normalization or attach a unit to an unchecked plain r
 
 BrainUnit typing expresses whether an interface accepts convertible values, a particular unit dimension, or a named physical type. `QuantityLike` includes plain numbers, NumPy/JAX arrays, and existing quantities; it does not itself require a unit. `UnitLike` accepts a `Unit`, a unit string, or `None`. Use `u.Quantity[unit]` for a unit-derived dimension and `u.Quantity["physical type"]` for a named dimension.
 
-Annotations alone describe the contract. Apply `@validate_units` when calls must be checked at runtime; by default it accepts dimensionally compatible scales, while `strict=True` requires an exact unit for unit-based annotations.
+Annotations alone describe the contract. Apply `@u.typing.validate_units` when calls must be checked at runtime; by default it accepts dimensionally compatible scales, while `strict=True` requires an exact unit for unit-based annotations.
 
 ```python
-def normalize(values: QuantityLike, unit: UnitLike = None):
+def normalize(values: u.typing.QuantityLike, unit: u.typing.UnitLike = None):
     return u.math.asarray(values, unit=unit)
 
 
-@validate_units
+@u.typing.validate_units
 def travel_time(
     distance: u.Quantity["length"],
     speed: u.Quantity["speed"],
@@ -231,7 +229,7 @@ duration = travel_time(100.0 * u.meter, 5.0 * u.meter / u.second)
 # Expected: 20 seconds.
 ```
 
-Use `@validate_units` when `Quantity[...]` annotations define the runtime contract. Open the typing reference for additional aliases, runtime type helpers, and strict-validation details.
+Use `@u.typing.validate_units` when `Quantity[...]` annotations define the runtime contract. Open the typing reference for additional aliases, runtime type helpers, and strict-validation details.
 
 If `brainunit.typing` is unavailable, upgrade BrainUnit with its matched SaiUnit dependency; do not mix validators and `Quantity` types from different releases.
 
