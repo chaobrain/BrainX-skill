@@ -11,12 +11,6 @@ make your coding agent understand the power of BrainX
 npx brainx-skill install
 ```
 
-If npm resolves a stale cached package, request the latest release explicitly:
-
-```bash
-npx brainx-skill@latest install
-```
-
 ## Update
 
 ```bash
@@ -28,10 +22,6 @@ npx brainx-skill update
 
 ```bash
 npx --registry=https://registry.npmmirror.com brainx-skill install
-```
-## Update when the internet connection is low
-```bash
-npx --registry=https://registry.npmmirror.com brainx-skill@latest install
 ```
 
 ## Installation locations
