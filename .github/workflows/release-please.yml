@@ -1,0 +1,26 @@
+name: Release notes
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    if: github.repository == 'chaobrain/BrainX-skill'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update release pull request or publish release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo-url: chaobrain/BrainX-skill
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
