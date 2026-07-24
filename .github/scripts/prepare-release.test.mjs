@@ -3,8 +3,10 @@ import test from 'node:test';
 
 import {
   bumpPatch,
+  compareVersions,
   parseCommitLog,
   renderReleaseNotes,
+  selectPreviousRef,
   updateChangelog,
 } from './prepare-release.mjs';
 
@@ -12,6 +14,90 @@ test('bumpPatch increments only the patch component', () => {
   assert.equal(bumpPatch('1.0.3'), '1.0.4');
   assert.equal(bumpPatch('12.8.99'), '12.8.100');
   assert.throws(() => bumpPatch('1.0'), /Expected a semantic version/);
+});
+
+test('compareVersions orders semantic versions numerically', () => {
+  assert.equal(compareVersions('1.0.3', '1.0.5'), -1);
+  assert.equal(compareVersions('1.10.0', '1.9.9'), 1);
+  assert.equal(compareVersions('2.4.6', '2.4.6'), 0);
+  assert.throws(() => compareVersions('latest', '1.0.5'), /semantic version/);
+});
+
+test('selectPreviousRef uses the latest tag when npm and Git are synchronized', () => {
+  assert.equal(
+    selectPreviousRef({
+      packageVersion: '1.0.5',
+      npmPublishedVersion: '1.0.5',
+      latestTag: 'v1.0.5',
+      npmVersionTagExists: true,
+    }),
+    'v1.0.5',
+  );
+});
+
+test('selectPreviousRef uses the configured baseline for the npm catch-up', () => {
+  assert.equal(
+    selectPreviousRef({
+      packageVersion: '1.0.5',
+      npmPublishedVersion: '1.0.3',
+      latestTag: 'v1.0.5',
+      npmVersionTagExists: false,
+      catchUp: {
+        publishedVersion: '1.0.3',
+        previousRef: 'e2b723e489a645fab5d42044a1b73ab21f69b38e',
+      },
+    }),
+    'e2b723e489a645fab5d42044a1b73ab21f69b38e',
+  );
+});
+
+test('selectPreviousRef prefers an npm version tag when it exists', () => {
+  assert.equal(
+    selectPreviousRef({
+      packageVersion: '1.0.5',
+      npmPublishedVersion: '1.0.4',
+      latestTag: 'v1.0.5',
+      npmVersionTagExists: true,
+      catchUp: {
+        publishedVersion: '1.0.3',
+        previousRef: 'unused',
+      },
+    }),
+    'v1.0.4',
+  );
+});
+
+test('selectPreviousRef rejects inconsistent or unknown version state', () => {
+  assert.throws(
+    () =>
+      selectPreviousRef({
+        packageVersion: '1.0.5',
+        npmPublishedVersion: '1.0.4',
+        latestTag: 'v1.0.4',
+        npmVersionTagExists: true,
+      }),
+    /does not match/,
+  );
+  assert.throws(
+    () =>
+      selectPreviousRef({
+        packageVersion: '1.0.5',
+        npmPublishedVersion: '1.0.6',
+        latestTag: 'v1.0.5',
+        npmVersionTagExists: false,
+      }),
+    /is ahead/,
+  );
+  assert.throws(
+    () =>
+      selectPreviousRef({
+        packageVersion: '1.0.5',
+        npmPublishedVersion: '1.0.3',
+        latestTag: 'v1.0.5',
+        npmVersionTagExists: false,
+      }),
+    /No Git comparison baseline/,
+  );
 });
 
 test('parseCommitLog preserves detailed commit bodies', () => {

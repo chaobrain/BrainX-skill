@@ -4,6 +4,10 @@
   "description": "Portable BrainX Agent Skills for Claude Code, Codex, and Cursor",
   "license": "Apache-2.0",
   "type": "commonjs",
+  "scripts": {
+    "test": "node --test .github/scripts/*.test.mjs",
+    "prepublishOnly": "npm test"
+  },
   "bin": {
     "brainx": "installation/bin/brainx.js"
   },
@@ -26,6 +30,14 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chaobrain/BrainX-skill.git"
+  },
+  "homepage": "https://github.com/chaobrain/BrainX-skill#readme",
+  "bugs": {
+    "url": "https://github.com/chaobrain/BrainX-skill/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "keywords": [
     "agent-skills",

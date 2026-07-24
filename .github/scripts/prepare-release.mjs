@@ -26,6 +26,61 @@ export function bumpPatch(version) {
   return `${match[1]}.${match[2]}.${Number(match[3]) + 1}`;
 }
 
+function versionParts(version) {
+  const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(version);
+  if (!match) {
+    throw new Error(`Expected a semantic version, received "${version}"`);
+  }
+  return match.slice(1).map(Number);
+}
+
+export function compareVersions(left, right) {
+  const leftParts = versionParts(left);
+  const rightParts = versionParts(right);
+  for (let index = 0; index < leftParts.length; index += 1) {
+    if (leftParts[index] !== rightParts[index]) {
+      return Math.sign(leftParts[index] - rightParts[index]);
+    }
+  }
+  return 0;
+}
+
+export function selectPreviousRef({
+  packageVersion,
+  npmPublishedVersion,
+  latestTag,
+  npmVersionTagExists,
+  catchUp,
+}) {
+  const packageTag = `v${packageVersion}`;
+  if (latestTag !== packageTag) {
+    throw new Error(
+      `package.json version ${packageVersion} does not match ${latestTag}`,
+    );
+  }
+
+  const versionOrder = compareVersions(npmPublishedVersion, packageVersion);
+  if (versionOrder > 0) {
+    throw new Error(
+      `npm version ${npmPublishedVersion} is ahead of package.json ${packageVersion}`,
+    );
+  }
+  if (versionOrder === 0) return latestTag;
+
+  if (npmVersionTagExists) return `v${npmPublishedVersion}`;
+
+  if (
+    catchUp?.publishedVersion === npmPublishedVersion &&
+    catchUp.previousRef
+  ) {
+    return catchUp.previousRef;
+  }
+
+  throw new Error(
+    `No Git comparison baseline is configured for npm ${npmPublishedVersion}`,
+  );
+}
+
 export function parseCommitLog(log) {
   return log
     .split(RECORD_SEPARATOR)
@@ -138,6 +193,15 @@ function tryLatestTag() {
   }
 }
 
+function refExists(ref) {
+  try {
+    git(['rev-parse', '--verify', '--quiet', `${ref}^{commit}`]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function collectCommits(range) {
   const log = git([
     'log',
@@ -163,22 +227,6 @@ function collectCommits(range) {
     }));
 }
 
-function resolvePreviousRef(latestTag, beforeSha) {
-  if (latestTag) return latestTag;
-
-  if (/^[0-9a-f]{40}$/.test(beforeSha) && !/^0+$/.test(beforeSha)) {
-    try {
-      git(['merge-base', '--is-ancestor', beforeSha, 'HEAD']);
-      return beforeSha;
-    } catch {
-      const mergeBase = git(['merge-base', beforeSha, 'HEAD']);
-      if (mergeBase) return mergeBase;
-    }
-  }
-
-  return git(['rev-list', '--max-parents=0', 'HEAD']).split('\n')[0];
-}
-
 function writeOutput(name, value) {
   if (process.env.GITHUB_OUTPUT) {
     appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${value}\n`);
@@ -194,6 +242,7 @@ export function main() {
   const config = JSON.parse(readFileSync('release-notes.config.json', 'utf8'));
   const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
   const repository = process.env.GITHUB_REPOSITORY ?? config.repository;
+  const npmPublishedVersion = process.env.NPM_PUBLISHED_VERSION;
 
   if (repository !== config.repository) {
     throw new Error(
@@ -202,16 +251,28 @@ export function main() {
   }
 
   const latestTag = tryLatestTag();
-  if (latestTag && latestTag !== `v${packageJson.version}`) {
+  if (!latestTag) {
+    throw new Error('A version tag is required before preparing a release');
+  }
+  if (!npmPublishedVersion) {
     throw new Error(
-      `package.json version ${packageJson.version} does not match ${latestTag}`,
+      'NPM_PUBLISHED_VERSION is required before preparing a release',
     );
   }
 
-  const previousRef = resolvePreviousRef(
+  const previousRef = selectPreviousRef({
+    packageVersion: packageJson.version,
+    npmPublishedVersion,
     latestTag,
-    process.env.RELEASE_BEFORE ?? '',
-  );
+    npmVersionTagExists: refExists(`v${npmPublishedVersion}`),
+    catchUp: config.npmCatchUp,
+  });
+  try {
+    git(['merge-base', '--is-ancestor', previousRef, 'HEAD']);
+  } catch {
+    throw new Error(`Release baseline ${previousRef} is not an ancestor of HEAD`);
+  }
+
   const commits = collectCommits(`${previousRef}..HEAD`);
   if (commits.length === 0) {
     writeOutput('skip', 'true');
