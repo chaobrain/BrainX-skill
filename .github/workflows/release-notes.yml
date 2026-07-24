@@ -1,9 +1,7 @@
 name: Release notes
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,9 +12,7 @@ concurrency:
 
 jobs:
   release:
-    if: >-
-      github.repository == 'chaobrain/BrainX-skill' &&
-      !startsWith(github.event.head_commit.message, 'chore(release):')
+    if: github.repository == 'chaobrain/BrainX-skill'
     runs-on: ubuntu-latest
     steps:
       - name: Check out current main
