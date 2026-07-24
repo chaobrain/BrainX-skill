@@ -21,6 +21,21 @@ make your coding agent understand the power of BrainX
 npx brainx-skill install
 ```
 
+```bash
+# Claude Code, current project
+npx skills add chaobrain/BrainX-skill --agent claude-code
+
+# Codex, current project
+npx skills add chaobrain/BrainX-skill --agent codex
+
+# Claude Code, globally
+npx skills add chaobrain/BrainX-skill --agent claude-code --global
+
+# Specific project
+cd /actual/path/to/project
+npx skills add chaobrain/BrainX-skill --agent codex
+```
+
 ## Update
 
 ```bash
