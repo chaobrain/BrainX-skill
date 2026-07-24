@@ -1,0 +1,98 @@
+# ---------------------------------------------------------------------------
+# Project scratch — specs and plans (see AGENTS.md, rule 7)
+# ---------------------------------------------------------------------------
+.superpowers/
+
+# ---------------------------------------------------------------------------
+# Node / npm (installer CLI + adapters)
+# ---------------------------------------------------------------------------
+node_modules/
+jspm_packages/
+.npm/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/versions
+
+# Package manager debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Local package tarballs (from `npm pack`)
+*.tgz
+
+# Build / distribution output
+dist/
+build/
+out/
+lib-cov/
+*.tsbuildinfo
+
+# ---------------------------------------------------------------------------
+# Test / coverage artifacts (see AGENTS.md, rule 8)
+# ---------------------------------------------------------------------------
+coverage/
+*.lcov
+.nyc_output/
+.jest-cache/
+
+# ---------------------------------------------------------------------------
+# Python (skill scripts)
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# Environment / secrets
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# Editors / IDEs
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.history/
+
+# ---------------------------------------------------------------------------
+# OS cruft
+# ---------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ---------------------------------------------------------------------------
+# Logs / temp
+# ---------------------------------------------------------------------------
+*.log
+logs/
+tmp/
+.tmp/
+.cache/
