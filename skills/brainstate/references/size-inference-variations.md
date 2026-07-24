@@ -1,6 +1,67 @@
-# Size-inference variations: convolution, pooling, and flatten
+# Size inference and composition
 
-Use this reference when stride, padding, dimensionality, pooling mode, or flatten axes make a layer's size behavior non-obvious. The canonical `Sequential` / `.desc()` workflow and the `ComplexNet` example remain in `SKILL.md`; this file covers only the variations demonstrated by the official tutorial.
+Use this reference to compose size-aware layers with `Sequential` and `.desc()`, or when stride, padding, dimensionality, pooling mode, or flatten axes make a layer's size behavior non-obvious.
+
+## Compose `ComplexNet` with `Sequential` and `.desc()`
+
+Give the first layer an explicit `in_size`, then use `.desc()` wherever `Sequential` should instantiate a layer from the preceding `out_size`. Start the classifier from `self.features.out_size` so flattening and dense construction stay coupled to the feature extractor.
+
+```python
+import brainstate
+import brainstate.nn as nn
+
+
+class ComplexNet(brainstate.nn.Module):
+    def __init__(self, in_size):
+        super().__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(
+                in_size,
+                out_channels=16,
+                kernel_size=3,
+                padding="SAME",
+            ),
+            nn.ReLU(),
+            nn.Conv2d.desc(
+                out_channels=32,
+                kernel_size=3,
+                stride=2,
+                padding="SAME",
+            ),
+            nn.ReLU(),
+            nn.Conv2d.desc(
+                out_channels=64,
+                kernel_size=3,
+                padding="SAME",
+            ),
+            nn.ReLU(),
+            nn.MaxPool2d.desc(
+                kernel_size=(2, 2),
+                stride=(2, 2),
+                channel_axis=-1,
+            ),
+        )
+        self.classifier = nn.Sequential(
+            nn.Flatten(in_size=self.features.out_size),
+            nn.Linear.desc(out_size=256),
+            nn.ReLU(),
+            nn.Linear.desc(out_size=10),
+        )
+
+    def update(self, x):
+        return self.classifier(self.features(x))
+
+
+brainstate.random.seed(42)
+net = ComplexNet(in_size=(32, 32, 3))
+x_image = brainstate.random.randn(2, 32, 32, 3)
+y_image = net(x_image)
+
+assert net.features.out_size == (8, 8, 64)
+assert net.classifier.layers[0].out_size == (4096,)
+assert net.classifier.out_size == (10,)
+assert y_image.shape == (2, 10)
+```
 
 ## Convolution output-size behavior
 
@@ -204,4 +265,4 @@ print(x.shape)           # (2, 2048)
 print(y.shape)           # (2, 256)
 ```
 
-This is the source's manual-composition variation: spatial feature shapes progress from `(8, 8, 128)` through `(4, 4, 128)` to `(2048,)`, and the first dense layer accepts 2048 features. It complements the skill body's descriptor-based composition without duplicating that workflow.
+This is the source's manual-composition variation: spatial feature shapes progress from `(8, 8, 128)` through `(4, 4, 128)` to `(2048,)`, and the first dense layer accepts 2048 features. Use it when explicit construction is clearer than descriptor-based composition.

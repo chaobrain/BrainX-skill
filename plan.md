@@ -149,7 +149,14 @@ brainunit/
 - In `Sequential` composition, one layer's output size becomes the next layer's input size.
 - Use `.desc()` to create a layer descriptor that is instantiated when its input size becomes available.
 
-##### 4. State-Aware Transformations and Randomness
+##### 4. Simulation environment
+
+- Put run-level settings such as `dt`, `fit`, time, precision, and platform in `brainstate.environ`, not in model State or every Module signature.
+- Prefer `context()` for scoped simulation, training, and evaluation settings; use `set()` only for intentional persistent defaults.
+- Read settings with `get()` or typed accessors such as `get_dt()`.
+- Use a separate `EnvironmentState` only when a configuration must be isolated from the default environment.
+
+##### 5. State-Aware Transformations and Randomness
 
 - Write ordinary code that reads and writes `.value`, then wrap the complete operation in `brainstate.transform`; do not apply raw `jax.jit`, `jax.grad`, or `jax.vmap` to stateful code.
 - `brainstate.transform` mirrors the JAX transformation API with state-aware `jit`, `grad`, and `vmap` that track the State objects a model reads and writes.
@@ -164,7 +171,7 @@ brainunit/
 4. Seed Management and Reproducibility
 5. Add State to a Module
 6. Using Basic Pre-built Neural-Network Layers
-7. One ComplexNet scripts illustrate Size Inference, `Sequential`, and `.desc()`
+7. Environment-Scoped Time-Indexed Simulation
 8. Minimal State-Aware JIT
 9. Minimal Gradient and Parameter Update
 10. Composed Training-Step Transform
@@ -182,6 +189,7 @@ brainstate/
 ├── prebuilt-layer-library.md
 ├── prebuilt-activation-library.md
 ├── size-inference-variations.md
+├── simulation-environment.md
 ├── parameter-constraints-regularization.md
 │   └── parameter-transforms-regularizers-catalog.md
 ├── transformation-jit-expansion.md [shared]
@@ -202,7 +210,8 @@ brainstate/
 | `skills/brainstate/references/state_collections_and_utilities.md` | Filter, organize, freeze, flatten, configure, and print nested collections | [Utility Toolkit](https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html) |
 | `skills/brainstate/references/collective_model_operations.md` | Initialize, reset, invoke methods, batch lifecycle operations, and restore model-wide State | [Collective Operations](https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html) |
 | `skills/brainstate/references/extension_mechanisms.md` | Mixins, descriptors, runtime modes, and State hooks | [Mixin System](https://brainx.chaobrain.com/brainstate/how_to/custom_states_and_mixins.html), [State Hooks](https://brainx.chaobrain.com/brainstate/how_to/state_hooks.html) |
-| `skills/brainstate/references/size-inference-variations.md` | Convolution size formulas and edge cases, pooling reduction, and flatten-size inference | [Common layers tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/03_common_layers.html) |
+| `skills/brainstate/references/size-inference-variations.md` | Canonical `ComplexNet` composition with `Sequential` / `.desc()`, convolution size formulas and edge cases, pooling reduction, and flatten-size inference | [Common layers tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/03_common_layers.html) |
+| `skills/brainstate/references/simulation-environment.md` | Scoped and nested run settings, persistent defaults, time and fit semantics, precision and platform controls, isolated `EnvironmentState` workflows, and environment-driven one-step exponential-Euler integration | [Time and Environment](https://brainx.chaobrain.com/brainstate/concepts/time_and_environment.html), [`brainstate.environ` API](https://brainx.chaobrain.com/brainstate/apis/environ.html), [`brainstate.nn.exp_euler_step` API](https://brainx.chaobrain.com/brainstate/apis/generated/brainstate.nn.exp_euler_step.html) |
 | `skills/brainstate/references/brainstate/parameter-constraints-regularization.md` | Operational `nn.Param` workflow: constrained forward values, explicit loss integration, common transforms and penalties, prior reset, and `nn.Const` | [parameter model](https://brainx.chaobrain.com/brainstate/concepts/the_parameter_model.html), [parameters tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html), [constraint/regularization how-to](https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html) |
 | `skills/brainstate/references/brainstate/randomness-and-reproducibility.md` | Independent streams, mapped randomness, direct key control, exact replay, dropout/noise, and checkpointed RNG State | [Randomness tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html), [random API](https://brainx.chaobrain.com/brainstate/apis/random.html) |
 | `skills/brainstate/references/libraries/prebuilt-layer-library.md` | Full layer catalog | [Linear API](https://brainx.chaobrain.com/brainstate/apis/nn/linear.html), [convolution API](https://brainx.chaobrain.com/brainstate/apis/nn/conv.html), [normalization API](https://brainx.chaobrain.com/brainstate/apis/nn/normalization.html), [pooling API](https://brainx.chaobrain.com/brainstate/apis/nn/pooling.html), [padding API](https://brainx.chaobrain.com/brainstate/apis/nn/padding.html), [dropout API](https://brainx.chaobrain.com/brainstate/apis/nn/dropout.html) |
