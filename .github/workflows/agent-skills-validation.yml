@@ -1,0 +1,75 @@
+name: Agent Skills validation
+
+on:
+  push:
+    paths:
+      - ".github/workflows/agent-skills-validation.yml"
+      - "manifest.json"
+      - "skills/**"
+  pull_request:
+    paths:
+      - ".github/workflows/agent-skills-validation.yml"
+      - "manifest.json"
+      - "skills/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Agent Skills
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install the Agent Skills reference validator
+        run: python -m pip install --disable-pip-version-check skills-ref==0.1.1
+
+      - name: Verify the skill manifest
+        shell: bash
+        run: |
+          jq -e '
+            .skills
+            | type == "array"
+              and length > 0
+              and all(.[]; type == "string")
+              and length == (unique | length)
+          ' manifest.json > /dev/null
+
+          mapfile -t manifest_skills < <(jq -r '.skills[]' manifest.json | sort)
+          mapfile -t directory_skills < <(
+            find skills -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort
+          )
+
+          if [[ "${manifest_skills[*]}" != "${directory_skills[*]}" ]]; then
+            echo "manifest.json does not match the skill directories." >&2
+            printf 'Manifest: %s\n' "${manifest_skills[*]}" >&2
+            printf 'Directories: %s\n' "${directory_skills[*]}" >&2
+            exit 1
+          fi
+
+      - name: Validate every skill
+        shell: bash
+        run: |
+          mapfile -d '' skill_dirs < <(
+            find skills -mindepth 1 -maxdepth 1 -type d -print0 | sort -z
+          )
+
+          if (( ${#skill_dirs[@]} == 0 )); then
+            echo "No skill directories found under skills/." >&2
+            exit 1
+          fi
+
+          for skill_dir in "${skill_dirs[@]}"; do
+            skills-ref validate "$skill_dir"
+          done
