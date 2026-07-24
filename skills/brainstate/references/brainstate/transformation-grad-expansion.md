@@ -1,4 +1,4 @@
-# BrainState Gradient and Autodiff Expansion
+# Brainstate gradient and autodiff expansion
 
 Use this reference after `skills/brainstate/SKILL.md` when a task needs gradient targets beyond the main skill's minimal parameter update, exact `return_value`/`has_aux` destructuring, state discovery in an arbitrary function, vector- or matrix-valued sensitivities, second derivatives, or an optimizer-integrated fitting step. The main skill owns the canonical `ParamState` collection and manual update; the parameter reference owns the choice between `ParamState` and `nn.Param`.
 
@@ -44,7 +44,7 @@ grad_x, grad_y = grad_fn_xy(x, y, scale)
 
 Official source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html
 
-### Arguments and State in one pass
+### Arguments and state in one pass
 
 Use both selectors when one loss depends on explicit differentiable arguments and mutable model State. In the official example, `grad_states` targets the model collection while `argnums=0` also differentiates the regularization coefficient; therefore the gradient result is grouped as `(state_grads, coeff_grad)`.
 
@@ -129,7 +129,7 @@ Here `gradient[0]` corresponds to the first State in the supplied list. This cap
 
 Official source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html
 
-## Discover State in an arbitrary function
+## Discover state in an arbitrary function
 
 Use `StateFinder` when the differentiable computation is not an `nn.Module` and its State dependencies must be discovered. `filter` selects State types, `usage='all'` finds read and write State, and `return_type='dict'` returns a dictionary that can be passed as `grad_states`.
 
@@ -234,7 +234,7 @@ grad_complete = grad(
 
 Official source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html
 
-## Select vector, Jacobian, or second-order derivatives
+## Select vector, jacobian, or second-order derivatives
 
 BrainState provides `vector_grad`, `jacrev`, `jacfwd`, `jacobian`, and `hessian` with the same State-aware signature pattern as `grad`.
 
@@ -266,7 +266,7 @@ result = vgrad(x0)
 
 Official source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html
 
-### Compute full Jacobians
+### Compute full jacobians
 
 The tutorial defines `jacrev` as reverse-mode Jacobian, efficient for many inputs and few outputs; `jacfwd` is forward-mode, efficient for few inputs and many outputs; `jacobian` is an alias for `jacrev`.
 
@@ -443,7 +443,7 @@ Official source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_train
 - Do not assume an attached regularizer changes fitting unless its penalty is added to the scalar loss.
 - Do not infer BrainCell integration, reset, unit, or solver semantics from these sources; route specialized dynamics to the matching BrainCell or BrainPy-State skill.
 
-## Mirror source URLs
+## Mirror source urls
 
 - https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html
 - https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html

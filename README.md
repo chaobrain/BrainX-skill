@@ -35,4 +35,3 @@ Cursor:      ~/.cursor/skills/<skill-name> or <cwd>/.cursor/skills/<skill-name>
 ```
 
 Installation ownership is recorded in `~/.brainx/receipt.json`.
-

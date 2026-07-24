@@ -1,8 +1,8 @@
-# BrainState Extension Mechanisms
+# Brainstate extension mechanisms
 
 Use this reference when a BrainState task needs reusable class behavior, reusable constructor presets, runtime-mode objects, or callbacks around State operations. It deliberately does not restate ordinary State or Module construction and update patterns.
 
-## Mixin System
+## Mixin system
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/custom_states_and_mixins.html
 
@@ -154,7 +154,7 @@ result = pipeline.forward(jnp.arange(4.0))  # [0.6, 2.6]
 
 Use mode objects to centralize runtime semantics instead of scattering ad hoc boolean flags.
 
-## Observe and Intercept State Access with Hooks
+## Observe and intercept state access with hooks
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/state_hooks.html
 

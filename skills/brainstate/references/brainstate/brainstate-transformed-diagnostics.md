@@ -1,4 +1,4 @@
-# BrainState Transformed Diagnostics
+# Brainstate transformed diagnostics
 
 Open this first-layer reference after `skills/brainstate/SKILL.md` when runtime values, state updates, or failures must be inspected from transformed BrainState code. The skill owns the core transformation model; this reference only adds diagnostics that execute after tracing or turn value-dependent failures into data or runtime exceptions.
 
@@ -88,7 +88,7 @@ If any entry is zero at runtime, the call raises with the supplied message inste
 
 Source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/06_error_handling_and_checks.html
 
-## Locate the first NaN or Inf with `debug_nan`
+## Locate the first nan or inf with `debug_nan`
 
 `debug_nan(fn, *args)` runs `fn` with NaN/Inf detection enabled and raises as soon as a non-finite value appears, naming the offending primitive. Keep the tested computation and the detector together:
 
@@ -135,7 +135,7 @@ The same runtime print is documented inside `grad` and `vmap`: in a loss functio
 
 Source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/07_debugging.html
 
-## Send runtime values to a Python callback
+## Send runtime values to a python callback
 
 `jax.debug.callback` passes runtime values to an arbitrary Python function for inspection such as shapes and summary statistics. The callback must not return a value used by the computation.
 

@@ -1,4 +1,4 @@
-# BrainState Constrained and Regularized Parameters
+# Brainstate constrained and regularized parameters
 
 Use this first-layer reference after `skills/brainstate/SKILL.md` has selected `brainstate.nn.Param` for a value that needs a valid-domain transform, a regularization penalty, a modeling prior, or fixed parameter-like storage. It owns the operational workflow and common patterns. Open `references/brainstate/parameter-transforms-regularizers-catalog.md` only when selecting an exact built-in transform or regularizer beyond the common choices shown here.
 
@@ -188,7 +188,7 @@ Official sources:
 - Match a prior's support to the parameter domain; use `t=` when the domain must be guaranteed by construction.
 - Do not assume every `nn.Transform` subclass is a smooth bijection; the catalog distinguishes projection-like transforms.
 
-## Mirror source URLs
+## Mirror source urls
 
 - https://brainx.chaobrain.com/brainstate/concepts/the_parameter_model.html
 - https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html

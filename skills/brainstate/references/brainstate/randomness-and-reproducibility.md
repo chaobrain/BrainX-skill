@@ -1,4 +1,4 @@
-# BrainState Randomness and Reproducibility
+# Brainstate randomness and reproducibility
 
 Open this reference after `skills/brainstate/SKILL.md` when a task needs independent streams, repeated stochastic trials, random calls inside a transformed operation, dropout or noise, direct key control, parallel key preparation, exact replay, or RNG state stored with a checkpoint.
 
@@ -80,7 +80,7 @@ y2 = layer(x)
 
 Source: https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
 
-## Checkpoint the RNG with the model
+## Checkpoint the rng with the model
 
 When exact stochastic continuation matters, the tutorial saves the model and current RNG key in the same checkpoint, then restores the key before continuing:
 
@@ -97,7 +97,7 @@ Keep this compact checkpoint requirement here because it determines what must be
 
 Source: https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
 
-## Advanced BrainState Randomness
+## Advanced brainstate randomness
 
 Use this section when a task needs direct key control, parallel key preparation, exact key replay, custom-generator state inspection, or checkpoint behavior beyond the ordinary stochastic path above.
 
@@ -194,7 +194,7 @@ Capture `rng_key` after every random operation that belongs to the completed por
 
 Source: https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
 
-### Key API distinctions
+### Key api distinctions
 
 - `get_key()` returns the current global random key.
 - `get_key_data()` returns the current global random key as raw `uint32[2]` data; use it only when raw key data is the required interchange form.

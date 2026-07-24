@@ -233,9 +233,11 @@ Use `@u.typing.validate_units` when `Quantity[...]` annotations define the runti
 
 If `brainunit.typing` is unavailable, upgrade BrainUnit with its matched SaiUnit dependency; do not mix validators and `Quantity` types from different releases.
 
-## Transform and validate unit-aware functions
+## Unit aware transformation
 
-BrainUnit integrates with automatic differentiation, JIT compilation, vectorization, and parallel computation. Its strict physical-unit type checking and dimensional inference perform unit conversion and analysis at compilation time in compiled workflows; eager invalid operations raise when evaluated. Use `jax.jit` and `jax.vmap` with quantities, `u.autograd.grad` for unit-aware derivatives, and `@u.check_units` at scientific function boundaries.
+BrainUnit quantities work with JAX transformations such as `jax.jit` and `jax.vmap`; units are tracked through compilation, and these transformations compose with BrainUnit automatic differentiation.
+
+`u.autograd.grad` is BrainUnit's physical-unit-aware version of `jax.grad`: for a scalar-valued function with quantity arguments, it automatically returns derivatives with the correct unit, `unit(output) / unit(input)`. Raw `jax.grad` does not reconstruct derivative units, while `brainstate.transform.grad` is primarily state-aware and requires `unit_aware=True` for unit-aware gradients.
 
 ```python
 @jax.jit
@@ -254,18 +256,6 @@ denergy_dv = u.autograd.grad(
 )
 momentum = denergy_dv(3.0 * u.meter / u.second)
 # 6. kg * m / s
-
-
-@u.check_units(v=u.meter / u.second, t=u.second)
-def displacement(v, t):
-    return v * t
-
-
-distance_traveled = displacement(
-    10.0 * u.meter / u.second,
-    5.0 * u.second,
-)
-# 50. m
 ```
 
 ## Convert Celsius at affine boundaries

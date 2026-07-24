@@ -1,4 +1,4 @@
-# BrainState State-Graph Operations
+# Brainstate state-graph operations
 
 Use this reference after the core `State`, `Module`, and transform rules in
 `SKILL.md`. It covers the less-frequent graph operations needed to find,
@@ -13,7 +13,7 @@ cycles are encoded by integer index rather than duplicated.
 Source URL:
 https://brainx.chaobrain.com/brainstate/apis/graph.html
 
-## Find Nodes, Leaves, and States
+## Find nodes, leaves, and states
 
 Use traversal when the path is part of the decision. `iter_node()` yields
 `(path, graph_node)` for every graph node; `iter_leaf()` yields `(path, value)`
@@ -64,7 +64,7 @@ The filter DSL also accepts:
 Source URL:
 https://brainx.chaobrain.com/brainstate/how_to/inspect_and_edit_state_graph.html
 
-## Extract State Objects or State PyTrees
+## Extract state objects or state pytrees
 
 Choose the extraction API by the representation required downstream:
 
@@ -99,7 +99,7 @@ Source URLs:
 https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html
 https://brainx.chaobrain.com/brainstate/apis/graph.html
 
-## Split Structure from State
+## Split structure from state
 
 `treefy_split()` returns `(graph_def, state_tree1, state_tree2, ...)`. Each
 filter adds one state mapping in the same order; `...` is the catch-all used for
@@ -130,7 +130,7 @@ Source URLs:
 https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html
 https://brainx.chaobrain.com/brainstate/how_to/inspect_and_edit_state_graph.html
 
-## Replace State Values in Place
+## Replace state values in place
 
 `update_states()` updates a graph node in place from one or more state mappings.
 Extract the desired subset, produce a replacement mapping with the same paths,
@@ -161,7 +161,7 @@ Source URLs:
 https://brainx.chaobrain.com/brainstate/apis/graph.html
 https://brainx.chaobrain.com/brainstate/how_to/inspect_and_edit_state_graph.html
 
-## Reconstruct the Graph
+## Reconstruct the graph
 
 Use `treefy_merge()` with the `GraphDef` and every state mapping returned by
 the corresponding `treefy_split()` call. It reconstructs a new graph node;
@@ -203,7 +203,7 @@ shared index across the related operations. For a deep copy of one graph,
 Source URL:
 https://brainx.chaobrain.com/brainstate/apis/graph.html
 
-## Selection Rules
+## Selection rules
 
 - Need paths plus graph objects: `iter_node()`, `iter_leaf()`, `nodes()`, or
   `states()`.

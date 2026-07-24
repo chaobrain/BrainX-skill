@@ -1,4 +1,4 @@
-# BrainState Prebuilt Layer Library
+# Brainstate prebuilt layer library
 
 Use this reference only to select a prebuilt `brainstate.nn` layer and recover its constructor form. The canonical layer example, `Module` composition, and `.desc()` workflow stay in `SKILL.md`. Route convolution, pooling, padding, and flatten output formulas to `../size-inference-variations.md`; route activation functions to `prebuilt-activation-library.md`; route dropout randomness, reproducibility, and fitting-mode work to `../brainstate/randomness-and-reproducibility.md`.
 
@@ -22,7 +22,7 @@ C1  = Constant(value=1.0)
 
 The `...` inside an initializer alias stands only for its rendered RNG and unit representation, not for omitted layer arguments.
 
-## Linear And Connectivity Layers
+## Linear and connectivity layers
 
 Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/linear.html
 
@@ -40,7 +40,7 @@ The official catalog includes standard dense, weight-standardized, signed-absolu
 
 Do not replace `SparseLinear`, `LoRA`, `AllToAll`, or `OneToOne` with a hand-written dense layer when the corresponding connection structure is the requirement.
 
-## Convolutional Layers
+## Convolutional layers
 
 Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/conv.html
 
@@ -92,7 +92,7 @@ ConvTransposeNd(
 
 Select this family for the catalog's transposed-convolution, or deconvolution, upsampling operation. Unlike the standard and scaled-WS forms, its documented constructor has no `lhs_dilation` argument.
 
-## Normalization Layers
+## Normalization layers
 
 Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/normalization.html
 
@@ -130,7 +130,7 @@ brainstate.nn.weight_standardization(w, eps=0.0001, gain=None, out_axis=-1)
 
 Use it when standardizing a weight value directly; prefer the prebuilt `ScaledWSLinear` or `ScaledWSConv*` families when the whole layer already matches the task.
 
-## Pooling And Reshaping
+## Pooling and reshaping
 
 Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/pooling.html
 
@@ -173,7 +173,7 @@ Select the matching rank when the partial inverse of the corresponding `MaxPoolN
 | `AdaptiveAvgPool1d`, `AdaptiveAvgPool2d`, `AdaptiveAvgPool3d` | `AdaptiveAvgPoolNd(target_size, channel_axis=-1, name=None, in_size=None)` | Adaptive average pooling to a fixed target size. |
 | `AdaptiveMaxPool1d`, `AdaptiveMaxPool2d`, `AdaptiveMaxPool3d` | `AdaptiveMaxPoolNd(target_size, channel_axis=-1, name=None, in_size=None)` | Adaptive max pooling to a fixed target size. |
 
-## Padding Layers
+## Padding layers
 
 Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/padding.html
 
@@ -189,7 +189,7 @@ All five boundary-condition families are available in 1D, 2D, and 3D. Choose the
 
 Do not derive output dimensions here. Open `../size-inference-variations.md` when `padding` interacts with convolution, pooling, stride, dilation, or flattening.
 
-## Dropout Layers
+## Dropout layers
 
 Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/dropout.html
 
@@ -207,7 +207,7 @@ The official catalog distinguishes elementwise dropout, channelwise spatial drop
 
 After selecting the class, route RNG streams, deterministic replay, mapped randomness, checkpoint behavior, or training/evaluation mode to `../brainstate/randomness-and-reproducibility.md`; those concerns are deliberately not duplicated here.
 
-## Exact Official Sources
+## Exact official sources
 
 - https://brainx.chaobrain.com/brainstate/apis/nn/linear.html
 - https://brainx.chaobrain.com/brainstate/apis/nn/conv.html

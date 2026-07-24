@@ -1,10 +1,10 @@
-# BrainState State Collections and Utility Toolkit
+# Brainstate state collections and utility toolkit
 
 Use this reference for the collection-focused parts of BrainState's Utility Toolkit: managing mappings, nested configuration, dictionary conversion, immutable structured PyTrees, declarative filters, and readable PyTree containers. These utilities organize data; the core `State` and `Module` programming model remains in the parent `SKILL.md`.
 
 Official page: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
 
-## Managing Collections with `DictManager`
+## Managing collections with `DictManager`
 
 Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
 
@@ -31,7 +31,7 @@ print(param_counts)
 
 The demonstrated results retain `encoder` and `decoder` in `submods` and `dicts`, put only `dropout` in `remainder`, and produce `DictManager({'encoder': 32, 'decoder': 45})` for `param_counts`.
 
-## Configuration Access with `DotDict`
+## Configuration access with `DotDict`
 
 Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
 
@@ -58,7 +58,7 @@ round_trip = config.to_dict()
 
 The example reads `config.model.hidden` as `256`, adds `config.training.dropout`, and converts the complete nested configuration back with `to_dict()`.
 
-## Merge, Flatten, and Unflatten Dictionaries
+## Merge, flatten, and unflatten dictionaries
 
 Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
 
@@ -91,7 +91,7 @@ The recursive merge preserves `optimizer.beta1`, overrides `optimizer.lr`, and a
 
 `unflatten_dict(flat)` restores the nested representation.
 
-## Structured PyTrees and Frozen Mappings
+## Structured pytrees and frozen mappings
 
 Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
 
@@ -123,7 +123,7 @@ unfrozen = struct.unfreeze(frozen)
 
 In the page's result, `cfg.replace(...)` returns a configuration whose weight is filled with `3.0`; flattening `cfg` yields array leaves with shapes `(2, 2)` and `(2,)`, so the `name` field marked `pytree_node=False` is not a dynamic leaf. `struct.freeze(...)` returns a `FrozenDict`, and `struct.unfreeze(...)` returns the ordinary dictionary again.
 
-## Filtering Nested Objects
+## Filtering nested objects
 
 Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
 
@@ -177,7 +177,7 @@ print(tuple(both.keys()))
 
 Both predicates select `('encoder', 'head')` in the demonstrated tree. Use `to_predicate(...)` to normalize the tag filter, `OfType(...)` for the type check, `WithTag(...)` for tag matching, and `All(...)` to require both conditions.
 
-## Pretty PyTree Containers and Tuple-Path Flattening
+## Pretty pytree containers and tuple-path flattening
 
 Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
 

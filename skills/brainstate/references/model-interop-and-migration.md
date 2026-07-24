@@ -1,8 +1,8 @@
-# BrainState Model Interoperation and Migration
+# Brainstate model interoperation and migration
 
 Use this reference after the main BrainState skill when a task must move registered weighted layers between BrainState, Flax NNX, Flax Linen, or Equinox, or translate a PyTorch workflow into BrainState equivalents. It assumes the main skill's `State`, `Module`, parameter-collection, randomness, and state-aware transformation model; this file covers only interoperability and migration deltas.
 
-## Interop Contract and API Surface
+## Interop contract and api surface
 
 Source: https://brainx.chaobrain.com/brainstate/apis/interop.html
 
@@ -94,7 +94,7 @@ Handle the documented error hierarchy rather than catching a generic failure wit
 | `MissingShapeError` | A spatial layer such as Conv or BatchNorm is imported without a sample input. |
 | `ConversionError` | Weight transfer fails because of a shape, dtype, or unit mismatch. |
 
-## Flax NNX Round Trip
+## Flax nnx round trip
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/interoperate_with_flax_equinox.html
 
@@ -120,7 +120,7 @@ to_nnx output matches  : True
 from_nnx output matches: True
 ```
 
-## Flax Linen Round Trip
+## Flax linen round trip
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/interoperate_with_flax_equinox.html
 
@@ -146,7 +146,7 @@ to_linen output matches  : True
 from_linen output matches: True
 ```
 
-## Equinox Round Trip
+## Equinox round trip
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/interoperate_with_flax_equinox.html
 
@@ -173,7 +173,7 @@ to_equinox output matches  : True
 from_equinox output matches: True
 ```
 
-## Import Spatial Layers with `sample_input`
+## Import spatial layers with `sample_input`
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/interoperate_with_flax_equinox.html
 
@@ -192,7 +192,7 @@ Expected result:
 converted conv output shape: (2, 8, 8, 4)
 ```
 
-## PyTorch-to-BrainState Migration Deltas
+## Pytorch-to-brainstate migration deltas
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/migrate_from_pytorch.html
 
@@ -257,7 +257,7 @@ print('parameters saved and restored via msgpack')
 
 The source assigns the return from `msgpack_load` to `restored`.
 
-### Port gradients for model State plus an explicit argument
+### Port gradients for model state plus an explicit argument
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/migrate_from_pytorch.html
 
@@ -288,7 +288,7 @@ for path, g in grads_state.items():
 
 Here `argnums=0` selects the explicit `alpha` argument while `grad_states=params` selects the model State tree; do not replace one with the other during a port.
 
-## Source Pages
+## Source pages
 
 - `brainstate.interop` module: https://brainx.chaobrain.com/brainstate/apis/interop.html
 - Interoperate with Flax and Equinox: https://brainx.chaobrain.com/brainstate/how_to/interoperate_with_flax_equinox.html

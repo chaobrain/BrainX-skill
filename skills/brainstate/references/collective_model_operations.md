@@ -1,8 +1,8 @@
-# BrainState Collective Operations
+# Brainstate collective operations
 
 Use this reference when one operation must initialise, reset, batch, invoke a common method on, or restore stateful objects throughout a model without manually traversing its module graph. It assumes familiarity with `brainstate.nn` modules and states and basic JAX `vmap` usage; BrainState requires `brainunit`.
 
-## Overview of the API
+## Overview of the api
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
@@ -16,7 +16,7 @@ The official guide presents `brainstate.nn._collective_ops` through these public
 | Reset existing states everywhere | `brainstate.nn.reset_all_states`, `brainstate.nn.vmap_reset_all_states` |
 | Restore values keyed by absolute state paths | `brainstate.nn.assign_state_values` |
 
-## Ordering Calls with `call_order`
+## Ordering calls with `call_order`
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
@@ -45,7 +45,7 @@ class EncoderDecoder(brainstate.nn.Module):
 
 The decorators make collective utilities honour this order while visiting child modules.
 
-## Initialising Every Module
+## Initialising every module
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
@@ -67,7 +67,7 @@ brainstate.nn.init_all_states(
 model = brainstate.nn.init_all_states(model)
 ```
 
-## Resetting State Between Sequences
+## Resetting state between sequences
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
@@ -84,7 +84,7 @@ brainstate.nn.reset_all_states(rnn)
 
 As with `init_all_states`, reset can exclude nodes or receive additional arguments. `call_order` still governs the pass, allowing buffers to reset before hidden states when required.
 
-## Batched Initialisation with `vmap_*`
+## Batched initialisation with `vmap_*`
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
@@ -106,7 +106,7 @@ brainstate.nn.vmap_reset_all_states(policy, axis_size=8)
 
 Pass a `state_to_exclude` filter to `vmap_init_all_states` when selected states, such as statistics buffers, must remain shared. Excluded states retain their original shape across the batch.
 
-## Calling Arbitrary Methods Collectively
+## Calling arbitrary methods collectively
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
@@ -142,7 +142,7 @@ for layer in net.layers:
 
 The page identifies `brainstate.nn.vmap_call_all_fns` as the corresponding operation for `axis_size` independent instances and says it shares the interface and filter options. It does not provide a concrete `call_all_fns` or `vmap_call_all_fns` invocation signature, so consult API help rather than inferring argument order from this guide.
 
-## Restoring States with `assign_state_values`
+## Restoring states with `assign_state_values`
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
@@ -178,13 +178,13 @@ if unexpected or missing:
 
 The guide's own output reports flattened paths as unexpected and their parent state paths as missing. Therefore, the example demonstrates why both return collections must be inspected; it does not demonstrate a mismatch-free restore.
 
-## Putting It All Together
+## Putting it all together
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
 The final guide example combines the earlier operations in this order: construct a `ValinaRNNCell`, call `vmap_init_all_states(..., axis_size=4)`, build the same absolute-path snapshot shown above, run a time-stepped rollout, call `vmap_reset_all_states(..., axis_size=4)`, and pass the snapshot to `assign_state_values`. It repeats the same dictionary-flattening restoration pattern and likewise produces unexpected and missing keys, so retain the mismatch check when adapting that lifecycle.
 
-## Best Practices
+## Best practices
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 

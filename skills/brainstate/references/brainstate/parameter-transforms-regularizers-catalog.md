@@ -1,4 +1,4 @@
-# BrainState Parameter Transforms and Regularizers Catalog
+# Brainstate parameter transforms and regularizers catalog
 
 This is the exhaustive selection reference for `brainstate.nn` parameter transforms and regularizers. Open it only from `references/brainstate/parameter-constraints-regularization.md`, after that parent has established the operational `nn.Param` workflow. Return to the parent for `ParamState` versus `nn.Param`, `nn.Const`, forward computation, optimizer targeting, and loss integration.
 
@@ -155,7 +155,7 @@ Official source: https://brainx.chaobrain.com/brainstate/apis/nn/regularization.
 - `reset_to_prior()` uses `reg.reset_value()`; use `reg.sample_init(shape)` separately when a random prior draw is required.
 - Return to `parameter-constraints-regularization.md` for objective integration and complete workflow code.
 
-## Mirror source URLs
+## Mirror source urls
 
 - https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html
 - https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html

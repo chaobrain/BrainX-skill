@@ -3,21 +3,27 @@ name: brainstate
 description: Use for BrainState mutable State and `.value`, ParamState and other State roles, Module graphs, environment-scoped simulations, state initialization, operational randomness, size-aware neural-network composition, state-aware jit/grad/vmap, or a BrainState training step.
 ---
 
-# BrainState
+# Brainstate
 
-## Purpose And Boundary
+## Purpose and boundary
 
-Use this skill for BrainState mutable `State`, `brainstate.nn.Module` graphs, environment-scoped simulation settings, state collection and initialization, operational randomness, state-aware transformations, and the general structure of stateful simulation and training.
+Use this skill for BrainState's general stateful workflow: mutable `State`, registered `brainstate.nn.Module` graphs, environment-scoped simulation, state initialization and collection, randomness, state-aware transforms, and simulation or training.
 
-Use this canonical path:
+Canonical path:
 
 `classify State roles -> construct Modules -> register State and children -> initialize -> set the run environment -> transform the whole operation -> validate State and outputs`
 
-Keep the canonical path here. Open references only for graph editing, collection utilities, lifecycle operations, extension hooks, constraints, full layer catalogs, transform variants, diagnostics, interoperation, or optimizer selection. Route performance, memory, accelerator, and multi-device work to `skills/brainx-acceleration-audit/SKILL.md`.
+Open the routed reference for specialized variants; route specialized neuronal or network dynamics to the matching BrainCell or BrainPy-State skill.
 
-Advanced branches include training, dynamics, randomness, parameter constraints, model graphs, diagnostics, interoperation, layers, and acceleration. This skill keeps the general stateful simulation and training structure; route specialized neuronal or network dynamics to the matching BrainCell or BrainPy-State skill instead of the legacy BrainState dynamics drafts.
+## Underlying principle of BrainState
 
-### API Structure
+BrainState makes mutable programs compatible with JAX's functional model. A `State` is the explicit mutation boundary: values that change, such as neuron voltages, firing rates, parameters, hidden activations, or optimizer buffers, live in `.value`; ordinary attributes remain static.
+
+This fits neuroscience simulation and training because brain models contain values with different lifecycles: membrane potentials and firing rates evolve during every simulation step, while weights are optimized across training steps. e.g `HiddenState` marks evolving neural dynamics and `ParamState` marks trainable values, so code can update simulation state separately from the parameters selected for gradients.
+
+BrainState transforms mirror JAX's `jit`, `grad`, and `vmap`, but understand `State`: they thread state reads and writes, differentiate State collections, and share or map State during vectorization. Raw JAX transforms expect explicit, side-effect-free state flow, so `jax.jit` can discard ordinary mutation. Read and write `.value`, then wrap the complete stateful operation in `brainstate.transform`.
+
+### Api structure
 
 | API | Feature description |
 |---|---|
@@ -32,7 +38,7 @@ Advanced branches include training, dynamics, randomness, parameter constraints,
 | `brainstate.mixin` | Defines reusable behavior mixins, deferred parameter descriptors, computation modes, and type utilities; use it to add shared contracts or `.desc()`-style construction to components. |
 | `brainstate.environ` | Manages global defaults and scoped overrides for time, training mode, precision, platform, and related run settings; use it to share configuration across a computation. |
 
-### 1. State Is The Mutation Boundary
+### 1. State is the mutation boundary
 
 `State` encapsulates model values that change over time. It can wrap Python scalars, arrays, `jax.Array` values, dictionaries, lists, or another stable PyTree structure; its value remains mutable after compilation. Read and write it through `.value`.
 
@@ -44,7 +50,7 @@ State provides three operational guarantees:
 
 Only values inside `State` are mutable in transformed code. Keep ordinary Python attributes for static configuration. Preserve the original PyTree structure when assigning `.value`.
 
-#### Create scalar, array, and PyTree State
+#### Create scalar, array, and pytree state
 
 ```python
 import brainstate
@@ -89,7 +95,7 @@ last_spike = brainstate.ShortTermState(jnp.full(5, -1e7))
 running_mean = brainstate.LongTermState(jnp.zeros(5))
 ```
 
-### 2. Modules Form Registered State Graphs
+### 2. Modules form registered state graphs
 
 `brainstate.nn.Module` is the base class for BrainState modules. It provides automatic child registration, State collection, inspection, and integration with BrainState transformations. Assign each `State` and child `Module` to an attribute so the model becomes a nested Module graph with State objects at the leaves.
 
@@ -99,7 +105,7 @@ Modules keep related State and computation together, can be reused after constru
 params = model.states(brainstate.ParamState)
 ```
 
-#### Add State to a Module
+#### Add state to a module
 
 ```python
 class Counter(brainstate.nn.Module):
@@ -174,7 +180,7 @@ print(positive_tau.val)      # underlying unconstrained ParamState
 print(fixed_scale.value())   # fixed value, excluded from ParamState collection
 ```
 
-### 3. Size Inference Drives Composition
+### 3. Size inference drives composition
 
 Every size-aware `brainstate.nn.Module` exposes `in_size` and `out_size` as feature shapes without the batch dimension. When the input size is known, the Module computes its output size. `nn.Sequential` propagates one layer's `out_size` into the next layer, and `.desc()` creates a descriptor that is instantiated when that input size becomes available.
 #### Compose `ComplexNet` with `Sequential` and `.desc()`
@@ -234,7 +240,7 @@ assert y_image.shape == (2, 10)
 
 Open `references/size-inference-variations.md` for convolution formulas, padding/stride edge cases, pooling reduction, and flatten-size variants.
 
-### 4. Environment Context Drives Simulations
+### 4. Environment context drives simulations
 
 Many parts of a simulation need the same settings, such as the time step (`dt`), training mode (`fit`), and numerical precision. Instead of passing these values to every Module, store them in `brainstate.environ`. Use `set()` for a lasting default or `context()` to apply settings only inside a `with` block; code inside that scope reads them with `get()` or a typed accessor such as `get_dt()`.
 
@@ -319,7 +325,7 @@ with brainstate.environ.context(dt=0.1 * u.ms):
 
 The state must use a supported floating dtype, and a state with units `[X]` requires drift units `[X] / [time]`. Only the diagonal of the drift Jacobian is integrated exponentially; off-diagonal coupling is treated explicitly like forward Euler, so do not treat this as an exact solver for strongly cross-coupled systems.
 
-### 5. State-Aware Transforms
+### 5. State-aware transforms
 
 `brainstate.transform` mirrors JAX's `jit`, `grad`, and `vmap`, but tracks the `State` objects a model reads and writes. Raw `jax.jit` can discard State writes; wrap the complete stateful operation in `brainstate.transform` and prefer whole forward, simulation, or training steps over fragmented transforms.
 
@@ -335,7 +341,7 @@ y_train = brainstate.random.randn(64, 1)
 params = model.states(brainstate.ParamState)
 ```
 
-#### Minimal State-Aware JIT
+#### State-aware jit example
 
 ```python
 forward = brainstate.transform.jit(model)
@@ -345,7 +351,7 @@ assert prediction.shape == (64, 1)
 
 The first compatible call traces and compiles the complete forward pass; later compatible calls reuse it while BrainState handles State effects.
 
-#### Minimal Gradient And Parameter Update
+#### Gradient and parameter update example
 
 `grad` differentiates with respect to a State collection and returns gradients keyed by the same State paths. `return_value=True` returns the loss from the same pass.
 
@@ -364,7 +370,7 @@ for key in params:
     params[key].value -= 0.1 * grads[key]
 ```
 
-#### Composed Training-Step Transform
+#### Composed training-step transform
 
 ```python
 @brainstate.transform.jit
@@ -384,7 +390,7 @@ loss = train_step()
 
 Use `jit(grad(...))` as the default compiled training-step backbone. Open the optimizer reference when manual updates should become optimizer-managed updates.
 
-#### Minimal `vmap`
+#### State-aware `vmap`
 
 ```python
 def predict_one(x_row):
@@ -443,18 +449,18 @@ y_epoch = y_train[order]
 
 Use independent `RandomState` instances, key save/restore, stochastic mapping, or checkpoint-aware randomness only through the randomness reference.
 
-## Script References
+## Script references
 
 - `scripts/integrator_rnn.py`: full stateful sequence-training workflow with a custom RNN cell, trainable initial state, optimization, compiled steps, and evaluation.
 - `scripts/lif_neuron_model.py`: extended combination of `HiddenState`, `ShortTermState`, and `ParamState` with explicit `.value` updates.
 - `scripts/modern_cnn.py`: full convolution, normalization, activation, pooling, dropout, and dense Module composition. Select it through the layer or activation branch.
 - `scripts/resnet.py`: residual Modules and dynamically registered child blocks.
 
-## Reference Routing
+## Reference routing
 
 Route by the outcome the task needs, then open only the smallest reference that owns that variant.
 
-### State Graphs, Collections, And Lifecycle
+### State graphs, collections, and lifecycle
 
 | Reference | Open when |
 |---|---|
@@ -462,7 +468,7 @@ Route by the outcome the task needs, then open only the smallest reference that 
 | `references/state_collections_and_utilities.md` | Structure, filter, freeze, flatten, and inspect the configs or PyTree mappings around a model without changing graph identity; use `DictManager`, `DotDict`, `FrozenDict`, and declarative filters |
 | `references/collective_model_operations.md` | Initialize, reset, restore, or invoke one shared method across an entire Module graph without manual traversal; use `call_order`, `call_all_fns`, `init_all_states`, and their vmapped variants |
 
-### Model Composition, Extension, And Interoperation
+### Model composition, extension, and interoperation
 
 | Reference | Open when |
 |---|---|
@@ -470,7 +476,7 @@ Route by the outcome the task needs, then open only the smallest reference that 
 | `references/extension_mechanisms.md` | Extend BrainState without rewriting core Modules: compose reusable `Mixin` behavior, defer construction with `ParamDesc`, centralize runtime semantics with `Mode`, or observe and enforce State access through hooks |
 | `references/model-interop-and-migration.md` | Reuse standard-layer architectures and weights across BrainState, Flax NNX/Linen, or Equinox, or port a PyTorch workflow into BrainState's explicit State and transform model |
 
-### Parameters, Optimization, And Randomness
+### Parameters, optimization, and randomness
 
 | Reference | Open when |
 |---|---|
@@ -482,14 +488,14 @@ The remaining nested reference has one inbound route:
 
 - Only `parameter-constraints-regularization.md` may open `parameter-transforms-regularizers-catalog.md`.
 
-### Layer Libraries
+### Layer libraries
 
 | Reference | Open when |
 |---|---|
 | `references/libraries/prebuilt-layer-library.md` | Keep graph registration, parameter roles, size metadata, and fit behavior BrainState-native by selecting an existing layer instead of hand-rolling a standard linear, convolutional, normalization, pooling, padding, or dropout operator |
 | `references/libraries/prebuilt-activation-library.md` | Decide whether nonlinear behavior belongs in Module composition or as a pure lowercase function inside `update()` or raw JAX code, then select the exact activation symbol |
 
-### Stateful Transformations
+### Stateful transformations
 
 | Reference | Open when |
 |---|---|
@@ -500,4 +506,3 @@ The remaining nested reference has one inbound route:
 | `references/brainstate/brainstate-transformed-diagnostics.md` | See what actually happens at runtime inside traced stateful code and enforce value-dependent invariants; use `checkify`, `jit_error_if`, `debug_nan`, runtime print/callback, or conditional breakpoints |
 
 Do not route to dynamics or solver references from this skill; they are outside the architecture supplied for this BrainState skill.
-

@@ -1,4 +1,4 @@
-# Size-Inference Variations: Convolution, Pooling, and Flatten
+# Size-inference variations: convolution, pooling, and flatten
 
 Use this reference when stride, padding, dimensionality, pooling mode, or flatten axes make a layer's size behavior non-obvious. The canonical `Sequential` / `.desc()` workflow and the `ComplexNet` example remain in `SKILL.md`; this file covers only the variations demonstrated by the official tutorial.
 

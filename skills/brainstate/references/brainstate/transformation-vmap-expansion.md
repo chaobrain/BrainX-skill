@@ -1,6 +1,6 @@
-# BrainState VMAP Expansion
+# Brainstate vmap expansion
 
-## Scope And Source Boundary
+## Scope and source boundary
 
 Open this reference after the minimal `brainstate.transform.vmap` example in `skills/brainstate/SKILL.md`. The vectorization tutorial describes `brainstate.transform.vmap` as a state-aware wrapper around `jax.vmap`, but its detailed executable examples use `brainstate.transform.vmap2`. Preserve that distinction when adapting a script; do not silently substitute one API for the other.
 
@@ -19,7 +19,7 @@ from brainstate.transform import vmap2
 from brainstate.util.filter import OfType
 ```
 
-## Map Sweeps And Broadcast Fixed Arguments
+## Map sweeps and broadcast fixed arguments
 
 `in_axes` controls how batch dimensions are mapped over function arguments and works identically to `jax.vmap`. Use an axis number for a swept argument and `None` for a value shared by every mapped call.
 
@@ -81,7 +81,7 @@ vmap_normalize = vmap2(normalize_batch, in_axes=0, axis_name='batch')
 normalized = vmap_normalize(jnp.array([1.0, 2.0, 3.0, 4.0]))
 ```
 
-## Map Per-Instance State And Share Parameters
+## Map per-instance state and share parameters
 
 `state_in_axes` and `state_out_axes` are BrainState-specific parameters that control how `State` objects are batched. The tutorial's State Axis Inference example maps `ShortTermState` along axis 0 while leaving `ParamState` shared; use that demonstrated separation for an ensemble with per-instance mutable State and shared parameters.
 
@@ -120,13 +120,13 @@ assert model.param.value == 1.0
 
 This bundles the State-axis decision with the executable pattern: each mapped element owns one `temp` value, while every element reads the same scalar parameter. For an ordinary `nn.Module` with no State-axis filters, the tutorial says Module states are typically shared, or broadcast, across the batch by default.
 
-### Exact Parameter Names
+### Exact parameter names
 
 Neither routed tutorial defines mapping parameters named `in_states` or `out_states`. The exact documented names in the Vectorization tutorial are `state_in_axes` and `state_out_axes`; do not present `in_states` / `out_states` as aliases without opening an official API page that defines them.
 
 Source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vectorization.html#state-aware-parameters-state-in-axes-and-state-out-axes
 
-## Handle State Writes Outside `state_out_axes`
+## Handle state writes outside `state_out_axes`
 
 `unexpected_out_state_mapping` controls behavior when a State is written but is not covered by `state_out_axes`. The tutorial demonstrates the default `'ignore'` policy with a written `LongTermState` that is not listed in State-axis filters.
 
@@ -153,7 +153,7 @@ result = vmap_ignore(jnp.array([1.0, 2.0, 3.0]))
 
 Treat an unexpected write as an explicit policy decision. Do not assume that mapping only the function arguments also specifies the output behavior of every State the function mutates.
 
-## Choose Independent Or Shared Randomness
+## Choose independent or shared randomness
 
 `brainstate.transform.vmap` automatically splits keys for `brainstate.random.RandomState`, so each mapped element receives a unique random key. Seed before the mapped call when the whole experiment must be reproducible; do not manually add `RandomState` State-axis filters for this ordinary independent-sample path.
 
@@ -200,7 +200,7 @@ Stop here for ordinary stochastic mapping. For `get_key`, `set_key`, `split_key`
 
 Randomness boundary source: https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html#advanced-key-management
 
-## Nest And Compose Mappings
+## Nest and compose mappings
 
 Nest `vmap2` when the function must map over more than one batch dimension. Each layer owns one mapped axis.
 
@@ -243,7 +243,7 @@ batch_targets = jnp.array([2.0, 4.0, 6.0])
 gradients = batched_grad_jit(batch_x, batch_targets)
 ```
 
-## Use `StatefulMapping` Only For A Custom Primitive
+## Use `StatefulMapping` only for a custom primitive
 
 The tutorial states that `vmap` is a thin wrapper around `StatefulMapping`, which performs State discovery, input/output axis mapping, intermediate-representation compilation, and State management. Advanced users can instantiate it directly for a custom mapping primitive.
 
@@ -276,7 +276,7 @@ results = custom_mapping(jnp.array([1.0, 2.0, 3.0]))
 
 Do not infer semantics for `vmap_new_states`, `vmap2_new_states`, `map`, `pmap2`, `pmap2_new_states`, `shard_map`, or `unvmap` from their names. The routed Vectorization tutorial lists those APIs in navigation but does not teach their contracts.
 
-## High-Impact Checks
+## High-impact checks
 
 - Match every non-`None` `in_axes` entry to an actual mapped dimension of the corresponding argument.
 - Decide whether mutable State is shared or mapped; use `state_in_axes` and `state_out_axes` together for per-instance State write-back.

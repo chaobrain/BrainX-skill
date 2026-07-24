@@ -1,10 +1,10 @@
-# Prebuilt Activation Library
+# Prebuilt activation library
 
 Use this reference to select an exact `brainstate.nn` activation symbol. The routed catalog provides symbol names and descriptions, but not constructor or callable signatures; do not invent argument lists from similarly named APIs in another library. It distinguishes stateful layer modules from pure functions, but leaves basic activation use and `Module` composition to `SKILL.md`.
 
 Normalization layers are not present on this page. Select `BatchNorm*`, `LayerNorm`, `RMSNorm`, or `GroupNorm` from `prebuilt-layer-library.md`. The functional `standardize` entry below remains here because it is part of the activation catalog and is described as standardizing an array; it is not a normalization-layer API.
 
-## Element-wise Layers
+## Element-wise layers
 
 Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/activation.html
 
@@ -50,7 +50,7 @@ Selection cues supplied by the catalog:
 - Use `SpikeBitwise` only for the page's stated spiking-input bitwise addition role.
 - Treat the remaining entries according to their exact named activation. The catalog does not expose parameters here, even for parameterized, thresholded, randomized, gated, or shrinkage variants.
 
-## Functional Activations
+## Functional activations
 
 Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/activation.html
 

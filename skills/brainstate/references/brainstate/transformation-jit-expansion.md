@@ -1,4 +1,4 @@
-# BrainState JIT Expansion
+# Brainstate jit expansion
 
 Use this reference after the main BrainState skill's minimal state-aware JIT workflow. It covers supplemental write-back behavior, `JittedFunction` cache controls, static specialization, compilation boundaries, and the boundary where raw `jax.jit` remains appropriate. It does not repeat the basic forward-pass example.
 
@@ -16,7 +16,7 @@ import jax.numpy as jnp
 import brainstate
 ```
 
-## Verify Write-Back Across Multiple States
+## Verify write-back across multiple states
 
 Use this pattern when a compiled call updates more than one piece of hidden state and the caller must observe every update after each invocation. BrainState records and replays the state updates around the compiled executable, so the hidden states remain in sync.
 
@@ -53,7 +53,7 @@ assert int(tracker.count.value) == 12
 
 The three calls print means `1.50`, `2.00`, and `2.50`. Validate both the returned value and the final `State` values when write-back is part of the function's contract.
 
-## Precompile Or Clear Cached Traces
+## Precompile or clear cached traces
 
 `brainstate.transform.jit` returns a `JittedFunction`. The tutorial names `compile`, `clear_cache`, and `origin_fun` as helper surfaces and demonstrates the first two: `compile()` precompiles an executable for example inputs, while `clear_cache()` explicitly drops cached traces. Subsequent compatible calls otherwise reuse the compiled executable.
 
@@ -82,7 +82,7 @@ with jax.disable_jit():
     result_without_jit = softplus(example * 2.0)
 ```
 
-## Specialize Python Control With Static Arguments
+## Specialize python control with static arguments
 
 Static-argument handling mirrors `jax.jit`. Use `static_argnums` when a positional value controls Python structure; the tutorial specializes the compiled polynomial program by `degree`.
 
@@ -112,7 +112,7 @@ assert jnp.allclose(p3, jnp.array([10.0, 98.0]))
 
 Here `degree=3` and `degree=4` select different static specializations. The sources do not enumerate other cache-key or recompilation triggers, so do not add shape-, dtype-, or Python-object rules without a separate official source.
 
-## Keep The Compilation Boundary At A Whole Step
+## Keep the compilation boundary at a whole step
 
 `jit` traces a function on its first call, compiles it with XLA, and reuses the compiled version afterwards. Apply it to a whole forward pass or training step, not to tiny operations. For training, preserve the main skill's `jit(grad(...))` composition as one compiled step instead of wrapping its internal arithmetic separately.
 
@@ -120,7 +120,7 @@ Source URL: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transforma
 
 The two routed tutorials demonstrate first-call compilation, later executable reuse, explicit precompilation, and cache clearing. They do not demonstrate a lowering API, a synchronized timing protocol, or a benchmark. Do not invent `lower()` or benchmarking instructions in this reference; route performance measurement to a source that documents it.
 
-## Cross Into Raw `jax.jit` Only With A Pure Interface
+## Cross into raw `jax.jit` only with a pure interface
 
 Use raw `jax.jit` for a pure stateless function when it is the leanest choice. If the computation owns mutable values, pull each value out, pass it through the call signature, and return the updated value for the next call.
 
@@ -148,7 +148,7 @@ assert int(count) == 12
 
 This boundary is explicit: the raw JAX function receives and returns `carry`; no BrainState mutation is hidden inside it. When a `GraphDef` or explicit module reconstruction is required, route to `../state-graph-operations.md` rather than expanding graph splitting here.
 
-## Selection Checklist
+## Selection checklist
 
 - Use the main skill for the canonical state-aware JIT rule and minimal forward script.
 - Use this reference for multi-State write-back, `compile()`, `clear_cache()`, static specialization, whole-step boundaries, or a pure-JAX boundary.

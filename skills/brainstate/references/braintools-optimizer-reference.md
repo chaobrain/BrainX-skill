@@ -1,10 +1,10 @@
-# Braintools Optimizer Selection Reference
+# Braintools optimizer selection reference
 
 Use this reference to select a `braintools.optim` optimizer, learning-rate scheduler, Optax bridge, or external optimizer wrapper. It is a selection adapter, not a BrainState training-loop guide: return to `skills/brainstate/SKILL.md` for the canonical State-aware training structure. Advanced full-training workflows are outside the supplied router.
 
 **Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
 
-## Route From The Official Optimization Index
+## Route from the official optimization index
 
 The index states: "Optimization guides highlight practical solvers for tuning models and experiments. Compare gradient-free Nevergrad strategies with SciPy-based routines and learn when to apply each."
 
@@ -20,7 +20,7 @@ Use its five routes as follows, without importing their unshown details into thi
 
 **Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
 
-## Optimizer And State Types
+## Optimizer and state types
 
 The index exposes the `braintools.optim` module and lists `Optimizer`, `OptaxOptimizer`, and `OptimState` before its concrete optimizer classes. For class selection, preserve the module and symbol names exactly:
 
@@ -62,7 +62,7 @@ The index does not provide constructor signatures, update semantics, or comparat
 
 **Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
 
-## Learning-Rate Schedulers
+## Learning-rate schedulers
 
 The scheduler base and concrete scheduler symbols are listed together. Select the exact class first, then return to the main BrainState skill for the surrounding canonical training structure.
 
@@ -95,7 +95,7 @@ Scheduler classes, in index order:
 
 **Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
 
-## Optax Bridge
+## Optax bridge
 
 The index pairs a "Getting Started with `optax` Optimizers" route with the exported `OptaxOptimizer` symbol. Select that bridge only when the task explicitly calls for the Optax route through Braintools:
 
@@ -109,7 +109,7 @@ The index gives no adapter constructor or Optax transformation example, so this 
 
 **Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
 
-## SciPy And Nevergrad Wrappers
+## Scipy and nevergrad wrappers
 
 The index distinguishes "gradient-free Nevergrad strategies" from "SciPy-based routines" and lists the wrapper symbols `NevergradOptimizer` and `ScipyOptimizer`.
 
@@ -126,7 +126,7 @@ scipy_wrapper_type = braintools.optim.ScipyOptimizer
 
 **Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
 
-## Integration Boundary
+## Integration boundary
 
 After choosing a symbol, route back to the main BrainState skill for its canonical State-aware training structure. Advanced full-training workflows remain outside this supplied router. Training operations are deliberately not repeated here because the optimization index supplies names and routes, not the BrainState training structure.
 

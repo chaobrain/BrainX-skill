@@ -1,16 +1,16 @@
-# BrainCell Solver Library With Effects
+# Braincell solver library with effects
 
 ## Purpose
 
 Catalog BrainCell integration and solver choices with their expected modeling consequences.
 
-## Source Pages
+## Source pages
 
 * https://brainx.chaobrain.com/braincell/concepts/integration.html
 * https://brainx.chaobrain.com/braincell/apis/integration.html
 * https://brainx.chaobrain.com/braincell/examples/integration_methods.html
 
-## Core Model
+## Core model
 
 * `DiffEqState` is a state variable that carries its derivative.
 * `DiffEqModule` exposes a right-hand side over integrable states.
@@ -18,7 +18,7 @@ Catalog BrainCell integration and solver choices with their expected modeling co
 * `braincell.quad` holds a registry of solvers selectable by name.
 * `get_integrator` resolves an integrator from a string or callable; `register_integrator` adds a function to the global registry; `all_integrators` exposes registered names.
 
-## Solver Families
+## Solver families
 
 | Family | Names / APIs | Use |
 | --- | --- | --- |
@@ -35,14 +35,14 @@ import braincell.quad as quad
 sorted(quad.all_integrators)
 ```
 
-## Single-Compartment Defaults
+## Single-compartment defaults
 
 * Use `exp_euler` for high-precision single-cell HH traces and electrophysiology-style examples.
 * Use `ind_exp_euler` for large vectorized point-neuron or network simulations when speed matters.
 * Use `rk4` when the user asks for classical Runge-Kutta comparison or explicitly requests it.
 * Treat method-dependent waveform changes as numerical artifacts until proven otherwise.
 
-## Solver Effects From Official HH Comparison
+## Solver effects from official hh comparison
 
 The official integration-methods example compares `exp_euler` and `ind_exp_euler` on HH dynamics:
 
@@ -51,7 +51,7 @@ The official integration-methods example compares `exp_euler` and `ind_exp_euler
 * For high-precision single-cell simulations, prefer `exp_euler`.
 * For large-scale network simulations with thousands of neurons, prefer `ind_exp_euler` when the approximation is acceptable.
 
-## Usage Pattern
+## Usage pattern
 
 ```python
 class HH(braincell.SingleCompartment):
@@ -75,7 +75,7 @@ with brainstate.environ.context(dt=0.01 * u.ms):
     vs, spikes = brainstate.transform.for_loop(step, times)
 ```
 
-## Common Mistakes -> Fix
+## Common mistakes -> fix
 
 * Choosing solver blindly -> name the solver and why it fits the task.
 * Using too-large `dt` -> reduce `dt` before blaming model biology.

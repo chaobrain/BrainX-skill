@@ -1,4 +1,4 @@
-# BrainState Control-Flow Patterns
+# Brainstate control-flow patterns
 
 Use this reference when repeated or conditional execution must preserve BrainState
 `State` effects and compile to JAX control-flow primitives. It covers only the
@@ -37,7 +37,7 @@ from brainstate.transform import ProgressBar
 
 Source: [Imports and Setup](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html#imports-and-setup).
 
-## Choose the Primitive
+## Choose the primitive
 
 | Need | Primitive | Source-grounded selection rule |
 |---|---|---|
@@ -53,7 +53,7 @@ Source: [Imports and Setup](https://brainx.chaobrain.com/brainstate/tutorials/tr
 
 Sources: [scan vs for_loop](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html#comparison-scan-vs-for-loop), [while_loop vs bounded_while_loop](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html#comparison-while-loop-vs-bounded-while-loop), and [Conditional Control Flow summary](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html#id3).
 
-## Scans and Collected Outputs
+## Scans and collected outputs
 
 ### `scan`
 
@@ -161,7 +161,7 @@ running_averages = for_loop(acc.process, data)
 
 Source: [1.3 for_loop: Simplified Loop Without Carry](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html#for-loop-simplified-loop-without-carry).
 
-## Checkpointed Sequence Control Flow
+## Checkpointed sequence control flow
 
 The checkpointed variants trade recomputation for backward-pass memory. The
 tutorial states that regular `scan` stores `O(n)` intermediate activations,
@@ -273,7 +273,7 @@ smoothed = checkpointed_for_loop(ema.update, signal, base=10)
 
 Source: [1.4 checkpointed_for_loop: Memory-Efficient For Loop](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html#checkpointed-for-loop-memory-efficient-for-loop).
 
-## Conditional Iteration
+## Conditional iteration
 
 ### `while_loop`
 
@@ -367,7 +367,7 @@ value, grad = jax.value_and_grad(smooth_threshold)(x)
 
 Source: [2.2 bounded_while_loop: While Loop with Maximum Steps](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html#bounded-while-loop-while-loop-with-maximum-steps).
 
-## Conditional Branches
+## Conditional branches
 
 All three branch primitives track State reads and writes. The selected branch is
 executed lazily, so put branch-specific State effects inside its callable.

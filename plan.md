@@ -183,17 +183,13 @@ brainstate/
 ├── prebuilt-activation-library.md
 ├── size-inference-variations.md
 ├── parameter-constraints-regularization.md
-│   └── parameter-containers-transforms-catalog.md
+│   └── parameter-transforms-regularizers-catalog.md
 ├── transformation-jit-expansion.md [shared]
 ├── transformation-grad-expansion.md [shared]
 ├── transformation-vmap-expansion.md
 ├── brainstate-control-flow-patterns.md [shared]
-├── brainstate-randomness-reproducibility/
-│   └── randomness-and-reproducibility.md
-│       └── advanced-randomness.md
-├── diagnostics
-│   └── brainstate-transformed-diagnostics.md
-│       └── common-failures-index.md
+├── randomness-and-reproducibility.md
+├── brainstate-transformed-diagnostics.md
 └── braintools/optimizers.md [shared]
 ```
 
@@ -207,56 +203,44 @@ brainstate/
 | `skills/brainstate/references/collective_model_operations.md` | Initialize, reset, invoke methods, batch lifecycle operations, and restore model-wide State | [Collective Operations](https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html) |
 | `skills/brainstate/references/extension_mechanisms.md` | Mixins, descriptors, runtime modes, and State hooks | [Mixin System](https://brainx.chaobrain.com/brainstate/how_to/custom_states_and_mixins.html), [State Hooks](https://brainx.chaobrain.com/brainstate/how_to/state_hooks.html) |
 | `skills/brainstate/references/size-inference-variations.md` | Convolution size formulas and edge cases, pooling reduction, and flatten-size inference | [Common layers tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/03_common_layers.html) |
-| `skills/brainstate/references/brainstate/parameter-constraints-regularization.md` | `ParamState` versus `nn.Param`, constraints/transforms, `nn.Const`, classical/structural penalties, prior regularizers, and loss integration | [Parameters tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html), [constraint/regularization how-to](https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html), [regularization API](https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html) |
-| `skills/brainstate/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` | Randomness parent: streams, stochastic transforms, trials, dropout/noise, and checkpointed RNG State | [Randomness tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html), [random API](https://brainx.chaobrain.com/brainstate/apis/random.html) |
+| `skills/brainstate/references/brainstate/parameter-constraints-regularization.md` | Operational `nn.Param` workflow: constrained forward values, explicit loss integration, common transforms and penalties, prior reset, and `nn.Const` | [parameter model](https://brainx.chaobrain.com/brainstate/concepts/the_parameter_model.html), [parameters tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html), [constraint/regularization how-to](https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html) |
+| `skills/brainstate/references/brainstate/randomness-and-reproducibility.md` | Independent streams, mapped randomness, direct key control, exact replay, dropout/noise, and checkpointed RNG State | [Randomness tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html), [random API](https://brainx.chaobrain.com/brainstate/apis/random.html) |
 | `skills/brainstate/references/libraries/prebuilt-layer-library.md` | Full layer catalog | [Linear API](https://brainx.chaobrain.com/brainstate/apis/nn/linear.html), [convolution API](https://brainx.chaobrain.com/brainstate/apis/nn/conv.html), [normalization API](https://brainx.chaobrain.com/brainstate/apis/nn/normalization.html), [pooling API](https://brainx.chaobrain.com/brainstate/apis/nn/pooling.html), [padding API](https://brainx.chaobrain.com/brainstate/apis/nn/padding.html), [dropout API](https://brainx.chaobrain.com/brainstate/apis/nn/dropout.html) |
 | `skills/brainstate/references/libraries/prebuilt-activation-library.md` | Activation functions and normalization selection | [Activation API](https://brainx.chaobrain.com/brainstate/apis/nn/activation.html) |
 | `skills/brainstate/references/brainstate/transformation-jit-expansion.md` | State write-back, cache/static args, compilation boundaries, and benchmarking | [JIT and Compilation](https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html), [Transformation Essentials](https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html) |
 | `skills/brainstate/references/brainstate/transformation-grad-expansion.md` | Autodiff, differentiable simulation, fitting, `return_value`, and `has_aux` | [Autodiff](https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html), [Training and Metrics](https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html), [Parameters tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html) |
 | `skills/brainstate/references/brainstate/transformation-vmap-expansion.md` | State axes, ensembles, sweeps, stochastic vmap, `in_states`, and `out_states` | [Vectorization](https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vectorization.html), [Randomness](https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html) |
 | `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md` | Transform-safe loops, scans, branches, and checkpointed control flow | [Control Flow](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html) |
-| `skills/brainstate/references/diagnostics/brainstate-transformed-diagnostics.md` | Runtime checks, transformed debugging, NaN/Inf checks, callbacks, and traced values | [Error Handling and Checks](https://brainx.chaobrain.com/brainstate/tutorials/transformations/06_error_handling_and_checks.html), [Debugging](https://brainx.chaobrain.com/brainstate/tutorials/transformations/07_debugging.html) |
+| `skills/brainstate/references/brainstate/brainstate-transformed-diagnostics.md` | Runtime checks, transformed debugging, NaN/Inf checks, callbacks, traced values, and recurring failure diagnosis | [Error Handling and Checks](https://brainx.chaobrain.com/brainstate/tutorials/transformations/06_error_handling_and_checks.html), [Debugging](https://brainx.chaobrain.com/brainstate/tutorials/transformations/07_debugging.html) |
 | `skills/brainx-acceleration-audit/SKILL.md` | Performance, batching, sweeps, memory, GPU, and multi-device work | The acceleration skill plus the transform sources it conditionally opens |
 
 ##### Nested parameter
 
-`skills/brainstate/references/brainstate/parameter-constraints-regularization.md` contains the merged regularization catalog and alone selects this exhaustive transform child:
+`skills/brainstate/references/brainstate/parameter-constraints-regularization.md` owns the operational workflow and alone selects this exhaustive API-family child:
 
 | Nested child | Need | Crafting source |
 |---|---|---|
-| `skills/brainstate/references/brainstate/parameter-containers-transforms-catalog.md` | Parameter containers and transform-class selection | [parameter-container API](https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html), parameters tutorial, constraint how-to |
-
-##### Nested randomness
-
-No skill or index route may select advanced randomness directly. The randomness parent is its only inbound selection route.
-
-| Nested child | Need | Crafting source |
-|---|---|---|
-| `skills/brainstate/references/brainstate-randomness-reproducibility/advanced-randomness.md` | Advanced streams, mapped randomness, key restoration, and checkpoint behavior | Same randomness corpus as the parent |
-
-##### Other parent-selected routes
-
-| Conditional reference | Selected by | Need | Crafting source |
-|---|---|---|---|
-| `skills/brainstate/references/diagnostics/common-failures-index.md` | Transformed-diagnostics parent | Second-level recurring-failure routing | Existing diagnostic routing content |
-- `skills/brainstate/references/diagnostics/brainstate-transformed-diagnostics.md` establishes transformed diagnostics before selecting its second-level common-failures router.
+| `skills/brainstate/references/brainstate/parameter-transforms-regularizers-catalog.md` | Exact transform signatures plus transform and regularizer selection by domain or modeling intent | [parameter-container API](https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html), [regularization API](https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html), parameters tutorial, constraint how-to |
 
 #### Script References
 
-`skills/brainstate/references/lif_neuron_model.py`  
+`skills/brainstate/scripts/lif_neuron_model.py`
+
 Source: [State and PyTrees](https://brainx.chaobrain.com/brainstate/tutorials/core/01_state_and_pytrees.html)  
 Role: State-role combination with explicit `.value` updates.  
-Location: Direct skill reference.
+Location: Direct skill script.
 
-`skills/brainstate/references/modern_cnn.py`  
+`skills/brainstate/scripts/modern_cnn.py`
+
 Source: [Activations and normalization](https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html)  
 Role: Full Module composition with convolution, normalization, pooling, dropout, and dense layers.  
-Location: Prebuilt-layer/activation branch.
+Location: Direct skill script selected through the prebuilt-layer/activation branch.
 
-`skills/brainstate/references/resnet.py`  
+`skills/brainstate/scripts/resnet.py`
+
 Source: Not recorded in the current file; source must be established before treating it as canonical.  
 Role: Residual Modules and dynamic child registration.  
-Location: Direct skill reference.
+Location: Direct skill script.
 
 
 
