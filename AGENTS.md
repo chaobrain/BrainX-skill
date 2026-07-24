@@ -23,29 +23,6 @@ together without prior expertise, by giving the agent clean, correct,
 high-performance BrainX knowledge through **progressive disclosure** — a compact
 core skill plus deep, on-demand Markdown references.
 
-## Working agreement
-
-These apply to every task in this repo — skills are content *and* code, so
-"code" below means Markdown skills, reference docs, scripts, and installer code
-alike.
-
-1. **Approval before building.** Before writing or editing any skill, reference,
-   script, or installer code, describe the approach and wait for approval.
-2. **Clarify first.** If requirements are ambiguous, ask clarifying questions
-   before writing anything.
-3. **Edge cases after code.** After writing code, list the edge cases it must
-   handle and suggest concrete test cases.
-4. **Reproduce bugs with a test.** On any bug, first write a test that reproduces
-   it, then fix until that test passes.
-5. **Reflect on every correction.** When corrected, state what the mistake was
-   and the concrete change that prevents repeating it.
-6. **Never work on `main`.** All updates happen on a worktree branch, never
-   committed directly to `main`.
-7. **Spec and plan first, gitignored.** Before implementation, write the spec and
-   plan under `.superpowers/` (gitignored). They stay available for reference
-   without cluttering repo history.
-8. **Meaningful coverage > 90%.** Aim above 90% coverage, focused on edge cases
-   and critical paths — not trivial lines padded for a number.
 
 ## Skill-authoring principles
 
@@ -62,14 +39,6 @@ Match the conventions already established in `skills/brainunit/` and
 - Runnable, canonical patterns go in `scripts/` — real code the agent can copy,
   not prose.
 
-### Frontmatter and triggers
-
-- Every `SKILL.md` starts with YAML frontmatter delimited by `---` on both sides
-  (not a hyphen rule).
-- `name` is lowercase and matches the skill directory.
-- `description` states the boundary and includes explicit **"Use when …"**
-  triggers — the concrete symptoms, APIs, or errors that should activate the
-  skill.
 
 ### Section skeleton
 

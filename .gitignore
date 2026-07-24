@@ -2,6 +2,7 @@
 # Project scratch — specs and plans (see AGENTS.md, rule 7)
 # ---------------------------------------------------------------------------
 .superpowers/
+/AGENTS.md
 
 # ---------------------------------------------------------------------------
 # Node / npm (installer CLI + adapters)
