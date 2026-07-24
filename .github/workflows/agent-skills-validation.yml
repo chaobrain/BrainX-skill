@@ -3,11 +3,13 @@ name: Agent Skills validation
 on:
   push:
     paths:
+      - ".github/scripts/agent-skills-workflow.test.mjs"
       - ".github/workflows/agent-skills-validation.yml"
       - "manifest.json"
       - "skills/**"
   pull_request:
     paths:
+      - ".github/scripts/agent-skills-workflow.test.mjs"
       - ".github/workflows/agent-skills-validation.yml"
       - "manifest.json"
       - "skills/**"
@@ -26,6 +28,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - name: Test the validator invocation
+        run: node --test .github/scripts/agent-skills-workflow.test.mjs
 
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -71,5 +76,5 @@ jobs:
           fi
 
           for skill_dir in "${skill_dirs[@]}"; do
-            skills-ref validate "$skill_dir"
+            python -c 'from skills_ref.cli import main; main()' validate "$skill_dir"
           done
