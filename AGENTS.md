@@ -14,7 +14,7 @@ installer that deploys them.
   `brainx-acceleration-audit`, `brainx-install`). Each holds a `SKILL.md` core,
   a `references/` tree, and optional `scripts/` and `agents/`.
 - `adapters/` — per-agent install adapters (`claude.js`, `codex.js`, `cursor.js`).
-- `installation-code/` — the `brainx-skill` CLI (`bin/`, `lib/`).
+- `installation/` — the `brainx-skill` CLI (`bin/`, `lib/`).
 - `plan.md` — the design source of truth for skill scope, layering, and routing.
   Read it before adding or changing a skill; keep it in sync when the design shifts.
 

@@ -5,11 +5,11 @@
   "license": "Apache-2.0",
   "type": "commonjs",
   "bin": {
-    "brainx": "installation-code/bin/brainx.js"
+    "brainx": "installation/bin/brainx.js"
   },
   "files": [
     "adapters/",
-    "installation-code/",
+    "installation/",
     "skills/brainx-install/",
     "skills/brainunit/",
     "skills/brainstate/",
