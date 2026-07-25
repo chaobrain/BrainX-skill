@@ -36,6 +36,7 @@ jobs:
         run: npm test
 
       - name: Recover an incomplete tagged release
+        id: recovery
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -60,9 +61,11 @@ jobs:
               --notes-file "${recovery_dir}/RELEASE_NOTES.md"
             git worktree remove --force "${recovery_dir}"
             trap - EXIT
+            echo "recovered=true" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Read latest npm version
+        if: steps.recovery.outputs.recovered != 'true'
         id: npm
         run: |
           package_name="$(node -p "require('./package.json').name")"
@@ -70,13 +73,16 @@ jobs:
           echo "latest=${latest}" >> "${GITHUB_OUTPUT}"
 
       - name: Prepare version and detailed notes
+        if: steps.recovery.outputs.recovered != 'true'
         id: release
         env:
           NPM_PUBLISHED_VERSION: ${{ steps.npm.outputs.latest }}
         run: node .github/scripts/prepare-release.mjs
 
       - name: Verify target npm version is available
-        if: steps.release.outputs.skip != 'true'
+        if: >-
+          steps.recovery.outputs.recovered != 'true' &&
+          steps.release.outputs.skip != 'true'
         env:
           VERSION: ${{ steps.release.outputs.version }}
         run: |
@@ -88,11 +94,15 @@ jobs:
           fi
 
       - name: Validate package contents
-        if: steps.release.outputs.skip != 'true'
+        if: >-
+          steps.recovery.outputs.recovered != 'true' &&
+          steps.release.outputs.skip != 'true'
         run: npm pack --dry-run
 
       - name: Commit and tag the version record
-        if: steps.release.outputs.skip != 'true'
+        if: >-
+          steps.recovery.outputs.recovered != 'true' &&
+          steps.release.outputs.skip != 'true'
         env:
           VERSION: ${{ steps.release.outputs.version }}
         run: |
@@ -104,11 +114,15 @@ jobs:
           git push --atomic origin HEAD:main "refs/tags/v${VERSION}"
 
       - name: Publish npm package
-        if: steps.release.outputs.skip != 'true'
+        if: >-
+          steps.recovery.outputs.recovered != 'true' &&
+          steps.release.outputs.skip != 'true'
         run: npm publish --provenance --access public
 
       - name: Publish detailed GitHub Release
-        if: steps.release.outputs.skip != 'true'
+        if: >-
+          steps.recovery.outputs.recovered != 'true' &&
+          steps.release.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.release.outputs.version }}

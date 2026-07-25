@@ -35,10 +35,23 @@ test('release recovery only runs when the GitHub Release is missing', () => {
     workflow.indexOf('- name: Recover an incomplete tagged release'),
     workflow.indexOf('- name: Read latest npm version'),
   );
+  const afterRecovery = workflow.slice(
+    workflow.indexOf('- name: Read latest npm version'),
+  );
 
+  assert.match(recovery, /id: recovery/);
   assert.match(recovery, /! gh release view/);
   assert.match(recovery, /npm-registry\.mjs exists/);
   assert.ok(recovery.indexOf('npm publish') < recovery.indexOf('gh release create'));
+  assert.match(recovery, /recovered=true/);
+  assert.equal(
+    (
+      afterRecovery.match(
+        /steps\.recovery\.outputs\.recovered != 'true'/g,
+      ) ?? []
+    ).length,
+    7,
+  );
 });
 
 test('package metadata targets this repository with a semantic version', () => {
