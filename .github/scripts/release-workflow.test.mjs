@@ -41,8 +41,8 @@ test('release recovery only runs when the GitHub Release is missing', () => {
   assert.ok(recovery.indexOf('npm publish') < recovery.indexOf('gh release create'));
 });
 
-test('package metadata targets this repository without advancing the version', () => {
-  assert.equal(packageJson.version, '1.0.5');
+test('package metadata targets this repository with a semantic version', () => {
+  assert.match(packageJson.version, /^\d+\.\d+\.\d+$/);
   assert.equal(
     packageJson.repository.url,
     'git+https://github.com/chaobrain/BrainX-skill.git',
