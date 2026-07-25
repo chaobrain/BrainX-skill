@@ -1,6 +1,6 @@
 ---
 name: brainunit
-description: Enforce BrainUnit physical-quantity, dimensional, typing, conversion, unit-aware math, JAX-transformation, and external-library boundary safety. Use when Codex works with BrainUnit or BrainCell values involving voltage, current, time, conductance, capacitance, length, concentration, temperature, physical constants, unit errors, dimensional mismatches, or suspicious bare numbers.
+description: BrainUnit is the central physical-quantity infrastructure for BrainX modeling and simulation. Use this skill for dimensional safety, typing, conversion, unit-aware math, JAX transformations, and external-library boundaries involving voltage, current, time, conductance, capacitance, length, concentration, temperature, physical constants, unit errors, dimensional mismatches, or suspicious bare numbers.
 ---
 
 ## Purpose and boundary

@@ -1,6 +1,6 @@
 ---
 name: brainstate
-description: Use for BrainState mutable State and `.value`, ParamState and other State roles, Module graphs, environment-scoped simulations, state initialization, operational randomness, size-aware neural-network composition, state-aware jit/grad/vmap, or a BrainState training step.
+description: BrainState is the central stateful execution infrastructure for BrainX modeling and simulation. Use this skill for mutable State and `.value`, ParamState and other State roles, Module graphs, environment-scoped simulations, state initialization, operational randomness, size-aware neural-network composition, state-aware jit/grad/vmap, or a BrainState training step.
 ---
 
 # Brainstate
@@ -303,48 +303,36 @@ This maps a function written for one example over a batch. Open the `vmap` expan
 
 ### 6. Randomness
 
-Use the NumPy-like `brainstate.random` API through the global `DEFAULT` `RandomState`, which splits keys automatically; call `seed()` before any sequence that must be reproducible.
+In BrainX modeling, seed BrainState's stateful generator before model construction or simulation so initialization, stochastic inputs, noise, dropout, and data order follow the same automatically split key sequence.
 
-#### Seed when the sequence needs reproducibility
+| API | Description |
+|---|---|
+| `brainstate.random.DEFAULT` | Global `RandomState` used by module-level random functions; it manages and splits JAX keys automatically. |
+| `brainstate.random.seed(seed)` | Set the global seed for JAX and NumPy; call it before random work that must be reproducible. |
+| `brainstate.random.rand(*shape)` / `random(size)` | Draw uniform samples in `[0, 1)` for stochastic thresholds such as spike or dropout probabilities. |
+| `brainstate.random.randn(*shape)` / `normal(loc, scale, size)` | Draw standard or parameterized Gaussian samples for parameter initialization and model noise. |
+| `brainstate.random.bernoulli(p, size)` | Draw Bernoulli samples for binary events and masks. |
+| `brainstate.random.shuffle(x, axis=0)` / `permutation(x)` | Randomly reorder data, trials, or indices; `shuffle()` returns a shuffled copy along the selected axis. |
+
+#### Generate reproducible stochastic input
 
 ```python
 brainstate.random.seed(42)
-x1 = brainstate.random.rand(5)
 
-brainstate.random.seed(42)
-x2 = brainstate.random.rand(5)
-
-assert jnp.allclose(x1, x2)
-```
-
-#### Generate random input spikes
-
-The official SNN training pattern compares uniform `[0, 1)` samples with the dimensionless per-step spike probability `firing_rate * dt`. The result is a Boolean `(time, batch, input)` tensor:
-
-```python
 num_steps, batch_size, num_inputs = 100, 128, 100
 firing_rate = 5.0 * u.Hz
 
 with brainstate.environ.context(dt=1.0 * u.ms):
+    spike_probability = firing_rate * brainstate.environ.get_dt()
     input_spikes = (
         brainstate.random.rand(num_steps, batch_size, num_inputs)
-        < firing_rate * brainstate.environ.get_dt()
+        < spike_probability
     )
 
 assert input_spikes.shape == (num_steps, batch_size, num_inputs)
 ```
 
-#### Shuffle the training order
-
-`brainstate.random.shuffle(x, axis=0)` returns a shuffled copy; JAX arrays are immutable, so it does not modify `x` in place. Generate one order and apply it to every aligned training array:
-
-```python
-order = brainstate.random.shuffle(jnp.arange(x_train.shape[0]))
-x_epoch = x_train[order]
-y_epoch = y_train[order]
-```
-
-Use independent `RandomState` instances, key save/restore, stochastic mapping, or checkpoint-aware randomness only through the randomness reference.
+Open `references/brainstate/randomness-and-reproducibility.md` for independent `RandomState` streams, direct key control, stochastic mapping, exact replay, or checkpointed RNG State.
 
 ## Script references
 
@@ -361,31 +349,31 @@ Route by the outcome the task needs, then open only the smallest reference that 
 
 | Reference | Open when |
 |---|---|
-| `references/state-graph-operations.md` | Break a stateful `Module` into `GraphDef` plus State PyTrees so raw JAX can transform or checkpoint the values, then reconstruct the graph without losing sharing or cycles |
-| `references/state_collections_and_utilities.md` | Structure, filter, freeze, flatten, and inspect the configs or PyTree mappings around a model without changing graph identity; use `DictManager`, `DotDict`, `FrozenDict`, and declarative filters |
-| `references/collective_model_operations.md` | Initialize, reset, restore, or invoke one shared method across an entire Module graph without manual traversal; use `call_order`, `call_all_fns`, `init_all_states`, and their vmapped variants |
+| `references/state-graph-operations.md` | Splitting, transforming, checkpointing, or reconstructing Module graphs while preserving sharing and cycles |
+| `references/state_collections_and_utilities.md` | Filtering, freezing, flattening, configuring, or inspecting supporting mappings without graph identity |
+| `references/collective_model_operations.md` | Initializing, resetting, restoring, or invoking methods across a Module graph, including vmapped lifecycle operations |
 
 ### Simulation environment
 
 | Reference | Open when |
 |---|---|
-| `references/simulation-environment.md` | Choose persistent defaults, generic setting access, scoped or nested overrides, Module-bound contexts, or an isolated `EnvironmentState`; configure precision and platform, or advance environment-driven dynamics with `exp_euler_step()` |
+| `references/simulation-environment.md` | Managing persistent, scoped, nested, Module-bound, or isolated environments, including precision, platform, and `exp_euler_step()` |
 
 ### Model composition, extension, and interoperation
 
 | Reference | Open when |
 |---|---|
-| `references/size-inference-variations.md` | Prevent shape mismatches when spatial operations make `out_size` non-obvious; resolve convolution, padding, pooling, and `Flatten` variants so size-aware `Sequential` / `.desc()` composition remains valid |
-| `references/extension_mechanisms.md` | Extend BrainState without rewriting core Modules: compose reusable `Mixin` behavior, defer construction with `ParamDesc`, centralize runtime semantics with `Mode`, or observe and enforce State access through hooks |
-| `references/model-interop-and-migration.md` | Reuse standard-layer architectures and weights across BrainState, Flax NNX/Linen, or Equinox, or port a PyTorch workflow into BrainState's explicit State and transform model |
+| `references/size-inference-variations.md` | Resolving convolution, padding, pooling, or `Flatten` size propagation in `Sequential` / `.desc()` pipelines |
+| `references/extension_mechanisms.md` | Adding reusable `Mixin` behavior, deferred `ParamDesc` construction, runtime `Mode` semantics, or State hooks |
+| `references/model-interop-and-migration.md` | Converting models or weights among BrainState, Flax NNX/Linen, Equinox, and PyTorch |
 
 ### Parameters, optimization, and randomness
 
 | Reference | Open when |
 |---|---|
-| `references/brainstate/parameter-constraints-regularization.md` | Encode valid parameter domains and modeling priors while optimization remains unconstrained; use `nn.Param` transforms, explicit regularization or prior penalties, and `nn.Const` for fixed graph values |
-| `references/braintools-optimizer-reference.md` | Replace manual `ParamState` updates with the right optimization strategy inside the canonical training step; select a `braintools.optim` optimizer or scheduler, `OptaxOptimizer`, `ScipyOptimizer`, or `NevergradOptimizer` |
-| `references/brainstate/randomness-and-reproducibility.md` | Control independence and exact replay of dropout, noise, and stochastic trials across transforms and checkpoints; use custom `RandomState` streams, direct key management, parallel key preparation, and checkpoint restoration |
+| `references/brainstate/parameter-constraints-regularization.md` | Using `nn.Param` transforms, regularizers, priors, penalties, or `nn.Const` |
+| `references/braintools-optimizer-reference.md` | Selecting a `braintools.optim`, Optax, SciPy, or Nevergrad optimizer or scheduler |
+| `references/brainstate/randomness-and-reproducibility.md` | Creating independent random streams or exact stochastic replay across transforms and checkpoints |
 
 The remaining nested reference has one inbound route:
 
@@ -395,17 +383,17 @@ The remaining nested reference has one inbound route:
 
 | Reference | Open when |
 |---|---|
-| `references/libraries/prebuilt-layer-library.md` | Keep graph registration, parameter roles, size metadata, and fit behavior BrainState-native by selecting an existing layer instead of hand-rolling a standard linear, convolutional, normalization, pooling, padding, or dropout operator |
-| `references/libraries/prebuilt-activation-library.md` | Decide whether nonlinear behavior belongs in Module composition or as a pure lowercase function inside `update()` or raw JAX code, then select the exact activation symbol |
+| `references/libraries/prebuilt-layer-library.md` | Selecting a BrainState linear, convolutional, normalization, pooling, padding, or dropout layer |
+| `references/libraries/prebuilt-activation-library.md` | Selecting a Module activation or pure lowercase activation function |
 
 ### Stateful transformations
 
 | Reference | Open when |
 |---|---|
-| `references/brainstate/transformation-jit-expansion.md` | Compile a whole stateful step while keeping State writes observable, or expose mutation explicitly to cross into raw `jax.jit`; use `JittedFunction` cache controls and static specialization around that boundary |
-| `references/brainstate/transformation-grad-expansion.md` | Define exactly what a stateful computation differentiates with `argnums`, `grad_states`, or both, and how gradients, loss, and auxiliary values return; use `StateFinder`, Jacobian/Hessian transforms, or optimizer fitting overlays |
-| `references/brainstate/transformation-vmap-expansion.md` | Lift one stateful computation into batches, ensembles, or sweeps while deciding per-instance versus shared State, write-back, and random-key behavior; use `vmap2` with `state_in_axes` / `state_out_axes` |
-| `references/brainstate/brainstate-control-flow-patterns.md` | Express repeated or conditional State updates as compiled JAX control flow instead of Python loops and branches; choose `scan`, `for_loop`, checkpointed loops, bounded iteration, or lazy branches by carry, gradient, and memory needs |
-| `references/brainstate/brainstate-transformed-diagnostics.md` | See what actually happens at runtime inside traced stateful code and enforce value-dependent invariants; use `checkify`, `jit_error_if`, `debug_nan`, runtime print/callback, or conditional breakpoints |
+| `references/brainstate/transformation-jit-expansion.md` | Controlling State write-back, raw `jax.jit` boundaries, caching, or static specialization |
+| `references/brainstate/transformation-grad-expansion.md` | Controlling `argnums`, `grad_states`, gradient returns, higher-order transforms, or fitting overlays |
+| `references/brainstate/transformation-vmap-expansion.md` | Mapping or sharing State across batches, ensembles, or sweeps, including State axes and randomness |
+| `references/brainstate/brainstate-control-flow-patterns.md` | Choosing transform-safe loops, scans, branches, or checkpointed control flow |
+| `references/brainstate/brainstate-transformed-diagnostics.md` | Debugging runtime values or enforcing invariants inside transformed stateful code |
 
 Do not route to dynamics or solver references from this skill; they are outside the architecture supplied for this BrainState skill.
