@@ -26,27 +26,43 @@ core skill plus deep, on-demand Markdown references.
 
 ## Skill-authoring principles
 
-Match the conventions already established in `skills/brainunit/` and
-`skills/brainstate/`. Read the target skill's `SKILL.md` before editing it.
-# BrainX Skill Writing Philosophy
+Match the conventions in `skills/brainunit/` and `skills/brainstate/`. Read the target `SKILL.md` before editing it.
 
-A BrainX skill is not a textbook or an API catalog. It is a compact guide that gives an agent the mental model and operational instructions needed to use a library correctly.
+A BrainX skill is not a textbook or exhaustive API catalogue. It is a compact guide that gives an agent the mental model and operational instructions required to use a library correctly.
 
-The goal is:
+> **Preserve essential understanding while removing everything that does not improve a decision or implementation.**
 
-> **Preserve essential understanding while removing every sentence that does not improve a decision or implementation.**
+### 1. Teach the irreducible mental model
 
-## 1. Write the underlying principles sharply
+Explain the system only deeply enough for the agent to predict its behavior and make correct decisions.
 
-Explain the system deeply enough to support correct decisions, but no further.
+Focus on:
 
-The underlying-principles section must remain because individual APIs are difficult to use reliably without understanding the system they belong to. However, it should contain only the **irreducible mental model**.
+* the main abstractions;
+* how they relate;
+* how data, state, or control flows;
+* the lifecycle or execution order;
+* the invariants that later workflows depend on.
 
-Explain relationships and consequences rather than implementation history or broad background. Once the reader can predict how the system behaves, move to operational guidance.
+Remove implementation history, broad background, and descriptive commentary.
 
-## 2. Keep decisions, remove commentary
+### 2. Keep the canonical path in the root skill
 
-Retain information that changes an action; remove information that merely describes the library.
+Present the shortest complete route from user intent to a correct implementation:
+
+> **understand the model → choose the abstraction → construct the workflow → execute it → verify the result**
+
+Keep common decisions, essential constraints, and likely failure points in `SKILL.md`. Route uncommon variants, advanced controls, and exhaustive API coverage to references.
+
+### 3. Explain each concept and action once
+
+Give each important concept one authoritative definition, then apply it without re-explaining it.
+
+Use one code example for one operational lesson. Each example should demonstrate exact syntax, object relationships, execution order, or a non-obvious result with the smallest code block that makes the rule unambiguous.
+
+> **One concept, one explanation; one example, one lesson.**
+
+### 4. Write for decisions
 
 Every sentence should answer at least one question:
 
@@ -56,129 +72,64 @@ Every sentence should answer at least one question:
 * What must I avoid?
 * Where should I look next?
 
+Use concise, imperative language. State the action first and its consequence only when needed.
 
-## 3. Explain each concept once
-
-Give every important idea one authoritative definition, then reuse it without re-explaining it.
-
-Later sections should apply previously established principles rather than restating them in different words. Brief reminders are acceptable only when they prevent a likely mistake.
-
-> **One concept, one explanation, many applications.**
-
-## 4. Keep the main skill as the canonical path
-
-The root skill should present the shortest complete route from user intent to a correct implementation.
-
-Organize it in the order an agent actually works:
-
-> understand the model → choose the abstraction → construct the workflow → execute it → verify the result
-
-Keep common decisions and essential constraints in the root skill. Move uncommon variants, advanced controls, and exhaustive API coverage to references.
-
-## 5. One example, one lesson
-
-Each code block should prove one operational pattern clearly.
-
-An example should show exact syntax, object relationships, execution order, or a non-obvious result. Do not make one example teach several unrelated features.
-
-> **Use the smallest example that makes the rule unambiguous.**
-
-## 6. Prefer contrasts over description
-
-Explain similar APIs by showing the decision boundary between them.
-
-Do not write separate descriptive paragraphs when a direct comparison can reveal the choice more clearly.
-
-Use this pattern:
+Prefer direct decision boundaries:
 
 > **Use X when Y. Use Z when W.**
 
-Comparisons should focus on practical differences such as purpose, lifecycle, input shape, side effects, performance, or compatibility.
+Compare similar APIs by purpose, lifecycle, input shape, side effects, performance, or compatibility rather than describing each one separately.
 
-## 7. Route precisely and sharply
+### 5. Keep code and prose complementary
 
-Tell the agent exactly when to leave the root skill and exactly where to go.
-
-Each reference should own a distinct class of problems. A routing instruction should identify:
-
-* the condition that triggers the reference;
-* the exact reference to open;
-* the decisions or details contained there.
-
-Avoid vague instructions such as “see the advanced guide.”
-
-## 8. Use concise, imperative language
-
-State the required action first, followed by the consequence when it is not obvious.
-
-Prefer:
-
-> Assign the object before initialization so it becomes part of the managed structure.
-
-Over:
-
-> The framework provides a mechanism through which assigned objects can become part of its managed structure.
-
-Use direct verbs such as **choose, create, assign, initialize, wrap, collect, preserve, verify, avoid,** and **open**.
-
-## 9. Keep code and prose complementary
-
-Let code show the mechanics; use prose only for meaning that the code cannot communicate safely.
-
-Code should show:
+Use code to show mechanics:
 
 * exact syntax;
-* operation order;
+* execution order;
 * object relationships;
 * expected inputs and outputs.
 
-Prose should explain:
+Use prose to explain:
 
-* why the pattern is correct;
-* when to choose it;
+* when to choose the pattern;
+* why it is correct;
 * which invariant it depends on;
 * which failure it prevents.
 
 Do not narrate obvious lines of code.
 
-## 10. Preserve critical exceptions
+### 6. Preserve critical exceptions and route everything else
 
-Remove general commentary, but retain exceptions that prevent common or costly failures.
+Keep a warning in the root skill when the failure is likely, difficult to diagnose, silent, misleading, or fundamental to correct use. State it once beside the workflow where it matters.
 
-A warning belongs in the root skill when the failure is:
+Route non-canonical cases precisely. Every routing instruction should state:
 
-* likely to occur;
-* difficult to diagnose;
-* silent or misleading;
-* fundamental to correct library use.
+* when to open the reference;
+* the exact file to open;
+* what decisions or details it contains.
 
-State each warning once, beside the workflow where it matters.
+Avoid vague directions such as “see the advanced guide.”
 
-## 11. Editing test
-
-Evaluate every sentence and example by the decision it protects.
+### Editing test
 
 For every sentence, ask:
 
-> Would removing this sentence make the agent choose or implement something incorrectly?
-
-If not, remove it or relocate it.
+> Would removing this make the agent choose or implement something incorrectly?
 
 For every code block, ask:
 
 > What unique behavior does this example teach?
 
-If it teaches nothing new, merge or delete it.
-
 For every section, ask:
 
 > Does this section have one clear instructional purpose?
 
-If not, divide it, sharpen it, or move part of it elsewhere.
+Remove, merge, divide, or relocate anything that fails these tests.
 
 ## Final rule
 
 > **Teach the mental model sharply. Define each invariant once. Show each canonical action once. State each critical exception once. Route everything else precisely.**
+
 
 ## Other general principles
 
@@ -192,12 +143,63 @@ If not, divide it, sharpen it, or move part of it elsewhere.
 - Runnable, canonical patterns go in `scripts/` — real code the agent can copy,
   not prose.
 
+### Section structure
 
-### Section skeleton
+Organize the root `SKILL.md` in this order:
 
-Follow the established order: **Purpose and boundary → core concepts / API
-table → canonical workflow → reference routing → boundaries and common
-failures**. Keep the canonical path in the core; route everything else out.
+> **Purpose and boundary → underlying mental model → operational sections → reference routing → boundaries and common failures**
+
+Structure each operational section as follows:
+
+1. **State the mental model in one sentence.**
+   Explain what the mechanism represents, how it behaves, and why that behavior matters when using it.
+
+2. **List the APIs that implement the workflow.**
+   Use a two-column `API | Description` table and give each important API its own row.
+
+3. **List the essential API rows**
+   Describe the API in this order:
+
+   > **when to use it → important behavior → result **
+
+4. **Show one canonical example.**
+   Demonstrate the normal end-to-end pattern with the smallest code block that makes the workflow unambiguous. Remove unrelated setup, optional variants, repeated outputs, and assertions that do not verify an important invariant.
+
+5. **Route non-canonical cases precisely.**
+   End with the exact reference file to open for advanced variants, edge cases, configuration details, uncommon failures, or more complex compositions.
+
+Use this default shape:
+
+````markdown
+### Operational concept
+
+One sentence explaining the mechanism and why it matters.
+
+| API | Description |
+|---|---|
+| `api()` | When to use it, what it does, its important behavior, and its result or relevant failure. |
+
+```python
+# Canonical workflow
+```
+
+Open `references/example.md` when [specific condition], for [specific decisions or details].
+````
+
+Include closely related APIs only when they are required to understand or complete the canonical workflow. Do not expand the root skill into an exhaustive API catalogue.
+
+Keep an API in the root skill only when it:
+
+is directly required by the canonical workflow;
+is required to choose between canonical workflows;
+represents a major direction of variation that the agent must recognize;
+protects against a likely and costly failure; or
+is required to route the task correctly.
+
+For a major variation family, include only the representative API needed to establish the decision boundary.
+
+An API does not belong in the root merely because it is useful, common, or part of the same package.
+
 
 ### Correctness and voice
 
