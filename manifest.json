@@ -3,6 +3,7 @@
   "skills": [
     "brainx-install",
     "brainunit",
-    "brainstate"
+    "brainstate",
+    "brainevent"
   ]
 }

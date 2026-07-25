@@ -447,7 +447,8 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 - `BinaryArray` and `spikes @ connectivity`.
 - `coo2csr()`.
 - `JITCScalarR` and seed stability.
-- `FixedPostNumConn` versus `FixedPreNumConn`.
+- `FixedNumPerPre` versus `FixedNumPerPost`, with deprecated
+  `FixedPostNumConn` / `FixedPreNumConn` alias recognition.
 - Event-driven plasticity see synaptic-plasticity-modeling.md
 - Custom CPU/GPU operator boundary.
 #### Connectivity Decision Table we will include
@@ -457,7 +458,7 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 | Dense JAX/NumPy array | The matrix is small or genuinely dense (roughly more than 25% nonzero), or you need arbitrary per-entry weights with the simplest possible code. | The matrix is large and sparse, because storing and computing zeros wastes memory and compute. |
 | CSR / CSC | You have an explicit, fixed sparse matrix and want fast row-oriented (CSR) or column-oriented (CSC) event-driven products. | Connectivity is generated randomly and the full matrix would not fit in memory. |
 | JITC (`JITCScalarR`, `JITCNormalR`, `JITCUniformR`, …) | Connectivity is random with a fixed probability and should be regenerated on demand from a seed instead of materialized. | You need to inspect, mutate, or learn individual weights. |
-| Fixed fan-in/out (`FixedPreNumConn`, `FixedPostNumConn`) | Each neuron has a fixed number of connections and you want that structure encoded directly. | Connection counts vary per neuron, or you need an explicit weight matrix. |
+| Fixed fan-in/out (`FixedNumPerPost`, `FixedNumPerPre`) | Each neuron has a fixed number of connections and you want that structure encoded directly. | Connection counts vary per neuron, or you need an explicit weight matrix. |
 
 #### Canonical Workflow Scripts Included in the Skill
 
@@ -465,8 +466,14 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 2. Dense Connectivity
 3. Explicit Sparse Connectivity: `CSR`
 4. Generated Random Connectivity: `JITCScalarR`
-5. Fixed Fan-Out Connectivity: `FixedPostNumConn`
+5. Fixed Fan-Out Connectivity: `FixedNumPerPre`
 6. JAX Transform Pattern
+
+API tables enumerate the complete decision-relevant variations: COO construction,
+`CSR`, `CSC`, all six scalar/normal/uniform JITC row/column classes, both
+current fixed-degree directions, and their deprecated aliases. Each canonical
+code example constructs only one representative connectivity API; variant
+mechanics remain in references.
 
 #### Reference Routing
 
@@ -486,10 +493,10 @@ All four required Markdown references are skill-local and already exist. Applica
 
 | Canonical reference | Need | Crafting source |
 |---|---|---|
-| `skills/brainevent/references/sparse-formats.md` | COO construction, CSR/CSC storage, conversion, and selection | [Sparse matrices tutorial](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/02_sparse_matrices.html), [sparse-data API](https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html), [utilities API](https://brainx.chaobrain.com/brainevent/reference/apis/utilities.html) |
-| `skills/brainevent/references/connectivity-variants.md` | JITC distributions/orientations, fixed fan-in/out, and format choice | [JIT connectivity](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/03_jit_connectivity.html), [fixed connections](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/04_fixed_connections.html), [format guide](https://brainx.chaobrain.com/brainevent/how-to/data-structures/choosing-a-sparse-format.html), [sparse-data API](https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html), [utilities API](https://brainx.chaobrain.com/brainevent/reference/apis/utilities.html) |
-| `skills/brainevent/references/synaptic-plasticity.md` | Pre/post event updates, CSR/dense routing, and STDP overlay | [Plasticity tutorial](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/05_synaptic_plasticity.html), [plasticity how-to](https://brainx.chaobrain.com/brainevent/how-to/data-structures/synaptic-plasticity.html), [operations API](https://brainx.chaobrain.com/brainevent/reference/apis/operations.html) |
-| `skills/brainevent/references/custom-operators.md` | Route to Numba, Numba CUDA, Warp, C++, or CUDA extension paths | [Index](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/index.html), [Numba CPU](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/01_numba.html), [Numba CUDA](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/02_numba_cuda.html), [Warp](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/03_warp.html), [C++](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/04_cpp.html), [CUDA](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/05_cuda.html) |
+| `skills/brainevent/references/sparse-formats.md` | COO construction, CSR/CSC storage, conversion and selection, plus the official two-layer sparse spiking-network practice | [Sparse matrices tutorial](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/02_sparse_matrices.html), [sparse-data API](https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html), [utilities API](https://brainx.chaobrain.com/brainevent/reference/apis/utilities.html) |
+| `skills/brainevent/references/connectivity-variants.md` | JITC distributions/orientations, current and deprecated fixed fan-in/out APIs, format choice, and the official large JITC and cortical fixed-degree applications | [JIT connectivity](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/03_jit_connectivity.html), [fixed connections](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/04_fixed_connections.html), [format guide](https://brainx.chaobrain.com/brainevent/how-to/data-structures/choosing-a-sparse-format.html), [sparse-data API](https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html), [utilities API](https://brainx.chaobrain.com/brainevent/reference/apis/utilities.html) |
+| `skills/brainevent/references/synaptic-plasticity.md` | Pre/post event updates, CSR/dense routing, STDP overlay, and the official adaptive self-learning network | [Plasticity tutorial](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/05_synaptic_plasticity.html), [plasticity how-to](https://brainx.chaobrain.com/brainevent/how-to/data-structures/synaptic-plasticity.html), [operations API](https://brainx.chaobrain.com/brainevent/reference/apis/operations.html) |
+| `skills/brainevent/references/custom-operators.md` | Route to Numba, Numba CUDA, Warp, C++, or CUDA extension paths, with the official neuroscience CSR custom-kernel application | [Index](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/index.html), [Numba CPU](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/01_numba.html), [Numba CUDA](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/02_numba_cuda.html), [Warp](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/03_warp.html), [C++](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/04_cpp.html), [CUDA](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/05_cuda.html) |
 
 #### Script References
 

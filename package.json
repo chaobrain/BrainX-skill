@@ -17,6 +17,7 @@
     "skills/brainx-install/",
     "skills/brainunit/",
     "skills/brainstate/",
+    "skills/brainevent/",
     "manifest.json",
     "README.md",
     "LICENSE"
@@ -43,6 +44,7 @@
     "agent-skills",
     "brainx",
     "brainunit",
+    "brainevent",
     "claude-code",
     "codex",
     "cursor"
