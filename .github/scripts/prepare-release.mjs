@@ -45,6 +45,14 @@ export function compareVersions(left, right) {
   return 0;
 }
 
+export function selectNextVersion(currentVersion, minimumReleaseVersion) {
+  const nextPatch = bumpPatch(currentVersion);
+  if (!minimumReleaseVersion) return nextPatch;
+  return compareVersions(nextPatch, minimumReleaseVersion) < 0
+    ? minimumReleaseVersion
+    : nextPatch;
+}
+
 export function selectPreviousRef({
   packageVersion,
   npmPublishedVersion,
@@ -279,7 +287,10 @@ export function main() {
     return;
   }
 
-  const version = bumpPatch(packageJson.version);
+  const version = selectNextVersion(
+    packageJson.version,
+    config.minimumReleaseVersion,
+  );
   const releaseNotes = renderReleaseNotes({
     version,
     commits,

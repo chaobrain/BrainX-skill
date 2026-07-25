@@ -1,8 +1,8 @@
-BrainX Skill 1.0.7 records 13 commits merged into `main`.
+BrainX Skill 1.0.6 records 13 commits merged into `main`.
 
 ## Release record
 
-- **Version:** `1.0.7`
+- **Version:** `1.0.6`
 - **Previous release:** `e2b723e489a645fab5d42044a1b73ab21f69b38e`
 - **Commits included:** 13
 
@@ -107,4 +107,4 @@ No additional commit description was provided.
 
 **Changed files:** `plan.md`, `skills/brainstate/SKILL.md`, `skills/brainstate/references/simulation-environment.md`, `skills/brainstate/references/size-inference-variations.md`
 
-**Full Changelog:** https://github.com/chaobrain/BrainX-skill/compare/e2b723e489a645fab5d42044a1b73ab21f69b38e...v1.0.7
+**Full Changelog:** https://github.com/chaobrain/BrainX-skill/compare/e2b723e489a645fab5d42044a1b73ab21f69b38e...v1.0.6

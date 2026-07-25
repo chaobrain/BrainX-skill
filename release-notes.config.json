@@ -1,5 +1,6 @@
 {
   "repository": "chaobrain/BrainX-skill",
+  "minimumReleaseVersion": "1.0.8",
   "npmCatchUp": {
     "publishedVersion": "1.0.3",
     "previousRef": "e2b723e489a645fab5d42044a1b73ab21f69b38e"

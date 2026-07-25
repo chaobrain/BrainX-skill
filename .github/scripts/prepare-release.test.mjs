@@ -6,6 +6,7 @@ import {
   compareVersions,
   parseCommitLog,
   renderReleaseNotes,
+  selectNextVersion,
   selectPreviousRef,
   updateChangelog,
 } from './prepare-release.mjs';
@@ -21,6 +22,12 @@ test('compareVersions orders semantic versions numerically', () => {
   assert.equal(compareVersions('1.10.0', '1.9.9'), 1);
   assert.equal(compareVersions('2.4.6', '2.4.6'), 0);
   assert.throws(() => compareVersions('latest', '1.0.5'), /semantic version/);
+});
+
+test('selectNextVersion skips versions below the configured release floor', () => {
+  assert.equal(selectNextVersion('1.0.6', '1.0.8'), '1.0.8');
+  assert.equal(selectNextVersion('1.0.8', '1.0.8'), '1.0.9');
+  assert.equal(selectNextVersion('1.0.8'), '1.0.9');
 });
 
 test('selectPreviousRef uses the latest tag when npm and Git are synchronized', () => {
