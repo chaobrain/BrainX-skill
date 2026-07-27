@@ -209,6 +209,8 @@ Open only the smallest reference that owns the decision.
 
 
 ## Application script examples
+| Reference | Open when |
+|---|---|
 | `references/scripts/103_COBA_2005.py` | Needing a complete canonical E/I COBA network built from native BrainPy-State projections |
 | `references/scripts/106_COBA_HH_2007.py` | Reproducing a conductance-based E/I network with a custom Hodgkin-Huxley neuron |
 | `references/scripts/107_gamma_oscillation_1996.py` | Reproducing gamma oscillations with custom neuron and synapse dynamics |
