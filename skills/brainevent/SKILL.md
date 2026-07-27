@@ -43,15 +43,26 @@ Use a dense array only when its storage cost is acceptable. Open `references/spa
 
 ## API structure overview
 
-| API family | Responsibility |
+### Python API
+
+| Category | Responsibility |
 |---|---|
-| `BinaryArray` | Mark boolean or 0/1 vectors and matrices for event-driven multiplication. |
-| Dense JAX/NumPy arrays | Store every connection weight for small or genuinely dense matrices. |
-| COO triplets, `CSR`, `CSC` | Build and store explicit sparse connectivity. |
-| `JITCScalar*`, `JITCNormal*`, `JITCUniform*` | Regenerate random connectivity from distribution parameters and a seed instead of materializing edges. |
-| `FixedNumPerPre`, `FixedNumPerPost` | Encode a fixed fan-out or fan-in directly; recognize `FixedPostNumConn` and `FixedPreNumConn` as deprecated aliases. |
-| `update_*_on_binary_pre`, `update_*_on_binary_post` | Update stored CSR or dense weights from spike-triggered plasticity rules. |
-| CPU and GPU custom-operator APIs | Extend BrainEvent with Numba, Warp, C++, CUDA, or registered accelerator kernels when built-ins are insufficient. |
+| Event Array Types | Represent binary events with `EventRepresentation` and `BinaryArray`. |
+| Sparse Matrix Data Structures | Store explicit, generated, or fixed-degree connectivity with `CSR`, `CSC`, `JITC*`, and fixed-connection structures. |
+| Matrix Operations | Apply event-driven dense, sparse, generated, fixed-connectivity, and plasticity operations. |
+| Custom Kernel Framework | Define and load JAX-compatible custom kernels for CPU and accelerator backends. |
+| Error Classes | Diagnose mathematical, kernel availability, compilation, fallback, execution, and CUDA installation failures. |
+| Utility Functions | Convert sparse indices, generate LFSR random values, benchmark operations, and define transformation or type-conversion helpers. |
+| Configuration API | Configure Numba parallelism, LFSR selection, and backend behavior. |
+
+### Custom kernels
+
+| Category | Responsibility |
+|---|---|
+| `arg_spec` System | Declare kernel arguments, returned buffers, streams, and scalar attributes. |
+| C++ API | Use BrainEvent tensors, dtypes, validation macros, and dispatch macros in C++ kernels. |
+| Compiler Options | Control optimization, fast math, extra compiler flags, and CUDA graph support. |
+| Caching | Control compiled-kernel cache keys, storage, rebuilds, and reuse. |
 
 ## Choose a connectivity representation
 
@@ -60,7 +71,7 @@ Choose the representation before constructing it; every family supports the same
 | Representation | Use when | Avoid when |
 |---|---|---|
 | Dense JAX/NumPy array | The matrix is small or genuinely dense, roughly more than 25% nonzero, or arbitrary per-edge values require the simplest storage. | A large matrix is mostly zero. |
-| COO triplets -> `CSR` or `CSC` | Edges are explicit, fixed, reusable, inspectable, or mutable. Use CSR for row-oriented work and CSC for column-oriented work. | Random connectivity is too large to materialize. |
+| `CSR` / `CSC` | Edges are explicit, fixed, reusable, inspectable, or mutable. Use CSR for row-oriented work and CSC for column-oriented work. | Random connectivity is too large to materialize. |
 | `JITC*` | Connectivity is random with fixed probability and must be regenerated from compact parameters and a stable seed. | Individual edges must be inspected, mutated, or learned. |
 | `FixedNumPerPre` / `FixedNumPerPost` | Each neuron has a fixed number of outputs or inputs and that topology should be encoded directly. | Connection counts vary per neuron. |
 
@@ -68,14 +79,10 @@ Use explicit `CSR` or `CSC` for stored edges, `JITC*` for random and huge connec
 
 ## Build explicit sparse connectivity
 
-COO describes edges for construction, while `CSR` and `CSC` store the finished explicit matrix for row- or column-oriented operations.
+`CSR` and `CSC` store explicit sparse connectivity for row- or column-oriented operations.
 
 | API | Description |
 |---|---|
-| COO `row`, `col`, `data` triplets | Use while assembling sparse edges from coordinate records; BrainEvent has no standalone COO matrix class, so convert the indices before multiplication. |
-| `coo2csr(row_ids, col_ids, *, shape)` | Use to convert COO indices to CSR; it returns `(indptr, indices, order)`, and `data[order]` aligns values with the compressed row order. |
-| `coo_to_csc_index(pre_ids, indices, *, shape)` | Use to convert COO indices directly to CSC index arrays; use the returned permutation to align stored values. |
-| `csr_to_csc_index(csr_indptr, csr_indices, *, shape, ...)` | Use when an existing CSR topology must become column-oriented; it returns CSC indices and, by default, the value permutation. |
 | `CSR(data, indices=None, indptr=None, *, shape, ...)` | Use for explicit row-oriented sparse connectivity and the normal forward `BinaryArray @ connectivity` path; it stores nonzero values, column indices, and row pointers. |
 | `CSC(data, indices=None, indptr=None, *, shape, ...)` | Use for explicit column-oriented sparse connectivity or transpose-centered work; it stores nonzero values, row indices, and column pointers. |
 
@@ -97,7 +104,7 @@ postsynaptic_input = spikes @ connectivity
 assert postsynaptic_input.shape == (2,)
 ```
 
-This example constructs only `CSR`; do not duplicate it for every format. Open `references/sparse-formats.md` when edges begin as COO, CSC orientation is required, or formats must be converted.
+This example constructs only `CSR`; do not duplicate it for every format. Open `references/sparse-formats.md` when explicit edges must be imported, CSC orientation is required, or stored formats must be converted.
 
 ## Generate random connectivity
 
@@ -243,7 +250,7 @@ Verify `postsynaptic_input.shape == connectivity.shape[1:]` for vector input and
 
 | Reference | Open when |
 |---|---|
-| `references/sparse-formats.md` | Open when explicit connectivity begins as COO, requires CSR/CSC conversion, or needs row/column storage decisions; it contains the exact construction and conversion APIs and storage invariants. |
+| `references/sparse-formats.md` | Open when explicit connectivity must be imported, converted between CSR and CSC, or oriented for row or column access; it contains the construction, conversion, and storage invariants. |
 | `references/connectivity-variants.md` | Open when choosing among all six JITC distribution/orientation variants or between fixed fan-in and fan-out; it contains constructor semantics, index shapes, deprecated alias mapping, seed rules, and benchmarking guidance. |
 | `references/synaptic-plasticity.md` | Open when pre- or postsynaptic events must update stored CSR or dense weights; it contains all four public update variants and one CSR STDP pattern. |
 | `references/custom-operators-cpu.md` | Open when a custom operation targets CPU; it contains Numba CPU, raw C++, CPU registration and transformation rules, the C++ ABI, compilation, caching, diagnostics, and verification workflows. |

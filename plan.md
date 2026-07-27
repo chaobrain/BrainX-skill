@@ -436,7 +436,7 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 #### Purpose
 
 - Boundary: represent binary events and route them through dense, explicit sparse, generated, or fixed-degree connectivity.
-- Activate for `BinaryArray`, CSR/CSC/COO decisions, JIT connectivity, fixed fan-in/out, event plasticity, or custom event operators.
+- Activate for `BinaryArray`, CSR/CSC decisions, JIT connectivity, fixed fan-in/out, event plasticity, or custom event operators.
 - Primary path: classify event data → choose connectivity representation → construct → multiply → optionally update stored weights → transform → validate shape/orientation.
 - Advanced branches: sparse formats, connectivity variants, plasticity, custom operators.
 
@@ -445,7 +445,6 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 - The brain computes with spikes — sparse, binary events. Wrap a spike vector in BinaryArray, and any matrix multiplication against it skips the zeros and processes only the neurons that fired.
 #### dense arrays and any of brainevent’s sparse connectivity structures that A BinaryArray multiplies against
 - `BinaryArray` and `spikes @ connectivity`.
-- `coo2csr()`.
 - `JITCScalarR` and seed stability.
 - `FixedNumPerPre` versus `FixedNumPerPost`, with deprecated
   `FixedPostNumConn` / `FixedPreNumConn` alias recognition.
@@ -470,11 +469,11 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 6. Event-Driven Synaptic Plasticity
 7. JAX Transform Pattern
 
-API tables enumerate the complete decision-relevant variations: COO construction,
-`CSR`, `CSC`, all six scalar/normal/uniform JITC row/column classes, both
+API tables enumerate the complete decision-relevant variations: `CSR`, `CSC`,
+all six scalar/normal/uniform JITC row/column classes, both
 current fixed-degree directions, and their deprecated aliases. Each canonical
 code example constructs only one representative connectivity API; variant
-mechanics remain in references.
+mechanics and coordinate-input conversion remain in references.
 
 #### Reference Routing
 
@@ -496,7 +495,7 @@ All five required Markdown references are skill-local and already exist. Applica
 
 | Canonical reference | Need | Crafting source |
 |---|---|---|
-| `skills/brainevent/references/sparse-formats.md` | COO construction, CSR/CSC storage, conversion and selection, plus the official two-layer sparse spiking-network practice | [Sparse matrices tutorial](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/02_sparse_matrices.html), [sparse-data API](https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html), [utilities API](https://brainx.chaobrain.com/brainevent/reference/apis/utilities.html) |
+| `skills/brainevent/references/sparse-formats.md` | CSR/CSC storage, conversion, and selection; reference-only coordinate edge-list import with `coo2csr()`; and the official two-layer sparse spiking-network practice | [Sparse matrices tutorial](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/02_sparse_matrices.html), [sparse-data API](https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html), [utilities API](https://brainx.chaobrain.com/brainevent/reference/apis/utilities.html) |
 | `skills/brainevent/references/connectivity-variants.md` | JITC distributions/orientations, current and deprecated fixed fan-in/out APIs, format choice, and the official large JITC and cortical fixed-degree applications | [JIT connectivity](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/03_jit_connectivity.html), [fixed connections](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/04_fixed_connections.html), [format guide](https://brainx.chaobrain.com/brainevent/how-to/data-structures/choosing-a-sparse-format.html), [sparse-data API](https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html), [utilities API](https://brainx.chaobrain.com/brainevent/reference/apis/utilities.html) |
 | `skills/brainevent/references/synaptic-plasticity.md` | Pre/post event updates, CSR/dense routing, STDP overlay, and the official adaptive self-learning network | [Plasticity tutorial](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/05_synaptic_plasticity.html), [plasticity how-to](https://brainx.chaobrain.com/brainevent/how-to/data-structures/synaptic-plasticity.html), [operations API](https://brainx.chaobrain.com/brainevent/reference/apis/operations.html) |
 | `skills/brainevent/references/custom-operators-cpu.md` | Select and implement Numba CPU or raw C++ operators; define CPU registration and transformation rules; use the CPU argument ABI, compiler, cache, diagnostics, and verification workflows | [installation](https://brainx.chaobrain.com/brainevent/getting-started/installation.html), [Numba CPU](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/01_numba.html), [C++](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/04_cpp.html), [operator API](https://brainx.chaobrain.com/brainevent/reference/apis/operator.html), [`arg_spec`](https://brainx.chaobrain.com/brainevent/reference/kernels/arg-spec.html), [C++ API](https://brainx.chaobrain.com/brainevent/reference/kernels/cpp-api.html), [caching](https://brainx.chaobrain.com/brainevent/reference/kernels/caching.html) |
@@ -513,7 +512,7 @@ All five required Markdown references are skill-local and already exist. Applica
 - Continuous analog values wrapped as binary events.
 - Large random matrices materialized unnecessarily.
 - JIT connectivity used where per-edge weights must be learned.
-- COO mistaken for a finished matrix class.
+- Coordinate edge-list input mistaken for a public BrainEvent matrix class.
 - Fixed fan-in and fan-out reversed.
 - Orientation inferred from class suffix without checking contraction.
 - BrainEvent treated as a complete simulator.

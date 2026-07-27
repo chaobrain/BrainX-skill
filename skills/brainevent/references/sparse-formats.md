@@ -1,26 +1,30 @@
 # BrainEvent sparse formats
 
-Use this reference when explicit sparse connectivity must be assembled, converted, stored, or reoriented. Keep `CSR` as the single representative code path; choose other variations from the API table.
+Use this reference when explicit sparse connectivity must be stored or reoriented as CSR or CSC, or when coordinate edge-list input must be converted. Keep `CSR` as the single representative code path.
 
 ## Storage model
 
-COO triplets are flexible construction records, while CSR and CSC compress the row or column dimension for event-driven products.
+`CSR` and `CSC` are BrainEvent's public explicit sparse connectivity types; choose between them by the access and contraction orientation.
 
 | API | Description |
 |---|---|
-| COO `row`, `col`, `data` triplets | Use when edges arrive as coordinate records; they describe nonzero locations and values but are not a standalone BrainEvent matrix class. |
-| `coo2csr(row_ids, col_ids, *, shape)` | Use to convert COO indices to CSR; it returns `(indptr, indices, order)`, where `data[order]` produces row-compressed value order. |
-| `coo_to_csc_index(pre_ids, indices, *, shape)` | Use to convert COO indices to CSC; it returns column pointers, row indices, and the value permutation required by the generated order. |
-| `csr_to_coo_index(indptr, indices)` | Use to convert CSR indices back to COO; it returns `(row_ids, col_ids)`, with `col_ids` equal to the input column indices. |
-| `csr_to_csc_index(csr_indptr, csr_indices, *, shape, include_perm=True, ...)` | Use to convert an existing CSR topology to CSC; it returns CSC structure and, by default, the permutation for the stored values. |
 | `CSR(data, indices=None, indptr=None, *, shape, ...)` | Use for explicit row-oriented sparse connectivity and common forward `BinaryArray @ connectivity`; it stores values, column indices, and row pointers. |
 | `CSC(data, indices=None, indptr=None, *, shape, ...)` | Use for explicit column-oriented connectivity, transpose-centered products, or column access; it stores values, row indices, and column pointers. |
+| `csr_to_csc_index(csr_indptr, csr_indices, *, shape, include_perm=True, ...)` | Use to convert an existing CSR topology to CSC; it returns CSC structure and, by default, the permutation for the stored values. |
+
+## Import coordinate edge lists
+
+BrainEvent does not expose a public `brainevent.COO` connectivity type. Treat COO only as an input or interchange format for coordinate edge lists; convert it to `CSR` or `CSC` before event-driven multiplication.
+
+| API | Description |
+|---|---|
+| `coo2csr(row_ids, col_ids, *, shape)` | Use only to import coordinate row and column arrays into CSR; it returns `(indptr, indices, order)`, where `data[order]` aligns values with the row-compressed structure. |
 
 ```python
 import brainevent
 import jax.numpy as jnp
 
-# Build a 4 x 5 sparse matrix from COO triplets:
+# Import a 4 x 5 coordinate edge list as CSR:
 # (0, 1) = 1.5, (1, 3) = 2.0, (2, 0) = 0.5, (3, 4) = 3.0.
 shape = (4, 5)
 row = jnp.array([0, 1, 2, 3])
@@ -47,13 +51,12 @@ assert jnp.allclose(
 )
 ```
 
-This example mirrors the official COO-to-CSR workflow and constructs only `CSR`. Keep `data[order]`: the conversion sorts the index structure and returns the value permutation separately. For CSC, use the matching conversion utility and apply its returned permutation.
+This example constructs a public `CSR` matrix from coordinate input. Keep `data[order]`: `coo2csr()` sorts the index structure and returns the value permutation separately. Do not retain or present the coordinate arrays as BrainEvent connectivity.
 
 ## Selection rules
 
 | Format | Use when | Critical invariant |
 |---|---|---|
-| COO triplets | Building, importing, or editing an edge list. | Convert before multiplication; keep values aligned with the returned permutation. |
 | `CSR` | The contraction is row-oriented, especially presynaptic `BinaryArray @ connectivity` forward propagation. | `indptr` has one boundary per row plus the terminal boundary; `indices` are column indices. |
 | `CSC` | The contraction or access is column-oriented or transpose-centered. | `indptr` has one boundary per column plus the terminal boundary; `indices` are row indices. |
 
