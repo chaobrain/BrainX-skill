@@ -1,106 +1,115 @@
 # Prebuilt activation library
 
-Use this reference to select an exact `brainstate.nn` activation symbol. The routed catalog provides symbol names and descriptions, but not constructor or callable signatures; do not invent argument lists from similarly named APIs in another library. It distinguishes stateful layer modules from pure functions, but leaves basic activation use and `Module` composition to `SKILL.md`.
+Use this reference to choose an exact `brainstate.nn` activation symbol and decide
+between a Module and a functional form. Open
+`prebuilt-layer-library.md` for normalization layers; `standardize` remains here
+because the activation API exports it as a pure array operation.
 
-Normalization layers are not present on this page. Select `BatchNorm*`, `LayerNorm`, `RMSNorm`, or `GroupNorm` from `prebuilt-layer-library.md`. The functional `standardize` entry below remains here because it is part of the activation catalog and is described as standardizing an array; it is not a normalization-layer API.
+## Selection map
 
-## Element-wise layers
+| Choice | Use when | Key constraint |
+|---|---|---|
+| Module class, such as `nn.ReLU()` | The activation must be stored in a Module graph, `Sequential`, or descriptor-based composition. | Instantiate the class; parameterized classes keep their configuration in the graph. |
+| Functional form, such as `nn.relu(x)` | The activation is a stateless operation inside `update()` or another function. | Pass the array directly; do not instantiate the function. |
+| `Softmax`, `LogSoftmax`, `Softmin`, or lowercase equivalents | The output must be normalized across a specified dimension. | Set the dimension or axis deliberately; the default may not match the feature dimension. |
+| `standardize`, `one_hot`, or `logsumexp` | The task is array standardization, encoding, or stable log reduction rather than nonlinear activation. | These are utilities, not activation Modules. |
+| `SpikeBitwise` | The input is a spiking representation requiring the catalog's bitwise-addition behavior. | Do not use it as a general numeric activation. |
 
-Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/activation.html
+## Module activations
 
-The official page describes these as non-linear activation layers that operate element-wise on input tensors. Its catalog includes rectified linear units and variants, sigmoid functions, hyperbolic tangent, softmax for probability distributions, and specialized activations for specific architectures such as SELU, GELU, SiLU, and Mish.
+Use a Module class when graph composition or constructor-held configuration
+matters. The exact class names are case-sensitive.
 
-| Exact symbol | Official catalog description |
-|---|---|
-| `Threshold` | Thresholds each element of the input Tensor. |
-| `ReLU` | Applies the rectified linear unit function element-wise. |
-| `RReLU` | Applies the randomized leaky rectified liner unit function, element-wise. |
-| `Hardtanh` | Applies the HardTanh function element-wise. |
-| `ReLU6` | Applies the element-wise function. |
-| `Sigmoid` | Applies the element-wise function. |
-| `Hardsigmoid` | Applies the Hardsigmoid function element-wise. |
-| `Tanh` | Applies the Hyperbolic Tangent (Tanh) function element-wise. |
-| `SiLU` | Applies the Sigmoid Linear Unit (SiLU) function, element-wise. |
-| `Mish` | Applies the Mish function, element-wise. |
-| `Hardswish` | Applies the Hardswish function, element-wise. |
-| `ELU` | Applies the Exponential Linear Unit (ELU) function, element-wise. |
-| `CELU` | Applies the element-wise function. |
-| `SELU` | Applied element-wise. |
-| `GLU` | Applies the gated linear unit function. |
-| `GELU` | Applies the Gaussian Error Linear Units function. |
-| `Hardshrink` | Applies the Hard Shrinkage (Hardshrink) function element-wise. |
-| `LeakyReLU` | Applies the element-wise function. |
-| `LogSigmoid` | Applies the element-wise function. |
-| `Softplus` | Applies the Softplus function element-wise. |
-| `Softshrink` | Applies the soft shrinkage function elementwise. |
-| `PReLU` | Applies the element-wise function. |
-| `Softsign` | Applies the element-wise function. |
-| `Tanhshrink` | Applies the element-wise function. |
-| `Softmin` | Applies the Softmin function to an n-dimensional input Tensor. |
-| `Softmax` | Applies the Softmax function to an n-dimensional input Tensor. |
-| `Softmax2d` | Applies SoftMax over features to each spatial location. |
-| `LogSoftmax` | Applies the `log(Softmax(x))` function to an n-dimensional input Tensor. |
-| `Identity` | A placeholder identity operator that is argument-insensitive. |
-| `SpikeBitwise` | Bitwise addition for the spiking inputs. |
-
-Selection cues supplied by the catalog:
-
-- Use `Softmin`, `Softmax`, or `LogSoftmax` when the requested operation names that distribution transform; use `Softmax2d` when the request specifically calls for SoftMax over features at each spatial location.
-- Use `Identity` when an argument-insensitive placeholder identity operator is required.
-- Use `SpikeBitwise` only for the page's stated spiking-input bitwise addition role.
-- Treat the remaining entries according to their exact named activation. The catalog does not expose parameters here, even for parameterized, thresholded, randomized, gated, or shrinkage variants.
+| API | Choose it when | Decision-changing control |
+|---|---|---|
+| `Threshold` | Values on one side of a threshold must be replaced. | `Threshold(threshold, value)` |
+| `ReLU` | Use the standard rectified linear unit. | `ReLU(name=None)` |
+| `RReLU` | Use randomized negative slopes. | `RReLU(lower=0.125, upper=1 / 3)` |
+| `Hardtanh` | Clamp with a hard-tanh response. | `Hardtanh(min_val=-1.0, max_val=1.0)` |
+| `ReLU6` | Clamp ReLU output at six. | No selection-specific constructor control is documented. |
+| `Sigmoid` | Map values through the logistic sigmoid. | No selection-specific constructor control is documented. |
+| `Hardsigmoid` | Use the piecewise-linear sigmoid approximation. | No selection-specific constructor control is documented. |
+| `Tanh` | Map values through hyperbolic tangent. | No selection-specific constructor control is documented. |
+| `SiLU` | Use SiLU, also called swish. | No selection-specific constructor control is documented. |
+| `Mish` | Use the Mish activation. | No selection-specific constructor control is documented. |
+| `Hardswish` | Use the piecewise-linear hard-swish variant. | No selection-specific constructor control is documented. |
+| `ELU` | Use exponential linear units. | `ELU(alpha=1.0)` |
+| `CELU` | Use continuously differentiable ELU. | `CELU(alpha=1.0)` |
+| `SELU` | Use scaled ELU in an architecture designed for self-normalization. | Pair with architecture-appropriate initialization and dropout rather than substituting it blindly. |
+| `GLU` | Split and gate the input along a dimension. | `GLU(dim=-1)` requires a compatible size on the split dimension. |
+| `GELU` | Use Gaussian error linear units. | Check the generated page when an approximation variant matters. |
+| `Hardshrink` | Apply hard shrinkage. | Check the generated page for the threshold control. |
+| `LeakyReLU` | Preserve a fixed negative slope. | `LeakyReLU(negative_slope=0.01)` |
+| `LogSigmoid` | Return the log of sigmoid stably. | No selection-specific constructor control is documented. |
+| `Softplus` | Use a smooth positive rectifier. | The current generated constructor is `Softplus(name=None)`; do not assume PyTorch's `beta` or `threshold` arguments. |
+| `Softshrink` | Apply soft shrinkage. | Check the generated page for the threshold control. |
+| `PReLU` | Learn the negative slope. | `PReLU(num_parameters=1, init=0.25, dtype=None)` creates trainable slope parameters. |
+| `Softsign` | Use the soft-sign response. | No selection-specific constructor control is documented. |
+| `Tanhshrink` | Return the tanh-shrink response. | No selection-specific constructor control is documented. |
+| `Softmin` | Normalize with larger probability on smaller inputs. | Set the normalization dimension explicitly. |
+| `Softmax` | Convert logits to normalized probabilities. | `Softmax(dim=None)`; pass the intended feature dimension. |
+| `Softmax2d` | Normalize features independently at each spatial location. | Use only for the documented 2D spatial layout. |
+| `LogSoftmax` | Return normalized log-probabilities. | Set the normalization dimension explicitly. |
+| `Identity` | Keep a configurable graph slot without changing the input. | It is a placeholder, not an activation. |
+| `SpikeBitwise` | Apply bitwise addition to spiking inputs. | Keep it within spiking-data workflows. |
 
 ## Functional activations
 
-Source URL: https://brainx.chaobrain.com/brainstate/apis/nn/activation.html
+Use the lowercase form for stateless composition. Prefer the function whose name
+matches the requested operation; aliases are shown explicitly.
 
-The official page describes these as functional, non-module activation functions for flexible composition. They are pure functions that may be used directly in `update()` methods or combined with JAX transformations, and provide activation behavior without state or module overhead.
-
-| Exact symbol | Official catalog description |
+| API | Distinguishing behavior |
 |---|---|
-| `tanh` | Hyperbolic tangent activation function. |
-| `relu` | Rectified Linear Unit activation function. |
-| `squareplus` | Squareplus activation function. |
-| `softplus` | Softplus activation function. |
-| `soft_sign` | Soft-sign activation function. |
-| `sigmoid` | Sigmoid activation function. |
-| `silu` | SiLU (Sigmoid Linear Unit) activation function. |
-| `swish` | SiLU (Sigmoid Linear Unit) activation function. |
-| `log_sigmoid` | Log-sigmoid activation function. |
-| `elu` | Exponential Linear Unit activation function. |
-| `leaky_relu` | Leaky Rectified Linear Unit activation function. |
-| `hard_tanh` | Hard hyperbolic tangent activation function. |
-| `celu` | Continuously-differentiable Exponential Linear Unit activation. |
-| `selu` | Scaled Exponential Linear Unit activation. |
-| `gelu` | Gaussian Error Linear Unit activation function. |
-| `glu` | Gated Linear Unit activation function. |
-| `logsumexp` | No description is supplied in the routed catalog. |
-| `log_softmax` | Log-Softmax function. |
-| `softmax` | Softmax activation function. |
-| `standardize` | Standardize (normalize) an array. |
-| `one_hot` | One-hot encode the given indices. |
-| `relu6` | Rectified Linear Unit 6 activation function. |
-| `hard_sigmoid` | Hard Sigmoid activation function. |
-| `hard_silu` | Hard SiLU (Swish) activation function. |
-| `hard_swish` | Hard SiLU (Swish) activation function. |
-| `hard_shrink` | Hard shrinkage activation function. |
-| `rrelu` | Randomized Leaky Rectified Linear Unit activation function. |
-| `mish` | Mish activation function. |
-| `soft_shrink` | Soft shrinkage activation function. |
-| `prelu` | Parametric Rectified Linear Unit activation function. |
-| `tanh_shrink` | Tanh shrink activation function. |
-| `softmin` | Softmin activation function. |
-| `sparse_plus` | Sparse plus activation function. |
-| `sparse_sigmoid` | Sparse sigmoid activation function. |
+| `tanh` | Hyperbolic tangent. |
+| `relu` | Rectified linear unit. |
+| `squareplus` | Smooth squareplus rectifier. |
+| `softplus` | Smooth positive rectifier. |
+| `soft_sign` | Soft-sign response. |
+| `sigmoid` | Logistic sigmoid. |
+| `silu`, `swish` | Equivalent SiLU/swish names. |
+| `log_sigmoid` | Stable log-sigmoid. |
+| `elu`, `celu`, `selu` | ELU-family functions; select by the requested activation contract. |
+| `leaky_relu`, `rrelu`, `prelu` | Fixed, randomized, or supplied negative-slope behavior. |
+| `hard_tanh`, `relu6`, `hard_sigmoid` | Piecewise-linear or clamped responses. |
+| `hard_silu`, `hard_swish` | Equivalent hard-SiLU/hard-swish names. |
+| `gelu`, `mish` | GELU or Mish response. |
+| `glu` | Split-and-gate operation; preserve a compatible split-axis size. |
+| `hard_shrink`, `soft_shrink`, `tanh_shrink` | Shrinkage-family functions. |
+| `softmin`, `softmax`, `log_softmax` | Normalize across `axis`; choose probability, inverse-probability, or log-probability output. |
+| `sparse_plus`, `sparse_sigmoid` | Sparse probability transformations. |
+| `logsumexp` | Stable log of summed exponentials. |
+| `standardize` | Standardize an array, optionally using supplied variance. |
+| `one_hot` | Encode integer indices along a new class axis. |
 
-Selection cues supplied by the catalog:
+## Canonical selection workflow
 
-- Choose the lowercase functional form when the operation should remain a pure function inside `update()` or a JAX transformation rather than a layer module.
-- `silu` and `swish` share the same catalog description; likewise, `hard_silu` and `hard_swish` share the same description.
-- `standardize` is the page's functional array-standardization choice. Route stateful or configurable normalization-layer selection to `prebuilt-layer-library.md`.
-- `one_hot` is an encoding utility listed in this catalog, not a nonlinear layer.
-- The routed page gives no description or signature for `logsumexp`; use the exact symbol only when that operation is explicitly requested, and consult a version-matched generated API page before supplying arguments.
+Use a Module in a registered layer pipeline and a function for an inline output
+transformation:
 
-## Source
+```python
+import brainstate
+import brainstate.nn as nn
+
+brainstate.random.seed(0)
+feature_block = nn.Sequential(
+    nn.Linear(in_size=(8,), out_size=(4,)),
+    nn.ReLU(),
+)
+
+x = brainstate.random.randn(2, 8)
+logits = feature_block(x)
+probabilities = nn.softmax(logits, axis=-1)
+
+assert probabilities.shape == logits.shape
+```
+
+**Invariant:** choose the normalization axis from the tensor layout. A valid
+call on the wrong axis can silently produce the wrong probability semantics.
+
+For any parameter not shown above, open the version-matched generated page
+linked from the activation catalog instead of borrowing a signature from JAX,
+PyTorch, or another library.
+
+## Official source
 
 - https://brainx.chaobrain.com/brainstate/apis/nn/activation.html

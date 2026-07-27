@@ -1,4 +1,4 @@
-# Brainstate gradient and autodiff expansion
+# BrainState gradient and autodiff expansion
 
 Use this reference after `skills/brainstate/SKILL.md` when a task needs gradient targets beyond the main skill's minimal parameter update, exact `return_value`/`has_aux` destructuring, state discovery in an arbitrary function, vector- or matrix-valued sensitivities, second derivatives, or an optimizer-integrated fitting step. The main skill owns the canonical `ParamState` collection and manual update; the parameter reference owns the choice between `ParamState` and `nn.Param`.
 
@@ -9,6 +9,18 @@ Official sources:
 - https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html
 - https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 - https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
+
+## Selection map
+
+| Need | Use | Key constraint |
+|---|---|---|
+| Differentiate explicit function inputs | `argnums` | Select positional arguments; the return structure follows scalar versus multiple selection. |
+| Differentiate registered values | `grad_states` | Pass a `State`, State mapping, or discovered State collection. |
+| Differentiate inputs and State together | `argnums` plus `grad_states` | Destructure the result as separate argument and State gradient groups. |
+| Return loss or auxiliary metrics from the same pass | `return_value=True` and/or `has_aux=True` | With `has_aux=True`, the function returns `(scalar_loss, aux)`. |
+| Sum sensitivities of a vector output | `vector_grad` | It is not a full Jacobian. |
+| Return full first- or second-order structure | `jacrev`, `jacfwd`, `jacobian`, or `hessian` | Choose reverse versus forward mode from input/output dimensions. |
+| Discover State touched by an arbitrary function | `StateFinder` | Filter read and write State into a collection that can be passed to `grad_states`. |
 
 ## Select the derivative target
 

@@ -1,20 +1,20 @@
-# Brainstate collective operations
+# BrainState collective operations
 
 Use this reference when one operation must initialise, reset, batch, invoke a common method on, or restore stateful objects throughout a model without manually traversing its module graph. It assumes familiarity with `brainstate.nn` modules and states and basic JAX `vmap` usage; BrainState requires `brainunit`.
 
-## Overview of the api
+## Selection map
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
 The official guide presents `brainstate.nn._collective_ops` through these public `brainstate.nn` utilities:
 
-| Operation | API |
-|---|---|
-| Fix the execution order of methods | `brainstate.nn.call_order` |
-| Call the same method on each model node | `brainstate.nn.call_all_fns`, `brainstate.nn.vmap_call_all_fns` |
-| Initialise state variables everywhere | `brainstate.nn.init_all_states`, `brainstate.nn.vmap_init_all_states` |
-| Reset existing states everywhere | `brainstate.nn.reset_all_states`, `brainstate.nn.vmap_reset_all_states` |
-| Restore values keyed by absolute state paths | `brainstate.nn.assign_state_values` |
+| Need | API | Key constraint |
+|---|---|---|
+| Fix the execution order of methods | `brainstate.nn.call_order` | Lower order values run first. |
+| Call the same method on each model node | `brainstate.nn.call_all_fns`, `brainstate.nn.vmap_call_all_fns` | Filter nodes deliberately and verify the installed call signature. |
+| Initialise state variables everywhere | `brainstate.nn.init_all_states`, `brainstate.nn.vmap_init_all_states` | Run after construction and before the first rollout. |
+| Reset existing states everywhere | `brainstate.nn.reset_all_states`, `brainstate.nn.vmap_reset_all_states` | Reset at the intended sequence boundary, not every time step. |
+| Restore values keyed by absolute state paths | `brainstate.nn.assign_state_values` | Inspect both returned mismatch collections. |
 
 ## Ordering calls with `call_order`
 

@@ -2,6 +2,17 @@
 
 Use this reference to compose size-aware layers with `Sequential` and `.desc()`, or when stride, padding, dimensionality, pooling mode, or flatten axes make a layer's size behavior non-obvious.
 
+## Selection map
+
+| Need | Use | Key constraint |
+|---|---|---|
+| Infer each next layer from the previous output | Give the first layer `in_size`, then use `.desc()` | Every descriptor must receive enough non-size constructor arguments to instantiate later. |
+| Predict convolution output | Inspect `stride`, `padding`, dilation, rank, and channel layout | Use `stride`, not the obsolete `strides` spelling. |
+| Reduce by local windows | `AvgPool*`, `MaxPool*`, or `LPPool*` | Kernel, stride, padding, and channel axis determine the result. |
+| Produce a fixed spatial target | `AdaptiveAvgPool*` or `AdaptiveMaxPool*` | `target_size` determines the spatial output independently of input size. |
+| Flatten a runtime batch | Set `start_axis` to preserve the batch axis | Runtime axes include batch; Module `in_size` metadata does not. |
+| Flatten feature metadata for composition | Construct `Flatten(in_size=feature_size)` or use `.desc()` | Feature `in_size` excludes the batch dimension. |
+
 ## Compose `ComplexNet` with `Sequential` and `.desc()`
 
 Give the first layer an explicit `in_size`, then use `.desc()` wherever `Sequential` should instantiate a layer from the preceding `out_size`. Start the classifier from `self.features.out_size` so flattening and dense construction stay coupled to the feature extractor.

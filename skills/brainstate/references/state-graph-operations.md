@@ -1,4 +1,4 @@
-# Brainstate state-graph operations
+# BrainState state-graph operations
 
 Use this reference after the core `State`, `Module`, and transform rules in
 `SKILL.md`. It covers the less-frequent graph operations needed to find,
@@ -12,6 +12,18 @@ cycles are encoded by integer index rather than duplicated.
 
 Source URL:
 https://brainx.chaobrain.com/brainstate/apis/graph.html
+
+## Selection map
+
+| Need | Use | Key constraint |
+|---|---|---|
+| Inspect graph paths and live objects | `iter_node()`, `iter_leaf()`, `nodes()`, or `states()` | Filters select by path and value without changing graph structure. |
+| Extract State as a PyTree | `treefy_states()` | No `GraphDef` is returned, so this path alone cannot reconstruct the graph. |
+| Partition State and reconstruct later | `treefy_split()` plus `treefy_merge()` | Preserve the returned `GraphDef` and every matching partition. |
+| Produce the low-level graph representation | `flatten()` plus `unflatten()` | The pair preserves sharing and cycles through graph indices. |
+| Update State values in an existing graph | `update_states()` | This replaces values, not graph nodes. |
+| Remove matching State objects | `pop_states()` | This is destructive. |
+| Move graph nodes through a larger PyTree | `graph_to_tree()` plus `tree_to_graph()` | Preserve each `NodeStates` wrapper. |
 
 ## Find nodes, leaves, and states
 
@@ -202,17 +214,3 @@ shared index across the related operations. For a deep copy of one graph,
 
 Source URL:
 https://brainx.chaobrain.com/brainstate/apis/graph.html
-
-## Selection rules
-
-- Need paths plus graph objects: `iter_node()`, `iter_leaf()`, `nodes()`, or
-  `states()`.
-- Need only a parameter/state PyTree: `treefy_states()`.
-- Need filtered state PyTrees and later reconstruction: `treefy_split()` plus
-  `treefy_merge()`.
-- Need one low-level graph IR and nested state mapping: `flatten()` plus
-  `unflatten()`.
-- Need to update an existing graph: `update_states()`.
-- Need destructive removal: `pop_states()`.
-- Need graph nodes to cross a larger pytree boundary: `graph_to_tree()` plus
-  `tree_to_graph()`.

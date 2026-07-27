@@ -11,6 +11,36 @@ Use BrainEvent to represent binary spikes and communicate them through dense, ex
 
 `BinaryArray` marks boolean or 0/1 data for event-driven `spikes @ connectivity`, which processes active events through the selected dense-value, explicit-edge, generated, or fixed-degree representation; require `spikes.shape[-1] == connectivity.shape[0]`.
 
+## Represent and multiply binary events
+
+`BinaryArray` wraps boolean or 0/1 event data so multiplication visits active presynaptic rows and preserves a uniform call site across connectivity representations.
+
+| API | Description |
+|---|---|
+| `BinaryArray(value)` | Use at the binary event boundary; it wraps a boolean or 0/1 vector or matrix, dispatches later products to event-driven implementations, and remains compatible with JAX transformations. |
+| `spikes @ connectivity` | Use after the spike dimension and connectivity input dimension agree; it accumulates the connectivity rows selected by active events and returns the weighted postsynaptic input. |
+
+```python
+import brainevent
+import jax.numpy as jnp
+
+pre_spikes = brainevent.BinaryArray([1, 0, 1, 0, 1])
+weights = jnp.array([
+    [0.5, 0.2, 0.1],
+    [0.3, 0.4, 0.2],
+    [0.1, 0.5, 0.3],
+    [0.2, 0.1, 0.4],
+    [0.4, 0.3, 0.5],
+])
+post_input = pre_spikes @ weights
+
+# Only rows 0, 2, and 4 contribute.
+active_rows = jnp.array([0, 2, 4])
+assert jnp.allclose(post_input, weights[active_rows].sum(axis=0))
+```
+
+Use a dense array only when its storage cost is acceptable. Open `references/sparse-formats.md` when explicit edges should be compressed, or `references/connectivity-variants.md` when random or fixed-degree structure should not be materialized densely.
+
 ## API structure overview
 
 | API family | Responsibility |
@@ -21,7 +51,7 @@ Use BrainEvent to represent binary spikes and communicate them through dense, ex
 | `JITCScalar*`, `JITCNormal*`, `JITCUniform*` | Regenerate random connectivity from distribution parameters and a seed instead of materializing edges. |
 | `FixedNumPerPre`, `FixedNumPerPost` | Encode a fixed fan-out or fan-in directly; recognize `FixedPostNumConn` and `FixedPreNumConn` as deprecated aliases. |
 | `update_*_on_binary_pre`, `update_*_on_binary_post` | Update stored CSR or dense weights from spike-triggered plasticity rules. |
-| Custom-operator APIs | Extend BrainEvent with Numba, Warp, C++, or CUDA kernels when built-ins are insufficient. |
+| CPU and GPU custom-operator APIs | Extend BrainEvent with Numba, Warp, C++, CUDA, or registered accelerator kernels when built-ins are insufficient. |
 
 ## Choose a connectivity representation
 
@@ -35,33 +65,6 @@ Choose the representation before constructing it; every family supports the same
 | `FixedNumPerPre` / `FixedNumPerPost` | Each neuron has a fixed number of outputs or inputs and that topology should be encoded directly. | Connection counts vary per neuron. |
 
 Use explicit `CSR` or `CSC` for stored edges, `JITC*` for random and huge connectivity, and fixed-degree structures for constant fan-in or fan-out.
-
-## Represent and multiply binary events
-
-`BinaryArray` wraps boolean or 0/1 event data and preserves a uniform multiplication interface across connectivity representations.
-
-| API | Description |
-|---|---|
-| `BinaryArray(value)` | Use at the binary event boundary; it wraps a boolean or 0/1 vector or matrix, dispatches `@` to event-driven operations, and returns an event representation compatible with JAX transformations. |
-| `spikes @ connectivity` | Use after the spike dimension and connectivity input dimension agree; it selects the implementation for the connectivity representation and returns the weighted postsynaptic input. |
-
-```python
-import brainevent
-import jax.numpy as jnp
-
-spikes = brainevent.BinaryArray([1, 0, 1, 0])
-connectivity = jnp.array([
-    [0.5, 0.1],
-    [0.2, 0.4],
-    [0.3, 0.7],
-    [0.6, 0.2],
-])
-postsynaptic_input = spikes @ connectivity
-
-assert postsynaptic_input.shape == (2,)
-```
-
-Use a dense array only when its storage cost is acceptable. Open `references/sparse-formats.md` when explicit edges should be compressed instead.
 
 ## Build explicit sparse connectivity
 
@@ -169,6 +172,51 @@ assert postsynaptic_input.shape == (3,)
 
 This example constructs only `FixedNumPerPre`. Open `references/connectivity-variants.md` when fixed fan-in is required, a deprecated alias appears in existing code, or the stored index shape must be checked.
 
+## Apply event-driven synaptic plasticity
+
+Plasticity combines binary spike triggers with decaying activity traces to update only stored synaptic weights; keep the connectivity topology fixed and choose the operator by storage format and trigger direction.
+
+| API | Description |
+|---|---|
+| `update_csr_on_binary_pre(...)` | Use when presynaptic spikes trigger updates to explicit CSR weights; it visits stored outgoing synapses, applies the postsynaptic trace and bounds, and returns updated CSR data without changing `indices` or `indptr`. |
+| `update_csr_on_binary_post(...)` | Use when postsynaptic spikes trigger updates to weights stored in CSR order; provide a CSC view plus `weight_indices` mapping CSC positions back to CSR data, and it returns the updated CSR-ordered values. |
+| `update_dense_on_binary_pre(...)` | Use for a small dense matrix when presynaptic spikes trigger updates; it returns the updated dense weights. |
+| `update_dense_on_binary_post(...)` | Use for a small dense matrix when postsynaptic spikes trigger updates; it returns the updated dense weights. |
+
+```python
+import brainevent
+import jax.numpy as jnp
+
+weights = brainevent.CSR(
+    (
+        jnp.array([0.2, 0.4, 0.3, 0.5]),
+        jnp.array([0, 1, 1, 0]),
+        jnp.array([0, 2, 3, 4]),
+    ),
+    shape=(3, 2),
+)
+new_data = brainevent.update_csr_on_binary_pre(
+    weight=weights.data,
+    indices=weights.indices,
+    indptr=weights.indptr,
+    pre_spike=jnp.array([True, False, True]),
+    post_trace=jnp.array([0.02, 0.01]),
+    w_min=0.0,
+    w_max=1.0,
+    shape=weights.shape,
+)
+updated = brainevent.CSR(
+    (new_data, weights.indices, weights.indptr),
+    shape=weights.shape,
+)
+
+assert updated.data.shape == weights.data.shape
+assert jnp.array_equal(updated.indices, weights.indices)
+assert jnp.array_equal(updated.indptr, weights.indptr)
+```
+
+Open `references/synaptic-plasticity.md` when implementing decaying traces, a CSR STDP loop, or a complete adaptive network; open the operations API linked there for exact postsynaptic and dense update signatures.
+
 ## Transform and verify the product
 
 Keep the complete event-driven product inside the JAX transform, then verify shape, orientation, and reproducibility rather than relying on a class suffix alone.
@@ -198,19 +246,11 @@ Verify `postsynaptic_input.shape == connectivity.shape[1:]` for vector input and
 | `references/sparse-formats.md` | Open when explicit connectivity begins as COO, requires CSR/CSC conversion, or needs row/column storage decisions; it contains the exact construction and conversion APIs and storage invariants. |
 | `references/connectivity-variants.md` | Open when choosing among all six JITC distribution/orientation variants or between fixed fan-in and fan-out; it contains constructor semantics, index shapes, deprecated alias mapping, seed rules, and benchmarking guidance. |
 | `references/synaptic-plasticity.md` | Open when pre- or postsynaptic events must update stored CSR or dense weights; it contains all four public update variants and one CSR STDP pattern. |
-| `references/custom-operators.md` | Open when built-in operations are insufficient; it routes Numba, Numba CUDA, Warp, C++, and CUDA extension paths to the exact official tutorial. |
+| `references/custom-operators-cpu.md` | Open when a custom operation targets CPU; it contains Numba CPU, raw C++, CPU registration and transformation rules, the C++ ABI, compilation, caching, diagnostics, and verification workflows. |
+| `references/custom-operators-gpu.md` | Open when a custom operation targets GPU; it contains Numba CUDA, Warp, raw CUDA, GPU and multi-backend registration, stream and ABI rules, compiler controls, caching, diagnostics, and verification workflows. |
+
+## Application script examples
+
+| `references/scripts/coba_ei_teaching.py` | Open for the shared BrainEvent and BrainPy teaching example; it uses `BinaryArray` with interchangeable `FixedNumPerPre`, `CSR`, and dense connectivity for efficient event-driven communication into BrainPy `LIFRef`, `Expon`, and `COBA` dynamics inside one compiled BrainState loop. |
 | `references/scripts/102_EI_net_1996.py` | Open for a complete high-level E/I network already using `brainpy.state.AlignPostProj` and `brainstate.nn.EventFixedProb`; it preserves unit-aware weights, initialization, compiled time loops, and visualization. |
 | `references/scripts/204_joglekar_2018_propagation.py` | Open for delayed spikes, area mapping, and vmapped `JITCScalarC` communication; it preserves delays, seeds, external-data assumptions, and BrainPy compatibility details. |
-
-## Boundaries and common failures
-
-- Wrap only boolean or 0/1 events in `BinaryArray`; keep continuous values as ordinary arrays or BrainUnit quantities.
-- Match the spike vector length to the left connectivity dimension before compiling.
-- Do not materialize a huge random matrix when a JITC generation rule is sufficient.
-- Do not use JITC when individual connection weights must be inspected, mutated, or learned; use stored `CSR`, `CSC`, or dense weights.
-- Treat COO as construction input, not as a BrainEvent matrix class.
-- Apply the `order` or permutation returned by index-conversion utilities to the corresponding data values.
-- Do not reverse fixed fan-in and fan-out: `FixedNumPerPre` fixes outputs per presynaptic neuron; `FixedNumPerPost` fixes inputs per postsynaptic neuron.
-- Migrate deprecated `FixedPostNumConn` to `FixedNumPerPre` and deprecated `FixedPreNumConn` to `FixedNumPerPost`.
-- Do not infer the fastest orientation from `R` or `C` alone; benchmark the actual contraction.
-- Route spike-triggered weight mutation to `references/synaptic-plasticity.md` and custom kernels to `references/custom-operators.md`.

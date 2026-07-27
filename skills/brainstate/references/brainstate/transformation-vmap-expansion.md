@@ -1,13 +1,31 @@
-# Brainstate vmap expansion
+# BrainState vmap expansion
 
-## Scope and source boundary
-
-Open this reference after the minimal `brainstate.transform.vmap` example in `skills/brainstate/SKILL.md`. The vectorization tutorial describes `brainstate.transform.vmap` as a state-aware wrapper around `jax.vmap`, but its detailed executable examples use `brainstate.transform.vmap2`. Preserve that distinction when adapting a script; do not silently substitute one API for the other.
+Use this reference after the minimal `brainstate.transform.vmap` example in
+`skills/brainstate/SKILL.md` when argument axes, State axes, random-key policy,
+nested mappings, or unexpected State writes require explicit control.
 
 This reference covers only behavior demonstrated by these routed official tutorials:
 
 - Vectorization: https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vectorization.html
 - Random Number Generation: https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
+
+The Vectorization tutorial describes `brainstate.transform.vmap` as a
+state-aware wrapper around `jax.vmap`, but its detailed executable examples use
+`brainstate.transform.vmap2`. Preserve that distinction; do not silently
+substitute one API for the other.
+
+## Selection map
+
+| Need | Control | Key constraint |
+|---|---|---|
+| Map or broadcast function arguments | `in_axes` | Use an integer axis to map and `None` to share. |
+| Place the mapped output axis | `out_axes` | Match the downstream layout explicitly. |
+| Map with no mapped input argument | `axis_size` | Supply the size because it cannot be inferred. |
+| Use collectives over the mapped axis | `axis_name` | The collective must use the same name. |
+| Map mutable State but share parameters | `vmap2(..., state_in_axes=..., state_out_axes=...)` with State filters | Define both input mapping and write-back for per-instance State. |
+| Handle a written State omitted from `state_out_axes` | `vmap2(..., unexpected_out_state_mapping=...)` | The default `'auto'` infers and scatters the mapped axis; declare State axes when a coincidental leading-size match would be ambiguous. |
+| Choose independent or shared random draws | BrainState automatic splitting or one broadcast JAX key | Shared keys intentionally correlate mapped results. |
+| Build a custom mapping primitive | `StatefulMapping` | Use only when `vmap` or `vmap2` cannot express the required primitive. |
 
 The Vectorization tutorial imports the detailed mapping API and State filter as follows:
 
@@ -128,9 +146,16 @@ Source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vec
 
 ## Handle state writes outside `state_out_axes`
 
-`unexpected_out_state_mapping` controls behavior when a State is written but is not covered by `state_out_axes`. The tutorial demonstrates the default `'ignore'` policy with a written `LongTermState` that is not listed in State-axis filters.
+`unexpected_out_state_mapping` controls behavior when a State is written but is
+not covered by `state_out_axes`. The current generated `vmap2` API defaults to
+`'auto'`, which infers the output axis and scatters the write. The `'raise'`
+policy raises `BatchAxisError`; `'warn'` and `'ignore'` scatter with or without
+a warning. The tutorial demonstrates an explicit `'ignore'` policy with a
+written `LongTermState` that is not listed in State-axis filters.
 
 Source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vectorization.html#the-unexpected-out-state-mapping-parameter
+
+Exact policy source: https://brainx.chaobrain.com/brainstate/apis/generated/brainstate.transform.vmap2.html
 
 ```python
 temp_state = brainstate.ShortTermState(jnp.array(0.0))
@@ -151,7 +176,10 @@ vmap_ignore = vmap2(
 result = vmap_ignore(jnp.array([1.0, 2.0, 3.0]))
 ```
 
-Treat an unexpected write as an explicit policy decision. Do not assume that mapping only the function arguments also specifies the output behavior of every State the function mutates.
+Declare the State axes when an unexpected read-modify-write could be mistaken
+for per-lane State because its leading size happens to match the mapped size.
+Do not assume that mapping only the function arguments also specifies the
+output behavior of every State the function mutates.
 
 ## Choose independent or shared randomness
 
@@ -281,6 +309,6 @@ Do not infer semantics for `vmap_new_states`, `vmap2_new_states`, `map`, `pmap2`
 - Match every non-`None` `in_axes` entry to an actual mapped dimension of the corresponding argument.
 - Decide whether mutable State is shared or mapped; use `state_in_axes` and `state_out_axes` together for per-instance State write-back.
 - Set `axis_size` when all inputs are static.
-- Set an explicit policy for State writes not covered by `state_out_axes`.
+- Declare State axes or set an explicit policy when automatic output-axis inference would be ambiguous.
 - Expect automatic independent `RandomState` keys; use the documented broadcast-key pattern only when shared randomness is intentional.
 - Route direct key manipulation through the randomness reference rather than duplicating it here.

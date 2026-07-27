@@ -1,8 +1,19 @@
-# Brainstate state collections and utility toolkit
+# BrainState state collections and utility toolkit
 
 Use this reference for the collection-focused parts of BrainState's Utility Toolkit: managing mappings, nested configuration, dictionary conversion, immutable structured PyTrees, declarative filters, and readable PyTree containers. These utilities organize data; the core `State` and `Module` programming model remains in the parent `SKILL.md`.
 
 Official page: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
+
+## Selection map
+
+| Need | Use | Key constraint |
+|---|---|---|
+| Filter, split, or transform a mapping | `DictManager` | Operates on collection values; it does not preserve Module graph identity. |
+| Access nested configuration by attribute | `DotDict` | Convert back with `to_dict()` at plain-dictionary boundaries. |
+| Merge or convert dotted-key dictionaries | `merge_dicts`, `flatten_dict`, `unflatten_dict` | Dotted-string keys differ from tuple graph paths. |
+| Keep an immutable structured mapping | `FrozenDict` and related PyTree utilities | Replace values functionally rather than mutating in place. |
+| Build a reusable path/value predicate | `to_predicate`, `OfType`, `WithTag`, `Any`, or `All` | Filters receive both path and value. |
+| Preserve readable nested or flat PyTree containers | `NestedDict`, `FlattedDict`, `PrettyList`, `flat_mapping`, `nest_mapping` | `flat_mapping` uses tuple paths, not dotted strings. |
 
 ## Managing collections with `DictManager`
 

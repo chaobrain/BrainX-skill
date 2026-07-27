@@ -19,14 +19,42 @@ Subclass `brainpy.state.Projection` only when the concrete projections cannot ex
 
 ## Alignment decision
 
-| Condition | Use | State and result |
-|---|---|---|
-| Exponential-family linear synapse with many sources converging on a target | `AlignPostProj` or `align_post_projection` | Stores exact synaptic State on the postsynaptic dimension, with memory proportional to `N_post`. |
-| Nonlinear receptor kinetics | `align_pre_projection` | Stores exact synaptic State on the presynaptic dimension when outgoing synapses share parameters per source. |
-| One source population fans out to several targets | `align_pre_projection` | Reuses presynaptic traces across targets, with memory proportional to `N_pre`. |
-| Continuous input needs communication and output conversion but no synapse dynamics | `CurrentProj` | Applies `comm`, then `out`, and deposits current into `post`. |
-| An event should produce an instantaneous target increment | `DeltaProj` | Communicates the delta without temporal synapse State. |
-| Electrical coupling | `SymmetryGapJunction` or `AsymmetryGapJunction` | Computes reciprocal or directed gap-junction current rather than a chemical synapse. |
+Choose alignment from synapse linearity and trace reuse; use a filter-free or electrical projection only when the connection does not require aligned chemical-synapse State.
+
+### Linear convergent fan-in
+
+Use this family for exponential-family linear synapses when many sources converge on a target and exact State should scale with the postsynaptic dimension.
+
+| API | Use when |
+|---|---|
+| `brainpy.state.AlignPostProj(*modules, comm=..., syn=..., out=..., post=..., label=None, delay=None)` | Use the direct push form when the caller supplies presynaptic events at update time; it stores exact synaptic State with memory proportional to `N_post`. |
+| `brainpy.state.align_post_projection(*spike_generator, comm=..., syn=..., out=..., post=..., stp=None)` | Use the builder form when presynaptic extraction or short-term plasticity belongs to projection construction. |
+
+### Nonlinear or reusable fan-out
+
+Use this family for nonlinear receptor kinetics or when one source population fans out to several targets and outgoing parameters are homogeneous per source.
+
+| API | Use when |
+|---|---|
+| `brainpy.state.align_pre_projection(*spike_generator, syn=..., comm=..., out=..., post=..., stp=None)` | Use when exact synaptic traces should live on and be reusable from the presynaptic dimension, with memory proportional to `N_pre`. |
+
+### Filter-free chemical projections
+
+Use this family when communication should deposit continuous current or an instantaneous event without temporal synapse dynamics.
+
+| API | Use when |
+|---|---|
+| `brainpy.state.CurrentProj(*prefetch, comm=..., out=..., post=..., delay=None)` | Use when continuous input requires communication and output conversion before current is deposited into `post`. |
+| `brainpy.state.DeltaProj(*prefetch, comm=..., post=..., label=None)` | Use when an event should produce an instantaneous target increment without temporal synapse State. |
+
+### Electrical coupling
+
+Use this family when voltage differences should drive reciprocal or directed gap-junction current rather than a chemical synapse.
+
+| API | Use when |
+|---|---|
+| `brainpy.state.SymmetryGapJunction(couples, states, conn, weight, param_type=brainstate.ParamState)` | Use when the same conductance applies reciprocally in both coupling directions. |
+| `brainpy.state.AsymmetryGapJunction(pre, pre_state, post, post_state, conn, weight, param_type=brainstate.ParamState)` | Use when the two coupling directions require distinct conductances. |
 
 AlignPre and AlignPost are exact only under their stated conditions. They change State ownership and memory, not the intended dynamics.
 
@@ -103,52 +131,13 @@ Use AlignPre only when synaptic parameters are homogeneous for the outgoing syna
 
 ## Delayed projections
 
-Use the projection's `delay=` argument when the spike or continuous signal is passed directly at update time:
-
-```python
-proj = brainpy.state.AlignPostProj(
-    comm=brainstate.nn.EventFixedProb(
-        n_pre,
-        n_post,
-        conn_num=0.1,
-        conn_weight=0.5 * u.mS,
-    ),
-    syn=brainpy.state.Expon.desc(n_post, tau=5.0 * u.ms),
-    out=brainpy.state.COBA.desc(E=0.0 * u.mV),
-    post=post,
-    delay=5.0 * u.ms,
-)
-
-proj(pre.get_spike() != 0.0)
-```
-
-`AlignPostProj` and `CurrentProj` accept a scalar time for one homogeneous delay or a `(N_pre,)` array for per-presynaptic axonal delays. Sub-`dt` delays are linearly interpolated. The delay buffer is sized during State initialization from the largest delay, so do not change `dt` afterward.
-
-Built-in neurons store membrane potential rather than a separate historical spike State. For the pull-based form, delay the prefetched voltage, reconstruct the spike from that delayed value, and call the projection without an explicit signal:
-
-```python
-proj = brainpy.state.AlignPostProj(
-    pre.prefetch("V").delay.at(5.0 * u.ms),
-    lambda voltage: pre.get_spike(voltage) != 0.0,
-    comm=brainstate.nn.EventFixedProb(
-        n_pre,
-        n_post,
-        conn_num=0.1,
-        conn_weight=0.5 * u.mS,
-    ),
-    syn=brainpy.state.Expon.desc(n_post, tau=5.0 * u.ms),
-    out=brainpy.state.COBA.desc(E=0.0 * u.mV),
-    post=post,
-)
-
-proj()
-```
-
-Reinitialize the containing Module graph before an independent run so delay buffers and neural State reset together.
+Choose projection alignment before adding a delay. Open `references/brainstate-dynamics/brain-dynamics-delay-protocol.md` when selecting direct `delay=` versus delayed prefetch, applying scalar or per-presynaptic delays, preserving the fixed-`dt` buffer invariant, or separating BrainPy projection delays from general BrainState delay buffers.
 
 ## Communication boundary
 
 Use `brainstate.nn.EventFixedProb` for the canonical probabilistic sparse-spike connection shown in BrainPy-State tutorials. Open `skills/brainevent/SKILL.md` when the decision involves `EventLinear`, fixed-number event connectivity, sparse formats, plasticity operators, custom kernels, or dense-to-event performance conversion.
+
+Open `references/scripts/103_COBA_2005.py` for a complete E/I COBA projection workflow. Open `references/scripts/109_fast_global_oscillation.py` when the projection uses `DeltaProj` with delayed recurrent input.
 
 ## Official sources
 

@@ -1,6 +1,11 @@
-# Brainstate parameter transforms and regularizers catalog
+# BrainState parameter transforms and regularizers catalog
 
-This is the exhaustive selection reference for `brainstate.nn` parameter transforms and regularizers. Open it only from `references/brainstate/parameter-constraints-regularization.md`, after that parent has established the operational `nn.Param` workflow. Return to the parent for `ParamState` versus `nn.Param`, `nn.Const`, forward computation, optimizer targeting, and loss integration.
+Use this reference only from
+`references/brainstate/parameter-constraints-regularization.md`, after that
+parent has established the operational `nn.Param` workflow. It is the exhaustive
+selection catalog for `brainstate.nn` parameter transforms and regularizers.
+Return to the parent for `ParamState` versus `nn.Param`, `nn.Const`, forward
+computation, optimizer targeting, and loss integration.
 
 These are parameter-value transforms, not execution transforms such as `brainstate.transform.jit`, `grad`, or `vmap`.
 

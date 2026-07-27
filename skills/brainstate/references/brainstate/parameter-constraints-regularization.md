@@ -1,8 +1,22 @@
-# Brainstate constrained and regularized parameters
+# BrainState constrained and regularized parameters
 
-Use this first-layer reference after `skills/brainstate/SKILL.md` has selected `brainstate.nn.Param` for a value that needs a valid-domain transform, a regularization penalty, a modeling prior, or fixed parameter-like storage. It owns the operational workflow and common patterns. Open `references/brainstate/parameter-transforms-regularizers-catalog.md` only when selecting an exact built-in transform or regularizer beyond the common choices shown here.
+Use this reference after `skills/brainstate/SKILL.md` has selected
+`brainstate.nn.Param` for a value that needs a valid-domain transform, a
+regularization penalty, a modeling prior, or fixed parameter-like storage. It
+owns the operational workflow and common patterns. Open
+`references/brainstate/parameter-transforms-regularizers-catalog.md` only when
+selecting an exact built-in transform or regularizer beyond the common choices
+shown here.
 
 Keep `brainstate.nn` parameter transforms separate from execution transforms such as `brainstate.transform.jit`, `grad`, and `vmap`.
+
+## Choose the parameter representation
+
+| Need | Use | Key constraint |
+|---|---|---|
+| An unconstrained trainable value | `ParamState` | Read and write `.value`; no transform or regularizer contract is attached. |
+| A constrained or regularized trainable value | `nn.Param` | Use `.value()` in model computation and update the underlying `.val` through the optimizer. |
+| A fixed value that belongs in the Module graph | `nn.Const` | It is excluded from `ParamState` collection, gradients, and optimizer updates. |
 
 ## Parameter contract
 

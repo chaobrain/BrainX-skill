@@ -1,6 +1,16 @@
-# Brainstate model interoperation and migration
+# BrainState model interoperation and migration
 
 Use this reference after the main BrainState skill when a task must move registered weighted layers between BrainState, Flax NNX, Flax Linen, or Equinox, or translate a PyTorch workflow into BrainState equivalents. It assumes the main skill's `State`, `Module`, parameter-collection, randomness, and state-aware transformation model; this file covers only interoperability and migration deltas.
+
+## Selection map
+
+| Need | Use | Key constraint |
+|---|---|---|
+| Convert one supported layer or `Sequential` stack | `brainstate.interop.from_*` or `to_*` | Check `supported_layers()` in the installed version and verify numerical output equivalence. |
+| Convert a spatial layer into BrainState | `from_nnx`, `from_linen`, or `from_equinox` with `sample_input` | The sample fixes shape and layout information needed for construction. |
+| Add a conversion for a custom layer | `LayerMapping` and `register_layer_mapping` | Implement and test both conversion directions. |
+| Port a PyTorch workflow | Translate parameters, gradient selection, optimizer ownership, and checkpoint paths separately | This is a semantic migration, not an automatic whole-model conversion. |
+| Convert branching, skip connections, or arbitrary custom forward code | Rebuild and validate manually | The automatic boundary is registered layers and supported `Sequential` structure. |
 
 ## Interop contract and api surface
 

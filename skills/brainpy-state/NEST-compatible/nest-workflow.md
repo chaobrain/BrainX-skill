@@ -1,450 +1,156 @@
 # NEST-Compatible Workflow
 
-## Purpose And Boundary
+## Purpose and boundary
 
-Use this workflow when the user wants to write, port, debug, explain, or organize BrainPy-State NEST-compatible models.
+Use this reference for the NEST-compatible `brainpy.state` path: create NEST-named neurons and devices, connect them with NEST-style rules and synapse specs, execute an explicit `Simulator`, inspect results, or port PyNEST code.
 
-This is the compatibility path for users coming from NEST or PyNEST. The NEST-compatible family is built around JAX reimplementations of NEST neuron, synapse, plasticity, and device models, preserving NEST parameter names, defaults, and unit conventions where possible.
+Canonical path:
 
-Keep the operational workflow explicit:
+`create Simulator -> create nodes and devices -> connect sources, populations, and recorders -> simulate -> read SimulationResult`
 
-```text
-Simulator -> create -> connect -> simulate -> read result
-```
+Keep this path separate from native BrainPy-State composition. Do not mix `Simulator` networks with native projection APIs such as `AlignPostProj`, `align_pre_projection`, or manual BrainState rollout loops. Open the routed NEST reference for model catalogs, plasticity, spatial networks, or parity details; use the parent BrainPy-State skill only for native models.
 
-Do not turn this file into a full model encyclopedia. Keep model libraries, API lists, divergence details, and long gallery examples as progressive-disclosure references when those references exist or are supplied by the user.
+## Underlying principle of the NEST-compatible path
 
-## P0 Concepts
+Use one explicit `Simulator` instead of PyNEST's global kernel; it owns creation, connectivity, rollout State, recording, and results. Preserve NEST names with BrainUnit quantities, while connection rules select edges, synapse specs define edge behavior, and source/observer roles determine device direction.
 
-- **Explicit Simulator, not global NEST kernel**
-  Source: https://brainx.chaobrain.com/brainpy-state/apis/nest-network.html
-  PyNEST often feels global, but the NEST-compatible BrainPy-State path is explicit. The `Simulator` owns created populations, devices, connections, recording setup, rollout state, and the resulting `SimulationResult`.
+### API structure
 
-```python
-import brainunit as u
-from brainpy import state as bp
-
-sim = bp.Simulator(dt=0.1 * u.ms)
-pop = sim.create(bp.iaf_psc_alpha, 100)
-res = sim.simulate(1000.0 * u.ms)
-```
-
-Use this rewrite first when porting from PyNEST:
-
-```text
-nest.SetKernelStatus({"resolution": dt})
-->
-sim = bp.Simulator(dt=dt * u.ms)
-```
-
-- **NEST model names, parameter names, and units**
-  Source: https://brainx.chaobrain.com/brainpy-state/nest-style/models.html
-  Use NEST-style model names directly from `brainpy.state`, and attach explicit `brainunit` units to parameters.
-
-```python
-params = dict(
-    C_m=250.0 * u.pF,
-    tau_m=20.0 * u.ms,
-    t_ref=2.0 * u.ms,
-    E_L=-70.0 * u.mV,
-    V_reset=-70.0 * u.mV,
-    V_th=-55.0 * u.mV,
-    I_e=0.0 * u.pA,
-)
-
-pop = sim.create(bp.iaf_psc_alpha, 100, params=params)
-```
-
-When the user asks for model physiology, keep the answer short and route to model-library material or upstream NEST semantics instead of reproducing a full model textbook.
-
-- **NodeView algebra**
-  Source: https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html
-  `sim.create(...)` returns a `NodeView`, not a raw array. Use NodeView concatenation and slicing for population composition.
-
-```python
-exc = sim.create(bp.iaf_psc_alpha, 800, params=params)
-inh = sim.create(bp.iaf_psc_alpha, 200, params=params)
-all_cells = exc + inh
-sample = exc[:50]
-
-sim.connect(exc, all_cells, rule=bp.fixed_indegree(80), weight=0.1 * u.pA)
-sim.connect(sample, sr)
-```
-
-- **NEST-style connection rule plus synapse spec**
-  Source: https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html
-  The NEST-style connect surface has two conceptual parts: a connection rule and a synapse spec.
-
-```python
-sim.connect(
-    exc,
-    exc + inh,
-    rule=bp.fixed_indegree(80),
-    weight=0.1 * u.pA,
-    delay=1.5 * u.ms,
-    seed=1,
-    comm="sparse",
-)
-```
-
-Common connection rules:
-
-- `bp.all_to_all`
-- `bp.one_to_one`
-- `bp.fixed_indegree(K)`
-- `bp.fixed_total_number(N)`
-- `bp.pairwise_bernoulli(p)`
-- `bp.explicit_edges(pre_idx, post_idx)`
-
-Use `synapse=...` when the connection model is not only static weight and delay:
-
-```python
-syn = bp.tsodyks2_synapse(...)
-proj = sim.connect(pre, post, synapse=syn, weight=..., delay=...)
-```
-
-- **Weight-unit exception for delta neurons**
-  Source: https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html
-  Most current-based postsynaptic-current examples use synaptic current weights in `pA`, but `iaf_psc_delta` uses an instantaneous membrane-voltage jump.
-
-```python
-pop = sim.create(bp.iaf_psc_delta, 100)
-sim.connect(pre, pop, weight=0.1 * u.mV, delay=1.5 * u.ms)
-```
-
-This is one of the most important porting traps: `iaf_psc_delta` weights are voltage in `mV`, not current in `pA`.
-
-- **Device connection direction**
-  Source: https://brainx.chaobrain.com/brainpy-state/nest-style/devices.html
-  Device direction is intentionally NEST-like and easy to get wrong.
-
-| Device type | Direction |
+| API family | Use |
 |---|---|
-| Current generator | `sim.connect(generator, neuron)` |
-| Spike generator or Poisson generator | `sim.connect(generator, neuron)` |
-| Spike recorder | `sim.connect(neuron, spike_recorder)` |
-| Voltmeter | `sim.connect(voltmeter, neuron)` |
-| Multimeter | `sim.connect(multimeter, neuron)` |
+| `brainpy.state.Simulator` | Own node creation, connection construction, simulation lifecycle, and result collection. |
+| `brainpy.state` NEST models | Select NEST-compatible neurons, synapses, plasticity rules, generators, recorders, and detectors by NEST-style name. |
+| `brainpy.state.network` | Inspect the underlying `Network`, `Builder`, `NodeView`, `SimulationResult`, projection, connection-rule, and `SynapseCollection` APIs. |
+| `brainpy.state.spatial` | Place populations in 2-D or 3-D space and construct distance-dependent kernels, masks, and connection rules. |
+| `brainunit` | Supply physical time, voltage, current, conductance, capacitance, rate, weight, and delay quantities. |
 
-Analog recorders are reversed because they observe the neuron rather than receive spikes from it.
+### 1. Create the simulator and nodes
 
-- **Current sources versus spike sources**
-  Source: https://brainx.chaobrain.com/brainpy-state/apis/nest-devices.html
-  Current generators inject current in `pA` through the neuron current ring buffer. Spike sources deliver delayed spike events.
+Create every population and device through one `Simulator`; each `create()` call returns a `NodeView` that preserves population identity while supporting concatenation and slicing.
 
-Current sources:
-
-- `bp.dc_generator`
-- `bp.ac_generator`
-- `bp.noise_generator`
-- `bp.step_current_generator`
-- `bp.step_rate_generator`
-
-Spike sources:
-
-- `bp.poisson_generator`
-- `bp.poisson_generator_ps`
-- `bp.inhomogeneous_poisson_generator`
-- `bp.sinusoidal_poisson_generator`
-- `bp.spike_generator`
-- `bp.spike_train_injector`
-- `bp.spike_dilutor`
-- `bp.mip_generator`
-- `bp.pulsepacket_generator`
-
-- **STDP state and parameter location**
-  Source: https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/stdp.html
-  Do not assume every NEST STDP parameter lives on the same object in BrainPy-State.
-
-Main rule:
-
-```text
-Parameter names may match, but parameter location may differ.
-```
-
-The canonical example is `tau_minus`: in NEST it is a neuron parameter, while in BrainPy-State it belongs on the synapse-spec side. Setting a parameter on the wrong object is a common STDP porting mistake.
-
-## Minimal General Workflow
-
-Use this skeleton before adding model-specific details.
+| API | Description |
+|---|---|
+| `bp.Simulator(dt=...)` | Use to start an independent NEST-compatible network; it owns the timestep, graph, rollout, and results. |
+| `sim.create(model, size=1, *, params=None, positions=None, **kwargs)` | Use for neurons and devices; it instantiates the selected NEST-compatible model and returns a `NodeView`. Pass a large parameter set with `params=dict(...)` or individual parameters as keywords. |
+| `left + right` | Use to concatenate `NodeView` objects while preserving their segment boundaries; the result can be passed to one `connect()` call. |
+| `view[slice]` | Use to select a subset of a single population for connectivity or recording without creating another population. |
 
 ```python
 import brainunit as u
 from brainpy import state as bp
 
 sim = bp.Simulator(dt=0.1 * u.ms)
-
-pop = sim.create(bp.iaf_psc_alpha, 100)
-noise = sim.create(bp.poisson_generator, rate=8000.0 * u.Hz)
-sr = sim.create(bp.spike_recorder)
-mm = sim.create(bp.multimeter, record_from=["V_m"], interval=0.1 * u.ms)
-
-sim.connect(noise, pop, weight=1.2 * u.pA, delay=1.5 * u.ms)
-sim.connect(pop, sr)
-sim.connect(mm, pop[:5])
-
-res = sim.simulate(1000.0 * u.ms)
-
-times = res.times
-spikes = res.spikes(sr)
-rate = res.rate(sr)
-vm = res.trace(mm, "V_m")
-```
-
-The important decisions are the explicit `Simulator`, NEST-style model creation, unitful parameters and weights, correct device direction, and result readback through `SimulationResult`.
-
-## Canonical Workflow Scripts
-
-### Run One Neuron
-
-Use this when the user needs the smallest complete model: create one neuron, record voltage, simulate, and read a trace.
-
-```python
-import brainunit as u
-from brainpy import state as bp
-
-sim = bp.Simulator(dt=0.1 * u.ms)
-
-params = dict(
-    C_m=250.0 * u.pF,
-    tau_m=20.0 * u.ms,
-    t_ref=2.0 * u.ms,
-    E_L=-70.0 * u.mV,
-    V_reset=-70.0 * u.mV,
-    V_th=-55.0 * u.mV,
-    I_e=400.0 * u.pA,
-)
-
-cell = sim.create(bp.iaf_psc_alpha, 1, params=params)
-mm = sim.create(bp.multimeter, record_from=["V_m"], interval=0.1 * u.ms)
-
-sim.connect(mm, cell)
-
-res = sim.simulate(200.0 * u.ms)
-vm = res.trace(mm, "V_m")
-times = res.times
-```
-
-Concepts taught: `Simulator`, model creation, unitful parameters, analog recorder direction, and `SimulationResult.trace`.
-
-### Build Populations And Devices
-
-Use this when the user needs populations, combined groups, slices, source devices, and recorder devices.
-
-```python
-import brainunit as u
-from brainpy import state as bp
-
-sim = bp.Simulator(dt=0.1 * u.ms)
-
-params = dict(
-    C_m=250.0 * u.pF,
-    tau_m=20.0 * u.ms,
-    t_ref=2.0 * u.ms,
-    E_L=-70.0 * u.mV,
-    V_reset=-70.0 * u.mV,
-    V_th=-55.0 * u.mV,
-    I_e=0.0 * u.pA,
-)
-
-exc = sim.create(bp.iaf_psc_alpha, 800, params=params)
-inh = sim.create(bp.iaf_psc_alpha, 200, params=params)
-all_cells = exc + inh
-sample = exc[:50]
-
-drive = sim.create(bp.poisson_generator, rate=8000.0 * u.Hz)
-sr = sim.create(bp.spike_recorder)
-mm = sim.create(bp.multimeter, record_from=["V_m"], interval=0.1 * u.ms)
-
-sim.connect(drive, all_cells, weight=1.2 * u.pA, delay=1.5 * u.ms)
-sim.connect(sample, sr)
-sim.connect(mm, sample[:5])
-```
-
-Concepts taught: `NodeView` algebra, population/device distinction, source devices, recorder devices, and NEST-style names and parameters.
-
-### Connect A Network
-
-Use this when the user needs a minimal E/I or Brunel-like network.
-
-```python
-import brainunit as u
-from brainpy import state as bp
-
-sim = bp.Simulator(dt=0.1 * u.ms)
-
-params = dict(
-    C_m=250.0 * u.pF,
-    tau_m=20.0 * u.ms,
-    t_ref=2.0 * u.ms,
-    E_L=-70.0 * u.mV,
-    V_reset=-70.0 * u.mV,
-    V_th=-55.0 * u.mV,
-    I_e=0.0 * u.pA,
-)
-
-exc = sim.create(bp.iaf_psc_alpha, 800, params=params)
-inh = sim.create(bp.iaf_psc_alpha, 200, params=params)
-all_cells = exc + inh
-
-drive = sim.create(bp.poisson_generator, rate=8000.0 * u.Hz)
-sr = sim.create(bp.spike_recorder)
-
-sim.connect(drive, all_cells, rule=bp.all_to_all, weight=1.2 * u.pA, delay=1.5 * u.ms)
-sim.connect(exc, all_cells, rule=bp.fixed_indegree(80), weight=0.1 * u.pA, delay=1.5 * u.ms, seed=1, comm="sparse")
-sim.connect(inh, all_cells, rule=bp.fixed_indegree(20), weight=-0.4 * u.pA, delay=1.5 * u.ms, seed=2, comm="sparse")
-sim.connect(exc[:100], sr)
-
-res = sim.simulate(1000.0 * u.ms)
-rate = res.rate(sr)
-spikes = res.spikes(sr)
-```
-
-Concepts taught: `all_to_all`, `fixed_indegree`, seeded random connectivity, sparse communication, signed weights, delay, population-level recording, and rate readback.
-
-### Record And Analyze
-
-Use this when the user asks about spike trains, firing rate, voltage traces, or basic readback.
-
-```python
-import brainunit as u
-from brainpy import state as bp
-
-sim = bp.Simulator(dt=0.1 * u.ms)
-
-pop = sim.create(
+neurons = sim.create(
     bp.iaf_psc_alpha,
-    10,
-    params=dict(I_e=350.0 * u.pA),
+    100,
+    params={"I_e": 350.0 * u.pA},
 )
-sr = sim.create(bp.spike_recorder)
-mm = sim.create(bp.multimeter, record_from=["V_m"], interval=0.1 * u.ms)
-
-sim.connect(pop, sr)
-sim.connect(mm, pop[:3])
-
-res = sim.simulate(500.0 * u.ms)
-
-times = res.times
-spikes = res.spikes(sr)
-rate = res.rate(sr)
-vm = res.trace(mm, "V_m")
+sample = neurons[:5]
 ```
 
-Concepts taught: spike-recorder direction, multimeter direction, `SimulationResult.spikes`, `SimulationResult.rate`, `SimulationResult.trace`, and `SimulationResult.times`.
+Open `references/model-library.md` when choosing a neuron family or exact NEST-compatible model name. Open `references/network-building.md` when using `Builder`, `Network`, multi-segment `NodeView` operations, or spatial placement.
 
-## Embedded Reference Map
+### 2. Connect populations and devices
 
-These six areas are compact lookups embedded in this parent file, not child Markdown routes. Do not create separate files for them as part of this architecture pass.
+Connect source to target with a connection rule plus a unitful synapse spec, and reverse the call only for analog recorders that observe a population.
 
-### Model Library
+| API | Description |
+|---|---|
+| `sim.connect(pre, post, *, rule=..., weight=..., delay=..., ...)` | Use to build a projection, attach a source device, or register a recorder tap; it returns projection handles for realized projections and `None` for recorder taps or current injectors. |
+| `bp.all_to_all` | Use when every source must connect to every target; this is the default generator fan-out rule. |
+| `bp.fixed_indegree(k)` | Use when every target must draw exactly `k` presynaptic edges; set `seed` for reproducible BrainPy-State wiring and `comm="sparse"` for large event fan-in. |
+| `synapse=bp.<synapse_model>(...)` | Use when the edge is plastic or needs behavior beyond static weight and delay; keep rule parameters on the synapse spec. |
+| `sim.connect(generator, neuron)` | Use for current and spike sources; generators drive their targets. |
+| `sim.connect(neuron, spike_recorder)` | Use to tap emitted spikes. |
+| `sim.connect(multimeter, neuron)` | Use for analog observation; `multimeter` follows NEST's reversed recorder direction. |
 
-Sources:
+```python
+drive = sim.create(bp.poisson_generator, rate=8000.0 * u.Hz, rng_seed=0)
+spike_recorder = sim.create(bp.spike_recorder)
+meter = sim.create(
+    bp.multimeter,
+    record_from=["V_m"],
+    interval=0.1 * u.ms,
+)
+
+sim.connect(
+    drive,
+    neurons,
+    rule=bp.all_to_all,
+    weight=10.0 * u.pA,
+    delay=1.0 * u.ms,
+)
+sim.connect(neurons, spike_recorder)
+sim.connect(meter, sample)
+```
+
+Open `references/synapse-and-connectivity.md` when selecting a static, special, STP, STDP, or voltage-based synapse; choosing a rule; or inspecting realized edges. Open `references/devices.md` when selecting a generator, recorder, detector, or result-readback method.
+
+### 3. Simulate and read results
+
+`simulate()` starts from freshly initialized State and returns one in-memory `SimulationResult` whose common time axis indexes spike and analog recordings.
+
+| API | Description |
+|---|---|
+| `sim.simulate(duration, *, dt=None)` | Use for an independent run from initialized State and time zero; it returns a `SimulationResult`. |
+| `result.times` | Use for the run's common `(n_steps,)` time axis. |
+| `result.spikes(recorder)` | Use for a spike recorder's `(n_steps, n_recorded)` spike matrix. |
+| `result.rate(recorder)` | Use for the mean firing rate in spikes per second over the recorded neurons. |
+| `result.trace(recorder, recordable)` | Use for a multimeter trace in the model State's natural unit; it raises `KeyError` when the recordable was not registered. |
+
+```python
+result = sim.simulate(100.0 * u.ms)
+
+spikes = result.spikes(spike_recorder)
+voltage = result.trace(meter, "V_m")
+rate = result.rate(spike_recorder)
+
+assert spikes.shape[0] == result.times.shape[0]
+assert voltage.shape[0] == result.times.shape[0]
+```
+
+Open `references/network-building.md` when continuing State across windows with `cont()`, resetting persistent rollout State, recording plastic weights, inspecting `SynapseCollection`, or selecting spatial primitives.
+
+## Reference routing
+
+Open only the smallest reference that owns the decision.
+
+| Reference | Open when |
+|---|---|
+| `references/model-library.md` | Selecting or identifying a NEST-compatible neuron family or exact model name, or locating its neuron API entry |
+| `references/synapse-and-connectivity.md` | Selecting static or special synapses, STP/STDP rules, connection rules, weight/delay specs, or realized-connectivity inspection |
+| `references/devices.md` | Selecting generators, recorders, detectors, source semantics, connection direction, or result readback |
+| `references/network-building.md` | Using `Builder`, `Network`, `Simulator`, `NodeView`, `SimulationResult`, `SynapseCollection`, projection classes, connection-rule helpers, or spatial networks |
+| `references/divergence-and-parity.md` | Porting NEST code, locating STDP parameters, explaining a mismatch, choosing trace versus distributional validation, or checking documented parity bands |
+| `references/integration-categories.md` | Determining how a model family is numerically updated and which validation category to consult next |
+
+## Full workflow scripts
+
+Use these standalone scripts when the canonical inline workflow is too small for the task. Keep the scripts separate from the Markdown references so their complete source remains directly runnable.
+
+| Script | Open when |
+|---|---|
+| `scripts/brunel_alpha.py` | Building an alpha-synapse Brunel network |
+| `scripts/brunel_delta.py` | Checking delta-synapse voltage-weight semantics in a Brunel network |
+| `scripts/brette_et_al_2007.py` | Reproducing the comparative network workflow from Brette et al. (2007) |
+| `scripts/synapsecollection.py` | Inspecting or manipulating realized synapses through `SynapseCollection` |
+| `scripts/evaluate_tsodyks2_synapse.py` | Evaluating short-term plasticity behavior against the Tsodyks2 protocol |
+| `scripts/clopath_synapse_spike_pairing.py` | Running the Clopath voltage-based plasticity spike-pairing protocol |
+| `scripts/spatial_gaussex.py` | Building spatial connectivity with a Gaussian distance-dependent rule |
+
+## Boundaries and common failures
+
+- Do not mix this workflow with native BrainPy-State projections or manual rollout code; keep the whole NEST-compatible graph under one `Simulator`.
+
+
+## Official sources
 
 - https://brainx.chaobrain.com/brainpy-state/nest-style/models.html
-- https://brainx.chaobrain.com/brainpy-state/apis/nest-neurons.html
-
-Purpose: model selection and neuron-model API lookup.
-
-### Synapse And Connectivity
-
-Sources:
-
-- https://brainx.chaobrain.com/brainpy-state/apis/nest-synapses.html
-- https://brainx.chaobrain.com/brainpy-state/apis/nest-plasticity.html
 - https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html
-
-Purpose: static synapses, special synapses, plasticity models, connection rules, synapse specs, and realized-connectivity inspection.
-
-### Devices
-
-Sources:
-
 - https://brainx.chaobrain.com/brainpy-state/nest-style/devices.html
-- https://brainx.chaobrain.com/brainpy-state/apis/nest-devices.html
-
-Purpose: generators, recorders, detectors, source-device semantics, recorder direction, and result readback.
-
-### Network Building
-
-Sources:
-
 - https://brainx.chaobrain.com/brainpy-state/nest-style/tutorials/03-connect-network.html
 - https://brainx.chaobrain.com/brainpy-state/apis/nest-network.html
-- https://brainx.chaobrain.com/brainpy-state/apis/nest-spatial.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/spatial.html
-
-Purpose: network builder API, simulator execution, `NodeView`, `SimulationResult`, `SynapseCollection`, projection classes, connection rules, and spatial network primitives.
-
-### Divergence And Parity
-
-Sources:
-
 - https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/index.html
 - https://brainx.chaobrain.com/brainpy-state/nest-style/validation-status.html
 - https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/stdp.html
-
-Purpose: porting differences, STDP parameter placement, recording conventions, stochastic parity, validation logic, and NEST mismatches.
-
-### Integration Categories
-
-Sources:
-
 - https://brainx.chaobrain.com/brainpy-state/nest-style/integration-categories.html
-
-Purpose: numerical and integration behavior by model family.
-
-## Selected Full-Script Inventory
-
-Sources:
-
-- https://brainx.chaobrain.com/brainpy-state/examples/nest-gallery.html
-- `brunel_alpha.py`: https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_alpha.py
-- `brunel_delta.py`: https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_delta.py
-- `brette_et_al_2007.py`: https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brette_et_al_2007.py
-- `synapsecollection.py`: https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/synapsecollection.py
-- `evaluate_tsodyks2_synapse.py`: https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/evaluate_tsodyks2_synapse.py
-- `clopath_synapse_spike_pairing.py`: https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/clopath_synapse_spike_pairing.py
-- `spatial_gaussex.py`: https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/spatial_gaussex.py
-
-These seven scripts are the complete selected NEST-compatible inventory for this branch, not the whole ported-script gallery. Do not add unselected gallery scripts unless the source plan is revised.
-
-## Common Mistakes -> Fix
-
-- Raw numbers without units -> attach `brainunit` units to times, voltages, capacitances, currents, rates, weights, and delays.
-- Treating `Simulator` like a global NEST kernel -> keep all `create`, `connect`, `simulate`, and readback calls tied to one `sim`.
-- Wrong analog recorder direction -> use `sim.connect(multimeter_or_voltmeter, neuron)`.
-- Wrong spike recorder direction -> use `sim.connect(neuron, spike_recorder)`.
-- Confusing current and spike sources -> current devices inject `pA`; spike sources deliver delayed spike events.
-- Using `pA` weight for `iaf_psc_delta` -> use `mV` for delta-neuron weights.
-- Forgetting NodeView algebra -> use `exc + inh` and `exc[:50]` instead of manually rebuilding populations.
-- Wrong connection rule -> verify `all_to_all`, `one_to_one`, `fixed_indegree`, `pairwise_bernoulli`, or `explicit_edges`.
-- Expecting stochastic sample identity -> compare stochastic drives and connectivity distributionally across seeds.
-- Copying STDP parameter locations blindly -> check where the learning state and rule parameters live before concluding the model is wrong.
-- Treating the model library as full physiology docs -> summarize the BrainPy-State API and route detailed equations to upstream NEST semantics.
-- Loading the whole script gallery -> use only selected representative scripts.
-
-## Default Answer Pattern
-
-When using this workflow:
-
-1. Identify whether the task is create, port, debug, analyze, or organize reference docs.
-2. Start from `Simulator -> create -> connect -> simulate -> read result`.
-3. Mention the relevant NEST-specific concept: explicit simulator, units, NodeView, connection rule plus synapse spec, delta-weight exception, device direction, current versus spike source, or STDP state location.
-4. Use only one reference area unless the task requires more.
-5. Use one representative full script when examples are needed.
-6. For mismatch or parity questions, check divergence material before giving a conclusion.
-
-## Load Strategy
-
-Start from this file for NEST-compatible tasks. Consult only the embedded lookup area that matches the request.
-
-| User need | Open or consult |
-|---|---|
-| Choose or identify a NEST-compatible neuron model | model-library material |
-| Understand synapse models, plasticity models, connection rules, weight or delay specs | synapse and connectivity material |
-| Use generators, recorders, detectors, current sources, or spike sources | device material |
-| Use Simulator, NodeView, SimulationResult, SynapseCollection, projections, connection-rule APIs, or spatial APIs | network-building material |
-| Port NEST code and resolve semantic mismatches | divergence material |
-| Understand numerical or integration behavior | integration-categories material |
-| Find representative official gallery scripts | full-script reference material |

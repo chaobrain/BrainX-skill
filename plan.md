@@ -437,7 +437,7 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 
 - Boundary: represent binary events and route them through dense, explicit sparse, generated, or fixed-degree connectivity.
 - Activate for `BinaryArray`, CSR/CSC/COO decisions, JIT connectivity, fixed fan-in/out, event plasticity, or custom event operators.
-- Primary path: classify event data → choose connectivity representation → construct → multiply → transform → validate shape/orientation.
+- Primary path: classify event data → choose connectivity representation → construct → multiply → optionally update stored weights → transform → validate shape/orientation.
 - Advanced branches: sparse formats, connectivity variants, plasticity, custom operators.
 
 #### Essential Concepts
@@ -467,7 +467,8 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 3. Explicit Sparse Connectivity: `CSR`
 4. Generated Random Connectivity: `JITCScalarR`
 5. Fixed Fan-Out Connectivity: `FixedNumPerPre`
-6. JAX Transform Pattern
+6. Event-Driven Synaptic Plasticity
+7. JAX Transform Pattern
 
 API tables enumerate the complete decision-relevant variations: COO construction,
 `CSR`, `CSC`, all six scalar/normal/uniform JITC row/column classes, both
@@ -483,23 +484,27 @@ brainevent/
 ├── JIT-connectivity-variants.md
 ├── Fixed-Connection-extension.md
 ├── synaptic-plasticity-modeling.md
-├── custom-operators.md
+├── custom-operators-cpu.md
+├── custom-operators-gpu.md
 └── scripts/
+    ├── coba_ei_teaching.py
     ├── 102_EI_net_1996.py
     └── 204_joglekar_2018_propagation.py
 ```
 
-All four required Markdown references are skill-local and already exist. Application-script selection and provenance live directly in the skill body.
+All five required Markdown references are skill-local and already exist. Application-script selection and provenance live directly in the skill body.
 
 | Canonical reference | Need | Crafting source |
 |---|---|---|
 | `skills/brainevent/references/sparse-formats.md` | COO construction, CSR/CSC storage, conversion and selection, plus the official two-layer sparse spiking-network practice | [Sparse matrices tutorial](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/02_sparse_matrices.html), [sparse-data API](https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html), [utilities API](https://brainx.chaobrain.com/brainevent/reference/apis/utilities.html) |
 | `skills/brainevent/references/connectivity-variants.md` | JITC distributions/orientations, current and deprecated fixed fan-in/out APIs, format choice, and the official large JITC and cortical fixed-degree applications | [JIT connectivity](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/03_jit_connectivity.html), [fixed connections](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/04_fixed_connections.html), [format guide](https://brainx.chaobrain.com/brainevent/how-to/data-structures/choosing-a-sparse-format.html), [sparse-data API](https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html), [utilities API](https://brainx.chaobrain.com/brainevent/reference/apis/utilities.html) |
 | `skills/brainevent/references/synaptic-plasticity.md` | Pre/post event updates, CSR/dense routing, STDP overlay, and the official adaptive self-learning network | [Plasticity tutorial](https://brainx.chaobrain.com/brainevent/tutorials/data-structures/05_synaptic_plasticity.html), [plasticity how-to](https://brainx.chaobrain.com/brainevent/how-to/data-structures/synaptic-plasticity.html), [operations API](https://brainx.chaobrain.com/brainevent/reference/apis/operations.html) |
-| `skills/brainevent/references/custom-operators.md` | Route to Numba, Numba CUDA, Warp, C++, or CUDA extension paths, with the official neuroscience CSR custom-kernel application | [Index](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/index.html), [Numba CPU](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/01_numba.html), [Numba CUDA](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/02_numba_cuda.html), [Warp](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/03_warp.html), [C++](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/04_cpp.html), [CUDA](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/05_cuda.html) |
+| `skills/brainevent/references/custom-operators-cpu.md` | Select and implement Numba CPU or raw C++ operators; define CPU registration and transformation rules; use the CPU argument ABI, compiler, cache, diagnostics, and verification workflows | [installation](https://brainx.chaobrain.com/brainevent/getting-started/installation.html), [Numba CPU](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/01_numba.html), [C++](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/04_cpp.html), [operator API](https://brainx.chaobrain.com/brainevent/reference/apis/operator.html), [`arg_spec`](https://brainx.chaobrain.com/brainevent/reference/kernels/arg-spec.html), [C++ API](https://brainx.chaobrain.com/brainevent/reference/kernels/cpp-api.html), [caching](https://brainx.chaobrain.com/brainevent/reference/kernels/caching.html) |
+| `skills/brainevent/references/custom-operators-gpu.md` | Select and implement Numba CUDA, Warp, raw CUDA, Pallas, Triton, or multi-backend GPU operators; define stream and GPU ABI rules; use compiler controls, cache, diagnostics, and verification workflows | [installation](https://brainx.chaobrain.com/brainevent/getting-started/installation.html), [Numba CUDA](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/02_numba_cuda.html), [Warp](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/03_warp.html), [CUDA](https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/05_cuda.html), [operator API](https://brainx.chaobrain.com/brainevent/reference/apis/operator.html), [`arg_spec`](https://brainx.chaobrain.com/brainevent/reference/kernels/arg-spec.html), [C++ API](https://brainx.chaobrain.com/brainevent/reference/kernels/cpp-api.html), [compiler options](https://brainx.chaobrain.com/brainevent/reference/kernels/compiler-options.html), [caching](https://brainx.chaobrain.com/brainevent/reference/kernels/caching.html) |
 
 #### Script References
 
+- `references/scripts/coba_ei_teaching.py`; local shared teaching example; integrates efficient BrainEvent `BinaryArray` communication over interchangeable fixed-degree, CSR, and dense storage with BrainPy `LIFRef`, `Expon`, and `COBA` dynamics in one compiled BrainState loop.
 - `references/scripts/102_EI_net_1996.py`; [source](https://raw.githubusercontent.com/chaobrain/brainpy.state/main/examples/brainpy_like/102_EI_net_1996.py); high-level E/I network; direct full-script reference.
 - `references/scripts/204_joglekar_2018_propagation.py`; [source](https://raw.githubusercontent.com/chaobrain/brainpy.state/main/examples/brainpy_like/204_joglekar_2018_propagation.py); delayed spikes, JIT connectivity, and area mapping; connectivity-variants branch.
 
@@ -663,12 +668,14 @@ The skill defines ten package references and routes to six shared Braintools ref
 7. Validate projection order, State reset, output shapes, units, spikes, and gradients.
 
 Minimal inline scripts: single-neuron rollout and two-population synapse/projection workflow.
+Shared complete teaching script: `skills/brainevent/references/scripts/coba_ei_teaching.py` shows how to retain BrainPy neuron and synapse dynamics while using BrainEvent for efficient event-driven communication over fixed-degree, CSR, or dense connectivity.
 
 #### Reference Routing
 
 ```text
 brainpy/
 ├── skills/brainevent/SKILL.md [shared skill]
+├── skills/brainevent/references/scripts/coba_ei_teaching.py [shared teaching script]
 ├── brainpy-neuron-library.md
 ├── brainpy-synapse-library.md
 ├── brainpy-synaptic-outputs.md
@@ -685,21 +692,22 @@ brainpy/
 │   └── braintools/surrogate-gradients.md [shared]
 ├── brainpy-readouts-and-inputs.md
 ├── NEST-compatible/
-│   └── nest-workflow.md
-│       ├── model-library.md
-│       ├── synapse-and-connectivity.md
-│       ├── devices.md
-│       ├── network-building.md
-│       ├── divergence-and-parity.md
-│       ├── integration-categories.md
-│       └── scripts/
-│           ├── brunel_alpha.py
-│           ├── brunel_delta.py
-│           ├── brette_et_al_2007.py
-│           ├── synapsecollection.py
-│           ├── evaluate_tsodyks2_synapse.py
-│           ├── clopath_synapse_spike_pairing.py
-│           └── spatial_gaussex.py
+│   ├── nest-workflow.md
+│   ├── references/
+│   │   ├── model-library.md
+│   │   ├── synapse-and-connectivity.md
+│   │   ├── devices.md
+│   │   ├── network-building.md
+│   │   ├── divergence-and-parity.md
+│   │   └── integration-categories.md
+│   └── scripts/
+│       ├── brunel_alpha.py
+│       ├── brunel_delta.py
+│       ├── brette_et_al_2007.py
+│       ├── synapsecollection.py
+│       ├── evaluate_tsodyks2_synapse.py
+│       ├── clopath_synapse_spike_pairing.py
+│       └── spatial_gaussex.py
 └── braintools/initializers.md [shared]
 ```
 
@@ -713,7 +721,7 @@ brainpy/
 | `skills/brainpy/references/brainpy-custom-models.md` | Custom Neuron/Synapse anatomy, ODE steps, and paper reproduction | [Paper-reproduction how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-reproduce-a-paper.html), [BrainPy gallery](https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html) |
 | `skills/brainpy/references/brainpy-training.md` | Differentiability, surrogate gradients, ParamState, BPTT, and checkpointed rollouts | [Differentiability concept](https://brainx.chaobrain.com/brainpy-state/concepts/differentiability.html), [train-an-SNN tutorial](https://brainx.chaobrain.com/brainpy-state/brainpy-style/tutorials/04-train-an-snn.html), [surrogate-gradient how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-surrogate-gradients.html), [checkpointing how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-long-rollouts-checkpoint.html) |
 | `skills/brainpy/references/brainpy-readouts-and-inputs.md` | Readout heads, spike/input generators, Poisson helpers, and encoders | [Readout API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-readouts.html), [readout how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-readouts.html), [input API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-inputs.html) |
-| `skills/brainstate/references/brainstate-dynamics/brain-dynamics-delay-protocol.md` | Delay APIs and buffer behavior | [delay tutorial](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html) |
+| `skills/brainpy-state/references/brainstate-dynamics/brain-dynamics-delay-protocol.md` | BrainPy projection delay integration through direct `delay=` or delayed prefetch; route general buffers and manual delayed State to BrainState | [BrainPy delays how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html), [AlignPost projection API](https://brainx.chaobrain.com/brainpy-state/apis/generated/brainpy.state.AlignPostProj.html), [BrainState delay protocol](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html) |
 | `skills/brainstate/references/brainstate-dynamics/brain-dynamics-event-driven-operators.md` | Sparse event operators and connectivity | [event-driven tutorial](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/03_event_driven_operators.html) |
 
 
@@ -721,33 +729,34 @@ brainpy/
 
 | Nested lookup area | Need | Crafting sources | Disposition |
 |---|---|---|---|
-| `Model Library.md` | Select NEST-compatible neurons and inspect neuron-model APIs | [Models](https://brainx.chaobrain.com/brainpy-state/nest-style/models.html), [neuron API](https://brainx.chaobrain.com/brainpy-state/apis/nest-neurons.html) | Keep as a compact area in `nest-workflow.md` |
-| `Synapse And Connectivity.md` | Static/special synapses, plasticity, connection rules, synapse specs, and realized connectivity | [synapse API](https://brainx.chaobrain.com/brainpy-state/apis/nest-synapses.html), [plasticity API](https://brainx.chaobrain.com/brainpy-state/apis/nest-plasticity.html), [connectivity](https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html) | Keep as a compact area in `nest-workflow.md` |
-| `Devices` | Generators, recorders, detectors, source semantics, direction, and result readback | [devices guide](https://brainx.chaobrain.com/brainpy-state/nest-style/devices.html), [device API](https://brainx.chaobrain.com/brainpy-state/apis/nest-devices.html) | Keep as a compact area in `nest-workflow.md` |
-| `Network Building.md` | `Simulator`, `NodeView`, `SimulationResult`, `SynapseCollection`, projection/connection APIs, and spatial primitives | [network tutorial](https://brainx.chaobrain.com/brainpy-state/nest-style/tutorials/03-connect-network.html), [network API](https://brainx.chaobrain.com/brainpy-state/apis/nest-network.html), [spatial API](https://brainx.chaobrain.com/brainpy-state/apis/nest-spatial.html), [spatial guide](https://brainx.chaobrain.com/brainpy-state/nest-style/spatial.html) | Keep as a compact area in `nest-workflow.md` |
-| `Divergence And Parity.md` | Porting differences, STDP parameter placement, recording/stochastic parity, validation, and NEST mismatches | [divergence index](https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/index.html), [validation status](https://brainx.chaobrain.com/brainpy-state/nest-style/validation-status.html), [STDP divergence](https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/stdp.html) | Keep as a compact area in `nest-workflow.md` |
-| `Integration Categories.md` | Numerical and integration behavior by NEST-compatible model family | [integration categories](https://brainx.chaobrain.com/brainpy-state/nest-style/integration-categories.html) | Keep as a compact area in `nest-workflow.md` |
+| `references/model-library.md` | Select NEST-compatible neurons and inspect neuron-model APIs | [Models](https://brainx.chaobrain.com/brainpy-state/nest-style/models.html), [neuron API](https://brainx.chaobrain.com/brainpy-state/apis/nest-neurons.html) | Route from `nest-workflow.md` as the model-selection reference |
+| `references/synapse-and-connectivity.md` | Static/special synapses, plasticity, connection rules, synapse specs, and realized connectivity | [synapse API](https://brainx.chaobrain.com/brainpy-state/apis/nest-synapses.html), [plasticity API](https://brainx.chaobrain.com/brainpy-state/apis/nest-plasticity.html), [connectivity](https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html) | Route from `nest-workflow.md` as the edge-behavior and connectivity reference |
+| `references/devices.md` | Generators, recorders, detectors, source semantics, direction, and result readback | [devices guide](https://brainx.chaobrain.com/brainpy-state/nest-style/devices.html), [device API](https://brainx.chaobrain.com/brainpy-state/apis/nest-devices.html) | Route from `nest-workflow.md` as the device-selection reference |
+| `references/network-building.md` | `Simulator`, `NodeView`, `SimulationResult`, `SynapseCollection`, projection/connection APIs, and spatial primitives | [network tutorial](https://brainx.chaobrain.com/brainpy-state/nest-style/tutorials/03-connect-network.html), [network API](https://brainx.chaobrain.com/brainpy-state/apis/nest-network.html), [spatial API](https://brainx.chaobrain.com/brainpy-state/apis/nest-spatial.html), [spatial guide](https://brainx.chaobrain.com/brainpy-state/nest-style/spatial.html) | Route from `nest-workflow.md` as the construction and spatial reference |
+| `references/divergence-and-parity.md` | Porting differences, STDP parameter placement, recording/stochastic parity, validation, and NEST mismatches | [divergence index](https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/index.html), [validation status](https://brainx.chaobrain.com/brainpy-state/nest-style/validation-status.html), [STDP divergence](https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/stdp.html) | Route from `nest-workflow.md` as the porting and validation reference |
+| `references/integration-categories.md` | Numerical and integration behavior by NEST-compatible model family | [integration categories](https://brainx.chaobrain.com/brainpy-state/nest-style/integration-categories.html) | Route from `nest-workflow.md` as the numerical-behavior reference |
 
 #### Script References
 
 Native scripts:
 
-- `103_COBA_2005.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/103_COBA_2005.py) — canonical E/I COBA network; projection branch.
-- `106_COBA_HH_2007.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/106_COBA_HH_2007.py) — custom HH network; custom-model branch.
-- `107_gamma_oscillation_1996.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/107_gamma_oscillation_1996.py) — custom neuron/synapse; custom-model branch.
-- `109_fast_global_oscillation.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/109_fast_global_oscillation.py) — `DeltaProj` and delay; projection branch.
-- `201_surrogate_grad_lif_fashion_mnist.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/201_surrogate_grad_lif_fashion_mnist.py) — real-data SNN training; training branch.
+- `skills/brainevent/references/scripts/coba_ei_teaching.py` — local shared teaching example — efficient BrainEvent communication incorporated into a complete BrainPy COBA E/I network; projection branch.
+- `skills/brainpy-state/references/scripts/103_COBA_2005.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/103_COBA_2005.py) — canonical E/I COBA network; projection branch.
+- `skills/brainpy-state/references/scripts/106_COBA_HH_2007.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/106_COBA_HH_2007.py) — custom HH network; custom-model branch.
+- `skills/brainpy-state/references/scripts/107_gamma_oscillation_1996.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/107_gamma_oscillation_1996.py) — custom neuron/synapse; custom-model branch.
+- `skills/brainpy-state/references/scripts/109_fast_global_oscillation.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/109_fast_global_oscillation.py) — `DeltaProj` and delay; projection branch.
+- `skills/brainpy-state/references/scripts/201_surrogate_grad_lif_fashion_mnist.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/201_surrogate_grad_lif_fashion_mnist.py) — real-data SNN training; training branch.
 - `references/brainstate-dynamics/scripts/training-snn.py` — [source](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html) — compact SNN training; training branch.
 
 NEST-compatible external scripts:
 
-- `brunel_alpha.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_alpha.py) — alpha-synapse Brunel network.
-- `brunel_delta.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_delta.py) — delta-synapse voltage-weight semantics.
-- `brette_et_al_2007.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brette_et_al_2007.py) — comparative network workflow.
-- `synapsecollection.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/synapsecollection.py) — synapse inspection/manipulation.
-- `evaluate_tsodyks2_synapse.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/evaluate_tsodyks2_synapse.py) — short-term plasticity parity.
-- `clopath_synapse_spike_pairing.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/clopath_synapse_spike_pairing.py) — plasticity protocol.
-- `spatial_gaussex.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/spatial_gaussex.py) — spatial connectivity.
+- `skills/brainpy-state/NEST-compatible/scripts/brunel_alpha.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_alpha.py) — alpha-synapse Brunel network.
+- `skills/brainpy-state/NEST-compatible/scripts/brunel_delta.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_delta.py) — delta-synapse voltage-weight semantics.
+- `skills/brainpy-state/NEST-compatible/scripts/brette_et_al_2007.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brette_et_al_2007.py) — comparative network workflow.
+- `skills/brainpy-state/NEST-compatible/scripts/synapsecollection.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/synapsecollection.py) — synapse inspection/manipulation.
+- `skills/brainpy-state/NEST-compatible/scripts/evaluate_tsodyks2_synapse.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/evaluate_tsodyks2_synapse.py) — short-term plasticity parity.
+- `skills/brainpy-state/NEST-compatible/scripts/clopath_synapse_spike_pairing.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/clopath_synapse_spike_pairing.py) — plasticity protocol.
+- `skills/brainpy-state/NEST-compatible/scripts/spatial_gaussex.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/spatial_gaussex.py) — spatial connectivity.
 
 Location for all NEST scripts: `NEST-compatible/nest-workflow.md` full-script branch.
 

@@ -1,6 +1,17 @@
-# Brainstate extension mechanisms
+# BrainState extension mechanisms
 
 Use this reference when a BrainState task needs reusable class behavior, reusable constructor presets, runtime-mode objects, or callbacks around State operations. It deliberately does not restate ordinary State or Module construction and update patterns.
+
+## Selection map
+
+| Need | Use | Key constraint |
+|---|---|---|
+| Add reusable behavior without owning construction | `mixin.Mixin` | Do not define a competing `__init__` in the mixin. |
+| Capture a reusable constructor preset | `ParamDesc` or `ParamDescriber` | Call the descriptor to create a fresh concrete object. |
+| Require all or any runtime types | `JointTypes` or `OneOfTypes` | These express intersection versus union checks. |
+| Centralize runtime execution semantics | `Mode` and its concrete mode types | Keep mode in runtime configuration rather than trainable State. |
+| Observe State reads or completed writes | `read` or `write_after` hooks | These hooks inspect only; they cannot transform or cancel the operation. |
+| Transform or reject a pending State write | `write_before` hook | Set `ctx.transformed_value` to replace the value or `ctx.cancel` to preserve the previous value and raise `HookCancellationError`. |
 
 ## Mixin system
 

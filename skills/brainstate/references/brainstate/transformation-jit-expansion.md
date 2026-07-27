@@ -1,4 +1,4 @@
-# Brainstate jit expansion
+# BrainState jit expansion
 
 Use this reference after the main BrainState skill's minimal state-aware JIT workflow. It covers supplemental write-back behavior, `JittedFunction` cache controls, static specialization, compilation boundaries, and the boundary where raw `jax.jit` remains appropriate. It does not repeat the basic forward-pass example.
 
@@ -6,6 +6,16 @@ Official sources:
 
 - https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html
 - https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+
+## Selection map
+
+| Need | Use | Key constraint |
+|---|---|---|
+| Compile a complete State-reading or State-writing operation | `brainstate.transform.jit` | Keep the boundary around a stable whole step so every State effect is tracked. |
+| Compile before the first normal invocation | `JittedFunction.compile(...)` | Supply representative argument shapes, dtypes, and static values. |
+| Drop cached traces | `JittedFunction.clear_cache()` | The next compatible call retraces and recompiles. |
+| Specialize Python control flow | `static_argnums` or `static_argnames` | Every distinct static value can create another compiled variant. |
+| Use raw `jax.jit` | Expose a pure array/PyTree boundary | Do not close over mutable BrainState State. |
 
 The examples share these imports:
 

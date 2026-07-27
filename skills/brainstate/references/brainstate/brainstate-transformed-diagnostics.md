@@ -1,6 +1,10 @@
-# Brainstate transformed diagnostics
+# BrainState transformed diagnostics
 
-Open this first-layer reference after `skills/brainstate/SKILL.md` when runtime values, state updates, or failures must be inspected from transformed BrainState code. The skill owns the core transformation model; this reference only adds diagnostics that execute after tracing or turn value-dependent failures into data or runtime exceptions.
+Use this reference after `skills/brainstate/SKILL.md` when runtime values, State
+updates, or failures must be inspected from transformed BrainState code. The
+skill owns the core transformation model; this reference only adds diagnostics
+that execute after tracing or turn value-dependent failures into data or
+runtime exceptions.
 
 ## Choose the diagnostic outcome
 
