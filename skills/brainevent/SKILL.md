@@ -1,6 +1,6 @@
 ---
 name: brainevent
-description: Use when representing binary spike events with BrainEvent, multiplying BinaryArray values through dense, CSR, CSC, JIT-generated, or fixed-degree connectivity, choosing among BrainEvent connectivity formats, applying event-driven plasticity, or routing custom operator work.
+description: BrainEvent is the event-driven communication and plasticity layer for BrainX spiking models. Use this skill to translate neural projections, synaptic efficacy, binary firing events, spike-driven postsynaptic input, fixed or probabilistic fan-in or fan-out, and activity-dependent weight changes into `BinaryArray`, dense, CSR, CSC, JITC, fixed-degree connectivity, and plasticity operators, or to route custom event operators.
 ---
 
 ## Purpose and boundary
@@ -9,7 +9,11 @@ Use BrainEvent to represent binary spikes and communicate them through dense, ex
 
 ## Underlying principle of BrainEvent
 
-`BinaryArray` marks boolean or 0/1 data for event-driven `spikes @ connectivity`, which processes active events through the selected dense-value, explicit-edge, generated, or fixed-degree representation; require `spikes.shape[-1] == connectivity.shape[0]`.
+`BinaryArray` represents neuron spikes as boolean or 0/1 data. In `spikes @ connectivity`, BrainEvent processes only active presynaptic spikes and accumulates their weighted contributions into postsynaptic input.
+
+Connectivity represents synaptic wiring. It states which presynaptic neurons project to which postsynaptic neurons; its weights state each synapse's sign and strength.
+
+Plasticity operators represent activity-dependent changes in synaptic strength.
 
 ## Represent and multiply binary events
 
