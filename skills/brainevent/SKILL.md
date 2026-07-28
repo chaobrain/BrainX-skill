@@ -13,7 +13,7 @@ Use BrainEvent to represent binary spikes and communicate them through dense, ex
 
 Connectivity represents synaptic wiring. It states which presynaptic neurons project to which postsynaptic neurons; its weights state each synapse's sign and strength.
 
-Plasticity operators represent activity-dependent changes in synaptic strength.
+Plasticity operators represent activity-dependent changes in synaptic strength. Pre- and postsynaptic spikes and spike traces update stored weights.
 
 ## Represent and multiply binary events
 
