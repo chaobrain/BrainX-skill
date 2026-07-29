@@ -230,7 +230,7 @@ Do not default to time averaging when the label depends on latency, precise timi
 
 - Open `references/projection-patterns.md` for communication, alignment, descriptor ownership, delays, short-term plasticity integration, direct input, and electrical coupling.
 - Open `references/training-variations.md` for surrogate choice, loss-facing readout structure, batch State, loop form, and checkpointing.
-- Open `NEST-compatible/nest-workflow.md` instead when the task uses NEST/PyNEST model names or `Simulator`; do not mix those component APIs into the native path.
+- Open `references/nest-compatible/nest-workflow.md` instead when the task uses NEST/PyNEST model names or `Simulator`; do not mix those component APIs into the native path.
 
 Official sources:
 

@@ -43,10 +43,14 @@ npx brainx-skill update
 ```
 
 
-## Install when the internet connection is low
+## When the internet connection is low
 
 ```bash
+# install
 npx --registry=https://registry.npmmirror.com brainx-skill install
+
+# update
+npx --registry=https://registry.npmmirror.com brainx-skill update
 ```
 
 ## Installation locations

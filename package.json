@@ -18,6 +18,8 @@
     "skills/brainunit/",
     "skills/brainstate/",
     "skills/brainevent/",
+    "skills/brainpy-state/",
+    "skills/brainx-general-guard/",
     "manifest.json",
     "README.md",
     "LICENSE"

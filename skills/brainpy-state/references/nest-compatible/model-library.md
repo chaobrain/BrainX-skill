@@ -191,8 +191,8 @@ population = sim.create(bp.iaf_psc_alpha, 100, params=parameters)
 - Choose a multisynapse variant when receptor ports or multiple time constants are part of the model; do not silently collapse channels.
 - Use `aeif_psc_delta_clopath` or `hh_psc_alpha_clopath` with `clopath_synapse`.
 - Use `pp_cond_exp_mc_urbanczik` with `urbanczik_synapse`.
-- Open `integration-categories.md` after selecting a family when numerical behavior matters.
-- Open `divergence-and-parity.md` before claiming parity for multi-compartment, stochastic, precise-spiking, plastic, or network-level behavior.
+- Open `references/nest-compatible/integration-categories.md` after selecting a family when numerical behavior matters.
+- Open `references/nest-compatible/divergence-and-parity.md` before claiming parity for multi-compartment, stochastic, precise-spiking, plastic, or network-level behavior.
 
 ## Official sources
 

@@ -48,7 +48,7 @@ neurons = sim.create(
 sample = neurons[:5]
 ```
 
-Open `references/model-library.md` when choosing a neuron family or exact NEST-compatible model name. Open `references/network-building.md` when using `Builder`, `Network`, multi-segment `NodeView` operations, or spatial placement.
+Open `references/nest-compatible/model-library.md` when choosing a neuron family or exact NEST-compatible model name. Open `references/nest-compatible/network-building.md` when using `Builder`, `Network`, multi-segment `NodeView` operations, or spatial placement.
 
 ### 2. Connect populations and devices
 
@@ -84,7 +84,7 @@ sim.connect(neurons, spike_recorder)
 sim.connect(meter, sample)
 ```
 
-Open `references/synapse-and-connectivity.md` when selecting a static, special, STP, STDP, or voltage-based synapse; choosing a rule; or inspecting realized edges. Open `references/devices.md` when selecting a generator, recorder, detector, or result-readback method.
+Open `references/nest-compatible/synapse-and-connectivity.md` when selecting a static, special, STP, STDP, or voltage-based synapse; choosing a rule; or inspecting realized edges. Open `references/nest-compatible/devices.md` when selecting a generator, recorder, detector, or result-readback method.
 
 ### 3. Simulate and read results
 
@@ -109,7 +109,7 @@ assert spikes.shape[0] == result.times.shape[0]
 assert voltage.shape[0] == result.times.shape[0]
 ```
 
-Open `references/network-building.md` when continuing State across windows with `cont()`, resetting persistent rollout State, recording plastic weights, inspecting `SynapseCollection`, or selecting spatial primitives.
+Open `references/nest-compatible/network-building.md` when continuing State across windows with `cont()`, resetting persistent rollout State, recording plastic weights, inspecting `SynapseCollection`, or selecting spatial primitives.
 
 ## Reference routing
 
@@ -117,12 +117,12 @@ Open only the smallest reference that owns the decision.
 
 | Reference | Open when |
 |---|---|
-| `references/model-library.md` | Selecting or identifying a NEST-compatible neuron family or exact model name, or locating its neuron API entry |
-| `references/synapse-and-connectivity.md` | Selecting static or special synapses, STP/STDP rules, connection rules, weight/delay specs, or realized-connectivity inspection |
-| `references/devices.md` | Selecting generators, recorders, detectors, source semantics, connection direction, or result readback |
-| `references/network-building.md` | Using `Builder`, `Network`, `Simulator`, `NodeView`, `SimulationResult`, `SynapseCollection`, projection classes, connection-rule helpers, or spatial networks |
-| `references/divergence-and-parity.md` | Porting NEST code, locating STDP parameters, explaining a mismatch, choosing trace versus distributional validation, or checking documented parity bands |
-| `references/integration-categories.md` | Determining how a model family is numerically updated and which validation category to consult next |
+| `references/nest-compatible/model-library.md` | Selecting or identifying a NEST-compatible neuron family or exact model name, or locating its neuron API entry |
+| `references/nest-compatible/synapse-and-connectivity.md` | Selecting static or special synapses, STP/STDP rules, connection rules, weight/delay specs, or realized-connectivity inspection |
+| `references/nest-compatible/devices.md` | Selecting generators, recorders, detectors, source semantics, connection direction, or result readback |
+| `references/nest-compatible/network-building.md` | Using `Builder`, `Network`, `Simulator`, `NodeView`, `SimulationResult`, `SynapseCollection`, projection classes, connection-rule helpers, or spatial networks |
+| `references/nest-compatible/divergence-and-parity.md` | Porting NEST code, locating STDP parameters, explaining a mismatch, choosing trace versus distributional validation, or checking documented parity bands |
+| `references/nest-compatible/integration-categories.md` | Determining how a model family is numerically updated and which validation category to consult next |
 
 ## Full workflow scripts
 
@@ -130,13 +130,13 @@ Use these standalone scripts when the canonical inline workflow is too small for
 
 | Script | Open when |
 |---|---|
-| `scripts/brunel_alpha.py` | Building an alpha-synapse Brunel network |
-| `scripts/brunel_delta.py` | Checking delta-synapse voltage-weight semantics in a Brunel network |
-| `scripts/brette_et_al_2007.py` | Reproducing the comparative network workflow from Brette et al. (2007) |
-| `scripts/synapsecollection.py` | Inspecting or manipulating realized synapses through `SynapseCollection` |
-| `scripts/evaluate_tsodyks2_synapse.py` | Evaluating short-term plasticity behavior against the Tsodyks2 protocol |
-| `scripts/clopath_synapse_spike_pairing.py` | Running the Clopath voltage-based plasticity spike-pairing protocol |
-| `scripts/spatial_gaussex.py` | Building spatial connectivity with a Gaussian distance-dependent rule |
+| `references/nest-compatible/scripts/brunel_alpha.py` | Building an alpha-synapse Brunel network |
+| `references/nest-compatible/scripts/brunel_delta.py` | Checking delta-synapse voltage-weight semantics in a Brunel network |
+| `references/nest-compatible/scripts/brette_et_al_2007.py` | Reproducing the comparative network workflow from Brette et al. (2007) |
+| `references/nest-compatible/scripts/synapsecollection.py` | Inspecting or manipulating realized synapses through `SynapseCollection` |
+| `references/nest-compatible/scripts/evaluate_tsodyks2_synapse.py` | Evaluating short-term plasticity behavior against the Tsodyks2 protocol |
+| `references/nest-compatible/scripts/clopath_synapse_spike_pairing.py` | Running the Clopath voltage-based plasticity spike-pairing protocol |
+| `references/nest-compatible/scripts/spatial_gaussex.py` | Building spatial connectivity with a Gaussian distance-dependent rule |
 
 ## Boundaries and common failures
 

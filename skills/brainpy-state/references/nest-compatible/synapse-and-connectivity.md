@@ -1,6 +1,6 @@
 # Synapse and connectivity
 
-Use this reference when selecting a NEST-compatible synapse or plasticity rule, choosing canonical connectivity, constructing a unitful synapse spec, or reading and writing realized edges. Use `network-building.md` for the complete connection-rule and projection-class map, and `divergence-and-parity.md` for STDP parameter relocation and numerical bands.
+Use this reference when selecting a NEST-compatible synapse or plasticity rule, choosing canonical connectivity, constructing a unitful synapse spec, or reading and writing realized edges. Use `references/nest-compatible/network-building.md` for the complete connection-rule and projection-class map, and `references/nest-compatible/divergence-and-parity.md` for STDP parameter relocation and numerical bands.
 
 ## Connection rules
 
@@ -13,7 +13,7 @@ Use these APIs to choose realized source-target pairs; choose the synapse spec s
 | `bp.fixed_indegree(k)` | Use when every target must receive exactly `k` randomly drawn presynaptic edges. |
 | `bp.spatial.spatial_pairwise_bernoulli(p, mask=None, allow_autapses=True)` | Use when connection probability or eligibility depends on distance. |
 
-Set `seed` to reproduce a BrainPy-State random realization. For `fixed_indegree`, set `allow_multapses=True` to match NEST's default and use `comm="sparse"` for large event fan-in. Open `network-building.md` for the remaining rule constructors.
+Set `seed` to reproduce a BrainPy-State random realization. For `fixed_indegree`, set `allow_multapses=True` to match NEST's default and use `comm="sparse"` for large event fan-in. Open `references/nest-compatible/network-building.md` for the remaining rule constructors.
 
 ## Static synapses
 
@@ -67,7 +67,7 @@ Use these constructors for long-term weight changes driven by pre-post spike tim
 | `bp.stdp_triplet_synapse(*args, **kwargs)` | Use triplet STDP. |
 | `bp.stdp_dopamine_synapse(*args, **kwargs)` | Use dopamine-modulated STDP with a `volume_transmitter`. |
 
-Open `divergence-and-parity.md` before porting `tau_minus`, Clopath parameters, dopamine State, or a nearest-neighbour pairing rule.
+Open `references/nest-compatible/divergence-and-parity.md` before porting `tau_minus`, Clopath parameters, dopamine State, or a nearest-neighbour pairing rule.
 
 ## Voltage-based and specialized learning
 
