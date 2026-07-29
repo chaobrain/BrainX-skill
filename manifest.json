@@ -4,6 +4,8 @@
     "brainx-install",
     "brainunit",
     "brainstate",
-    "brainevent"
+    "brainevent",
+    "brainpy-state",
+    "brainx-general-guard"
   ]
 }
