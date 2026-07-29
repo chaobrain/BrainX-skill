@@ -167,7 +167,7 @@ For Nevergrad, total objective evaluations are approximately `n_iter * n_sample`
 
 ## Routing and official sources
 
-Return to `references/training-variations.md` for surrogate gradients, readout reduction, batch State, BPTT loop choice, checkpointing, and gradient diagnosis. Use `references/brainstate-dynamics/scripts/training-snn.py` for a complete BrainPy training script.
+Open `references/braintools/surrogate.md` for surrogate gradients, `references/braintools/metric.md` for loss and reduction choice, and `references/braintools/brainstate-control-flow-patterns.md` for BPTT loop choice and checkpointing. Use `references/scripts/training-snn.py` for a complete BrainPy training script.
 
 Official sources:
 

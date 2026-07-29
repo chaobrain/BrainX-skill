@@ -39,6 +39,7 @@ A neuron call advances one `dt`, mutates its registered dynamical State, and exp
 | `brainstate.nn.init_all_states(model, batch_size=...)` | Use after construction and before a rollout; it allocates or resets dynamical State across the Module graph and adds a leading batch dimension when `batch_size` is given. |
 | `brainstate.environ.context(dt=..., t=...)` | Use around the rollout for `dt` and inside the step for `t`; dynamics read the active values and the context restores previous settings on exit. |
 | `brainstate.environ.get_dt()` | Use when constructing the time axis or a numerical update from the active simulation step; it returns `dt` and raises when no value is set. |
+| `u.math.mean(current, axis=...)` | Use when a drive current should be the arithmetic mean of unit-aware samples; it reduces the selected axes and returns a quantity with the input current unit. |
 | `brainstate.transform.for_loop(step, *xs)` | Use by default for a multi-step rollout whose model State carries hidden variables; it slices leading input axes and stacks returned monitors. |
 | `neuron.get_spike()` | Use after advancing or when wiring the previous completed step into a projection; it returns the neuron's current spike output without advancing State. |
 
@@ -75,7 +76,7 @@ assert voltages.shape == (2000, 1)
 assert spikes.shape == (2000, 1)
 ```
 
-Open `references/component-selection.md` when choosing among documented neuron, input, synapse, output, plasticity, or readout variants, for the decision boundary and complete category list. Open `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md` when the rollout needs explicit carry, branching, or checkpointed control flow.
+Open `references/array-creation.md` when constructing specialized unit-aware current ranges, grids, filled arrays, template-shaped arrays, or matrix patterns. Open `references/component-selection.md` when choosing among documented neuron, input, synapse, output, plasticity, or readout variants, for the decision boundary and complete category list. Open `references/braintools/brainstate-control-flow-patterns.md` when the rollout needs explicit carry, branching, or checkpointed control flow.
 
 ### 2. Compose synapses and projections
 
@@ -191,18 +192,30 @@ def train_step():
 loss = train_step()
 ```
 
-Open `references/training-variations.md` when choosing a surrogate API, readout form, batched State layout, BPTT loop, or checkpointing policy. Use `references/brainstate-dynamics/scripts/training-snn.py` for a complete runnable training script and `references/braintools-optimizer.md` when optimizer or scheduler selection goes beyond Adam.
+Choose training variations from the first-level references below; open only the smallest reference that owns the decision. Use `references/scripts/training-snn.py` when a complete runnable training workflow is required.
 
 ## Reference routing
 
 Open only the smallest reference that owns the decision.
 
+### Training variation choices
+
 | Reference | Open when |
 |---|---|
+| `references/braintools/data-preprocessing.md` | Encoding continuous values, events, or temporal features into time-major spike inputs before training |
+| `references/braintools/parameter-initializer.md` | Selecting unit-aware parameter, weight, delay, variance-scaling, orthogonal, or spatial initialization |
+| `references/braintools/surrogate.md` | Selecting a surrogate API style or gradient family, implementing a custom surrogate, or validating its gradient |
+| `references/braintools/metric.md` | Selecting the training loss or evaluation metric and validating its input orientation, units, and reduction |
+| `references/braintools/optimizer.md` | Selecting an optimizer, learning-rate scheduler, Optax bridge, SciPy optimizer, or Nevergrad optimizer |
+| `references/braintools/brainstate-control-flow-patterns.md` | Choosing `for_loop` versus `scan`, adding transformed branches, or checkpointing a long differentiated rollout |
+
+### Modeling variation choices
+
+| Reference | Open when |
+|---|---|
+| `references/array-creation.md` | Constructing specialized unit-aware current ranges, grids, filled arrays, template-shaped arrays, or matrix patterns |
 | `references/component-selection.md` | Choosing a neuron, synapse, synaptic output, plasticity model, input generator, or readout from the documented native API families |
 | `references/projection-patterns.md` | Choosing projection alignment or API form, adding delays or short-term plasticity, using direct/delta projections, or adding gap junctions |
-| `references/braintools-optimizer.md` | Selecting an optimizer, learning-rate scheduler, Optax bridge, SciPy optimizer, or Nevergrad optimizer |
-| `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md` | Selecting explicit-carry scans, branches, or checkpointed simulation control flow beyond the canonical `for_loop` |
 | `references/nest-compatible/nest-workflow.md` | Using NEST/PyNEST model names, `Simulator`, devices, connection rules, spatial networks, parity, porting, or the bundled NEST-compatible full scripts |
 | `skills/brainevent/SKILL.md` | Selecting sparse event representations, connectivity formats, event operators, plasticity kernels, or custom kernels |
 | `skills/brainevent/references/scripts/coba_ei_teaching.py` | Learning how to incorporate efficient BrainEvent communication into a complete BrainPy COBA E/I network while preserving BrainPy dynamics and BrainState execution |
@@ -215,6 +228,5 @@ Open only the smallest reference that owns the decision.
 | `references/scripts/106_COBA_HH_2007.py` | Reproducing a conductance-based E/I network with a custom Hodgkin-Huxley neuron |
 | `references/scripts/107_gamma_oscillation_1996.py` | Reproducing gamma oscillations with custom neuron and synapse dynamics |
 | `references/scripts/109_fast_global_oscillation.py` | Needing a complete `DeltaProj` network with delayed recurrent input |
-| `references/training-variations.md` | Selecting surrogate class/function forms, readout structure, BPTT loops, batching, or checkpoint granularity |
 | `references/scripts/201_surrogate_grad_lif_fashion_mnist.py` | Needing a complete real-data surrogate-gradient LIF training workflow |
-| `references/brainstate-dynamics/scripts/training-snn.py` | Needing a complete runnable surrogate-gradient SNN training workflow |
+| `references/scripts/training-snn.py` | Needing a complete runnable surrogate-gradient SNN training workflow |

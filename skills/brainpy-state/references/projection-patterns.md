@@ -78,31 +78,7 @@ proj = brainpy.state.AlignPostProj(
 proj(pre.get_spike() != 0.0)
 ```
 
-Use the functional builder when presynaptic extraction or short-term plasticity belongs to projection construction:
-
-```python
-proj = brainpy.state.align_post_projection(
-    pre.prefetch("V"),
-    lambda voltage: pre.get_spike(voltage) != 0.0,
-    comm=brainstate.nn.EventFixedProb(
-        n_pre,
-        n_post,
-        conn_num=0.1,
-        conn_weight=0.5 * u.mS,
-    ),
-    syn=brainpy.state.Expon.desc(n_post, tau=5.0 * u.ms),
-    out=brainpy.state.COBA.desc(E=0.0 * u.mV),
-    post=post,
-    stp=brainpy.state.STP.desc(
-        n_pre,
-        U=0.2,
-        tau_f=1500.0 * u.ms,
-        tau_d=200.0 * u.ms,
-    ),
-)
-
-proj()
-```
+Use the functional builder when presynaptic extraction or short-term plasticity belongs to projection construction. Open `references/component-selection.md` for the canonical `stp=STP.desc(...)` composition.
 
 Do not pass both a pulled presynaptic source and a second explicit spike array at update time.
 
@@ -131,7 +107,7 @@ Use AlignPre only when synaptic parameters are homogeneous for the outgoing syna
 
 ## Delayed projections
 
-Choose projection alignment before adding a delay. Open `references/brainstate-dynamics/brain-dynamics-delay-protocol.md` when selecting direct `delay=` versus delayed prefetch, applying scalar or per-presynaptic delays, preserving the fixed-`dt` buffer invariant, or separating BrainPy projection delays from general BrainState delay buffers.
+Choose projection alignment before adding a delay. Open `references/brain-dynamics-delay-protocol.md` when selecting direct `delay=` versus delayed prefetch, applying scalar or per-presynaptic delays, preserving the fixed-`dt` buffer invariant, or separating BrainPy projection delays from general BrainState delay buffers.
 
 ## Communication boundary
 

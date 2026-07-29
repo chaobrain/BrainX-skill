@@ -393,7 +393,7 @@ The remaining nested reference has one inbound route:
 | `references/brainstate/transformation-jit-expansion.md` | Controlling State write-back, raw `jax.jit` boundaries, caching, or static specialization |
 | `references/brainstate/transformation-grad-expansion.md` | Controlling `argnums`, `grad_states`, gradient returns, higher-order transforms, or fitting overlays |
 | `references/brainstate/transformation-vmap-expansion.md` | Mapping or sharing State across batches, ensembles, or sweeps, including State axes and randomness |
-| `references/brainstate/brainstate-control-flow-patterns.md` | Choosing transform-safe loops, scans, branches, or checkpointed control flow |
+| `references/brainstate/brainstate-control-flow-patterns.md` | Choosing transform-safe loops, scans, branches, checkpointed control flow, or memory-efficient training through long rollouts |
 | `references/brainstate/brainstate-transformed-diagnostics.md` | Debugging runtime values or enforcing invariants inside transformed stateful code |
 
 Do not route to dynamics or solver references from this skill; they are outside the architecture supplied for this BrainState skill.

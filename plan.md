@@ -219,7 +219,7 @@ brainstate/
 | `skills/brainstate/references/brainstate/transformation-jit-expansion.md` | State write-back, cache/static args, compilation boundaries, and benchmarking | [JIT and Compilation](https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html), [Transformation Essentials](https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html) |
 | `skills/brainstate/references/brainstate/transformation-grad-expansion.md` | Autodiff, differentiable simulation, fitting, `return_value`, and `has_aux` | [Autodiff](https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html), [Training and Metrics](https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html), [Parameters tutorial](https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html) |
 | `skills/brainstate/references/brainstate/transformation-vmap-expansion.md` | State axes, ensembles, sweeps, stochastic vmap, `in_states`, and `out_states` | [Vectorization](https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vectorization.html), [Randomness](https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html) |
-| `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md` | Transform-safe loops, scans, branches, and checkpointed control flow | [Control Flow](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html) |
+| `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md` | Transform-safe loops, scans, branches, checkpointed control flow, and memory-efficient training through long rollouts | [Control Flow](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html), [long-rollout checkpoint training](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-long-rollouts-checkpoint.html) |
 | `skills/brainstate/references/brainstate/brainstate-transformed-diagnostics.md` | Runtime checks, transformed debugging, NaN/Inf checks, callbacks, traced values, and recurring failure diagnosis | [Error Handling and Checks](https://brainx.chaobrain.com/brainstate/tutorials/transformations/06_error_handling_and_checks.html), [Debugging](https://brainx.chaobrain.com/brainstate/tutorials/transformations/07_debugging.html) |
 | `skills/brainx-acceleration-audit/SKILL.md` | Performance, batching, sweeps, memory, GPU, and multi-device work | The acceleration skill plus the transform sources it conditionally opens |
 
@@ -273,15 +273,16 @@ Location: Direct skill script.
 
 #### Purpose
 
-- Boundary: own BrainCell single-compartment HH-style modeling and route morphology-based work through one multicompartment parent.
-- Activate for channels, ions, current clamp, solver selection, FI curves, ablation, adaptation, rebound, or point-neuron populations.
-- Primary path: choose unit convention → construct `SingleCompartment` → attach ions/channels → initialize → inject current → transform over time → validate.
-- Advanced branches: area scaling, mixed-ion adaptation, channel/ion libraries, solver catalog, multicompartment morphology.
+- Boundary: own BrainCell cellular biophysics at both supported scales: single-compartment `SingleCompartment` models and morphology-based multicompartment `Cell` models. Route connections and training across cells to BrainPy-State.
+- Activate for channels, ions, current clamp, solver selection, point-neuron populations, morphology, CVs, `paint`, `place`, clamps, probes, and spatially distributed cellular mechanisms.
+- Primary path: choose `SingleCompartment` or `Cell` → declare mechanisms and geometry → initialize → simulate → validate voltage, spikes, or probe traces.
+- Advanced branches: area scaling, mixed-ion adaptation, channel/ion libraries, solver catalog, and detailed multicompartment morphology.
 
 #### Essential Concepts
 
 - `SingleCompartment` versus morphology-based `Cell`
 - braincell.SingleCompartment collapses the morphology and discretization layers — there is exactly one compartment — and exposes ions and channels added imperatively in __init__.
+- braincell.Cell uses the full declaration-to-runtime pipeline: wrap a Morphology, discretize it into CVs, paint density mechanisms onto regions, place point mechanisms at locsets, initialize, and run for probe traces.
 
 ```text
 Direct model declaration
@@ -343,16 +344,13 @@ Updated states and spike detection
 - must use brainstate.environ.context() to define the simulation environment
 - must use brainstate.transform.for_loop(step, times) for timestamped steps
 - Brainunit math functions that help with array: u.math.arange u.math.squeeze(), recommend to use
-- When to use `MixIons` 
+- When to use `MixIons`
 - Solver choice.
 
-#### Canonical Workflow Scripts Included in the Skill
+#### Canonical workflows included in the root skill
 
-1. Minimal HH Cell
-2. Run A Current-Clamp Simulation
-3. Using Existing Ions And Channels
-4. Vectorized FI Curve Pattern
-5. Channel Ablation Pattern
+1. Build and run a single-compartment HH cell.
+2. Build and run a morphology-based multicompartment cell.
 
 #### Reference Routing
 
@@ -360,49 +358,54 @@ Updated states and spike detection
 braincell/
 ├── skills/brainevent/SKILL.md [shared skill]
 ├── area-scaled-hh-pattern.md
-├── mixions-for-adaptation.md [shared]
-├── ion-library.md
-├── channel-library.md
-├── solver-library-with-effects.md
-├── array-creation.md
 ├── braincell-custom-ion-channel-authoring.md
-└── multicompartment-cell-workflow.md
-    ├── braincell-manual-morphology-construction.md
-    ├── morphology-io-loading-validation.md
-    ├── topology-building-and-visualization.md
-    │   └── common-failures-index.md [shared diagnostic]
-    ├── probe-reference.md
-    │   └── common-failures-index.md [shared diagnostic]
-    ├── filter-function-library.md
-    └── cv-policy-reference.md
+├── channel-library.md
+├── ion-library.md
+├── mixions-for-adaptation.md
+├── solver-library-with-effects.md
+├── multicompartment/
+│   ├── multicompartment-cell-workflow.md
+│   ├── braincell-manual-morphology-construction.md
+│   ├── cv-policy-reference.md
+│   ├── filter-function-library.md
+│   ├── morphology-io-loading-validation.md
+│   ├── probe-reference.md
+│   └── topology-building-and-visualization.md
+└── scripts/
+    ├── calcium_channel_gating.py
+    ├── cell_multicompartment_reference.py
+    ├── channel_ablation.py
+    ├── fi_curve.py
+    ├── hh_neuron_basics.py
+    ├── spike_frequency_adaptation.py
+    ├── t_current_rebound.py
+    └── thalamic_neurons.py
 ```
 
-##### First-layer references
+##### First-hop references
 
 | Canonical reference | Need | Crafting source |
 |---|---|---|
-| `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md` | morphology route: `Cell`, CVs, `paint`, `place`, clamps, probes, and geometry-dependent simulation | [Cell tutorial](https://brainx.chaobrain.com/braincell/tutorials/cell.html), then the nested sources below |
 | `skills/braincell/references/area-scaled-hh-pattern.md` | Density-to-total conversion for capacitance, conductance, current, and cell area | The current skill's density-versus-total P0 rule and the existing extracted area-scaled pattern |
-| `skills/braincell/references/mixions-for-adaptation.md` | First-layer adaptation, AHP/KCa, rebound, dynamic calcium, and `MixIons(k, ca)` composition | [Adaptation](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html), [T-current rebound](https://brainx.chaobrain.com/braincell/examples/t_current_rebound.html), and [thalamic neurons](https://brainx.chaobrain.com/braincell/examples/thalamic_neurons.html) |
-| `skills/braincell/references/libraries/ion-library.md` | Built-in ions, fixed/InitNernst/dynamic choices, concentration dynamics, and `MixIons` | [Ions and channels concept](https://brainx.chaobrain.com/braincell/concepts/ions_channels.html), [ion tutorial](https://brainx.chaobrain.com/braincell/tutorials/ion.html), [ion API](https://brainx.chaobrain.com/braincell/apis/braincell.ion.html) |
-| `skills/braincell/references/libraries/channel-library.md` | Built-in channel families, dependencies, selection, and the built-in-versus-custom boundary | [Ions and channels concept](https://brainx.chaobrain.com/braincell/concepts/ions_channels.html), [channel tutorial](https://brainx.chaobrain.com/braincell/tutorials/channel.html), [channel API](https://brainx.chaobrain.com/braincell/apis/braincell.channel.html), [channel ablation](https://brainx.chaobrain.com/braincell/examples/channel_ablation.html), [adaptation example](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html) |
-| `skills/braincell/references/libraries/solver-library-with-effects.md` | Integrator names, cable/composite solvers, speed/accuracy guidance, and numerical effects | [Integration concept](https://brainx.chaobrain.com/braincell/concepts/integration.html), [integration API](https://brainx.chaobrain.com/braincell/apis/integration.html), [solver guide](https://brainx.chaobrain.com/braincell/integration/solvers.html), [advanced integration](https://brainx.chaobrain.com/braincell/integration/advanced.html), [integration-methods example](https://brainx.chaobrain.com/braincell/examples/integration_methods.html) |
-| `skills/braincell/references/braincell/braincell-custom-ion-channel-authoring.md` | Custom channel/ion extension after built-ins are exhausted | [Ions and channels concept](https://brainx.chaobrain.com/braincell/concepts/ions_channels.html), [channel tutorial](https://brainx.chaobrain.com/braincell/tutorials/channel.html), [extending BrainCell](https://brainx.chaobrain.com/braincell/developer/extending.html) |
+| `skills/braincell/references/braincell-custom-ion-channel-authoring.md` | Custom channel/ion extension after built-ins are exhausted | [Ions and channels concept](https://brainx.chaobrain.com/braincell/concepts/ions_channels.html), [channel tutorial](https://brainx.chaobrain.com/braincell/tutorials/channel.html), [extending BrainCell](https://brainx.chaobrain.com/braincell/developer/extending.html) |
+| `skills/braincell/references/channel-library.md` | Built-in channel families, dependencies, selection, and the built-in-versus-custom boundary | [Ions and channels concept](https://brainx.chaobrain.com/braincell/concepts/ions_channels.html), [channel tutorial](https://brainx.chaobrain.com/braincell/tutorials/channel.html), [channel API](https://brainx.chaobrain.com/braincell/apis/braincell.channel.html), [channel ablation](https://brainx.chaobrain.com/braincell/examples/channel_ablation.html), and [adaptation example](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html) |
+| `skills/braincell/references/ion-library.md` | Built-in ions, fixed/InitNernst/dynamic choices, concentration dynamics, and `MixIons` | [Ions and channels concept](https://brainx.chaobrain.com/braincell/concepts/ions_channels.html), [ion tutorial](https://brainx.chaobrain.com/braincell/tutorials/ion.html), and [ion API](https://brainx.chaobrain.com/braincell/apis/braincell.ion.html) |
+| `skills/braincell/references/mixions-for-adaptation.md` | Adaptation, AHP/KCa, rebound, dynamic calcium, and `MixIons(k, ca)` composition | [Adaptation](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html), [T-current rebound](https://brainx.chaobrain.com/braincell/examples/t_current_rebound.html), and [thalamic neurons](https://brainx.chaobrain.com/braincell/examples/thalamic_neurons.html) |
+| `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md` | Complete advanced morphology path and exclusive selector for CV, filter, probe, topology, IO, and manual-construction references | [Cell tutorial](https://brainx.chaobrain.com/braincell/tutorials/cell.html) |
+| `skills/braincell/references/solver-library-with-effects.md` | Integrator names, cable/composite solvers, speed/accuracy guidance, and numerical effects | [Integration concept](https://brainx.chaobrain.com/braincell/concepts/integration.html), [integration API](https://brainx.chaobrain.com/braincell/apis/integration.html), [solver guide](https://brainx.chaobrain.com/braincell/integration/solvers.html), [advanced integration](https://brainx.chaobrain.com/braincell/integration/advanced.html), and [integration-methods example](https://brainx.chaobrain.com/braincell/examples/integration_methods.html) |
 
-##### Nested reference tree under the multicompartment parent
+##### Multicompartment-exclusive references
 
-| Exclusive nested child | Need | Crafting source |
+Open these only from `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`.
+
+| Exclusive reference | Need | Crafting source |
 |---|---|---|
-| `skills/braincell/references/braincell/morphology-io-loading-validation.md` | SWC, ASC, NeuroML2, NeuroMorpho, validation, checkpoints, and post-load checks | [IO overview](https://brainx.chaobrain.com/braincell/file_formats/overview.html), [SWC](https://brainx.chaobrain.com/braincell/file_formats/swc.html), [ASC](https://brainx.chaobrain.com/braincell/file_formats/asc.html), [NeuroML2](https://brainx.chaobrain.com/braincell/file_formats/neuroml2.html), [NeuroMorpho](https://brainx.chaobrain.com/braincell/file_formats/neuromorpho.html), [checkpointing](https://brainx.chaobrain.com/braincell/file_formats/checkpointing.html), [morphology concept](https://brainx.chaobrain.com/braincell/concepts/morphology.html) |
-| `skills/braincell/references/braincell/topology-building-and-visualization.md` | NodeTree, CV/branch/node views, placement verification, and visualization | [Visualization tutorial](https://brainx.chaobrain.com/braincell/tutorials/vis.html), [filter tutorial](https://brainx.chaobrain.com/braincell/tutorials/filter.html) |
-| `skills/braincell/references/braincell/probe-reference.md` | State, mechanism, current, and trace probes plus missing-trace checks | [Mechanisms tutorial](https://brainx.chaobrain.com/braincell/tutorials/mech.html) |
-| `skills/braincell/references/libraries/filter-function-library.md` | Region and locset selection for mechanisms, probes, and clamps | [Filter tutorial](https://brainx.chaobrain.com/braincell/tutorials/filter.html), [filter API](https://brainx.chaobrain.com/braincell/apis/filter.html), and the existing selector blueprint |
-| `skills/braincell/references/libraries/cv-policy-reference.md` | CV policy selection, discretization effects, resolution, and cost | [Discretization concept](https://brainx.chaobrain.com/braincell/concepts/discretization.html), [Cell tutorial](https://brainx.chaobrain.com/braincell/tutorials/cell.html), and the existing CV blueprint |
-| `skills/braincell/references/braincell/braincell-manual-morphology-construction.md` | Manual topology creation before `Cell` construction | Morphology concept, Cell tutorial, and existing blueprint |
-
-`skills/braincell/references/diagnostics/common-failures-index.md` remains a second-level diagnostic child, selected only after the manual-morphology, topology, or probe child identifies a failure mode. It is not an eighth first-level child.
-
-The multicompartment parent may reuse first-layer ion, channel, solver, and MixIons references; reuse does not make those files exclusive children.
+| `skills/braincell/references/multicompartment/braincell-manual-morphology-construction.md` | Manual topology creation before `Cell` construction | [Morphology concept](https://brainx.chaobrain.com/braincell/concepts/morphology.html), [morphology tutorial](https://brainx.chaobrain.com/braincell/tutorials/morphology.html), and [Cell tutorial](https://brainx.chaobrain.com/braincell/tutorials/cell.html) |
+| `skills/braincell/references/multicompartment/cv-policy-reference.md` | CV policy selection, discretization effects, resolution, and cost | [Discretization concept](https://brainx.chaobrain.com/braincell/concepts/discretization.html) and [Cell tutorial](https://brainx.chaobrain.com/braincell/tutorials/cell.html) |
+| `skills/braincell/references/multicompartment/filter-function-library.md` | Region and locset selection for mechanisms, probes, and clamps | [Filter tutorial](https://brainx.chaobrain.com/braincell/tutorials/filter.html) and [filter API](https://brainx.chaobrain.com/braincell/apis/filter.html) |
+| `skills/braincell/references/multicompartment/morphology-io-loading-validation.md` | SWC, ASC, NeuroML2, NeuroMorpho, validation, checkpoints, and post-load checks | [IO overview](https://brainx.chaobrain.com/braincell/file_formats/overview.html), [SWC](https://brainx.chaobrain.com/braincell/file_formats/swc.html), [ASC](https://brainx.chaobrain.com/braincell/file_formats/asc.html), [NeuroML2](https://brainx.chaobrain.com/braincell/file_formats/neuroml2.html), [NeuroMorpho](https://brainx.chaobrain.com/braincell/file_formats/neuromorpho.html), [checkpointing](https://brainx.chaobrain.com/braincell/file_formats/checkpointing.html), and [morphology concept](https://brainx.chaobrain.com/braincell/concepts/morphology.html) |
+| `skills/braincell/references/multicompartment/probe-reference.md` | State, mechanism, current, and trace probes plus missing-trace checks | [Mechanisms tutorial](https://brainx.chaobrain.com/braincell/tutorials/mech.html) |
+| `skills/braincell/references/multicompartment/topology-building-and-visualization.md` | NodeTree, CV/branch/node views, placement verification, and visualization | [Visualization tutorial](https://brainx.chaobrain.com/braincell/tutorials/vis.html) and [filter tutorial](https://brainx.chaobrain.com/braincell/tutorials/filter.html) |
 
 #### Script References
 
@@ -413,7 +416,7 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 - `references/scripts/spike_frequency_adaptation.py`; [source](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html); dynamic calcium/KCa/AHP; `mixions-for-adaptation.md`.
 - `references/scripts/t_current_rebound.py`; [source](https://brainx.chaobrain.com/braincell/examples/t_current_rebound.html); post-inhibitory rebound; `mixions-for-adaptation.md`.
 - `references/scripts/thalamic_neurons.py`; [source](https://brainx.chaobrain.com/braincell/examples/thalamic_neurons.html); advanced phenotype comparison; `mixions-for-adaptation.md`.
-- `references/multicompartment/references/cell_multicompartment_reference.py`; [source](https://brainx.chaobrain.com/braincell/tutorials/cell.html); morphology-to-simulation workflow; multicompartment parent.
+- `references/scripts/cell_multicompartment_reference.py`; [source](https://brainx.chaobrain.com/braincell/tutorials/cell.html); morphology-to-simulation workflow.
 
 #### Boundaries and Common Failures
 
@@ -424,7 +427,7 @@ The multicompartment parent may reuse first-layer ion, channel, solver, and MixI
 - Leak placed inside an ion container.
 - `MixIons` order inconsistent with `root_type`.
 - Custom channel authored before checking built-ins.
-- Morphology leaf opened before the multicompartment parent.
+- Multicompartment leaf opened before the workflow reference.
 - `paint` and `place` semantics reversed.
 - CV policy, locset, probe key, or topology selected blindly.
 - Network construction incorrectly kept in BrainCell instead of BrainPy.
@@ -648,13 +651,15 @@ The skill defines ten package references and routes to six shared Braintools ref
 - Projection-before-post update order.
 #### Simulation techniques
 - Random Sampling rand, randn, randint, is useful for parameter intialization , basic random seed knowledge.
-- use the braintool.init apis to initialize states and parameters for reusable initialization policy, use braintool encoders when need to converts experimental/data input into spikes
+- Use the local Braintools preprocessing reference when experimental or continuous data must become spike inputs.
+- Use the local Braintools initializer reference for reusable, unit-aware parameter and State initialization policies.
 - must use brainstate.environ.context() to define the simulation environment
-- must use brainstate.transform.for_loop(step, times) for timestamped steps, `for_loop`/`scan` rollout and checkpointing.
-- Brainunit math functions that help with array: u.math.arange u.math.squeeze(), recommend to use
+- Use the local BrainState control-flow reference to choose `for_loop` or `scan`, transformed branches, and checkpointing.
+- Use the local BrainUnit array-creation reference for specialized unit-aware current arrays; use `u.math.mean()` when reducing current samples because it preserves the input current unit.
 
 ### Training
 - Surrogate gradients and `ParamState` selection.
+- The first-level `braintools/` reference folder owns six variation choices: data preprocessing, parameter initialization, surrogate gradient, metric or loss, optimizer, and State-aware control flow.
 
 #### Canonical Workflow Scripts Included in the Skill
 
@@ -672,25 +677,21 @@ Shared complete teaching script: `skills/brainevent/references/scripts/coba_ei_t
 #### Reference Routing
 
 ```text
-brainpy/
+brainpy-state/references/
 ├── skills/brainevent/SKILL.md [shared skill]
 ├── skills/brainevent/references/scripts/coba_ei_teaching.py [shared teaching script]
-├── brainpy-neuron-library.md
-├── brainpy-synapse-library.md
-├── brainpy-synaptic-outputs.md
-├── brainpy-projection-library.md
-├── brain-dynamics-delay-protocol.md
-├── brain-event-driven-operators.md
 ├── array-creation.md
-├── brainpy-plasticity.md
-├── brainpy-custom-models.md
-├── brainpy-training.md
-│   ├── braintools/encoders.md [shared]
-│   ├── braintools/metrics.md [shared]
-│   ├── braintools/optimizers.md [shared]
-│   └── braintools/surrogate-gradients.md [shared]
-├── brainpy-readouts-and-inputs.md
-├── references/nest-compatible/
+├── component-selection.md
+├── projection-patterns.md
+├── brain-dynamics-delay-protocol.md
+├── braintools/
+│   ├── data-preprocessing.md
+│   ├── metric.md
+│   ├── optimizer.md
+│   ├── parameter-initializer.md
+│   ├── surrogate.md
+│   └── brainstate-control-flow-patterns.md
+├── nest-compatible/
 │   ├── nest-workflow.md
 │   ├── model-library.md
 │   ├── synapse-and-connectivity.md
@@ -706,21 +707,22 @@ brainpy/
 │       ├── evaluate_tsodyks2_synapse.py
 │       ├── clopath_synapse_spike_pairing.py
 │       └── spatial_gaussex.py
-└── braintools/initializers.md [shared]
+└── scripts/
+    ├── 201_surrogate_grad_lif_fashion_mnist.py
+    └── training-snn.py
 ```
 
 | Canonical reference | Need | Crafting source |
 |---|---|---|
-| `skills/brainpy/references/brainpy-neuron-library.md` | Neuron catalog and selection | [Neuron API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-neurons.html), [neuron-selection how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-choose-neuron.html) |
-| `skills/brainpy/references/brainpy-synapse-library.md` | Synaptic dynamics and receptor filters | [Synapse API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synapses.html) |
-| `skills/brainpy/references/brainpy-synaptic-outputs.md` | COBA/CUBA/MgBlock outputs and current-versus-conductance selection | [Synaptic-output API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synouts.html), [COBA/CUBA how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-coba-cuba-synapses.html) |
-| `skills/brainpy/references/brainpy-projection-library.md` | Projection APIs, AlignPre/AlignPost, direct-current projections, gap junctions, and delays | [Projection API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-projections.html), [alignment concept](https://brainx.chaobrain.com/brainpy-state/concepts/alignpre-alignpost.html), [delays how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html) |
-| `skills/brainpy/references/brainpy-plasticity.md` | STP/STD state and projection integration | [Plasticity API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-plasticity.html), [short-term-plasticity how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-short-term-plasticity.html) |
-| `skills/brainpy/references/brainpy-custom-models.md` | Custom Neuron/Synapse anatomy, ODE steps, and paper reproduction | [Paper-reproduction how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-reproduce-a-paper.html), [BrainPy gallery](https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html) |
-| `skills/brainpy/references/brainpy-training.md` | Differentiability, surrogate gradients, ParamState, BPTT, and checkpointed rollouts | [Differentiability concept](https://brainx.chaobrain.com/brainpy-state/concepts/differentiability.html), [train-an-SNN tutorial](https://brainx.chaobrain.com/brainpy-state/brainpy-style/tutorials/04-train-an-snn.html), [surrogate-gradient how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-surrogate-gradients.html), [checkpointing how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-long-rollouts-checkpoint.html) |
-| `skills/brainpy/references/brainpy-readouts-and-inputs.md` | Readout heads, spike/input generators, Poisson helpers, and encoders | [Readout API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-readouts.html), [readout how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-readouts.html), [input API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-inputs.html) |
-| `skills/brainpy-state/references/brainstate-dynamics/brain-dynamics-delay-protocol.md` | BrainPy projection delay integration through direct `delay=` or delayed prefetch; route general buffers and manual delayed State to BrainState | [BrainPy delays how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html), [AlignPost projection API](https://brainx.chaobrain.com/brainpy-state/apis/generated/brainpy.state.AlignPostProj.html), [BrainState delay protocol](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html) |
-| `skills/brainstate/references/brainstate-dynamics/brain-dynamics-event-driven-operators.md` | Sparse event operators and connectivity | [event-driven tutorial](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/03_event_driven_operators.html) |
+| `skills/brainpy-state/references/array-creation.md` | Construct specialized unit-aware current ranges, grids, filled arrays, template-shaped arrays, matrix patterns, index arrays, or tree-shaped arrays | [Array Creation](https://brainunit.readthedocs.io/unit_operations/array_creation.html), with array constructors from the [brainunit.math API](https://brainunit.readthedocs.io/apis/brainunit.math.html) |
+| `skills/brainpy-state/references/component-selection.md` | Select native neurons, inputs, synapses, synaptic outputs, projection semantics, short-term plasticity, and readouts before constructing the Module graph | [Neuron API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-neurons.html), [neuron-selection how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-choose-neuron.html), [input API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-inputs.html), [synapse API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synapses.html), [synaptic-output API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synouts.html), [COBA/CUBA how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-coba-cuba-synapses.html), [projection API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-projections.html), [alignment concept](https://brainx.chaobrain.com/brainpy-state/concepts/alignpre-alignpost.html), [plasticity API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-plasticity.html), [short-term-plasticity how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-short-term-plasticity.html), [readout API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-readouts.html), [readout how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-readouts.html), [delays how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html) |
+| `skills/brainpy-state/references/braintools/data-preprocessing.md` | Select spike encoders and preprocess continuous values, events, or temporal features into time-major training inputs | [Braintools API](https://brainx.chaobrain.com/braintools/apis/braintools.html) |
+| `skills/brainpy-state/references/braintools/metric.md` | Select a training loss or evaluation metric and validate input orientation, units, labels, and reduction | [Metric API](https://brainx.chaobrain.com/braintools/apis/metric.html) |
+| `skills/brainpy-state/references/braintools/optimizer.md` | Select gradient optimizers, learning-rate schedules, Optax bridges, and standalone search wrappers | [Optimization API](https://brainx.chaobrain.com/braintools/apis/optim.html), [optimization tutorials](https://brainx.chaobrain.com/braintools/optim/index.html) |
+| `skills/brainpy-state/references/braintools/parameter-initializer.md` | Select unit-aware distribution, variance-scaling, orthogonal, composite, or distance-modulated parameter initialization | [Initializer API](https://brainx.chaobrain.com/braintools/apis/init.html) |
+| `skills/brainpy-state/references/braintools/surrogate.md` | Select functional, reusable, or custom surrogate gradients and validate their backward signal | [Surrogate-gradient API](https://brainx.chaobrain.com/braintools/apis/surrogate.html) |
+| `skills/brainpy-state/references/braintools/brainstate-control-flow-patterns.md` | Select State-aware loops, explicit carry, transformed branches, and checkpointed long-rollout BPTT | [Control Flow](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html), [checkpointing how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-long-rollouts-checkpoint.html) |
+| `skills/brainpy-state/references/brain-dynamics-delay-protocol.md` | BrainPy projection delay integration through direct `delay=` or delayed prefetch; route general buffers and manual delayed State to BrainState | [BrainPy delays how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html), [AlignPost projection API](https://brainx.chaobrain.com/brainpy-state/apis/generated/brainpy.state.AlignPostProj.html), [BrainState delay protocol](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html) |
 
 
 ##### NEST-compatible nested branch
@@ -744,7 +746,7 @@ Native scripts:
 - `skills/brainpy-state/references/scripts/107_gamma_oscillation_1996.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/107_gamma_oscillation_1996.py) — custom neuron/synapse; custom-model branch.
 - `skills/brainpy-state/references/scripts/109_fast_global_oscillation.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/109_fast_global_oscillation.py) — `DeltaProj` and delay; projection branch.
 - `skills/brainpy-state/references/scripts/201_surrogate_grad_lif_fashion_mnist.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/201_surrogate_grad_lif_fashion_mnist.py) — real-data SNN training; training branch.
-- `references/brainstate-dynamics/scripts/training-snn.py` — [source](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html) — compact SNN training; training branch.
+- `skills/brainpy-state/references/scripts/training-snn.py` — [source](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html) — compact SNN training; training branch.
 
 NEST-compatible external scripts:
 

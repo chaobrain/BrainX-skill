@@ -198,7 +198,35 @@ Use this family only when recent presynaptic activity must modulate transmission
 | `brainpy.state.STP(in_size, name=None, U=..., tau_f=..., tau_d=...)` | Use when both facilitation and depression are required; it tracks utilization `u` and available resources `x`. |
 | `brainpy.state.STD(in_size, name=None, tau=..., U=...)` | Use when depression is required without facilitation; it tracks available resources `x`. |
 
-Call the model directly to inspect its dynamics. Use `.desc(...)` through the functional projection builder's `stp=` argument when plasticity belongs inside projection construction. Open `references/projection-patterns.md` for that composition and update order.
+Use `.desc(...)` through a functional projection builder's `stp=` argument when plasticity belongs inside projection construction:
+
+```python
+# Given constructed pre/post populations:
+projection = brainpy.state.align_post_projection(
+    pre.prefetch("V"),
+    lambda voltage: pre.get_spike(voltage) != 0.0,
+    comm=brainstate.nn.EventFixedProb(
+        n_pre,
+        n_post,
+        conn_num=0.1,
+        conn_weight=0.5 * u.mS,
+    ),
+    syn=brainpy.state.Expon.desc(n_post, tau=5.0 * u.ms),
+    out=brainpy.state.COBA.desc(E=0.0 * u.mV),
+    post=post,
+    stp=brainpy.state.STP.desc(
+        n_pre,
+        U=0.2,
+        tau_f=1500.0 * u.ms,
+        tau_d=200.0 * u.ms,
+    ),
+)
+
+# Inside update(), before post integrates the current step:
+projection()
+```
+
+Use `STP.desc(n_pre, ...)` for plasticity State aligned to the presynaptic population. Call `STP(...)` or `STD(...)` directly only when inspecting their isolated dynamics. Open `references/projection-patterns.md` for projection selection and update order.
 
 ## Readouts and temporal reduction
 
@@ -224,18 +252,19 @@ Use this family when the loss should consume a statistic of per-step spikes or l
 | `u.math.mean(outputs, axis=0)` | Use when the target depends on a time-normalized rate or average logit. |
 | `outputs[-1]` | Use when the decision is encoded at the final valid step; handle padding and masking before selecting it. |
 
-Do not default to time averaging when the label depends on latency, precise timing, or the final State. Open `references/training-variations.md` when the readout participates in surrogate-gradient training, batching, or long-rollout BPTT.
+Do not default to time averaging when the label depends on latency, precise timing, or the final State. Open `references/braintools/metric.md` when selecting the loss-facing reduction, `references/braintools/surrogate.md` when gradients cross a spiking nonlinearity, and `references/braintools/brainstate-control-flow-patterns.md` for long-rollout BPTT.
 
 ## Boundaries and official sources
 
 - Open `references/projection-patterns.md` for communication, alignment, descriptor ownership, delays, short-term plasticity integration, direct input, and electrical coupling.
-- Open `references/training-variations.md` for surrogate choice, loss-facing readout structure, batch State, loop form, and checkpointing.
+- Open `references/braintools/metric.md` for loss and reduction choice, `references/braintools/surrogate.md` for surrogate choice, and `references/braintools/brainstate-control-flow-patterns.md` for loop form and checkpointing.
 - Open `references/nest-compatible/nest-workflow.md` instead when the task uses NEST/PyNEST model names or `Simulator`; do not mix those component APIs into the native path.
 
 Official sources:
 
 - `https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-choose-neuron.html`
 - `https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-coba-cuba-synapses.html`
+- `https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-short-term-plasticity.html`
 - `https://brainx.chaobrain.com/brainpy-state/apis/brainpy-neurons.html`
 - `https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synapses.html`
 - `https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synouts.html`

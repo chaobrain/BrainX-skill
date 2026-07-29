@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "skills": [
+    "braincell",
     "brainx-install",
     "brainunit",
     "brainstate",
