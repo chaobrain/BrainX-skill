@@ -146,14 +146,6 @@ The current filter API exports additional names, but the official filter tutoria
 
 Do not use an exported name as proof that the operation works. Prefer the implemented selectors above, construct equivalent explicit slices or points when practical, or inspect the installed BrainCell version before using a newly implemented surface.
 
-## Common failures
-
-- Do not pass a region to `place()` or a locset to `paint()`.
-- Do not guess imported type strings; inspect `branch.type` values or materialize the selector first.
-- Do not omit BrainUnit quantities from physical metric bounds.
-- Do not confuse `branch_range(...)` property filtering with `BranchSlice(...)` interval selection.
-- Do not use unseeded random placement when the model must be reproducible.
-- Do not assume a nonempty morphology selector maps to the expected CV midpoint; inspect the topology after choosing the CV policy.
 
 ## Sources
 

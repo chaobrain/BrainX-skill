@@ -1,6 +1,6 @@
 ---
 name: braincell
-description: BrainCell provides conductance-based single-compartment and morphology-based multicompartment neuron models in BrainX. Use this skill for `SingleCompartment`, Hodgkin-Huxley ions and channels, `Cell`, `Morphology`, control volumes, `paint` and `place`, current clamps, probes, cellular solver choice, and single-cell simulations. Do not use it for wiring cells into networks, synaptic projections between cells, or network training; route those tasks to BrainPy-State.
+description: Use BrainCell when working on a specific neuron or cell model, including its biophysics, ions, channels, morphology, stimulation, recording, or cellular simulation.
 ---
 
 # BrainCell

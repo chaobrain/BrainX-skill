@@ -27,32 +27,6 @@ Channels carry current; ions organize the shared electrochemical state that driv
 
 The ion API also exposes literature-derived calcium-dynamics templates such as `CdpHVA_SU2015_DCN`, `CdpLVA_SU2015_DCN`, and `CdpStC_MA2020_GoC`. Select one only when the requested model or source paper matches it; use the official `braincell.ion` API for the complete installed list.
 
-## Attach fixed ions and channels
-
-Construct the ion first, then add only channels whose `root_type` matches that ion.
-
-| API | Description |
-|---|---|
-| `ion.add(name=channel)` | Use after constructing a single-compartment ion; it registers the channel under that ion and raises a type error when the channel's `root_type` does not match. |
-| `ion.pack_info()` | Use when testing a channel directly; it returns the ion's `IonInfo(Ci, Co, E, valence)`. |
-| `channel.root_type` | Inspect before attachment when the required ion owner is uncertain. |
-
-```python
-import braincell
-import brainunit as u
-
-
-na = braincell.ion.SodiumFixed(size=1, E=50.0 * u.mV)
-na.add(INa=braincell.channel.Na_HH1952(size=1))
-
-k = braincell.ion.PotassiumFixed(size=1, E=-77.0 * u.mV)
-k.add(IK=braincell.channel.K_HH1952(size=1))
-
-assert braincell.channel.Na_HH1952.root_type is braincell.ion.Sodium
-assert braincell.channel.K_HH1952.root_type is braincell.ion.Potassium
-```
-
-Attach root-cell channels such as `IL` directly to the cell. They do not belong under a sodium, potassium, or calcium ion.
 
 ## Use dynamic calcium
 
@@ -105,47 +79,6 @@ kca.add(
 
 For `AHP_De1994`, the required order is potassium followed by calcium. Match `root_type` exactly; `(ca, k)` is not interchangeable with `(k, ca)`.
 
-## Declare ions on a multicompartment cell
-
-`braincell.mech.Ion` and `braincell.mech.Channel` are declarations; `Cell.init_state()` lowers them into runtime ion and channel objects over the selected control volumes.
-
-```python
-import braincell.mech as mech
-
-
-cell.paint(
-    region,
-    mech.Ion(
-        "CalciumDetailed",
-        name="ca_dyn",
-        d=0.5 * u.um,
-        tau=10.0 * u.ms,
-        C_rest=5.0e-5 * u.mM,
-        Ci_initializer=2.4e-4 * u.mM,
-    ),
-)
-cell.paint(
-    region,
-    mech.Channel(
-        "CaT_HM1992",
-        ion_name="ca_dyn",
-        g_max=2.0 * u.mS / u.cm**2,
-    ),
-)
-```
-
-Use an explicit ion `name` when a channel must bind to a particular runtime ion owner. Open `references/multicompartment/multicompartment-cell-workflow.md` before applying this fragment to a `Cell`; that workflow owns morphology, regions, CV policies, initialization, and runtime inspection.
-
-## Common failures
-
-- Adding a channel to the wrong ion: inspect `root_type`, then attach it to the matching ion or ordered `MixIons`.
-- Treating an ion as the current-producing mechanism: attach channels; the ion aggregates their current and owns shared electrochemical information.
-- Using fixed calcium when the result depends on calcium accumulation: use `CalciumDetailed`, `CalciumFirstOrder`, or a matching documented template.
-- Expecting `InitNernstIon` concentration to evolve: choose a dynamic ion when `Ci` must be integrated.
-- Passing bare concentrations, voltages, time constants, temperature, or shell depth: use BrainUnit quantities.
-- Authoring a new ion before checking `braincell.ion`: inspect the installed API and literature-derived templates first.
-
-Open `references/braincell-custom-ion-channel-authoring.md` only when the required ion species or concentration dynamics remain unavailable after that inspection.
 
 ## Sources
 

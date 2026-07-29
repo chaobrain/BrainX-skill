@@ -12,19 +12,16 @@ Keep custom dynamics inside BrainCell's lifecycle:
 
 Do not replace this lifecycle with detached ODE functions or raw JAX arrays.
 
-## Choose the extension level
+## Choose the channel extension level
 
-| Need | Use | Required contract |
-|---|---|---|
-| Independent Hodgkin-Huxley gates | `braincell.channel._base.HH` | Declare `Gate` objects, implement one recognized kinetic form per gate, and implement `current()`. |
-| Coupled probabilistic channel states | `braincell.channel._base.Markov` | Declare transitions, one dependent state, a conservation total, transition-rate methods, and current from open-state probability. |
-| Dynamics not expressible by HH or Markov templates | `braincell.Channel` | Implement State initialization/reset, derivatives, lifecycle hooks when needed, and current directly. |
-| Fixed custom ion species | `braincell.ion._base.FixedIon` or a matching concrete ion base | Define the species' fixed `Ci`, `Co`, `E`, and `valence`, then preserve the ion/channel ownership contract. |
-| Fixed concentrations with Nernst initialization | `braincell.ion._base.InitNernstIon` | Define fixed concentrations, valence, and temperature behavior; let initialization/reset compute `E`. |
-| Dynamic intracellular concentration | `braincell.ion._base.DynamicNernstIon` | Define `derivative(Ci, V, total_current=...)`, whether total owned current is required, and the concentration initialization rule. |
-| Multicompartment string declaration | `register_channel` or `register_ion` | Register a unique name at import time before `mech.Channel(...)` or `mech.Ion(...)` resolves it. |
+| Use | Need |
+|---|---|
+| `braincell.channel._base.HH` | Use for independent Hodgkin-Huxley gates. Declare `Gate` objects, implement one recognized kinetic form per gate, and implement `current()`. |
+| `braincell.channel._base.Markov` | Use for coupled probabilistic channel states. Declare transitions, one dependent state, a conservation total, transition-rate methods, and current from open-state probability. |
+| `braincell.Channel` | Use for dynamics that HH and Markov templates cannot express. Implement State initialization/reset, derivatives, required lifecycle hooks, and current directly. |
+| `register_channel` | Use when `mech.Channel(...)` must resolve the custom channel by name. Register a unique name when the defining module is imported. |
 
-`braincell.channel._base` and `braincell.ion._base` are lower-level authoring modules. Inspect the installed version before relying on them across releases.
+`braincell.channel._base` is a lower-level authoring module. Inspect the installed version before relying on it across releases.
 
 ## Define the channel contract
 
@@ -138,30 +135,16 @@ Use `braincell.Channel` directly only when neither HH gates nor a conserved Mark
 
 Do not implement all Markov probabilities as independent States when they must sum to one. Choose one dependent state and test conservation after stepping.
 
-## Register and use the mechanism
+## Choose the ion extension level
 
-Registration makes a custom class available to multicompartment declarations by name.
-
-| API | Description |
+| Use | Need |
 |---|---|
-| `braincell.mech.register_channel(name)` | Decorate a concrete channel class; registration occurs when its defining module is imported. |
-| `braincell.mech.register_ion(name)` | Decorate a concrete ion class when a custom species or concentration model must resolve by name. |
-| `braincell.mech.Channel(name, **parameters)` | Declare a registered channel on a multicompartment cell. |
-| `braincell.mech.Ion(name, **parameters)` | Declare a registered ion on a multicompartment cell. |
+| `braincell.ion._base.FixedIon` or a matching concrete ion base | Use for a custom ion with fixed `Ci`, `Co`, `E`, and `valence`. Preserve the ion/channel ownership contract. |
+| `braincell.ion._base.InitNernstIon` | Use when concentrations stay fixed but initialization and reset must compute `E` from concentrations, valence, and temperature. |
+| `braincell.ion._base.DynamicNernstIon` | Use when intracellular concentration is dynamic. Define its initializer, `derivative(Ci, V, total_current=...)`, and whether the total owned current is required. |
+| `register_ion` | Use when `mech.Ion(...)` must resolve the custom ion by name. Register a unique name when the defining module is imported. |
 
-The `DemoKChannel` example registers `"DemoK"` and can therefore be declared after its module has been imported:
-
-```python
-import braincell.mech as mech
-
-
-demo_k = mech.Channel(
-    "DemoK",
-    g_max=0.1 * u.mS / u.cm**2,
-)
-```
-
-Import registration modules before constructing a declaration. An unresolved string is a registry/import problem, not a reason to duplicate the mechanism under a built-in name.
+`braincell.ion._base` is a lower-level authoring module. Inspect the installed version before relying on it across releases.
 
 ## Author a custom ion only when required
 
@@ -172,6 +155,97 @@ Use a custom ion when the missing behavior belongs to reversal potential or conc
 3. For a dynamic ion, implement `derivative(Ci, V, total_current=...)` and declare whether the total current of owned channels is required.
 4. Package ion state through the inherited `IonInfo` path; do not pass the ion object directly into channels.
 5. Register the concrete class only when string-based `mech.Ion(...)` declarations need it.
+
+This custom calcium pool uses the owned channel current for influx and a saturating removal pump:
+
+```python
+import braincell
+import braintools
+import brainunit as u
+import jax.numpy as jnp
+from braincell.ion import Calcium
+from braincell.ion._base import DynamicNernstIon
+
+DEFAULT_TEMP = u.celsius2kelvin(36.0)
+
+
+class DemoSaturatingCalcium(Calcium, DynamicNernstIon):
+    uses_total_current = True
+
+    def __init__(
+        self,
+        size,
+        temp=DEFAULT_TEMP,
+        depth=1.0 * u.um,
+        pump_max=1.0e-4 * u.mM / u.ms,
+        pump_half=1.0e-4 * u.mM,
+        Co=None,
+        Ci_initializer=2.4e-4 * u.mM,
+    ):
+        super().__init__(size=size)
+        self._init_dynamic_nernst_ion(
+            Co=Co,
+            temp=temp,
+            valence=None,
+            Ci_initializer=Ci_initializer,
+        )
+        self.depth = braintools.init.param(
+            depth, self.varshape, allow_none=False
+        )
+        self.pump_max = braintools.init.param(
+            pump_max, self.varshape, allow_none=False
+        )
+        self.pump_half = braintools.init.param(
+            pump_half, self.varshape, allow_none=False
+        )
+
+    def derivative(self, Ci, V, total_current=None):
+        _ = V
+        influx = total_current / (
+            self.valence * u.faraday_constant * self.depth
+        )
+        influx = u.math.maximum(influx, u.math.zeros_like(influx))
+        pump = self.pump_max * Ci / (Ci + self.pump_half)
+        return influx - pump
+
+
+V = jnp.array([-65.0]) * u.mV
+initial_Ci = 2.4e-4 * u.mM
+
+calcium = DemoSaturatingCalcium(size=1, Ci_initializer=initial_Ci)
+calcium.add(
+    ICaT=braincell.channel.CaT_HM1992(
+        size=1,
+        g_max=2.0 * u.mS / u.cm**2,
+    )
+)
+calcium.init_state(V)
+calcium.compute_derivative(V)
+
+total_current = calcium.current(V, include_external=True)
+expected = calcium.derivative(
+    calcium.Ci.value,
+    V,
+    total_current=total_current,
+)
+assert u.math.allclose(
+    calcium.Ci.derivative.to_decimal(u.mM / u.ms),
+    expected.to_decimal(u.mM / u.ms),
+)
+
+E_before = calcium.E
+calcium.Ci.value = jnp.array([1.0e-3]) * u.mM
+assert not u.math.allclose(
+    E_before.to_decimal(u.mV),
+    calcium.E.to_decimal(u.mV),
+)
+
+calcium.reset_state(V)
+assert u.math.allclose(
+    calcium.Ci.value.to_decimal(u.mM),
+    initial_Ci.to_decimal(u.mM),
+)
+```
 
 Use `CalciumFixed`, `CalciumInitNernst`, and `CalciumDetailed` as the three concrete source patterns. Do not author a custom ion merely to change a channel's `g_max`, gating kinetics, or current formula.
 
@@ -189,18 +263,7 @@ For an ohmic current written as `g * gates * (E - V)`, verify that current appro
 
 Add a co-located test when the extension becomes repository code. Registration success alone does not validate kinetics.
 
-## Common failures
 
-- Authoring before checking the library: inspect built-in channel, ion, and template families first.
-- Omitting or misordering `root_type`: declare the exact ion dependency and test wrong-owner rejection.
-- Reaching into a parent ion object: consume the supplied `IonInfo`.
-- Mixing kinetic forms for one HH gate: implement either `inf/tau` or `alpha/beta`.
-- Returning unit-bearing HH time constants or rates when the template expects plain millisecond-based numbers: follow the installed template convention.
-- Allocating Markov probabilities without conservation: define one dependent state and test the total.
-- Returning raw floats from `current()`: preserve the cell's current or current-density units.
-- Stripping units before the formula boundary: convert only the term that must enter a dimensionless empirical expression.
-- Registering a class but never importing its module: ensure import-time registration occurs before string resolution.
-- Validating only one trace at one `dt`: test formula invariants and numerical convergence separately.
 
 ## Sources
 

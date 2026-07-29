@@ -64,82 +64,6 @@ Attach calcium channels to a calcium ion. Use a dynamic calcium ion when accumul
 
 The `Kca*`, `HCN*`, and template-import families contain model-specific alternatives. Prefer the exact source match over a name that merely has the same broad current type.
 
-## Attach built-in channels
-
-`root_type` determines which object supplies a channel's ion information and where the channel may be attached.
-
-| API | Description |
-|---|---|
-| `channel.root_type` | Inspect before attachment; it identifies a sodium, potassium, calcium, ordered multi-ion, or root-cell dependency. |
-| `ion.add(name=channel)` | Use for a single-ion channel in a `SingleCompartment`; it validates the channel against the ion owner. |
-| `mixed.add(name=channel)` | Use for a channel whose `root_type` is an ordered multi-ion dependency. |
-| `braincell.mech.Channel(name_or_class, **parameters)` | Use inside `Cell.paint()` for a multicompartment density-channel declaration; string names resolve through the channel registry. |
-
-```python
-import braincell
-import brainunit as u
-
-
-class HH(braincell.SingleCompartment):
-    def __init__(self, size, solver="exp_euler"):
-        super().__init__(size, V_th=20.0 * u.mV, solver=solver)
-
-        self.na = braincell.ion.SodiumFixed(size, E=50.0 * u.mV)
-        self.na.add(INa=braincell.channel.Na_HH1952(size))
-
-        self.k = braincell.ion.PotassiumFixed(size, E=-77.0 * u.mV)
-        self.k.add(IK=braincell.channel.K_HH1952(size))
-
-        self.IL = braincell.channel.IL(
-            size,
-            E=-54.387 * u.mV,
-            g_max=0.03 * u.mS / u.cm**2,
-        )
-```
-
-This pattern keeps ion-specific channels under their matching ion and the root-cell leak on the cell. Adding `K_HH1952` to `SodiumFixed`, for example, raises a type error instead of silently using the wrong reversal potential.
-
-Open `references/ion-library.md` when choosing fixed, Nernst-initialized, or dynamic ion behavior. Open `references/mixions-for-adaptation.md` when a mixed potassium-calcium channel participates in adaptation or rebound.
-
-## Isolate a channel effect
-
-Expose the target channel's parameter while holding the cell declaration, initial state, input, solver, `dt`, and recording path constant.
-
-```python
-class AblationHH(braincell.SingleCompartment):
-    def __init__(
-        self,
-        size,
-        gK=36.0 * u.mS / u.cm**2,
-        solver="exp_euler",
-    ):
-        super().__init__(size, V_th=20.0 * u.mV, solver=solver)
-
-        self.na = braincell.ion.SodiumFixed(size, E=50.0 * u.mV)
-        self.na.add(INa=braincell.channel.Na_HH1952(size))
-
-        self.k = braincell.ion.PotassiumFixed(size, E=-77.0 * u.mV)
-        self.k.add(
-            IK=braincell.channel.K_HH1952(size, g_max=gK)
-        )
-
-        self.IL = braincell.channel.IL(
-            size,
-            E=-54.387 * u.mV,
-            g_max=0.03 * u.mS / u.cm**2,
-        )
-
-
-intact = AblationHH(size=1)
-ablated = AblationHH(
-    size=1,
-    gK=0.0 * u.mS / u.cm**2,
-)
-```
-
-The official potassium-ablation example uses `gK = 0` to remove delayed-rectifier current while preserving the rest of the model. Initialize both cells identically and drive them with the same current before attributing a trace difference to the ablated channel.
-
-Do not interpret a waveform difference as a channel effect until it persists under an appropriate time-step refinement. Open `references/solver-library-with-effects.md` when the result may be solver-dependent.
 
 ## Route custom authoring
 
@@ -151,15 +75,6 @@ Open `references/braincell-custom-ion-channel-authoring.md` only when:
 
 For a multicompartment task, establish the `Morphology -> Cell -> paint/place -> init_state` workflow in `references/multicompartment/multicompartment-cell-workflow.md` before reusing the custom-authoring route.
 
-## Common failures
-
-- Writing a custom channel first: search `braincell.channel` and the source-model templates before authoring.
-- Attaching a channel to the wrong owner: inspect `root_type`; use the matching ion, ordered `MixIons`, or root cell.
-- Treating `IL` and `K_Leak` as interchangeable: `IL` is a root-cell leak with its own `E`; `K_Leak` is potassium-specific.
-- Comparing source models by `g_max` alone: preserve their gating, temperature, shift, and reversal-potential conventions.
-- Using a fixed calcium ion in a calcium-feedback experiment: select dynamic calcium before adding the dependent current.
-- Removing a channel while changing input or numerics: hold all non-ablated conditions constant.
-- Passing a bare maximal conductance: use the density or total-conductance unit expected by the surrounding cell convention.
 
 ## Sources
 
