@@ -6,13 +6,16 @@ const path = require('node:path');
 const codex = require('../../adapters/codex');
 const claude = require('../../adapters/claude');
 const cursor = require('../../adapters/cursor');
+const windsurf = require('../../adapters/windsurf');
+const gemini = require('../../adapters/gemini');
+const opencode = require('../../adapters/opencode');
 const { prepareAdapter, AdapterOperationError } = require('./adapter-transaction');
 const { validateBundle } = require('./bundle');
 const { PACKAGE_NAME, RECEIPT_SCHEMA_VERSION } = require('./constants');
 const { resolveDestinationRoot, resolveLocations } = require('./paths');
 const { readReceipt, writeReceiptAtomic } = require('./receipt');
 
-const DEFAULT_ADAPTERS = [claude, codex, cursor];
+const DEFAULT_ADAPTERS = [claude, codex, cursor, windsurf, gemini, opencode];
 
 function writeLine(stream, text = '') {
   stream.write(`${text}\n`);

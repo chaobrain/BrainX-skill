@@ -1,7 +1,7 @@
 {
   "name": "brainx-skill",
   "version": "1.0.6",
-  "description": "Portable BrainX Agent Skills for Claude Code, Codex, and Cursor",
+  "description": "Portable BrainX Agent Skills for Claude Code, Codex, Cursor, Windsurf, Gemini CLI, and OpenCode",
   "license": "Apache-2.0",
   "type": "commonjs",
   "scripts": {

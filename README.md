@@ -7,7 +7,7 @@
 [![Agent Skills validation](https://img.shields.io/github/actions/workflow/status/chaobrain/BrainX-skill/agent-skills-validation.yml?branch=main&label=Agent%20Skills&style=flat)](https://github.com/chaobrain/BrainX-skill/actions/workflows/agent-skills-validation.yml)
 [![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/chaobrain/BrainX-skill?label=OpenSSF&style=flat)](https://scorecard.dev/viewer/?uri=github.com/chaobrain/BrainX-skill)
 
-[![Works with Claude Code, Codex, and Cursor](https://img.shields.io/badge/Works%20with-Claude%20Code%20%7C%20Codex%20%7C%20Cursor-007EC6?style=flat)](#installation-locations)
+[![Works with Claude Code, Codex, Cursor, Windsurf, Gemini CLI, and OpenCode](https://img.shields.io/badge/Works%20with-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Gemini%20CLI%20%7C%20OpenCode-007EC6?style=flat)](#installation-locations)
 
 make your coding agent understand the power of BrainX
 
@@ -61,6 +61,9 @@ Depending on the selected scope, the canonical `brainx-install` skill is install
 Claude Code: ~/.claude/skills/<skill-name> or <cwd>/.claude/skills/<skill-name>
 Codex:       ~/.agents/skills/<skill-name> or <cwd>/.agents/skills/<skill-name>
 Cursor:      ~/.cursor/skills/<skill-name> or <cwd>/.cursor/skills/<skill-name>
+Windsurf:    ~/.codeium/windsurf/skills/<skill-name> or <cwd>/.codeium/windsurf/skills/<skill-name>
+Gemini CLI:  ~/.gemini/skills/<skill-name> or <cwd>/.gemini/skills/<skill-name>
+OpenCode:    ~/.config/opencode/skills/<skill-name> or <cwd>/.config/opencode/skills/<skill-name>
 ```
 
 Installation ownership is recorded in `~/.brainx/receipt.json`.
