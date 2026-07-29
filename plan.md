@@ -690,15 +690,14 @@ brainpy/
 │   ├── braintools/optimizers.md [shared]
 │   └── braintools/surrogate-gradients.md [shared]
 ├── brainpy-readouts-and-inputs.md
-├── NEST-compatible/
+├── references/nest-compatible/
 │   ├── nest-workflow.md
-│   ├── references/
-│   │   ├── model-library.md
-│   │   ├── synapse-and-connectivity.md
-│   │   ├── devices.md
-│   │   ├── network-building.md
-│   │   ├── divergence-and-parity.md
-│   │   └── integration-categories.md
+│   ├── model-library.md
+│   ├── synapse-and-connectivity.md
+│   ├── devices.md
+│   ├── network-building.md
+│   ├── divergence-and-parity.md
+│   ├── integration-categories.md
 │   └── scripts/
 │       ├── brunel_alpha.py
 │       ├── brunel_delta.py
@@ -728,12 +727,12 @@ brainpy/
 
 | Nested lookup area | Need | Crafting sources | Disposition |
 |---|---|---|---|
-| `references/model-library.md` | Select NEST-compatible neurons and inspect neuron-model APIs | [Models](https://brainx.chaobrain.com/brainpy-state/nest-style/models.html), [neuron API](https://brainx.chaobrain.com/brainpy-state/apis/nest-neurons.html) | Route from `nest-workflow.md` as the model-selection reference |
-| `references/synapse-and-connectivity.md` | Static/special synapses, plasticity, connection rules, synapse specs, and realized connectivity | [synapse API](https://brainx.chaobrain.com/brainpy-state/apis/nest-synapses.html), [plasticity API](https://brainx.chaobrain.com/brainpy-state/apis/nest-plasticity.html), [connectivity](https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html) | Route from `nest-workflow.md` as the edge-behavior and connectivity reference |
-| `references/devices.md` | Generators, recorders, detectors, source semantics, direction, and result readback | [devices guide](https://brainx.chaobrain.com/brainpy-state/nest-style/devices.html), [device API](https://brainx.chaobrain.com/brainpy-state/apis/nest-devices.html) | Route from `nest-workflow.md` as the device-selection reference |
-| `references/network-building.md` | `Simulator`, `NodeView`, `SimulationResult`, `SynapseCollection`, projection/connection APIs, and spatial primitives | [network tutorial](https://brainx.chaobrain.com/brainpy-state/nest-style/tutorials/03-connect-network.html), [network API](https://brainx.chaobrain.com/brainpy-state/apis/nest-network.html), [spatial API](https://brainx.chaobrain.com/brainpy-state/apis/nest-spatial.html), [spatial guide](https://brainx.chaobrain.com/brainpy-state/nest-style/spatial.html) | Route from `nest-workflow.md` as the construction and spatial reference |
-| `references/divergence-and-parity.md` | Porting differences, STDP parameter placement, recording/stochastic parity, validation, and NEST mismatches | [divergence index](https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/index.html), [validation status](https://brainx.chaobrain.com/brainpy-state/nest-style/validation-status.html), [STDP divergence](https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/stdp.html) | Route from `nest-workflow.md` as the porting and validation reference |
-| `references/integration-categories.md` | Numerical and integration behavior by NEST-compatible model family | [integration categories](https://brainx.chaobrain.com/brainpy-state/nest-style/integration-categories.html) | Route from `nest-workflow.md` as the numerical-behavior reference |
+| `references/nest-compatible/model-library.md` | Select NEST-compatible neurons and inspect neuron-model APIs | [Models](https://brainx.chaobrain.com/brainpy-state/nest-style/models.html), [neuron API](https://brainx.chaobrain.com/brainpy-state/apis/nest-neurons.html) | Route from `nest-workflow.md` as the model-selection reference |
+| `references/nest-compatible/synapse-and-connectivity.md` | Static/special synapses, plasticity, connection rules, synapse specs, and realized connectivity | [synapse API](https://brainx.chaobrain.com/brainpy-state/apis/nest-synapses.html), [plasticity API](https://brainx.chaobrain.com/brainpy-state/apis/nest-plasticity.html), [connectivity](https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html) | Route from `nest-workflow.md` as the edge-behavior and connectivity reference |
+| `references/nest-compatible/devices.md` | Generators, recorders, detectors, source semantics, direction, and result readback | [devices guide](https://brainx.chaobrain.com/brainpy-state/nest-style/devices.html), [device API](https://brainx.chaobrain.com/brainpy-state/apis/nest-devices.html) | Route from `nest-workflow.md` as the device-selection reference |
+| `references/nest-compatible/network-building.md` | `Simulator`, `NodeView`, `SimulationResult`, `SynapseCollection`, projection/connection APIs, and spatial primitives | [network tutorial](https://brainx.chaobrain.com/brainpy-state/nest-style/tutorials/03-connect-network.html), [network API](https://brainx.chaobrain.com/brainpy-state/apis/nest-network.html), [spatial API](https://brainx.chaobrain.com/brainpy-state/apis/nest-spatial.html), [spatial guide](https://brainx.chaobrain.com/brainpy-state/nest-style/spatial.html) | Route from `nest-workflow.md` as the construction and spatial reference |
+| `references/nest-compatible/divergence-and-parity.md` | Porting differences, STDP parameter placement, recording/stochastic parity, validation, and NEST mismatches | [divergence index](https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/index.html), [validation status](https://brainx.chaobrain.com/brainpy-state/nest-style/validation-status.html), [STDP divergence](https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/stdp.html) | Route from `nest-workflow.md` as the porting and validation reference |
+| `references/nest-compatible/integration-categories.md` | Numerical and integration behavior by NEST-compatible model family | [integration categories](https://brainx.chaobrain.com/brainpy-state/nest-style/integration-categories.html) | Route from `nest-workflow.md` as the numerical-behavior reference |
 
 #### Script References
 
@@ -749,15 +748,15 @@ Native scripts:
 
 NEST-compatible external scripts:
 
-- `skills/brainpy-state/NEST-compatible/scripts/brunel_alpha.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_alpha.py) — alpha-synapse Brunel network.
-- `skills/brainpy-state/NEST-compatible/scripts/brunel_delta.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_delta.py) — delta-synapse voltage-weight semantics.
-- `skills/brainpy-state/NEST-compatible/scripts/brette_et_al_2007.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brette_et_al_2007.py) — comparative network workflow.
-- `skills/brainpy-state/NEST-compatible/scripts/synapsecollection.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/synapsecollection.py) — synapse inspection/manipulation.
-- `skills/brainpy-state/NEST-compatible/scripts/evaluate_tsodyks2_synapse.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/evaluate_tsodyks2_synapse.py) — short-term plasticity parity.
-- `skills/brainpy-state/NEST-compatible/scripts/clopath_synapse_spike_pairing.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/clopath_synapse_spike_pairing.py) — plasticity protocol.
-- `skills/brainpy-state/NEST-compatible/scripts/spatial_gaussex.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/spatial_gaussex.py) — spatial connectivity.
+- `skills/brainpy-state/references/nest-compatible/scripts/brunel_alpha.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_alpha.py) — alpha-synapse Brunel network.
+- `skills/brainpy-state/references/nest-compatible/scripts/brunel_delta.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brunel_delta.py) — delta-synapse voltage-weight semantics.
+- `skills/brainpy-state/references/nest-compatible/scripts/brette_et_al_2007.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/brette_et_al_2007.py) — comparative network workflow.
+- `skills/brainpy-state/references/nest-compatible/scripts/synapsecollection.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/synapsecollection.py) — synapse inspection/manipulation.
+- `skills/brainpy-state/references/nest-compatible/scripts/evaluate_tsodyks2_synapse.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/evaluate_tsodyks2_synapse.py) — short-term plasticity parity.
+- `skills/brainpy-state/references/nest-compatible/scripts/clopath_synapse_spike_pairing.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/clopath_synapse_spike_pairing.py) — plasticity protocol.
+- `skills/brainpy-state/references/nest-compatible/scripts/spatial_gaussex.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/spatial_gaussex.py) — spatial connectivity.
 
-Location for all NEST scripts: `NEST-compatible/nest-workflow.md` full-script branch.
+Location for all NEST scripts: `references/nest-compatible/nest-workflow.md` full-script branch.
 
 #### Boundaries and Common Failures
 

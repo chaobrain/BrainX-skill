@@ -9,7 +9,7 @@ description: "Use for native BrainPy-State point-neuron simulations and trainabl
 
 Use this skill for the native `brainpy.state` modeling path: compose point neurons, synapses, communication operators, synaptic outputs, projections, inputs, plasticity, and readouts into simulations or trainable spiking neural networks.
 
-Route NEST-compatible work to `NEST-compatible/nest-workflow.md`, and online-learning execution to BrainTrace.
+Route NEST-compatible work to `references/nest-compatible/nest-workflow.md`, and online-learning execution to BrainTrace.
 
 ## Underlying principle of BrainPy-State
 
@@ -203,7 +203,7 @@ Open only the smallest reference that owns the decision.
 | `references/projection-patterns.md` | Choosing projection alignment or API form, adding delays or short-term plasticity, using direct/delta projections, or adding gap junctions |
 | `references/braintools-optimizer.md` | Selecting an optimizer, learning-rate scheduler, Optax bridge, SciPy optimizer, or Nevergrad optimizer |
 | `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md` | Selecting explicit-carry scans, branches, or checkpointed simulation control flow beyond the canonical `for_loop` |
-| `NEST-compatible/nest-workflow.md` | Using NEST/PyNEST model names, `Simulator`, devices, connection rules, spatial networks, parity, porting, or the bundled NEST-compatible full scripts |
+| `references/nest-compatible/nest-workflow.md` | Using NEST/PyNEST model names, `Simulator`, devices, connection rules, spatial networks, parity, porting, or the bundled NEST-compatible full scripts |
 | `skills/brainevent/SKILL.md` | Selecting sparse event representations, connectivity formats, event operators, plasticity kernels, or custom kernels |
 | `skills/brainevent/references/scripts/coba_ei_teaching.py` | Learning how to incorporate efficient BrainEvent communication into a complete BrainPy COBA E/I network while preserving BrainPy dynamics and BrainState execution |
 
