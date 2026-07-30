@@ -21,6 +21,7 @@ This ensures two advantage: first, it avoids the agent from opening useless cont
 
 ```text
 skills/
+├── brainx-general-guard/
 ├── brainunit/
 ├── brainstate/
 ├── braincell/
@@ -273,8 +274,8 @@ Location: Direct skill script.
 
 #### Purpose
 
-- Boundary: own BrainCell cellular biophysics at both supported scales: single-compartment `SingleCompartment` models and morphology-based multicompartment `Cell` models. Route connections and training across cells to BrainPy-State.
-- Activate for channels, ions, current clamp, solver selection, point-neuron populations, morphology, CVs, `paint`, `place`, clamps, probes, and spatially distributed cellular mechanisms.
+- Boundary: own biologically detailed conductance-based or Hodgkin-Huxley cell modeling at the ion, channel, single-compartment, and multicompartment morphology scales.
+- Activate when cellular biophysics is explicitly represented. Activate alone for cell studies or with BrainPy-State and/or BrainMass when cellular mechanisms participate in a multiscale model.
 - Primary path: choose `SingleCompartment` or `Cell` → declare mechanisms and geometry → initialize → simulate → validate voltage, spikes, or probe traces.
 - Advanced branches: area scaling, mixed-ion adaptation, channel/ion libraries, solver catalog, and detailed multicompartment morphology.
 
@@ -527,8 +528,8 @@ All five required Markdown references are skill-local and already exist. Applica
 
 #### Purpose
 
-- Boundary: neural-mass models, simulation, stochastic ensembles, coupled networks, forward models, and parameter fitting.
-- Activate for BrainMass model selection, `Simulator`, `Network`, BOLD/EEG/MEG, fitting, whole-brain workflows, or regime sweeps.
+- Boundary: differentiable neural-mass modeling of aggregate population activity at the local-circuit, brain-region, multi-region, and whole-brain scales.
+- Activate when aggregate population dynamics are explicitly represented. Activate alone for mass-model studies or with BrainPy-State and/or BrainCell when aggregate dynamics participate in a multiscale model.
 - Primary path: discover model → construct `*Step` → configure State/noise/units → simulate → observe → validate or fit.
 - Advanced branches: model catalog, noise, coupling/delays, observations, fitting backends, datasets, analysis, task training, sweeps.
 
@@ -571,22 +572,34 @@ brainmass/
 ├── coupling-network-api.md
 ├── forward-observation-api.md
 ├── fitting-with-objectives-api.md
-│   ├── braintools/initializers.md [shared]
-│   ├── braintools/metrics.md [shared]
-│   ├── braintools/optimizers.md [shared]
-│   └── braintools/surrogate-gradients.md [shared]
 ├── datasets-api.md
 ├── visualization-analysis-api.md
 ├── batch-transform-acceleration.md
 ├── horn-task-training.md
-│   ├── braintools/cognitive-tasks.md [shared]
-│   ├── braintools/encoders.md [shared]
-│   ├── braintools/metrics.md [shared]
-│   └── braintools/optimizers.md [shared]
+├── brainstate/
+│   ├── parameter-constraints-regularization.md
+│   └── parameter-transforms-regularizers-catalog.md
+├── braintools/
+│   ├── cogtask.md
+│   ├── data-preprocessing.md
+│   ├── metric.md
+│   ├── optimizer.md
+│   ├── parameter-initializer.md
+│   └── surrogate.md
 └── parameter-sweeps-and-regime-analysis.md
 ```
 
-The skill defines ten package references and routes to six shared Braintools references defined at the end of this plan.
+The skill defines ten BrainMass references, two local BrainState parameter references, and six local Braintools training references.
+
+Route them through five workflow categories:
+
+| Category | References |
+|---|---|
+| Model selection and simulation | `modellibrary.md`, `noiseprocesses.md`, `datasets-api.md` |
+| Networks, observation, and analysis | `coupling-network-api.md`, `forward-observation-api.md`, `visualization-analysis-api.md` |
+| Fitting, exploration, and scaling | `fitting-with-objectives-api.md`, `parameter-sweeps-and-regime-analysis.md`, `batch-transform-acceleration.md` |
+| HORN task training | `horn-task-training.md`, `braintools/cogtask.md`, `braintools/data-preprocessing.md` |
+| Shared parameter and optimization support | Both `brainstate/` references plus `braintools/metric.md`, `braintools/optimizer.md`, `braintools/parameter-initializer.md`, and `braintools/surrogate.md` |
 
 | Canonical reference | Need | Crafting source |
 |---|---|---|
@@ -600,21 +613,29 @@ The skill defines ten package references and routes to six shared Braintools ref
 | `skills/brainmass/references/batch-transform-acceleration.md` | JIT, transformed loops, `scan`, `vmap`, checkpointing, batched initial conditions, and sweeps | [BrainMass batch and accelerate](https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html), with [BrainTrace batching](https://brainx.chaobrain.com/braintrace/tutorials/batching.html) only for the vmap-per-sample comparison already used by the skill |
 | `skills/brainmass/references/horn-task-training.md` | HORN components, task datasets, direct optimizer loops, and held-out metrics | [HORN API](https://brainx.chaobrain.com/brainmass/reference/horn.html), [task-training tutorial](https://brainx.chaobrain.com/brainmass/tutorials/08_training_on_tasks.html), [HORN case study](https://brainx.chaobrain.com/brainmass/gallery/case_studies/horn_cognitive_task.html) |
 | `skills/brainmass/references/parameter-sweeps-and-regime-analysis.md` | Regime exploration and sensitivity analysis distinct from fitting | [Parameter-sweeps how-to](https://brainx.chaobrain.com/brainmass/howto/parameter_sweeps.html) |
+| `skills/brainmass/references/brainstate/parameter-constraints-regularization.md` | Constrained or regularized fitted and directly trained parameters | BrainState parameter-model, constraint, regularization, and generated API sources mirrored by the owning BrainState reference |
+| `skills/brainmass/references/brainstate/parameter-transforms-regularizers-catalog.md` | Exact transform and regularizer selection after the parent parameter workflow | BrainState transform and regularization APIs and implementations mirrored by the owning BrainState reference |
+| `skills/brainmass/references/braintools/cogtask.md` | Phase-structured cognitive trials for direct HORN training | [Cognitive-task API](https://brainx.chaobrain.com/braintools/apis/cogtask.html) |
+| `skills/brainmass/references/braintools/data-preprocessing.md` | Optional encoding of experimental or task inputs before custom training | [Encoder API](https://brainx.chaobrain.com/braintools/apis/braintools.html) |
+| `skills/brainmass/references/braintools/metric.md` | HORN losses and held-out metrics or fitting statistics outside `brainmass.objectives` | [Metric API](https://brainx.chaobrain.com/braintools/apis/metric.html) |
+| `skills/brainmass/references/braintools/optimizer.md` | Optimizers, learning-rate schedules, standalone search wrappers, and update lifecycle | [Optimization API](https://brainx.chaobrain.com/braintools/apis/optim.html), [optimization tutorials](https://brainx.chaobrain.com/braintools/optim/index.html) |
+| `skills/brainmass/references/braintools/parameter-initializer.md` | Model, fitting, HORN, and distance-modulated parameter initialization | [Initializer API](https://brainx.chaobrain.com/braintools/apis/init.html) |
+| `skills/brainmass/references/braintools/surrogate.md` | Custom hard-threshold or spiking training paths; not canonical HORN or `Fitter` | [Surrogate-gradient API](https://brainx.chaobrain.com/braintools/apis/surrogate.html) |
 
 #### Script References
 
 - `references/scripts/gradient-free-fitting.py`; [source](https://brainx.chaobrain.com/brainmass/tutorials/07_gradient_free_fitting.html); Nevergrad and derivative-free SciPy; fitting parent.
-- `resting-state-meg-whole-brain-pipeline.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/resting_state_meg.html); network → MEG → FC; coupling → forward-observation.
-- `eeg-fitting-with-gradients.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/eeg_fitting.html); gradient fitting and EEG recovery; fitting parent.
-- `seizure-epileptor-case-study.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/seizure_epileptor.html); disease dynamics; model library.
-- `wong-wang-decision-making.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/decision_making.html); stochastic decision trials; model library.
-- `horn-cognitive-task-training.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/horn_cognitive_task.html); task training; HORN branch.
-- `hopf-bifurcation-single-node.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/hopf.html); minimal oscillator; model library.
-- `wilson-cowan-ei-dynamics.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/wilson_cowan.html); E/I population rates; model library.
-- `jansen-rit-eeg-proxy.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/jansen_rit.html); EEG proxy; model library → forward-observation.
-- `kuramoto-synchronization.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/kuramoto.html); coupled oscillators; model library.
-- `wong-wang-dmf-resting-state.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/wong_wang_exc_inh.html); dynamic mean field; model library.
-- `linear-baseline-node.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/linear.html); analytical sanity check; optional model-library script.
+- `references/scripts/resting-state-meg-whole-brain-pipeline.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/resting_state_meg.html); network → MEG → FC; coupling → forward-observation.
+- `references/scripts/eeg-fitting-with-gradients.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/eeg_fitting.html); gradient fitting and EEG recovery; fitting parent.
+- `references/scripts/seizure-epileptor-case-study.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/seizure_epileptor.html); disease dynamics; model library.
+- `references/scripts/wong-wang-decision-making.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/decision_making.html); stochastic decision trials; model library.
+- `references/scripts/horn-cognitive-task-training.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/case_studies/horn_cognitive_task.html); task training; HORN branch.
+- `references/scripts/hopf-bifurcation-single-node.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/hopf.html); minimal oscillator; model library.
+- `references/scripts/wilson-cowan-ei-dynamics.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/wilson_cowan.html); E/I population rates; model library.
+- `references/scripts/jansen-rit-eeg-proxy.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/jansen_rit.html); EEG proxy; model library → forward-observation.
+- `references/scripts/kuramoto-synchronization.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/kuramoto.html); coupled oscillators; model library.
+- `references/scripts/wong-wang-dmf-resting-state.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/wong_wang_exc_inh.html); dynamic mean field; model library.
+- `references/scripts/linear-baseline-node.py`; [source](https://brainx.chaobrain.com/brainmass/gallery/model_zoo/linear.html); analytical sanity check; optional model-library script.
 
 #### Boundaries and Common Failures
 
@@ -635,8 +656,8 @@ The skill defines ten package references and routes to six shared Braintools ref
 
 #### Purpose
 
-- Boundary: native BrainPy-State point-neuron, synapse, projection, plasticity, readout, SNN simulation, and surrogate-gradient training workflows.
-- Activate for `brainpy.state` models, projections, E/I networks, delays, readouts, plasticity, SNN training, or NEST-compatible porting.
+- Boundary: individual point-neuron models and point-neuron-based spiking neural networks.
+- Activate when neurons are explicitly represented as point units or connected into a spiking network. Activate alone for point-neuron studies or with BrainCell and/or BrainMass when point-neuron dynamics participate in a multiscale model.
 - Primary path: choose native versus NEST path → select components → initialize → run transformed rollout → monitor/train → validate.
 - branches: component catalogs, custom models, training, Braintools, gallery scripts, NEST compatibility.
 
@@ -943,16 +964,55 @@ The acceleration skill and its transform references route only to the local rand
 
 ### brainx-general-guard
 
-This skill owns local copies of the randomness references it conditionally opens and keeps installation as a semantic skill route.
+#### Purpose and boundary
 
-#### Reference Routing
+- Open first for every BrainX modeling, simulation, training, review, debugging, or optimization task.
+- Identify every modeling scale explicitly represented, then open only the package skills that own those scales. Keep the guard active as the cross-cutting implementation layer.
+- Follow: classify represented scales → open the owning package skills → choose high-level BrainX APIs → compose readable code → transform stateful execution → validate scientific behavior.
 
-| Route | Open when | Crafting source |
-|---|---|---|
-| `skills/brainx-install/SKILL.md` | Setup, import, backend, device, version, or package mismatch | Owning installation skill |
-| `skills/brainx-general-guard/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` | Stochastic behavior, seed control, random trials, dropout/noise, or reproducibility | Randomness tutorial and API |
+#### Modeling-scale routing
 
-The guard's source anchors are [Thinking in BrainState](https://brainx.chaobrain.com/brainstate/getting_started/thinking_in_brainstate.html), [BrainCell units](https://brainx.chaobrain.com/braincell/concepts/units.html), [BrainCell mechanisms](https://brainx.chaobrain.com/braincell/concepts/mechanisms.html), and [BrainState randomness](https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html).
+| The task explicitly represents | Open |
+|---|---|
+| Point neurons, synapses, or point-neuron spiking networks | BrainPy-State |
+| Ions, channels, compartments, or cellular morphology | BrainCell |
+| Aggregate neural populations, local circuits, brain regions, or whole-brain dynamics | BrainMass |
+| Detailed cells connected into a spiking network | BrainCell + BrainPy-State |
+| Point-neuron spiking networks coupled to aggregate regional dynamics | BrainPy-State + BrainMass |
+| Cellular mechanisms coupled to aggregate neural-mass dynamics | BrainCell + BrainMass |
+| Cellular biophysics, point-neuron networks, and aggregate population dynamics interacting in one workflow | BrainCell + BrainPy-State + BrainMass |
+
+Use the finest explicitly modeled unit to distinguish adjacent scales: point neurons select BrainPy-State, explicit cellular mechanisms select BrainCell, and aggregate population variables select BrainMass.
+
+#### Essential principles
+
+1. Prioritize readability through high-level APIs. Use BrainX, BrainTools, and BrainUnit wrappers to own complex array manipulation, unit propagation, State threading, numerical steps, and infrastructure while simulation code states scientific intent.
+2. Write BrainX-native code. Keep BrainX abstractions intact; isolate generic NumPy or JAX code to explicit interoperability boundaries or verified API gaps.
+3. Transform stateful execution. Use `brainstate.transform` for State-aware compilation, differentiation, batching, and control flow; use `for_loop` when effects live in `State` and `scan` when an explicit carry must pass between steps.
+
+#### Reference routing
+
+| Route | Open when |
+|---|---|
+| `skills/brainunit/SKILL.md` | Physical quantities, units, or the canonical `brainunit.math` workflow |
+| `skills/brainunit/references/array-creation.md` | Specialized unit-aware constructors, ranges, grids, filled arrays, or matrix patterns |
+| `skills/brainunit/references/array-mechanics.md` | Indexing, functional updates, reshaping, broadcasting, joining, splitting, or named-axis transformations |
+| `skills/brainunit/references/math-function-library.md` | Mathematical-function selection by input and output unit semantics |
+| `skills/brainstate/SKILL.md` | State, Module, environment, initialization, randomness, or canonical transformations |
+| `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md` | Loop, carry, branch, or checkpointing selection |
+| `skills/brainstate/references/brainstate/transformation-jit-expansion.md` | JIT boundaries and compilation behavior |
+| `skills/brainstate/references/brainstate/transformation-grad-expansion.md` | Gradient targets, returns, or higher-order differentiation |
+| `skills/brainstate/references/brainstate/transformation-vmap-expansion.md` | Mapped or shared State axes, ensembles, or sweeps |
+| [Official BrainTools API index](https://brainx.chaobrain.com/braintools/apis/braintools.html) | A BrainTools capability is not covered by an active package reference |
+
+#### Boundaries and common failures
+
+- Generic NumPy or JAX used as the starting architecture.
+- Manual math, array manipulation, or infrastructure that duplicates BrainUnit or BrainTools.
+- Python loops around repeated State updates in a simulation rollout.
+- Raw JAX transformations applied to State-aware code.
+- Units or State effects lost at raw-array boundaries.
+- BrainX API names or signatures invented without checking documentation.
 
 ---
 
@@ -1038,13 +1098,15 @@ No nested Markdown layer is declared.
 
 ## Braintools References
 
-Use one shared reference file per Braintools capability. Consumer skills route to these files instead of maintaining package-local duplicates. `skills/braintools/` is a shared reference directory, not a standalone skill.
+Use `braintools-references/` as the authoring source for shared Braintools
+knowledge. Copy only the needed files into each consumer skill's
+`references/braintools/` tree so every installed skill remains self-contained.
 
 | Canonical reference | Consumers | Need | Crafting sources |
 |---|---|---|---|
-| `skills/braintools/references/cognitive-tasks.md` | BrainMass | Build and generate cognitive-task trials for task-training workflows | [Cognitive-task API](https://brainx.chaobrain.com/braintools/apis/cogtask.html) |
-| `skills/braintools/references/encoders.md` | BrainMass, BrainPy | Convert experimental or task inputs with latency, rate, Poisson, population, Bernoulli, delta, step-current, spike-count, temporal, or rank-order encoders and related spike operations | [Encoder API](https://brainx.chaobrain.com/braintools/apis/braintools.html) |
-| `skills/braintools/references/initializers.md` | BrainMass, BrainPy | Select and compose reusable state, parameter, weight, and distance-modulated connectivity initializers | [Initializer API](https://brainx.chaobrain.com/braintools/apis/init.html) |
-| `skills/braintools/references/metrics.md` | BrainMass, BrainPy, BrainTrace | Select losses and evaluation metrics for fitting, task training, simulation analysis, and online learning, including classification, regression, ranking, spike-train, synchronization, LFP, and connectivity metrics | [Metric API](https://brainx.chaobrain.com/braintools/apis/metric.html) |
-| `skills/braintools/references/optimizers.md` | BrainState, BrainMass, BrainPy, BrainTrace | Select optimizers, learning-rate schedules, Optax bridges, and SciPy or Nevergrad wrappers for training, fitting, and online parameter updates | [Optimization API](https://brainx.chaobrain.com/braintools/apis/optim.html), [optimization tutorials](https://brainx.chaobrain.com/braintools/optim/index.html) |
-| `skills/braintools/references/surrogate-gradients.md` | BrainMass, BrainPy | Select functional or object-style surrogate gradients and tune their shape parameters for differentiable workflows containing non-differentiable spike functions | [Surrogate-gradient API](https://brainx.chaobrain.com/braintools/apis/surrogate.html) |
+| `braintools-references/braintools-cogtask.md` | BrainMass | Build and generate cognitive-task trials for task-training workflows | [Cognitive-task API](https://brainx.chaobrain.com/braintools/apis/cogtask.html) |
+| `braintools-references/braintools-data-preprocessing.md` | BrainMass, BrainPy | Convert experimental or task inputs with latency, rate, Poisson, population, Bernoulli, delta, step-current, spike-count, temporal, or rank-order encoders and related spike operations | [Encoder API](https://brainx.chaobrain.com/braintools/apis/braintools.html) |
+| `braintools-references/braintools-parameter-initializer.md` | BrainMass, BrainPy | Select and compose reusable state, parameter, weight, and distance-modulated connectivity initializers | [Initializer API](https://brainx.chaobrain.com/braintools/apis/init.html) |
+| `braintools-references/braintools-metric.md` | BrainMass, BrainPy, BrainTrace | Select losses and evaluation metrics for fitting, task training, simulation analysis, and online learning, including classification, regression, ranking, spike-train, synchronization, LFP, and connectivity metrics | [Metric API](https://brainx.chaobrain.com/braintools/apis/metric.html) |
+| `braintools-references/braintools-optimizer.md` | BrainState, BrainMass, BrainPy, BrainTrace | Select optimizers, learning-rate schedules, Optax bridges, and SciPy or Nevergrad wrappers for training, fitting, and online parameter updates | [Optimization API](https://brainx.chaobrain.com/braintools/apis/optim.html), [optimization tutorials](https://brainx.chaobrain.com/braintools/optim/index.html) |
+| `braintools-references/braintools-surrogate.md` | BrainMass, BrainPy | Select functional or object-style surrogate gradients and tune their shape parameters for differentiable workflows containing non-differentiable spike functions | [Surrogate-gradient API](https://brainx.chaobrain.com/braintools/apis/surrogate.html) |

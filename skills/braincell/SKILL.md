@@ -1,6 +1,6 @@
 ---
 name: braincell
-description: Use BrainCell when working on a specific neuron or cell model, including its biophysics, ions, channels, morphology, stimulation, recording, or cellular simulation.
+description: Use for cell modeling with conductance-based or Hodgkin-Huxley ions, channels, compartments, or morphology. Use alone for cell studies or together with BrainPy-State and/or BrainMass when cellular mechanisms participate in a multiscale model.
 ---
 
 # BrainCell

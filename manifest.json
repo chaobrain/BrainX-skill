@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
   "skills": [
+    "brainx-general-guard",
     "braincell",
+    "brainmass",
     "brainx-install",
     "brainunit",
     "brainstate",
     "brainevent",
-    "brainpy-state",
-    "brainx-general-guard"
+    "brainpy-state"
   ]
 }

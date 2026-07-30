@@ -1,6 +1,6 @@
 ---
 name: brainpy-state
-description: "Use for native BrainPy-State point-neuron simulations and trainable spiking networks: neuron and synapse selection, projections, synaptic outputs, short-term plasticity, delays, unitful rollouts, readouts, and surrogate-gradient training."
+description: Use for point-neuron modeling, from individual neurons to spiking networks with synapses and projections. Use alone for point-neuron studies or together with BrainCell and/or BrainMass when point-neuron dynamics participate in a multiscale model.
 ---
 
 # BrainPy-State
