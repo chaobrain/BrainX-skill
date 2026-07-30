@@ -251,29 +251,23 @@ Open `references/fitting-with-objectives-api.md` when choosing `loss_fn` versus 
 
 Choose the workflow category first, then open only the smallest reference that owns the next decision.
 
-### Model selection and simulation
+### Modeling, simulation, and analysis
 
 | Reference | Open when |
 |---|---|
 | `references/modellibrary.md` | Choosing a model family, observable, state cost, or similarly named variant. |
 | `references/noiseprocesses.md` | Selecting a noise spectrum, correlation structure, State behavior, units, or direct noise workflow. |
 | `references/datasets-api.md` | Loading, inspecting, generating, or registering BrainMass data containers. |
-
-### Networks, observation, and analysis
-
-| Reference | Open when |
-|---|---|
 | `references/coupling-network-api.md` | Selecting or configuring coupling, delays, connectivity conventions, direct coupling objects, or trainable network parameters. |
 | `references/forward-observation-api.md` | Selecting BOLD, HRF kernels, temporal averaging, EEG/MEG lead fields, or trainable readouts. |
 | `references/visualization-analysis-api.md` | Plotting or computing time-series, FC, FCD, and spectral summaries. |
 
-### Fitting, exploration, and scaling
+### Fitting and regime exploration
 
 | Reference | Open when |
 |---|---|
 | `references/fitting-with-objectives-api.md` | Selecting a fitter interface, objective, backend, search space, callback, or result field. |
 | `references/parameter-sweeps-and-regime-analysis.md` | Mapping regimes or sensitivities over parameter grids instead of fitting one target. |
-| `references/batch-transform-acceleration.md` | Writing custom transformed execution, batching parameters, timing JAX, or checkpointing long gradients. |
 
 ### HORN task training
 
@@ -281,12 +275,13 @@ Choose the workflow category first, then open only the smallest reference that o
 |---|---|
 | `references/horn-task-training.md` | Training HORN networks on minibatched sequence tasks with held-out metrics. |
 | `references/braintools/cogtask.md` | Generating phase-structured cognitive trials for direct HORN task training. |
-| `references/braintools/data-preprocessing.md` | Encoding custom experimental or task inputs before training; ordinary HORN features do not require it. |
 
-### Shared parameter and optimization support
+### Shared data, execution, and optimization support
 
 | Reference | Open when |
 |---|---|
+| `references/braintools/data-preprocessing.md` | Encoding custom experimental or task inputs before training; ordinary HORN features do not require it. |
+| `references/batch-transform-acceleration.md` | Writing custom transformed execution, batching parameters, timing JAX, or checkpointing long gradients. |
 | `references/brainstate/parameter-constraints-regularization.md` | Constraining or regularizing fitted parameters and directly trained HORN parameters. |
 | `references/brainstate/parameter-transforms-regularizers-catalog.md` | Selecting an exact transform or regularizer after the parameter workflow reference routes here. |
 | `references/braintools/metric.md` | Selecting supervised HORN losses, held-out metrics, or custom fitting statistics outside `brainmass.objectives`. |

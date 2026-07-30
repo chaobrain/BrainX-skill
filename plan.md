@@ -591,15 +591,14 @@ brainmass/
 
 The skill defines ten BrainMass references, two local BrainState parameter references, and six local Braintools training references.
 
-Route them through five workflow categories:
+Route them through four workflow categories:
 
 | Category | References |
 |---|---|
-| Model selection and simulation | `modellibrary.md`, `noiseprocesses.md`, `datasets-api.md` |
-| Networks, observation, and analysis | `coupling-network-api.md`, `forward-observation-api.md`, `visualization-analysis-api.md` |
-| Fitting, exploration, and scaling | `fitting-with-objectives-api.md`, `parameter-sweeps-and-regime-analysis.md`, `batch-transform-acceleration.md` |
-| HORN task training | `horn-task-training.md`, `braintools/cogtask.md`, `braintools/data-preprocessing.md` |
-| Shared parameter and optimization support | Both `brainstate/` references plus `braintools/metric.md`, `braintools/optimizer.md`, `braintools/parameter-initializer.md`, and `braintools/surrogate.md` |
+| Modeling, simulation, and analysis | `modellibrary.md`, `noiseprocesses.md`, `datasets-api.md`, `coupling-network-api.md`, `forward-observation-api.md`, `visualization-analysis-api.md` |
+| Fitting and regime exploration | `fitting-with-objectives-api.md`, `parameter-sweeps-and-regime-analysis.md` |
+| HORN task training | `horn-task-training.md`, `braintools/cogtask.md` |
+| Shared data, execution, and optimization support | `braintools/data-preprocessing.md`, `batch-transform-acceleration.md`, both `brainstate/` references, `braintools/metric.md`, `braintools/optimizer.md`, `braintools/parameter-initializer.md`, and `braintools/surrogate.md` |
 
 | Canonical reference | Need | Crafting source |
 |---|---|---|
