@@ -5,9 +5,24 @@ description: Use first for every BrainX modeling, simulation, training, review, 
 
 # BrainX general guard
 
-## Purpose and boundary
+## Never inspect BrainX packages in the venv. for knowledge, ONLY check presence
 
-Open this guard before any package skill for every BrainX modeling task. First identify every modeling scale explicitly represented, then open the package skills that own those scales and keep this guard active as the cross-cutting implementation layer.
+Treat BrainX packages in the active virtual environment only as execution dependencies, never as sources of modeling knowledge.
+
+- **ONLY check presence.** Determine whether each required BrainX package is present, then stop inspecting the environment.
+- **NEVER investigate installed content.** Do not enumerate package files, modules, symbols, signatures, docstrings, runtime definitions, or object internals.
+- **NEVER read installed source code.** Do not open or read any BrainX source code in the virtual environment.
+
+
+## Study modeling skills and task-relevant scripts
+
+1. Treat the selected modeling skills as the authoritative guide to BrainX modeling, dive deep into the skill.
+2. Follow the skill's exact routing instructions. Open every reference that are likely relevant by the user's task.
+3. Identify the example scripts referenced by the skill or its routed references. Open and study every script that is highly related to the user's task.
+4. Trace each relevant script end to end.
+5. Derive the implementation from those canonical patterns, then adapt only the parts required by the user's scientific model.
+
+
 
 ## Select modeling skills by represented scale
 
@@ -23,8 +38,6 @@ Select every row supported by the user's task. A single-scale task opens one mod
 | Cellular mechanisms coupled to aggregate neural-mass dynamics | BrainCell + BrainMass |
 | Cellular biophysics, point-neuron networks, and aggregate population dynamics interacting in one workflow | BrainCell + BrainPy-State + BrainMass |
 
-Use the finest explicitly modeled unit to distinguish adjacent scales: point neurons select BrainPy-State, explicit cellular mechanisms select BrainCell, and aggregate population variables select BrainMass.
-
 ## Write BrainX-native code
 
 Start from the scientific concept and use the selected BrainX skills to construct the workflow. Avoid raw NumPy or JAX unless at an explicit interoperability boundary or after verifying an API gap.
@@ -35,14 +48,20 @@ Use high-level APIs as the abstraction boundary: simulation code should state th
 
 | Need | Prefer |
 |---|---|
-| Physical values, array creation or structure, mathematical operations | BrainUnit quantities and `brainunit.math` |
-| Connectivity, encoding, inputs, initialization, integration, metrics, optimization, surrogate gradients, training, visualization | `braintools.conn`, `input`, `init`, `quad`, `metric`, `optim`, `surrogate`, `trainer`, or `visualize` |
-| Mutable model state, compilation, differentiation, batching, control flow, randomness | `brainstate.State`, `brainstate.nn.Module`, `brainstate.transform`, and `brainstate.random` |
-| Cells, events, networks, mass models, or traces | The corresponding BrainCell, BrainEvent, BrainPy-State, BrainMass, or BrainTrace abstraction |
+| array creation or structure, mathematical operations | BrainUnit quantities and `brainunit.math` |
+| Connectivity, encoding, inputs, initialization, integration, metrics, optimization, surrogate gradients, training, visualization | `braintools` |
+
 
 Do not let code grow around manual indexing, reshaping, reductions, equations, loops, or bookkeeping. Prefer one named BrainX operation or Module over a chain of generic primitives.
 
 Write custom logic only when it expresses model behavior that the ecosystem does not already provide. Verify the owning skill, reference, or official API page before using an unfamiliar name or signature.
+
+## Keep plotting code short without lowering figure quality
+
+Use high-level `matplotlib.pyplot` APIs for standard scientific plots. Prefer a compact sequence of `plt.figure()`, `plt.plot()`, labeling, layout, and display calls over low-level Figure, Axes, Artist, or styling machinery when the high-level API expresses the same figure clearly.
+
+
+Brevity applies to the code, not the figure's scientific content or visual quality.
 
 
 ## Transform stateful execution
@@ -55,7 +74,7 @@ Transform the complete stateful operation with `brainstate.transform` whenever p
 | `brainstate.transform.for_loop` | Run a fixed time or data sequence when iteration-to-iteration effects live in `State`; it slices leading input axes and stacks per-step outputs. |
 | `brainstate.transform.scan` | Run a sequence when an ordinary explicit carry must pass between iterations. |
 
-Do not use a Python loop for simulation timesteps, recurrent sequences, or other repeated State updates that should execute as one compiled operation. Keep Python loops for static Module construction, configuration, host-side orchestration, and debugging outside the transformed execution path.
+Do not use a Python loop for simulation timesteps, recurrent sequences, or other repeated State updates that should execute as one compiled operation.
 
 Use raw JAX transformations only for pure array or PyTree functions that do not close over BrainState `State`.
 

@@ -1,6 +1,6 @@
 ---
 name: brainx-install
-description: "Manage BrainX Python package installation and package state: install, set up, upgrade, downgrade, pin, migrate, uninstall, or clean up BrainX; select CPU, CUDA 12, CUDA 13, or TPU package extras; and reconcile BrainX release, dependency, and virtual-environment compatibility. Use only for requests about installing or removing packages, package versions, dependency constraints, pip or virtual-environment setup, or device-specific package builds. Do not use for BrainX modeling, simulation, APIs, coding, application debugging, performance, or other general BrainX questions."
+description: " Gently check whether the BrainX meta-package is installed in the intended Python environment; if it is absent, open this skill. use this skill to install, set up, upgrade, downgrade, pin, migrate, uninstall, or clean up BrainX."
 ---
 
 # BrainX Install
@@ -67,7 +67,7 @@ Determine whether the intended installation is for:
 - `cuda13`
 - `tpu`
 
-Do not treat detected hardware as the user's choice. If the target is unstated, implied, contradictory, or unclear, question the user directly and persistently until they explicitly choose one device target. Resolve whether they mean the current machine, a container, a remote host, a cluster node, or another deployment environment. Never infer CUDA 12 or CUDA 13 from GPU visibility alone; consider the NVIDIA driver, toolkit or container runtime, and the intended execution host.
+Do not treat detected hardware as the user's choice. If the target is unstated, implied, contradictory, or unclear, question the user directly and persistently until they explicitly choose one device target.
 
 Reflect the understood requirement back to the user before release selection. Use wording such as:
 
@@ -161,7 +161,7 @@ Verification passes only when:
 
 Do not modify manifests, lockfiles, requirements files, or unrelated environments.
 
-## 7. Report
+## 7. Report and Post-install handoff
 
 Report:
 
@@ -171,7 +171,10 @@ Report:
 - verification command output;
 - final status: `PASS` or `FAIL`, with the reason.
 
-For a pip failure, include the exit status and relevant stderr and state that verification was not run. For a verification failure, identify the failed condition. Report `PASS` only when both imports succeed and JAX sees the confirmed backend.
+After reporting a `PASS`, explicitly tell the user:
+
+> This session is for installation of the BrainX package. Installation is complete; Please open another codex chat so that the context is clean
+
 
 ## Official Commands to use
 

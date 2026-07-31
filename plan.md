@@ -967,7 +967,7 @@ The acceleration skill and its transform references route only to the local rand
 
 - Open first for every BrainX modeling, simulation, training, review, debugging, or optimization task.
 - Identify every modeling scale explicitly represented, then open only the package skills that own those scales. Keep the guard active as the cross-cutting implementation layer.
-- Follow: classify represented scales → open the owning package skills → choose high-level BrainX APIs → compose readable code → transform stateful execution → validate scientific behavior.
+- Follow: classify represented scales → check only whether required packages are present → study the owning package skills and task-relevant example scripts → choose high-level BrainX APIs → compose readable code → transform stateful execution → validate scientific behavior.
 
 #### Modeling-scale routing
 
@@ -983,11 +983,28 @@ The acceleration skill and its transform references route only to the local rand
 
 Use the finest explicitly modeled unit to distinguish adjacent scales: point neurons select BrainPy-State, explicit cellular mechanisms select BrainCell, and aggregate population variables select BrainMass.
 
+#### Installed-package inspection boundary
+
+- Treat BrainX packages in the active virtual environment only as execution dependencies, never as modeling documentation.
+- Check only whether each required package is present or importable, then stop inspecting the environment.
+- Never query versions, distribution metadata, dependencies, installation history, installed files, modules, symbols, signatures, docstrings, runtime definitions, or object internals.
+- Never open, search, or read installed source, type stubs, generated files, caches, or build metadata.
+- If a package is present, move immediately to the selected modeling skills. If it is absent, report only its absence and route installation work to BrainX-install.
+
+#### Required modeling-skill and script study
+
+1. Read every selected modeling skill completely and identify its mental model, lifecycle, invariants, canonical workflow, decision boundaries, and common failures.
+2. Follow its exact routing instructions and open every reference required by the user's task.
+3. Open and study every referenced example script that is highly related to the task; reading only the root skill is incomplete.
+4. Trace model construction, initialization, State and data flow, execution, transformations, outputs, and validation through each relevant script.
+5. Derive the implementation from those canonical patterns before adapting it to the user's scientific model.
+
 #### Essential principles
 
 1. Prioritize readability through high-level APIs. Use BrainX, BrainTools, and BrainUnit wrappers to own complex array manipulation, unit propagation, State threading, numerical steps, and infrastructure while simulation code states scientific intent.
 2. Write BrainX-native code. Keep BrainX abstractions intact; isolate generic NumPy or JAX code to explicit interoperability boundaries or verified API gaps.
 3. Transform stateful execution. Use `brainstate.transform` for State-aware compilation, differentiation, batching, and control flow; use `for_loop` when effects live in `State` and `scan` when an explicit carry must pass between steps.
+4. Keep plotting code short without lowering figure quality. Use high-level `matplotlib.pyplot` calls for standard scientific plots instead of low-level Figure, Axes, Artist, or styling machinery when both produce the same result. Code brevity must not remove an intentional figure size, units, readable labels, a descriptive title, comparison styles, a needed legend, an unclipped layout, or sufficient PNG resolution.
 
 #### Reference routing
 
@@ -1020,8 +1037,9 @@ Use the finest explicitly modeled unit to distinguish adjacent scales: point neu
 #### Purpose
 
 - Boundary: inspect, diagnose, plan, modify with approval, and verify a compatible BrainX environment.
-- Activate for installation, upgrade, downgrade, repair, version mismatch, Python compatibility, CPU/CUDA/TPU selection, or import failures.
-- Primary path: inspect → collect versions → match release tuple → assess Python/hardware → propose exact changes → obtain approval → modify → verify.
+- Before a BrainX task, gently check whether the BrainX meta-package is installed in the intended Python environment; activate this skill when it is absent.
+- Also activate for installation, upgrade, downgrade, repair, version mismatch, Python compatibility, CPU/CUDA/TPU selection, or import failures.
+- Primary path: inspect → collect versions → match release tuple → assess Python/hardware → propose exact changes → obtain approval → modify → verify → hand the original task back to the relevant BrainX package skill.
 
 #### Essential Concepts
 
@@ -1044,6 +1062,7 @@ Use the finest explicitly modeled unit to distinguish adjacent scales: point neu
 8. Obtain explicit approval.
 9. Apply the minimal approved change.
 10. Verify tuple, imports, dependencies, hardware, and project behavior.
+11. After a passing installation, state that the section was for BrainX package installation and return to the user's original BrainX task.
 
 Minimal inline scripts: read-only shell/Python inspection commands and post-install verification commands.
 
@@ -1085,6 +1104,7 @@ No nested Markdown layer is declared.
 - GPU visibility treated as consent.
 - Lockfiles or manifests modified without approval.
 - Broad eager dependency upgrade used.
+- A passing installation treated as completion of the user's original modeling or coding task.
 - Malformed frontmatter prevents reliable skill discovery.
 
 ---
