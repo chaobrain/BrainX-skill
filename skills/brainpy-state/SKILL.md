@@ -1,6 +1,6 @@
 ---
 name: brainpy-state
-description: Use for point-neuron modeling, from individual neurons to spiking networks with synapses and projections. Use alone for point-neuron studies or together with BrainCell and/or BrainMass when point-neuron dynamics participate in a multiscale model.
+description: Use for point-neuron modeling, from individual neurons to spiking networks with synapses and projections. Use alone for point-neuron studies or together with BrainCell and/or BrainMass when point-neuron dynamics participate in a multiscale model. Use as the legacy BrainPy routing entry only when an existing codebase uses legacy `brainpy`, uses neither units nor BrainTrace, and the user explicitly asks to preserve it.
 ---
 
 # BrainPy-State
@@ -10,6 +10,10 @@ description: Use for point-neuron modeling, from individual neurons to spiking n
 Use this skill for the native `brainpy.state` modeling path: compose point neurons, synapses, communication operators, synaptic outputs, projections, inputs, plasticity, and readouts into simulations or trainable spiking neural networks.
 
 Route NEST-compatible work to `references/nest-compatible/nest-workflow.md`, and online-learning execution to BrainTrace.
+
+Open `references/brainPy(legacy)/brainpy legacy workflow.md` only when the workspace already contains legacy `brainpy` code, contains no BrainUnit quantities, unit-aware APIs, and when the user explicitly asks to preserve old BrainPy. Use native BrainPy-State for new project is HIGHLY RECOMMENDED; use BrainPy-State with BrainCell for all cellular modeling.
+
+Treat that workflow as the only first-level legacy reference. Do not open or route directly to any other Markdown under `references/brainPy(legacy)/`; let the workflow select those second-level references.
 
 ## Underlying principle of BrainPy-State
 
@@ -217,6 +221,7 @@ Open only the smallest reference that owns the decision.
 | `references/component-selection.md` | Choosing a neuron, synapse, synaptic output, plasticity model, input generator, or readout from the documented native API families |
 | `references/projection-patterns.md` | Choosing projection alignment or API form, adding delays or short-term plasticity, using direct/delta projections, or adding gap junctions |
 | `references/nest-compatible/nest-workflow.md` | Using NEST/PyNEST model names, `Simulator`, devices, connection rules, spatial networks, parity, porting, or the bundled NEST-compatible full scripts |
+| `references/brainPy(legacy)/brainpy legacy workflow.md` | Use as the only first-level legacy entry when existing legacy `brainpy` has no BrainUnit, unit-aware, or BrainTrace code and the user explicitly requests it; this workflow routes all second-level legacy references |
 | `skills/brainevent/SKILL.md` | Selecting sparse event representations, connectivity formats, event operators, plasticity kernels, or custom kernels |
 | `skills/brainevent/references/scripts/coba_ei_teaching.py` | Learning how to incorporate efficient BrainEvent communication into a complete BrainPy COBA E/I network while preserving BrainPy dynamics and BrainState execution |
 

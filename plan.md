@@ -657,8 +657,9 @@ Route them through four workflow categories:
 
 - Boundary: individual point-neuron models and point-neuron-based spiking neural networks.
 - Activate when neurons are explicitly represented as point units or connected into a spiking network. Activate alone for point-neuron studies or with BrainCell and/or BrainMass when point-neuron dynamics participate in a multiscale model.
-- Primary path: choose native versus NEST path → select components → initialize → run transformed rollout → monitor/train → validate.
-- branches: component catalogs, custom models, training, Braintools, gallery scripts, NEST compatibility.
+- Route to legacy BrainPy only when an existing codebase already uses legacy `brainpy`, contains no BrainUnit, unit-aware, or BrainTrace code, and the user explicitly asks to preserve old BrainPy. Route new point-neuron code to native BrainPy-State and all cellular modeling to BrainPy-State with BrainCell.
+- Primary path: choose native versus NEST-compatible path, or confirm the strict legacy-maintenance gate → select components → initialize → run transformed rollout → monitor/train → validate.
+- branches: component catalogs, custom models, training, Braintools, gallery scripts, NEST compatibility, and gated legacy maintenance.
 
 #### Essential Concepts
 
@@ -683,7 +684,7 @@ Route them through four workflow categories:
 
 #### Canonical Workflow Scripts Included in the Skill
 
-1. Classify native BrainPy versus NEST-compatible request.
+1. Classify native BrainPy-State, NEST-compatible, or explicitly requested unitless legacy maintenance.
 2. Select neuron, synapse, output, projection, and optional readout.
 3. Construct the Module/network with units.
 4. Initialize all State.
@@ -711,6 +712,8 @@ brainpy-state/references/
 │   ├── parameter-initializer.md
 │   ├── surrogate.md
 │   └── brainstate-control-flow-patterns.md
+├── brainPy(legacy)/
+│   └── brainpy legacy workflow.md [only first-level legacy entry]
 ├── nest-compatible/
 │   ├── nest-workflow.md
 │   ├── model-library.md
@@ -732,6 +735,8 @@ brainpy-state/references/
     └── training-snn.py
 ```
 
+`brainpy legacy workflow.md` is the only first-level BrainPy-State reference in the legacy branch. Its internal routing owns every other Markdown under `brainPy(legacy)/`; those files remain second-level and must not be linked directly from `skills/brainpy-state/SKILL.md`.
+
 | Canonical reference | Need | Crafting source |
 |---|---|---|
 | `skills/brainpy-state/references/array-creation.md` | Construct specialized unit-aware current ranges, grids, filled arrays, template-shaped arrays, matrix patterns, index arrays, or tree-shaped arrays | [Array Creation](https://brainunit.readthedocs.io/unit_operations/array_creation.html), with array constructors from the [brainunit.math API](https://brainunit.readthedocs.io/apis/brainunit.math.html) |
@@ -743,6 +748,7 @@ brainpy-state/references/
 | `skills/brainpy-state/references/braintools/surrogate.md` | Select functional, reusable, or custom surrogate gradients and validate their backward signal | [Surrogate-gradient API](https://brainx.chaobrain.com/braintools/apis/surrogate.html) |
 | `skills/brainpy-state/references/braintools/brainstate-control-flow-patterns.md` | Select State-aware loops, explicit carry, transformed branches, and checkpointed long-rollout BPTT | [Control Flow](https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html), [checkpointing how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-long-rollouts-checkpoint.html) |
 | `skills/brainpy-state/references/brain-dynamics-delay-protocol.md` | BrainPy projection delay integration through direct `delay=` or delayed prefetch; route general buffers and manual delayed State to BrainState | [BrainPy delays how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html), [AlignPost projection API](https://brainx.chaobrain.com/brainpy-state/apis/generated/brainpy.state.AlignPostProj.html), [BrainState delay protocol](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html) |
+| `skills/brainpy-state/references/brainPy(legacy)/brainpy legacy workflow.md` | Maintain existing legacy `brainpy` only when it contains no BrainUnit, unit-aware, or BrainTrace code and the user explicitly requests old BrainPy; exclude new code and cellular modeling | User-provided legacy BrainPy HTML sources mirrored under `skills/brainpy-state/references/brainPy(legacy)/` |
 
 
 ##### NEST-compatible nested branch
@@ -792,6 +798,7 @@ Location for all NEST scripts: `references/nest-compatible/nest-workflow.md` ful
 - All State differentiated.
 - BrainEvent treated as a separate simulator.
 - Online-learning APIs expected from BrainPy instead of BrainTrace.
+- Legacy BrainPy selected without existing legacy code, a unit- and BrainTrace-free codebase, and an explicit user request, or selected for cellular modeling.
 - Placeholder `scan` block left without an official script source.
 
 ---
