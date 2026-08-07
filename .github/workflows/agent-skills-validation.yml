@@ -6,12 +6,14 @@ on:
       - ".github/scripts/agent-skills-workflow.test.mjs"
       - ".github/workflows/agent-skills-validation.yml"
       - "manifest.json"
+      - "package.json"
       - "skills/**"
   pull_request:
     paths:
       - ".github/scripts/agent-skills-workflow.test.mjs"
       - ".github/workflows/agent-skills-validation.yml"
       - "manifest.json"
+      - "package.json"
       - "skills/**"
   workflow_dispatch:
 
@@ -43,23 +45,42 @@ jobs:
       - name: Verify the skill manifest
         shell: bash
         run: |
-          jq -e '
-            .skills
-            | type == "array"
-              and length > 0
-              and all(.[]; type == "string")
-              and length == (unique | length)
-          ' manifest.json > /dev/null
+          if ! jq -e '
+            .schemaVersion == 1
+            and (
+              .skills
+              | type == "array"
+                and length > 0
+                and all(.[]; type == "string" and test("^[a-z0-9]+(-[a-z0-9]+)*$"))
+                and length == (unique | length)
+            )
+          ' manifest.json > /dev/null; then
+            echo "manifest.json must use schemaVersion 1 and list unique, lowercase-kebab skill names." >&2
+            exit 1
+          fi
 
-          mapfile -t manifest_skills < <(jq -r '.skills[]' manifest.json | sort)
-          mapfile -t directory_skills < <(
-            find skills -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort
-          )
+          loose_entries="$(find skills -mindepth 1 -maxdepth 1 -not -type d -printf '%f\n' | sort)"
+          if [[ -n "$loose_entries" ]]; then
+            echo "skills/ may contain only skill directories. Unexpected entries:" >&2
+            printf '%s\n' "$loose_entries" | sed 's/^/  /' >&2
+            exit 1
+          fi
 
-          if [[ "${manifest_skills[*]}" != "${directory_skills[*]}" ]]; then
+          work="$(mktemp -d)"
+          jq -r '.skills[]' manifest.json | sort > "$work/manifest"
+          find skills -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort > "$work/directories"
+          jq -r '.files[] | select(startswith("skills/")) | ltrimstr("skills/") | sub("/$"; "")' \
+            package.json | sort > "$work/published"
+
+          if ! diff --unified=0 --label manifest.json --label 'skills/ directories' \
+            "$work/manifest" "$work/directories"; then
             echo "manifest.json does not match the skill directories." >&2
-            printf 'Manifest: %s\n' "${manifest_skills[*]}" >&2
-            printf 'Directories: %s\n' "${directory_skills[*]}" >&2
+            exit 1
+          fi
+
+          if ! diff --unified=0 --label 'skills/ directories' --label 'package.json files' \
+            "$work/directories" "$work/published"; then
+            echo "package.json files does not publish every skill directory." >&2
             exit 1
           fi
 

@@ -9,13 +9,19 @@ const cursor = require('../../adapters/cursor');
 const windsurf = require('../../adapters/windsurf');
 const gemini = require('../../adapters/gemini');
 const opencode = require('../../adapters/opencode');
+const antigravity = require('../../adapters/antigravity');
 const { prepareAdapter, AdapterOperationError } = require('./adapter-transaction');
 const { validateBundle } = require('./bundle');
 const { PACKAGE_NAME, RECEIPT_SCHEMA_VERSION } = require('./constants');
-const { resolveDestinationRoot, resolveLocations } = require('./paths');
+const {
+  groupAdaptersByDestination,
+  resolveDestinationRoot,
+  resolveLocations,
+  samePath,
+} = require('./paths');
 const { readReceipt, writeReceiptAtomic } = require('./receipt');
 
-const DEFAULT_ADAPTERS = [claude, codex, cursor, windsurf, gemini, opencode];
+const DEFAULT_ADAPTERS = [claude, codex, cursor, windsurf, gemini, antigravity, opencode];
 
 function writeLine(stream, text = '') {
   stream.write(`${text}\n`);
@@ -26,13 +32,30 @@ function adapterLabel(adapter) {
 }
 
 function formatAdapterFailure(error, stderr) {
-  writeLine(stderr, `x ${adapterLabel(error.adapter)} installation failed`);
+  writeLine(stderr, `x ${error.affectedLabels || adapterLabel(error.adapter)} installation failed`);
   writeLine(stderr, `  Path: ${error.affectedPath}`);
   writeLine(stderr, `  Action not performed: ${error.action}`);
   writeLine(stderr, `  Resolve: ${error.resolution}`);
   if (error.cause && error.cause.message) {
     writeLine(stderr, `  Detail: ${error.cause.message}`);
   }
+}
+
+// Ownership is a property of the destination directory, not of one harness, so a
+// directory installed for Codex is also BrainX-owned when Antigravity is added later.
+function findPreviousRecord(receipt, group, pathApi) {
+  if (!receipt) {
+    return undefined;
+  }
+  const ownRecord = group.adapters
+    .map((adapter) => receipt.adapters[adapter.id])
+    .find(Boolean);
+  if (ownRecord) {
+    return ownRecord;
+  }
+  return Object.values(receipt.adapters).find((record) => (
+    record && samePath(record.destination, group.destination, pathApi)
+  ));
 }
 
 function asAdapterError(adapter, destination, error) {
@@ -125,12 +148,16 @@ async function runInstaller(command, options = {}) {
   const committedTransactions = [];
   const failures = [];
 
-  for (const adapter of adapters) {
-    const destination = destinations[adapter.id];
-    const previousRecord = receipt ? receipt.adapters[adapter.id] : undefined;
+  // Harnesses may share one skill directory (Codex and Antigravity both use
+  // <cwd>/.agents/skills). Install once per destination and record the same
+  // ownership for every harness that resolves there.
+  for (const group of groupAdaptersByDestination(adapters, destinations, pathApi)) {
+    const { destination } = group;
+    const [leadAdapter] = group.adapters;
+    const previousRecord = findPreviousRecord(receipt, group, pathApi);
     try {
       const transaction = await prepareAdapter(
-        adapter,
+        leadAdapter,
         destination,
         bundle,
         previousRecord,
@@ -140,26 +167,39 @@ async function runInstaller(command, options = {}) {
           uuid: options.uuid,
           timestamp,
           copySkill: options.copySkill,
-          homeDir: resolveDestinationRoot(destination, adapter, pathApi),
+          homeDir: resolveDestinationRoot(destination, leadAdapter, pathApi),
         },
       );
-      if (transaction.status === 'current') {
-        results.push(transaction);
-        continue;
+      if (transaction.status !== 'current') {
+        await transaction.commit();
+        committedTransactions.push(transaction);
       }
-      await transaction.commit();
-      committedTransactions.push(transaction);
-      results.push({ ...transaction, status: 'installed' });
+      const status = transaction.status === 'current' ? 'current' : 'installed';
+      for (const adapter of group.adapters) {
+        results.push({
+          status,
+          adapter,
+          destination,
+          record: { ...transaction.record, label: adapter.label },
+        });
+      }
     } catch (error) {
-      failures.push(asAdapterError(adapter, destination, error));
+      const failure = asAdapterError(leadAdapter, destination, error);
+      failure.affectedLabels = group.adapters.map(adapterLabel).join(', ');
+      failures.push(failure);
     }
   }
 
-  if (committedTransactions.length > 0) {
-    const nextAdapters = receipt ? { ...receipt.adapters } : {};
-    for (const transaction of committedTransactions) {
-      nextAdapters[transaction.adapter.id] = transaction.record;
-    }
+  const nextAdapters = receipt ? { ...receipt.adapters } : {};
+  for (const result of results) {
+    nextAdapters[result.adapter.id] = result.record;
+  }
+  const receiptChanged = results.length > 0
+    && (committedTransactions.length > 0
+      || !receipt
+      || JSON.stringify(receipt.adapters) !== JSON.stringify(nextAdapters));
+
+  if (receiptChanged) {
     const nextReceipt = {
       schemaVersion: RECEIPT_SCHEMA_VERSION,
       packageName: PACKAGE_NAME,

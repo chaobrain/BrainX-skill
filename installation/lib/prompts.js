@@ -2,6 +2,7 @@
 
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const { adapterSkillPath, adapterSkillPaths } = require('./paths');
 
 class NonInteractiveInstallError extends Error {
   constructor() {
@@ -21,8 +22,13 @@ function harnessLabel(adapter) {
   return adapter.promptLabel || adapter.label;
 }
 
-function harnessRoot(adapter) {
-  return adapter.homePath.slice(0, -1);
+function harnessRoot(adapter, scope) {
+  return adapterSkillPath(adapter, scope).slice(0, -1);
+}
+
+function harnessHint(adapter) {
+  const variants = adapterSkillPaths(adapter).map((skillPath) => skillPath.join('/'));
+  return `(${[...new Set(variants)].join(' or ')})`;
 }
 
 async function isDirectory(directory, fsApi) {
@@ -47,9 +53,9 @@ async function detectHarnesses(options) {
       continue;
     }
     seen.add(adapter.id);
-    const root = harnessRoot(adapter);
-    const globalRoot = pathApi.resolve(options.homeDir, ...root);
-    const projectRoot = pathApi.resolve(options.cwd, ...root);
+    const globalPath = harnessRoot(adapter, 'global');
+    const globalRoot = pathApi.resolve(options.homeDir, ...globalPath);
+    const projectRoot = pathApi.resolve(options.cwd, ...harnessRoot(adapter, 'project'));
     const globalDetected = await isDirectory(globalRoot, fsApi);
     const projectDetected = globalRoot === projectRoot
       ? globalDetected
@@ -59,7 +65,7 @@ async function detectHarnesses(options) {
       detected.push({
         id: adapter.id,
         label: harnessLabel(adapter),
-        displayPath: globalDetected ? `~/${root.join('/')}` : projectRoot,
+        displayPath: globalDetected ? `~/${globalPath.join('/')}` : projectRoot,
       });
     }
   }
@@ -172,7 +178,7 @@ async function promptForInstall(options) {
       choices: options.adapters.map((adapter) => ({
         name: adapter.id,
         message: harnessLabel(adapter),
-        hint: `(${adapter.homePath.join('/')})`,
+        hint: harnessHint(adapter),
       })),
       validate(value) {
         return value.length > 0 || 'Select at least one harness.';
