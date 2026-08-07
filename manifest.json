@@ -8,6 +8,7 @@
     "brainunit",
     "brainstate",
     "brainevent",
-    "brainpy-state"
+    "brainpy-state",
+    "braintrace"
   ]
 }
