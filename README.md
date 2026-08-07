@@ -58,7 +58,13 @@ Codex:       ~/.agents/skills/<skill-name> or <cwd>/.agents/skills/<skill-name>
 Cursor:      ~/.cursor/skills/<skill-name> or <cwd>/.cursor/skills/<skill-name>
 Windsurf:    ~/.codeium/windsurf/skills/<skill-name> or <cwd>/.codeium/windsurf/skills/<skill-name>
 Gemini CLI:  ~/.gemini/skills/<skill-name> or <cwd>/.gemini/skills/<skill-name>
+Antigravity: ~/.gemini/config/skills/<skill-name> or <cwd>/.agents/skills/<skill-name>
 OpenCode:    ~/.config/opencode/skills/<skill-name> or <cwd>/.config/opencode/skills/<skill-name>
 ```
+
+Antigravity reads global skills from `~/.gemini/config/skills` and workspace skills
+from `<cwd>/.agents/skills`. In project scope that workspace directory is the same one
+Codex uses, so selecting both harnesses installs the skills once and records them for
+both.
 
 Installation ownership is recorded in `~/.brainx/receipt.json`.
