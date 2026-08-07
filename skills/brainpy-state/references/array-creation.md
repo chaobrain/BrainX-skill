@@ -143,9 +143,9 @@ import jax.numpy as jnp
 
 ## Routing
 
-`array_split()` appears on the tutorial page, but it is a structural operation; route it to `array-mechanics.md`.
+`array_split()` appears on the tutorial page, but it is a structural operation; route it to `skills/brainunit/references/array-mechanics.md`.
 
-Backend extraction and `as_numpy()` belong in `array-mechanics.md` because they cross an existing array boundary rather than create a scientific quantity from source values.
+Backend extraction and `as_numpy()` belong in `skills/brainunit/references/array-mechanics.md` because they cross an existing array boundary rather than create a scientific quantity from source values.
 
 ## Cross-family gotchas
 

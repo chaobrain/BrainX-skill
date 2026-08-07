@@ -5,7 +5,13 @@ description: Use first for every BrainX modeling, simulation, training, review, 
 
 # BrainX general guard
 
-## Never inspect BrainX packages in the venv. for knowledge, ONLY check presence
+## Purpose and boundary
+
+Route every BrainX modeling, simulation, training, review, debugging, or optimization task to the package skills that own it, then enforce the ecosystem-wide rules that no single package skill owns: never mine the installed packages for knowledge, write BrainX-native code, prefer high-level APIs, and transform stateful execution.
+
+This skill supplies no modeling APIs of its own. It selects the owning skills and hands the task to them; every signature, constructor, and workflow comes from those skills and their references.
+
+## Never inspect BrainX packages in the venv for knowledge
 
 Treat BrainX packages in the active virtual environment only as execution dependencies, never as sources of modeling knowledge.
 
@@ -26,7 +32,7 @@ Treat BrainX packages in the active virtual environment only as execution depend
 
 ## Select modeling skills by represented scale
 
-Select every row supported by the user's task. A single-scale task opens one modeling skill; a multiscale task may open two or all three.
+Select every row supported by the user's task. A single-scale task opens one modeling skill; a multiscale task may open two or all three of the scale skills.
 
 | The task explicitly represents | Open |
 |---|---|
@@ -37,6 +43,18 @@ Select every row supported by the user's task. A single-scale task opens one mod
 | Point-neuron spiking networks coupled to aggregate regional dynamics | BrainPy-State + BrainMass |
 | Cellular mechanisms coupled to aggregate neural-mass dynamics | BrainCell + BrainMass |
 | Cellular biophysics, point-neuron networks, and aggregate population dynamics interacting in one workflow | BrainCell + BrainPy-State + BrainMass |
+
+## Also select skills by cross-cutting concern
+
+Scale is not the only axis. Open each row whose concern the task contains, in addition to every scale skill selected above.
+
+| The task also involves | Open |
+|---|---|
+| Physical quantities, units, dimensional mismatches, unit-aware math, or suspicious bare numbers | BrainUnit |
+| Mutable State and `.value`, Module graphs, state initialization, environment scoping, or state-aware `jit`/`grad`/`vmap` | BrainState |
+| Binary firing events, sparse or probabilistic connectivity, spike-driven postsynaptic input, or activity-dependent weight changes | BrainEvent |
+| Eligibility-trace online learning, D-RTRL or pp-prop selection, or training a recurrent or spiking model without BPTT | BrainTrace |
+| Installing, upgrading, pinning, migrating, or removing BrainX packages | BrainX-Install |
 
 ## Write BrainX-native code
 

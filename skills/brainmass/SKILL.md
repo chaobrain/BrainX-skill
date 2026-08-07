@@ -69,7 +69,7 @@ assert result["ts"].shape == (1800,)
 
 Open `references/modellibrary.md` when choosing among model families, distinguishing similarly named Wong-Wang variants, comparing state cost, or locating a model's observable. Open `references/datasets-api.md` when the workflow needs bundled or registered input data.
 
-##  Noise and stochastic run
+## Noise and stochastic run
 
 Noise belongs to the model, while `batch_size` asks `Simulator` to initialize and run independent State realizations in one time-major result.
 
