@@ -261,6 +261,7 @@ Verify `postsynaptic_input.shape == connectivity.shape[1:]` for vector input and
 | `references/custom-operators-gpu.md` | Open when a custom operation targets GPU; it contains Numba CUDA, Warp, raw CUDA, GPU and multi-backend registration, stream and ABI rules, compiler controls, caching, diagnostics, and verification workflows. |
 
 ## Application script examples
+
 | Reference | Open when |
 |---|---|
 | `references/scripts/coba_ei_teaching.py` | Open for the shared BrainEvent and BrainPy teaching example; it uses `BinaryArray` with interchangeable `FixedNumPerPre`, `CSR`, and dense connectivity for efficient event-driven communication into BrainPy `LIFRef`, `Expon`, and `COBA` dynamics inside one compiled BrainState loop. |
