@@ -23,7 +23,7 @@ Permitted subdirectories:
 
 | Subdirectory | Contents |
 |---|---|
-| `references/` | Deep, on-demand Markdown. May nest one level further for grouping (`references/brainstate/`, `references/libraries/`). |
+| `references/` | Deep, on-demand Markdown. May nest up to two levels further for grouping (`references/brainstate/`, `references/nest-compatible/scripts/`). |
 | `references/scripts/` or `scripts/` | Runnable `.py` files the agent can copy. |
 | `agents/` | Optional per-platform interface metadata (e.g. `agents/openai.yaml`). |
 
@@ -74,7 +74,7 @@ State in one block:
 
 Prefer the vocabulary a researcher would type ("dimensional mismatch",
 "suspicious bare numbers", "spike-driven postsynaptic input") over internal
-jargon. Existing descriptions run 240–580 characters; that is the working range.
+jargon. Existing descriptions run 225–430 characters; that is the working range.
 
 ### Rule 5 — Keep skill boundaries disjoint
 
@@ -118,13 +118,20 @@ so and treat it as its own piece of work.
 
 ### Rule 10 — Validate before claiming the skill is done
 
-Run both checks and paste the output:
+Run these checks and paste the output. Validate every skill, not just the one you
+touched — a routing change in one skill can strand a file in another:
 
 ```bash
 python -m pip install --disable-pip-version-check skills-ref==0.1.1
-python -c 'from skills_ref.cli import main; main()' validate skills/<name>
+for d in skills/*/; do
+  python -c 'from skills_ref.cli import main; main()' validate "$d"
+done
 node --test .github/scripts/*.test.mjs
 ```
+
+Neither check reads routing tables, so neither catches a dangling target or an
+unrouted file. Verify rule 20's two invariants yourself before claiming the skill
+is done.
 
 ---
 
@@ -238,10 +245,18 @@ Avoid vague directions such as "see the advanced guide."
 Organize the root `SKILL.md` in this order:
 
 > **Purpose and boundary → underlying mental model → operational sections →
-> reference routing → boundaries and common failures**
+> reference routing → application script examples → boundaries and common
+> failures**
 
-`## Purpose and boundary` is always the first heading after the frontmatter, and
-it states both what the skill covers and what it refuses.
+The first three are required. The last three are the tail: keep them in this
+relative order, and omit any that the skill does not need — a skill that ships no
+references has no routing table, one that ships no scripts has no script table,
+and `## Boundaries and common failures` is optional when the operational sections
+already state each failure beside the workflow it threatens.
+
+`## Purpose and boundary` is always the first `##` section, and it states both
+what the skill covers and what it refuses. An H1 title may precede it; nothing
+else may.
 
 ### Rule 18 — Give every operational section the same five-part shape
 
@@ -301,9 +316,9 @@ establish the decision boundary.
 > An API does not belong in the root merely because it is useful, common, or part
 > of the same package.
 
-### Rule 20 — End with a reference routing table
+### Rule 20 — Route every shipped file from a routing table
 
-Close `SKILL.md` with a `## Reference routing` table:
+Open the tail of `SKILL.md` with a `## Reference routing` table:
 
 ```markdown
 | Reference | Open when |
@@ -312,8 +327,24 @@ Close `SKILL.md` with a `## Reference routing` table:
 ```
 
 Give runnable examples their own `## Application script examples` table in the
-same form. Every reference and script file that ships must appear in exactly one
-routing row, and every routing row must point at a file that exists.
+same form, placed after the routing table. See rule 17 for what may follow.
+
+Two invariants hold across the whole skill:
+
+* **Every routing row points at a file that exists.** Write the path relative to
+  the skill root (`references/brainstate/optimizer.md`), not relative to the
+  citing file, and never as a bare filename. To route into another skill, give
+  the full repository path (`skills/brainunit/references/array-mechanics.md`).
+* **Every shipped `references/` and script file has exactly one inbound routing
+  row.** That row does not have to live in `SKILL.md`. A grouped family may be
+  delegated: `SKILL.md` routes to the family's workflow reference, and that
+  reference's own routing table owns its leaves. When you delegate, say so
+  explicitly and forbid the root from opening the leaves directly, as
+  `skills/braincell/SKILL.md` does for `references/multicompartment/`.
+
+This invariant covers `references/` and script files. `agents/` holds per-platform
+interface metadata that the harness reads, not content an agent routes to; it is
+not part of any routing table.
 
 ## References and scripts
 
