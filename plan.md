@@ -807,13 +807,15 @@ Location for all NEST scripts: `references/nest-compatible/nest-workflow.md` ful
 
 #### Purpose
 
-- Boundary: online learning with eligibility-trace propagation, BrainTrace layers/primitives, compiler graphs, and online-learning batching.
+- Boundary: relieve BPTT sequence-memory pressure and enable memory-efficient temporal training with BrainTrace layers, primitives, compiler graphs, and sequence drivers.
+- Treat online learning through eligibility traces as the mechanism for memory efficiency, not the primary routing goal.
 - Activate for D-RTRL, ES-D-RTRL, pp-prop, eligibility traces, `braintrace.compile`, hidden groups, ETP primitives, or excluded-weight debugging.
 - Primary path: define recurrent model → compile once → inspect graph → run online learner → differentiate → validate traced weights.
 - Advanced branches: primitives, algorithms, compiler diagnostics, hidden-state/batching modes.
 
 #### Essential Concepts
 
+- Relieve sequence-length-dependent BPTT memory with forward-maintained eligibility State.
 - Online learning and eligibility traces.
 - Use built-in`braintrace.nn` first.
 - `braintrace.compile`.

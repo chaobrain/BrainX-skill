@@ -1,63 +1,58 @@
 ---
 name: braintrace
-description: Use BrainTrace for eligibility-trace online learning in recurrent or spiking BrainX models, including ETP-aware construction, D-RTRL or pp-prop selection, compilation, graph inspection, sequence gradients, and eligibility-State lifecycle.
+description: BrainTrace relieves training-memory pressure in recurrent and spiking models by replacing BPTT's sequence-length-dependent graph with eligibility traces. Use this skill for memory-efficient temporal training, long sequences, BPTT out-of-memory problems, activation-memory reduction, and BrainTrace estimator selection or compilation. Do not use for general speed optimization, offline BPTT, or model dynamics.
 ---
 
 # BrainTrace
 
 ## Purpose and boundary
 
-Use BrainTrace to train recurrent or spiking models by carrying temporal credit forward in eligibility State. Follow this path:
+Use BrainTrace when recurrent or spiking training is limited by BPTT memory. Its broad purpose is to relieve sequence-length memory pressure: it accumulates eligibility traces during the forward sequence instead of retaining the full trajectory for reverse-mode differentiation.
 
-`build with braintrace.nn -> choose an algorithm -> compile once -> inspect -> reset both State systems -> train -> validate`
+Online learning is the mechanism for this memory efficiency, not the routing goal. Memory becomes constant in sequence length, not constant in total: eligibility storage still depends on the batch size, participating parameters, hidden dimensions, and selected algorithm.
 
-Route general `State`, `Module`, transformations, and optimizers to BrainState; neuron and synapse dynamics to BrainPy-State or BrainCell; and offline BPTT without eligibility traces away from BrainTrace.
+Follow this path:
+
+`build with braintrace.nn -> choose a trace representation -> compile once -> inspect -> reset both State systems -> drive the sequence -> update -> verify`
+
+Route general `State`, `Module`, transformations, and optimizer behavior to BrainState. Route neuron and synapse dynamics to BrainPy-State or BrainCell. Use ordinary BrainState training when offline BPTT is acceptable and eligibility traces are not required.
 
 ## Underlying principle of BrainTrace
 
-Hidden State represents recurrent memory. BrainTrace discovers State read and written by one model step and groups related values for online Jacobian computation.
+Hidden State represents the model's recurrent memory. It carries neural activity from one time step to the next.
 
-ETP operations represent parameter paths that receive temporal credit. The operation selects participation: an ETP primitive marks a plain `brainstate.ParamState` input in JAX IR; the equivalent unmarked JAX operation does not.
+ETP operations represent parameterized paths that need temporal credit. The operation marks participation: a parameter consumed by a BrainTrace ETP operation can receive an eligibility trace; the same parameter consumed only by an ordinary JAX operation cannot.
 
-Eligibility State represents accumulated gradient history. An `ETraceGraph` connects ETP-marked parameters to hidden groups so an algorithm can update this State during the forward sequence.
+`ETraceGraph` represents the compiled relationship between ETP parameters and hidden-State groups. It tells the learner which parameter influences which recurrent state.
 
-## Online learning versus BPTT
-
-BrainTrace improves sequence-memory efficiency; it does not guarantee lower total memory or faster runtime for every model.
-
-| Concern | BrainTrace | BPTT |
-|---|---|---|
-| Temporal credit | Accumulate eligibility traces during the forward drive. | Traverse the unrolled sequence in reverse. |
-| Memory in sequence length $T$ | $O(1)$ per step; do not retain the trajectory. | $O(T)$ to store or rematerialize the trajectory. |
-| Gradient | Depends on the chosen online estimator and approximation. | Differentiates the chosen unrolled graph. |
-
-Trace State still scales with the model and algorithm. `D_RTRL` uses diagonal hidden recurrence with parameter-dimensional traces; use factorized `pp_prop` when that trace cost is unsuitable. Do not claim equality with BPTT without the algorithm's documented guarantee and a reduced comparison.
+Eligibility State represents compressed gradient history. The selected algorithm updates it during each forward step, so training does not retain the unrolled sequence graph.
 
 ## API structure overview
 
-| API | Responsibility |
+| API family | Responsibility |
 |---|---|
-| `braintrace.nn` | ETP-aware layers; use these first. |
-| ETP operations | Custom layer construction when prebuilt layers are insufficient. |
-| `braintrace.compile()` | Hidden-State discovery, graph compilation, and learner construction. |
-| `D_RTRL`, `pp_prop` | Parameter-dimensional or factorized online estimators. |
-| Compiled learner | Graph inspection, eligibility-State reset, and sequence execution. |
+| `braintrace.nn` | Prebuilt ETP-aware recurrent, linear, convolutional, sparse, and readout layers. Start here. |
+| ETP operations | Mark parameterized operations in a custom layer for eligibility-trace participation. |
+| `braintrace.compile()` | Discover hidden State and ETP parameter paths, build `ETraceGraph`, and return a learner. |
+| `D_RTRL`, `pp_prop`, other algorithms | Define how eligibility State is represented and updated. |
+| Compiled learner | Inspect compilation, reset eligibility State, execute sequences, and return online gradients. |
 
-## Build and compile a learner
+## Choose the memory strategy and compile
 
-Compile one representative step to connect ETP-marked parameters to recurrent hidden groups before training.
+Compile one representative time step once; the chosen algorithm determines the eligibility-memory shape and approximation.
 
 | API | Description |
 |---|---|
-| `braintrace.nn.MiniGRU(...)` | Use for the canonical recurrent layer; it applies ETP-aware parameter operations and carries hidden State. |
-| `braintrace.nn.Linear(...)` | Use for an ETP-aware projection; the compiler excludes it from temporal traces when it does not feed recurrent State. |
-| `braintrace.compile(model, algorithm, example, batch_size=...)` | Use once with the real step shape; it initializes State, builds the `ETraceGraph`, and returns a learner. |
-| `learner.report.show(1)` | Use after compilation to inspect included and excluded weights and their reasons. |
-| `learner.show_graph()` | Use after the report to inspect hidden groups and parameter relations. |
+| `braintrace.nn.MiniGRU(...)` | Use for the canonical recurrent model; it carries hidden State and applies ETP-aware parameter operations. |
+| `braintrace.nn.Linear(...)` | Use for an ETP-aware projection; the compiler treats it as non-temporal when its output does not return to hidden State. |
+| `braintrace.D_RTRL` | Use as the default recurrent estimator when a parameter-shaped trace fits memory; it avoids BPTT activation storage but uses a diagonal hidden-recurrence approximation. |
+| `braintrace.pp_prop` | Use when the parameter-shaped trace is too costly, especially for recurrent SNNs; it stores input/output factors and introduces a stronger factorization approximation. |
+| `braintrace.compile(model, algorithm, example_step, batch_size=...)` | Use once with the real per-step shape; it initializes State, compiles parameter-to-hidden relations, and returns the learner. |
+| `learner.report.show(1)` | Use immediately after compilation; it shows hidden groups, traced weights, excluded weights, and exclusion reasons. |
+| `learner.show_graph()` | Use when the report needs structural confirmation; it displays the compiled parameter-to-hidden relationships. |
 
 ```python
 import brainstate
-import braintools
 import braintrace
 import jax.numpy as jnp
 
@@ -83,21 +78,23 @@ learner.report.show(1)
 learner.show_graph()
 ```
 
-Open `references/pre-built-braintrace-layer.md` to select other layers, `references/ETP operators.md` to build a custom layer from built-in operations, or `references/custom ETP primitives.md` only when those operations cannot express the computation.
+Open `references/pre-built-braintrace-layer.md` when selecting another ETP-aware layer. Open `references/Drtrl.md` for D-RTRL memory, recurrence, and validation. Open `references/pp_pprop workflow.md` when parameter-shaped traces are too large or the model is a recurrent SNN. Open `references/algorithm selection.md` only when neither canonical choice fits.
 
-## Train and evaluate sequences
+## Train and evaluate a sequence
 
-Let the learner own the time loop and eligibility updates; make the step loss call the learner exactly once.
+Let the learner own the time loop and eligibility updates; reset recurrent State and eligibility State together at every independent sequence boundary.
 
 | API | Description |
 |---|---|
-| `brainstate.nn.reset_all_states(model, batch_size=...)` | Reset recurrent model State at an independent sequence boundary. |
-| `learner.reset_state(batch_size=...)` | Reset eligibility State at the same boundary. |
-| `learner.etrace_grad(..., step_fn=..., reduction=...)` | Drive a supervised sequence and return reduced online gradients. |
-| `learner.etrace_evolve(..., return_outputs=True)` | Drive a loss-free sequence and return stacked outputs. |
-| `optimizer.update(grads)` | Apply the reduced gradients to registered parameters. |
+| `brainstate.nn.reset_all_states(model, batch_size=...)` | Use at an independent sequence boundary; it resets the model's recurrent State. |
+| `learner.reset_state(batch_size=...)` | Use at the same boundary; it resets eligibility State and the learner's time index. |
+| `learner.etrace_evolve(inputs, return_outputs=True)` | Use for loss-free execution or evaluation; it advances hidden and eligibility State and returns stacked outputs when requested. |
+| `learner.etrace_grad(..., step_fn=..., reduction=...)` | Use for supervised online learning; it drives the sequence, accumulates per-step gradients, applies masking and reduction, and returns gradients. |
+| `optimizer.update(grads)` | Use after one sequence gradient has been reduced; it updates the registered parameters. |
 
 ```python
+import braintools
+
 weights = model.states(brainstate.ParamState)
 optimizer = braintools.optim.SGD(lr=0.08)
 optimizer.register_trainable_weights(weights)
@@ -116,37 +113,49 @@ def step_loss(x, target):
 
 def train_epoch(_):
     reset_sequence()
-    grads, losses = learner.etrace_grad(
-        inputs, targets, step_fn=step_loss,
-        reduction="mean", return_value=True,
+    grads, step_losses = learner.etrace_grad(
+        inputs,
+        targets,
+        step_fn=step_loss,
+        reduction="mean",
+        return_value=True,
     )
     optimizer.update(grads)
-    return losses.mean()
+    return step_losses.mean()
 
 initial_loss = evaluate()
 losses = brainstate.transform.for_loop(train_epoch, jnp.arange(25))
 final_loss = evaluate()
+
 assert losses.shape == (25,)
 assert final_loss < initial_loss
 ```
 
-Open `references/Drtrl.md` for D-RTRL recurrence, memory, resets, and BPTT comparison; `references/pp_pprop workflow.md` for factorized traces or SNNs; and `references/batching.md` before adding manual or mapped batch axes.
+Open `references/batching.md` before adding a batch axis or mapping wrapper; it identifies which API must own mapping. Do not wrap `etrace_grad()` or `etrace_evolve()` in another time scan, and make `step_fn` call the learner exactly once.
 
 ## Reference routing
 
-| Reference | Open when |
-|---|---|
-| `references/algorithm selection.md` | Choosing an estimator beyond the canonical D-RTRL and pp-prop boundary. |
-| `references/customizing_primitive_transforms.md` | Applying a mask, constraint, normalization, LoRA, or bias transform to an ETP weight. |
-| `references/custom algorithms.md` | Implementing an estimator that built-in algorithms cannot express. |
-| `references/compiler_internal.md` | Public `learner.report` and `learner.graph` cannot explain custom graph behavior. |
+Escalate model construction from prebuilt layers to built-in ETP operations, then to a custom ETP primitive only when the previous level cannot express the computation.
+
+| Reference | Open when | Contains |
+|---|---|---|
+| `references/pre-built-braintrace-layer.md` | Selecting another ETP-aware layer or composing the default model. | Layer families, parameterized-operation choices, and BrainState-owned supporting layers. |
+| `references/Drtrl.md` | Using or validating parameter-shaped D-RTRL traces. | Memory scaling, recurrence, sequence resets, and the BPTT comparison boundary. |
+| `references/pp_pprop workflow.md` | Parameter-shaped traces are too costly or a recurrent SNN needs factorized traces. | Input/output factorization, decay selection, SNN integration, and validation. |
+| `references/algorithm selection.md` | Neither canonical memory strategy fits the estimator requirements. | Other built-in estimators, guarantees, configuration axes, and sequence-driver options. |
+| `references/batching.md` | Adding a batch axis, mapped model, or multi-step wrapper. | Mapping ownership, batched compilation, State layout, and sequence-data wrappers. |
+| `references/ETP operators.md` | A prebuilt layer cannot express the required parameterized operation. | Built-in ETP operations, participation rules, units, and transform behavior. |
+| `references/custom ETP primitives.md` | No built-in ETP operation can express the computation. | Primitive registration, ETP rules, compiler integration, and validation. |
+| `references/customizing_primitive_transforms.md` | An ETP weight needs masking, constraints, normalization, LoRA, or a bias transform. | Transform hooks and raw-parameter gradient attachment. |
+| `references/custom algorithms.md` | No built-in algorithm or `ETraceConfig` expresses the research method. | Estimator bases, trace lifecycle, solve hooks, and inspection. |
+| `references/compiler_internal.md` | `learner.report` and `learner.graph` cannot explain custom graph behavior. | Discovery, graph execution, control-flow policy, and low-level diagnostics. |
 
 ## Boundaries and common failures
 
-- Use prebuilt layers before built-in ETP operations, and built-in operations before custom primitives.
-- Do not compile inside training or from an example with the wrong batch or feature shape.
-- Do not treat a documented non-temporal exclusion as a failure; inspect its report reason.
-- Reset both recurrent and eligibility State between independent sequences.
-- Do not wrap `etrace_grad()` or `etrace_evolve()` in another time scan.
-- Do not use the historical `ES_D_RTRL` name in new code; use `pp_prop`.
-- Do not infer constant total memory, universal speed, or BPTT-equivalent gradients from $O(1)$ memory in sequence length.
+- Do not describe BrainTrace as constant-total-memory training. Its memory is constant only in sequence length; trace storage still scales with the selected estimator and model.
+- Do not claim that an online estimator equals BPTT unless its documented mathematical regime and a reduced gradient-oracle comparison establish that result.
+- Do not compile inside training or compile from a full sequence; pass one representative time step with the real batch and feature shape.
+- Do not treat every excluded weight as an error. A readout that does not feed hidden State is correctly reported as non-temporal and still receives instantaneous gradients.
+- Reset both recurrent State and eligibility State between independent sequences.
+- Use exactly one batching owner; do not map an already mapped model again in `braintrace.compile()`.
+- Use `pp_prop` in new code; `ES_D_RTRL` is its compatibility alias.
