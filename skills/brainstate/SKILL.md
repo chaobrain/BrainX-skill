@@ -299,7 +299,7 @@ batched_prediction = predict_batch(x_train)
 assert batched_prediction.shape == (64, 1)
 ```
 
-This maps a function written for one example over a batch. Open the `vmap` expansion for mapped State axes, ensembles, parameter sweeps, or the documented `state_in_axes` / `state_out_axes` controls. The routed tutorial does not define the rough draft's `in_states` / `out_states` names.
+This maps a function written for one example over a batch. Open the `vmap` expansion for mapped State axes, ensembles, or parameter sweeps. Use `vmap(..., in_states=..., out_states=...)` to declare specific mapped State instances; use `vmap2(..., state_in_axes=..., state_out_axes=...)` to select State by filters with configurable output-axis inference. Do not add either transform when the owning package already exposes the required batch axis.
 
 ### 6. Randomness
 

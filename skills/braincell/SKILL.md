@@ -100,7 +100,7 @@ assert voltages.shape[:1] == times.shape
 assert spikes.shape[:1] == times.shape
 ```
 
-Treat `V_th` only as the spike-event threshold; it does not change the membrane equation. Keep membrane capacitance and channel conductance density-based in the canonical path. `update()` accepts current density or total current and uses `SingleCompartment.area` to normalize total input; do not manually area-scale only part of the model. Use `size=N` for `N` independent cells, never for `N` compartments.
+Treat `V_th` only as the spike-event threshold; it does not change the membrane equation. Keep membrane capacitance and channel conductance density-based in the canonical path. `update()` accepts current density or total current and uses `SingleCompartment.area` to normalize total input; do not manually area-scale only part of the model. Use `size=N` for `N` independent cells, never for `N` compartments. For a multidimensional condition sweep, use the condition-grid shape as `size` and pass shape-aligned channel parameters and inputs; do not wrap identity functions in `vmap` merely to construct that grid.
 
 Open `references/area-scaled-hh-pattern.md` when changing cell geometry or explicitly converting density parameters to total quantities. Open `references/ion-library.md`, `references/channel-library.md`, or `references/mixions-for-adaptation.md` only when the classical fixed-ion HH path is insufficient.
 

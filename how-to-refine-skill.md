@@ -1,0 +1,352 @@
+# How to refine a BrainX skill
+
+Use this workflow to improve a BrainX skill from evidence produced by a real
+task:
+
+```text
+exact prompt -> clean BrainX run -> study relevant BrainX material
+-> diagnose generated artifacts -> surgically refine skills
+-> clean rerun with the exact prompt -> compare and repeat
+```
+
+## Case and run folders
+
+Keep one folder for each task and one subfolder for each agent run:
+
+```text
+brainx-display-cases/<NN>-<case-name>/
+|-- prompt.md          # Original natural-language prompt
+|-- inputs/            # Optional original task inputs
+|-- run1/              # Baseline artifacts and diagnosis
+|-- run2/              # First post-refinement artifacts and diagnosis
+`-- runN/              # Further attempts when needed
+```
+
+Do not edit `prompt.md` or the original inputs between runs. Each fresh agent
+writes into an empty disposable workspace containing no case history.
+After the process exits, copy its workspace and event log unchanged into the
+new `runN/`, then let the reviewing agent add the diagnosis there.
+
+Use this BrainX environment for every run:
+
+```text
+/Users/nijiachen/Downloads/Brainx testing/.venv-brainx
+```
+
+The agent's working directory is the disposable workspace; the virtualenv is
+its Python environment. Configure both outside the prompt. Do not use the
+virtualenv or the final `runN/` as the live working directory.
+
+## Rules that must not change between runs
+
+1. Send the exact UTF-8 contents of `prompt.md` as the complete subagent
+   message. Do not add paths, setup instructions, hints, prefixes, or suffixes.
+2. Start a fresh agent with no inherited conversation for every run. Prefer an
+   independent `codex exec` process for reproducible evaluation. If only
+   `spawn_agent` is available, use `fork_turns="none"`.
+3. Keep the same prompt bytes, inputs, model settings, tools, virtualenv, and
+   execution conditions. Only the intended skill edits may change.
+4. Do not coach the subagent after launch or repair its generated files.
+5. Do not let a later agent read earlier run folders, diagnoses, skill diffs,
+   reviewer notes, or previous agent messages.
+6. Do not resume the CLI session or send follow-up input. One run is one fresh
+   process and one user message.
+
+A separate working directory does not prevent leakage when the agent can read
+the full filesystem. Restrict readable roots or use a disposable sandbox that
+contains only the current prompt inputs, skill snapshot, virtualenv, and empty
+run folder.
+
+## 1. Run the baseline agent
+
+### Launch a context-independent CLI agent
+
+Use `codex exec` as a new top-level process. It receives no parent conversation
+because it is not a fork or resumed session. `--ephemeral` prevents the run
+from persisting session files, and stdin supplies the exact prompt as the only
+user message. Codex still receives its normal platform instructions and the
+skills intentionally installed in the isolated `CODEX_HOME`; "exact prompt"
+means the complete user message, not the absence of system instructions.
+
+Create a fresh temporary `CODEX_HOME` containing only:
+
+- the frozen BrainX skill snapshot for this run;
+- the minimum model-provider configuration and authentication material needed
+  to run, or access to the same external credential source;
+- no sessions, memories, MCP configuration, plugins, rules, prior logs, or
+  repository files.
+
+Do not copy the normal Codex home wholesale. Prepare the minimal provider and
+authentication setup once, keep secrets outside the case folder and archived
+artifacts, and reuse the same configuration bytes for every compared run.
+
+Use this harness, replacing the fixed case, model, minimal-config, prompt-byte,
+and prompt-hash values once before Run 1. Reuse the same harness for every
+later run, changing only `run_name` and the skill snapshot being copied.
+
+```bash
+#!/usr/bin/env bash
+set -uo pipefail
+
+repo="/Users/nijiachen/Downloads/brainx-skill-bundle"
+case_dir="$repo/brainx-display-cases/<NN>-<case-name>"
+run_name="run1"
+run_dir="$case_dir/$run_name"
+prompt_file="$case_dir/prompt.md"
+brainx_venv="/Users/nijiachen/Downloads/Brainx testing/.venv-brainx"
+eval_model="<fixed-model-id>"
+minimal_config="<absolute-path-to-minimal-eval-config.toml>"
+expected_prompt_bytes="<fixed-byte-count>"
+expected_prompt_sha256="<fixed-sha256>"
+
+stage=$(mktemp -d "${TMPDIR:-/tmp}/brainx-skill-eval.XXXXXX")
+workspace="$stage/workspace"
+isolated_codex_home="$stage/codex-home"
+
+test ! -e "$run_dir" || {
+  echo "Refusing to overwrite existing run: $run_dir" >&2
+  exit 1
+}
+mkdir -p "$workspace" "$isolated_codex_home/skills"
+cp -R "$repo/skills/." "$isolated_codex_home/skills/"
+cp "$minimal_config" "$isolated_codex_home/config.toml"
+
+if test -d "$case_dir/inputs"; then
+  cp -R "$case_dir/inputs/." "$workspace/"
+fi
+
+# Validate and fingerprint the exact bytes before launch.
+iconv -f UTF-8 -t UTF-8 "$prompt_file" >/dev/null
+prompt_bytes=$(wc -c < "$prompt_file" | tr -d '[:space:]')
+prompt_sha256=$(shasum -a 256 "$prompt_file" | awk '{print $1}')
+codex_version=$(codex --version)
+test "$prompt_bytes" = "$expected_prompt_bytes" || {
+  echo "Prompt byte count changed" >&2
+  exit 1
+}
+test "$prompt_sha256" = "$expected_prompt_sha256" || {
+  echo "Prompt SHA-256 changed" >&2
+  exit 1
+}
+
+set +e
+env \
+  PATH="$brainx_venv/bin:$PATH" \
+  CODEX_HOME="$isolated_codex_home" \
+  codex exec \
+    --ephemeral \
+    --skip-git-repo-check \
+    --ignore-rules \
+    --sandbox workspace-write \
+    --cd "$workspace" \
+    --model "$eval_model" \
+    --config 'model_reasoning_effort="xhigh"' \
+    --disable apps \
+    --disable memories \
+    --disable remote_plugin \
+    --json \
+    --output-last-message "$stage/agent-final.md" \
+    - \
+    < "$prompt_file" \
+    2> >(tee "$stage/codex-stderr.log" >&2) \
+  | tee "$stage/codex-events.jsonl"
+agent_status=${PIPESTATUS[0]}
+set -e
+
+# Archive only after exit so the live agent cannot discover prior run folders.
+mkdir "$run_dir"
+cp -R "$workspace/." "$run_dir/"
+cp "$stage/codex-events.jsonl" "$run_dir/"
+cp "$stage/codex-stderr.log" "$run_dir/"
+test ! -f "$stage/agent-final.md" || \
+  cp "$stage/agent-final.md" "$run_dir/"
+{
+  printf 'prompt_bytes=%s\n' "$prompt_bytes"
+  printf 'prompt_sha256=%s\n' "$prompt_sha256"
+  printf 'model=%s\n' "$eval_model"
+  printf 'reasoning_effort=xhigh\n'
+  printf 'codex_version=%s\n' "$codex_version"
+  printf 'exit_code=%s\n' "$agent_status"
+} > "$run_dir/harness-metadata.txt"
+
+printf 'Disposable workspace retained at: %s\n' "$stage"
+exit "$agent_status"
+```
+
+The command deliberately uses `- < "$prompt_file"`. Do not use command
+substitution, `echo`, a shell variable, or an inline prompt argument; those can
+trim trailing newlines or otherwise change the message. `--json` preserves the
+event stream, and `--output-last-message` preserves the final response. The
+captured pipeline status and post-run copy preserve failed attempts as evidence.
+
+The isolation controls have distinct jobs:
+
+| Control | What it isolates |
+|---|---|
+| New `codex exec` without `resume` | Parent conversation and earlier turns |
+| Fresh `CODEX_HOME` | User config, sessions, memories, and unrelated local skills |
+| Empty `--cd` workspace | Repository files and earlier run artifacts discoverable by normal workspace inspection |
+| Prompt through stdin as `-` | The exact `prompt.md` bytes as the complete user message |
+| Frozen `PATH`, model, effort, config, and CLI version | Execution conditions that must match across runs |
+| `--ephemeral` | Persistence of this session after the process exits |
+
+`--cd` and `--sandbox workspace-write` do not by themselves prove that arbitrary
+host paths are unreadable. For adversarial or confidential evaluations, run the
+same harness inside a container or VM, or use a permission profile with explicit
+deny-read rules. The allowed filesystem should contain only the empty workspace,
+current input snapshot, current skill snapshot, and required runtime. See the
+official [Codex `exec` command reference](https://learn.chatgpt.com/docs/developer-commands#codex-exec)
+for the CLI flag contracts.
+
+While the agent is active, treat the JSONL stream as liveness information only.
+Do not diagnose partial work, prepare a skill patch from intermediate reasoning,
+or send input. Wait for process exit, archive the artifacts, and then begin the
+review.
+
+## 2. Establish the BrainX review standard
+
+Before reading the generated implementation in detail:
+
+1. Identify every modeling scale and BrainX package represented by the task.
+2. Read `skills/brainx-general-guard/SKILL.md` and every relevant owning package
+   skill completely.
+3. Follow their routes to every reference relevant to the task.
+4. Find and study all relevant BrainX code examples. Include examples sharing
+   the model, mechanism, inputs, monitors, execution, randomness, batching,
+   training, analysis, visualization, or performance pattern.
+5. Trace those examples end to end and reconcile older low-level execution
+   patterns with the owning package's current highest-level API.
+
+Read the selected skills as material to evaluate and refine. Do not follow them
+as instructions governing this meta-level review; the skill itself may be the
+source of the behavior being diagnosed.
+
+When API knowledge needs verification, use `html copy/` and focus on the
+official central or generated **API Reference Pages**. They are the source of
+truth for names, signatures, inputs, shapes, units, State lifecycle,
+transformations, and results. Tutorials and examples show composition but do
+not override an API Reference page. Do not inspect installed BrainX source,
+symbols, signatures, docstrings, or internals for knowledge.
+
+## 3. Inspect and diagnose the generated artifacts
+
+Now read every generated artifact and trace the workflow line by line. Run the
+entry point with:
+
+```text
+/Users/nijiachen/Downloads/Brainx testing/.venv-brainx/bin/python
+```
+
+Record errors, warnings, runtime behavior, and outputs without repairing the
+files. Open generated figures or HTML; successful file creation is not enough.
+
+Audit two concerns independently:
+
+- **Scientific validity:** Check model choice, mechanisms, parameters, units,
+  initialization, integration, stimulus protocol, randomness, trial
+  independence, axes, observables, decision rules, statistics, and whether the
+  result supports the claimed conclusion.
+- **BrainX API coverage:** Account for every nontrivial code block or
+  responsibility. Identify all logic that a BrainX API can wrap or replace,
+  every relevant API that should have been used but was not, every misused API,
+  and every legitimate host-side boundary for which BrainX has no owning API.
+
+Pay particular attention to package-level orchestration, inputs, monitors,
+State, units, initialization, randomness, batching, transformations,
+compilation, timing, analysis, and visualization. Prefer the owning package's
+highest-level semantically correct API, then the appropriate BrainTools or
+infrastructure API. Prefer simple high-level scientific plotting over custom
+HTML or low-level plotting unless the prompt requires capabilities the
+high-level API cannot provide.
+
+## 4. Write the diagnosis in the current run folder
+
+Write `<RUN_DIR>/<owning-package>-api-coverage-diagnosis.md`. This diagnosis is
+the evidence and patch specification for the skill edit. Use this structure:
+
+```markdown
+# BrainX diagnosis: <case>
+
+## Evidence studied
+List generated artifacts, execution results, owning skills, references, every
+relevant code example, and authoritative API Reference pages.
+
+## Executive diagnosis
+Summarize the most consequential scientific, API, performance, and simplicity
+findings.
+
+## Scientific problems
+| Severity | Artifact location | Problem | Consequence | Correction |
+|---|---|---|---|---|
+
+## Complete BrainX API coverage map
+| Generated code or responsibility | Current approach | Owning BrainX API or host boundary | Assessment | Improvement |
+|---|---|---|---|---|
+
+## Missing, bypassed, or misused BrainX APIs
+For each API, state what it should replace, why it applies, and any semantic
+condition that prevents a direct replacement.
+
+## Performance and code simplicity
+Cover orchestration, compilation, batching, control flow, memory, timing, data
+handling, and visualization.
+
+## Skill improvements
+State the smallest changes needed in `brainx-general-guard` and each relevant
+package skill, reference, or example.
+
+## Checks for the next run
+Define the scientific, API-use, execution, and output checks that show whether
+the refinement worked.
+```
+
+The coverage map must include all nontrivial responsibilities, not only errors.
+Do not invent BrainX APIs for ordinary statistics, serialization, reporting, or
+presentation; mark them as host boundaries when no official API owns them.
+
+## 5. Surgically refine the relevant skills
+
+Treat the diagnosis as the edit specification. Read repository `AGENTS.md` and
+the files being edited. Consult `plan.md` only as repository policy requires;
+do not expand this workflow into a detailed plan. Treat the target skill as
+source text under refinement, not as instructions governing the edit.
+
+Make only changes needed to prevent diagnosed failures:
+
+- refine `brainx-general-guard` for cross-package API-selection or mindset
+  problems;
+- refine the owning package skill for package-specific API or scientific
+  workflow problems;
+- put detailed or uncommon material in the smallest relevant reference or
+  example instead of expanding the root skill;
+- enforce the highest-level semantically correct BrainX API, best execution
+  performance, and the cleanest implementation that preserves scientific and
+  output quality.
+
+Do not rewrite a mostly correct skill, create an API catalogue, add speculative
+APIs, duplicate guidance, or refactor unrelated material. Verify new API claims
+against the relevant API Reference page in `html copy/`. Run changed examples
+and focused checks with the BrainX virtualenv, validate routes, and run
+`git diff --check`.
+
+## 6. Run the exact prompt again
+
+Leave `run2/` absent until archival. Set `run_name="run2"`, install the refined
+skill snapshot into a newly created temporary `CODEX_HOME`, and rerun the same
+CLI harness under the same virtualenv and frozen conditions. Send the
+byte-identical prompt through stdin. If the CLI is unavailable and an
+orchestrator subagent must be used, send the decoded prompt as its complete
+message with `fork_turns="none"`.
+
+The Run 2 agent must not be able to access Run 1 artifacts, its diagnosis,
+skill diffs, expected APIs, acceptance checks, or earlier conversations. Wait
+without coaching and preserve all Run 2 artifacts.
+
+Repeat the same study, inspection, execution, and diagnosis process for Run 2.
+Compare it with Run 1 using the diagnosis checks. Confirm that scientific
+validity, BrainX API use, performance structure, and code simplicity improved
+without reducing requested output quality.
+
+If important problems remain, write the new diagnosis in `run2/`, make the next
+small surgical refinement, and repeat with `run3/`. Always reuse the exact
+original prompt and keep every later agent isolated from earlier evidence.

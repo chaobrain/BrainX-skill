@@ -160,7 +160,7 @@ brainunit/
 ##### 5. State-Aware Transformations and Randomness
 
 - Write ordinary code that reads and writes `.value`, then wrap the complete operation in `brainstate.transform`; do not apply raw `jax.jit`, `jax.grad`, or `jax.vmap` to stateful code.
-- `brainstate.transform` mirrors the JAX transformation API with state-aware `jit`, `grad`, and `vmap` that track the State objects a model reads and writes.
+- `brainstate.transform` mirrors the JAX transformation API with state-aware `jit`, `grad`, and mapping APIs that track the State objects a model reads and writes. Use `vmap` with State-instance `in_states`/`out_states`; use `vmap2` with filter-based `state_in_axes`/`state_out_axes` and output-axis inference.
 - Use `brainstate.random.DEFAULT` and explicit seeding for reproducible stochastic workflows.
 - Prefer whole-step JIT, gradient, and batching transformations over fragmented transforms.
 
@@ -391,7 +391,7 @@ braincell/
 | `skills/braincell/references/braincell-custom-ion-channel-authoring.md` | Custom channel/ion extension after built-ins are exhausted | [Ions and channels concept](https://brainx.chaobrain.com/braincell/concepts/ions_channels.html), [channel tutorial](https://brainx.chaobrain.com/braincell/tutorials/channel.html), [extending BrainCell](https://brainx.chaobrain.com/braincell/developer/extending.html) |
 | `skills/braincell/references/channel-library.md` | Built-in channel families, dependencies, selection, and the built-in-versus-custom boundary | [Ions and channels concept](https://brainx.chaobrain.com/braincell/concepts/ions_channels.html), [channel tutorial](https://brainx.chaobrain.com/braincell/tutorials/channel.html), [channel API](https://brainx.chaobrain.com/braincell/apis/braincell.channel.html), [channel ablation](https://brainx.chaobrain.com/braincell/examples/channel_ablation.html), and [adaptation example](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html) |
 | `skills/braincell/references/ion-library.md` | Built-in ions, fixed/InitNernst/dynamic choices, concentration dynamics, and `MixIons` | [Ions and channels concept](https://brainx.chaobrain.com/braincell/concepts/ions_channels.html), [ion tutorial](https://brainx.chaobrain.com/braincell/tutorials/ion.html), and [ion API](https://brainx.chaobrain.com/braincell/apis/braincell.ion.html) |
-| `skills/braincell/references/mixions-for-adaptation.md` | Adaptation, AHP/KCa, rebound, dynamic calcium, and `MixIons(k, ca)` composition | [Adaptation](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html), [T-current rebound](https://brainx.chaobrain.com/braincell/examples/t_current_rebound.html), and [thalamic neurons](https://brainx.chaobrain.com/braincell/examples/thalamic_neurons.html) |
+| `skills/braincell/references/mixions-for-adaptation.md` | Adaptation, controlled AHP ablation, quiet-baseline checks, parameter provenance, rebound, dynamic calcium, and `MixIons(k, ca)` composition | [Adaptation](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html), [channel ablation](https://brainx.chaobrain.com/braincell/examples/channel_ablation.html), [F-I curve](https://brainx.chaobrain.com/braincell/examples/fi_curve.html), [T-current rebound](https://brainx.chaobrain.com/braincell/examples/t_current_rebound.html), and [thalamic neurons](https://brainx.chaobrain.com/braincell/examples/thalamic_neurons.html) |
 | `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md` | Complete advanced morphology path and exclusive selector for CV, filter, probe, topology, IO, and manual-construction references | [Cell tutorial](https://brainx.chaobrain.com/braincell/tutorials/cell.html) |
 | `skills/braincell/references/solver-library-with-effects.md` | Integrator names, cable/composite solvers, speed/accuracy guidance, and numerical effects | [Integration concept](https://brainx.chaobrain.com/braincell/concepts/integration.html), [integration API](https://brainx.chaobrain.com/braincell/apis/integration.html), [solver guide](https://brainx.chaobrain.com/braincell/integration/solvers.html), [advanced integration](https://brainx.chaobrain.com/braincell/integration/advanced.html), and [integration-methods example](https://brainx.chaobrain.com/braincell/examples/integration_methods.html) |
 
@@ -414,7 +414,7 @@ Open these only from `skills/braincell/references/multicompartment/multicompartm
 - `references/scripts/fi_curve.py`; [source](https://brainx.chaobrain.com/braincell/examples/fi_curve.html); vectorized current sweep; direct reference.
 - `references/scripts/channel_ablation.py`; [source](https://brainx.chaobrain.com/braincell/examples/channel_ablation.html); current suppression comparison; channel-library branch.
 - `references/scripts/calcium_channel_gating.py`; [source](https://brainx.chaobrain.com/braincell/examples/calcium_channel_gating.html); gating diagnostic; channel-library branch.
-- `references/scripts/spike_frequency_adaptation.py`; [source](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html); dynamic calcium/KCa/AHP; `mixions-for-adaptation.md`.
+- `references/scripts/spike_frequency_adaptation.py`; [source](https://brainx.chaobrain.com/braincell/examples/spike_frequency_adaptation.html); calibrated dynamic calcium/KCa/AHP teaching model with a quiet baseline, strength sweep, and zero-conductance comparison; `mixions-for-adaptation.md`.
 - `references/scripts/t_current_rebound.py`; [source](https://brainx.chaobrain.com/braincell/examples/t_current_rebound.html); post-inhibitory rebound; `mixions-for-adaptation.md`.
 - `references/scripts/thalamic_neurons.py`; [source](https://brainx.chaobrain.com/braincell/examples/thalamic_neurons.html); advanced phenotype comparison; `mixions-for-adaptation.md`.
 - `references/scripts/cell_multicompartment_reference.py`; [source](https://brainx.chaobrain.com/braincell/tutorials/cell.html); morphology-to-simulation workflow.
@@ -422,6 +422,7 @@ Open these only from `skills/braincell/references/multicompartment/multicompartm
 #### Boundaries and Common Failures
 
 - `size=N` interpreted as compartments instead of independent cells.
+- A `vmap` wrapper added to construct condition axes that `SingleCompartment(size=condition_shape)` already owns.
 - Density and total quantities mixed.
 - Bare physical values passed to BrainCell.
 - Channel installed on the wrong ion/root.

@@ -17,7 +17,12 @@ import brainunit as u
 
 
 class AdaptingCell(braincell.SingleCompartment):
-    def __init__(self, size, solver="ind_exp_euler"):
+    def __init__(
+        self,
+        size,
+        g_ahp=0.3 * u.mS / u.cm**2,
+        solver="ind_exp_euler",
+    ):
         super().__init__(
             size,
             V_initializer=braintools.init.Constant(-65. * u.mV),
@@ -51,7 +56,7 @@ class AdaptingCell(braincell.SingleCompartment):
         self.ca.add(ICaHT=braincell.channel.CaHT_HM1992(size, g_max=3.0 * (u.mS / u.cm ** 2)))
 
         self.kca = braincell.MixIons(self.k, self.ca)
-        self.kca.add(IAHP=braincell.channel.AHP_De1994(size, g_max=0.3 * (u.mS / u.cm ** 2)))
+        self.kca.add(IAHP=braincell.channel.AHP_De1994(size, g_max=g_ahp))
 
         self.IL = braincell.channel.IL(
             size,
@@ -60,7 +65,25 @@ class AdaptingCell(braincell.SingleCompartment):
         )
 ```
 
-## Rebound Input Variant
+## Test adaptation by controlled ablation
+
+Expose only AHP `g_max`, set it to zero for the ablated condition, and keep the cell template, initialization, solver, stimulus, and every other conductance identical. Use `SingleCompartment.size` for independent conditions; it already owns the batch axis.
+
+```python
+g_ahp = u.math.asarray([0.0, 0.3]) * u.mS / u.cm**2
+cell = AdaptingCell(size=g_ahp.shape, g_ahp=g_ahp)
+current = u.math.asarray([2.0, 2.0]) * u.uA / u.cm**2
+```
+
+Treat the ISI trajectory as the primary adaptation check: the present-AHP lane should lengthen materially while the zero-AHP lane remains more tonic or fires faster late in the stimulus. Report the early/late windows beside rate summaries. Call a condition "intact" only when its complete model and parameter values come from a sourced template; otherwise call it "AHP present" and disclose any calibration.
+
+Verify that stimulus onset starts from the intended baseline. If a calibrated hybrid spikes without applied current, use the same disclosed holding current and initialization in every lane, and assert that no spikes occur before the stimulus. Do not interpret an already-spiking baseline as onset adaptation.
+
+Do not combine channel families or tune calcium influx, calcium removal, and AHP conductance solely to force the requested contrast. Preserve a coherent template when making biological claims, or label a hybrid explicitly as a teaching model and check that the conclusion survives a small parameter sweep.
+
+Open `references/scripts/spike_frequency_adaptation.py` for a runnable calibrated teaching model with a quiet baseline, strength sweep, and zero-conductance comparison. Open `references/scripts/channel_ablation.py` only when the task needs the general one-parameter channel-ablation pattern without calcium-dependent adaptation.
+
+## Rebound input variant
 
 For post-inhibitory rebound, add or retain a low-threshold T-type calcium current such as `CaT_HM1992` and drive a time-dependent hyperpolarizing input.
 

@@ -9,10 +9,7 @@ This reference covers only behavior demonstrated by these routed official tutori
 - Vectorization: https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vectorization.html
 - Random Number Generation: https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
 
-The Vectorization tutorial describes `brainstate.transform.vmap` as a
-state-aware wrapper around `jax.vmap`, but its detailed executable examples use
-`brainstate.transform.vmap2`. Preserve that distinction; do not silently
-substitute one API for the other.
+The Vectorization tutorial demonstrates filter-based `vmap2`; the current generated API pages define both mapping contracts. Use `vmap` when specific State instances must be declared with `in_states` and `out_states`. Use `vmap2` when State filters, automatic output-axis inference, or `unexpected_out_state_mapping` are required. Do not silently substitute one contract for the other.
 
 ## Selection map
 
@@ -22,6 +19,7 @@ substitute one API for the other.
 | Place the mapped output axis | `out_axes` | Match the downstream layout explicitly. |
 | Map with no mapped input argument | `axis_size` | Supply the size because it cannot be inferred. |
 | Use collectives over the mapped axis | `axis_name` | The collective must use the same name. |
+| Map explicitly named State instances | `vmap(..., in_states=..., out_states=...)` | Declare every mapped input State and written output State; undeclared batched writes raise `BatchAxisError`. |
 | Map mutable State but share parameters | `vmap2(..., state_in_axes=..., state_out_axes=...)` with State filters | Define both input mapping and write-back for per-instance State. |
 | Handle a written State omitted from `state_out_axes` | `vmap2(..., unexpected_out_state_mapping=...)` | The default `'auto'` infers and scatters the mapped axis; declare State axes when a coincidental leading-size match would be ambiguous. |
 | Choose independent or shared random draws | BrainState automatic splitting or one broadcast JAX key | Shared keys intentionally correlate mapped results. |
@@ -138,11 +136,16 @@ assert model.param.value == 1.0
 
 This bundles the State-axis decision with the executable pattern: each mapped element owns one `temp` value, while every element reads the same scalar parameter. For an ordinary `nn.Module` with no State-axis filters, the tutorial says Module states are typically shared, or broadcast, across the batch by default.
 
-### Exact parameter names
+### Choose the State declaration contract
 
-Neither routed tutorial defines mapping parameters named `in_states` or `out_states`. The exact documented names in the Vectorization tutorial are `state_in_axes` and `state_out_axes`; do not present `in_states` / `out_states` as aliases without opening an official API page that defines them.
+The generated APIs use distinct, non-alias parameter names:
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vectorization.html#state-aware-parameters-state-in-axes-and-state-out-axes
+| API | State input mapping | State output mapping | Undeclared batched write |
+|---|---|---|---|
+| `brainstate.transform.vmap` | `in_states` by State instance | `out_states` by State instance | Raises `BatchAxisError`. |
+| `brainstate.transform.vmap2` | `state_in_axes` by State filter | `state_out_axes` by State filter | Controlled by `unexpected_out_state_mapping`; default `'auto'` infers and scatters. |
+
+Sources: https://brainx.chaobrain.com/brainstate/apis/generated/brainstate.transform.vmap.html and https://brainx.chaobrain.com/brainstate/apis/generated/brainstate.transform.vmap2.html.
 
 ## Handle state writes outside `state_out_axes`
 
@@ -307,6 +310,8 @@ Do not infer semantics for `vmap_new_states`, `vmap2_new_states`, `map`, `pmap2`
 ## High-impact checks
 
 - Match every non-`None` `in_axes` entry to an actual mapped dimension of the corresponding argument.
+- Use `vmap` for State-instance declarations and `vmap2` for filter-based State-axis policies; do not mix their parameter names.
+- Prefer an owning package's native batch or `size` axis when it already represents the independent conditions.
 - Decide whether mutable State is shared or mapped; use `state_in_axes` and `state_out_axes` together for per-instance State write-back.
 - Set `axis_size` when all inputs are static.
 - Declare State axes or set an explicit policy when automatic output-axis inference would be ambiguous.

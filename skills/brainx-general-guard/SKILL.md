@@ -92,6 +92,8 @@ Transform the complete stateful operation with `brainstate.transform` whenever p
 | `brainstate.transform.for_loop` | Run a fixed time or data sequence when iteration-to-iteration effects live in `State`; it slices leading input axes and stacks per-step outputs. |
 | `brainstate.transform.scan` | Run a sequence when an ordinary explicit carry must pass between iterations. |
 
+Do not add a transform only to construct parameter axes or satisfy a named-API checklist. When the owning package already represents independent conditions through a native batch or `size` axis, use that path and reserve `vmap` for a callable the owning package does not already batch.
+
 Do not use a Python loop for simulation timesteps, recurrent sequences, or other repeated State updates that should execute as one compiled operation.
 
 Use raw JAX transformations only for pure array or PyTree functions that do not close over BrainState `State`.
