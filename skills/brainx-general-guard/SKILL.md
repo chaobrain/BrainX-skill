@@ -75,9 +75,9 @@ Use the highest-level API in the selected owning package that preserves the scie
 
 Derive qualitative labels from observables that distinguish the claimed mechanism; validate the baseline and mechanism before tuning, and mark unsourced calibrated regimes as phenomenological.
 
-- Compare every intervention with a matched control at each nuisance setting, and show both at aligned times or event landmarks; a normalized summary is not a substitute.
+- Validate each matched control independently, then compare its intervention at the same nuisance setting and aligned times or event landmarks; a normalized summary is not a substitute.
 - Require time-resolved source-to-route-to-target order for propagation or pathway claims.
-- For categorical maps, retain and visualize every continuous boundary observable and verify each label's full predicate.
+- For categorical maps, retain every boundary observable; plot and save the exact reduction tested at each threshold, not a proxy summary, and verify each label's full predicate. Call a condition recovered only when a measured departure precedes a sustained return window; otherwise label it spared, and never require a requested category to appear.
 
 Run independent controls and mechanism checks in the same mapped or batched path as the intervention.
 
@@ -85,7 +85,7 @@ Run independent controls and mechanism checks in the same mapped or batched path
 
 Use the simplest highest-level API that expresses the required scientific figure. Prefer the selected BrainX package's visualization API, such as `brainmass.viz`, then BrainTools visualization APIs, then high-level `matplotlib.pyplot`.
 
-When Matplotlib is necessary, compose each graph with the shortest clear `pyplot` sequence. Do not build custom `Figure`, `Axes`, or `Artist` plumbing, manual axes placement, style systems, or layout scaffolding unless a stated output requirement cannot be met otherwise.
+Keep Matplotlib composition absolutely simple: create each figure with one `plt.subplots(...)` call, then use only basic high-level plotting methods. Use `plt.figure`, `GridSpec`, `add_subplot`, projection-specific axes, custom artists, manual axes placement, style systems, or layout scaffolding only when the user explicitly requests a result that `subplots()` cannot express.
 
 Simplicity applies to implementation, not scientific content or figure quality. Preserve intentional size, units, readable labels, title, comparison styles, legend, unclipped layout, and sufficient output resolution.
 
