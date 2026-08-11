@@ -959,7 +959,7 @@ The acceleration skill and its transform references route only to the local rand
 
 - Open first for every BrainX modeling, simulation, training, review, debugging, or optimization task.
 - Identify every modeling scale explicitly represented, then open only the package skills that own those scales. Keep the guard active as the cross-cutting implementation layer.
-- Follow: classify represented scales → check only whether required packages are present → study the owning package skills and task-relevant example scripts → reconcile examples with the current root workflow → choose owning-package orchestration → compose readable code → transform only custom stateful execution → validate scientific behavior.
+- Follow: classify represented scales → check only whether required packages are present → study the owning package skills and task-relevant example scripts → reconcile examples with the current root workflow → choose owning-package orchestration → compose absolutely simple code → transform only custom stateful execution → validate scientific behavior.
 
 #### Modeling-scale routing
 
@@ -996,8 +996,9 @@ Use the finest explicitly modeled unit to distinguish adjacent scales: point neu
 
 1. Prioritize owning-package orchestration. Use the highest-level selected-package API that preserves the scientific operation, such as `brainmass.Simulator`, `Network`, `Fitter`, or `brainmass.viz`, before composing lower-level BrainState control flow.
 2. Write BrainX-native code. Keep BrainX abstractions intact; use BrainUnit and BrainTools for operations they own, and isolate generic Python, NumPy, or JAX to documented dimensionless model inputs, host statistics, serialization, timing, device reporting, custom presentation, or verified API gaps.
-3. Transform custom stateful execution. Use `brainstate.transform` only when the owning package cannot express required inputs, monitors, State effects, or a stable compilation boundary; use `for_loop` when effects live in `State` and `scan` when an explicit carry must pass between steps.
-4. Keep visualization simple without lowering figure quality. Use the simplest highest-level API that expresses the required scientific figure: prefer the selected BrainX package's visualization API, then BrainTools visualization APIs, then high-level `matplotlib.pyplot`. Use low-level Matplotlib `Figure`, `Axes`, or `Artist` APIs only for a requirement those APIs cannot express, and preserve intentional size, units, readable labels, title, comparison styles, legend, unclipped layout, and sufficient output resolution.
+3. Enforce absolute coding simplicity. Invest in studying the relevant examples and authoritative APIs, then deliver the smallest clear composition that preserves the scientific contract, correctness, required performance, focused verification, and requested output quality. Keep one-off demonstrations concrete; add configuration objects, result classes, helper layers, CLI options, or extra artifacts only for required variation or reuse, or when they reduce total complexity.
+4. Transform custom stateful execution. Use `brainstate.transform` only when the owning package cannot express required inputs, monitors, State effects, or a stable compilation boundary; use `for_loop` when effects live in `State` and `scan` when an explicit carry must pass between steps. Compile one logical rollout; allow a small host loop across causally sequential trials when the boundary must reset selected State while preserving learned State.
+5. Keep visualization simple without lowering figure quality. Use the simplest highest-level API that expresses the required scientific figure: prefer the selected BrainX package's visualization API, then BrainTools visualization APIs, then high-level `matplotlib.pyplot`. Use low-level Matplotlib `Figure`, `Axes`, or `Artist` APIs only for a requirement those APIs cannot express, and preserve intentional size, units, readable labels, title, comparison styles, legend, unclipped layout, and sufficient output resolution.
 
 #### Reference routing
 

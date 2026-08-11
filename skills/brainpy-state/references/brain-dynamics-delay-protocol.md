@@ -84,9 +84,47 @@ Keep the projection-before-post order. The delayed signal must be communicated b
 
 Do not validate a delay only from postsynaptic spike time. Membrane integration, thresholding, refractory State, and other inputs can shift or suppress the postsynaptic spike even when the transmission delay is correct.
 
+## Use a manual BrainState delay
+
+Insert the current sample before retrieval so step 0 always means current and step `d` means exactly `d` completed updates earlier.
+
+| API | Description |
+|---|---|
+| `brainstate.nn.Delay(target_info, max_time)` | Use when model logic needs an explicit reusable history buffer rather than a projection-owned delay; it allocates enough history for `max_time` under the initialization `dt`. |
+| `delay.update(value)` | Insert the current sample once per step before any retrieval that should include the updated history. |
+| `delay.retrieve_at_step(step)` | Retrieve an integer-offset sample; after the current update, step 0 is `value` and step `d` is the value from `d` updates earlier. |
+| `delay.retrieve_at_time(time)` | Retrieve by a unit-bearing time when the model is defined in physical time; select the documented interpolation behavior rather than manually rounding an off-grid delay. |
+
+```python
+import brainstate
+import brainunit as u
+import jax
+import jax.numpy as jnp
+
+with brainstate.environ.context(dt=1.0 * u.ms):
+    delay = brainstate.nn.Delay(
+        jax.ShapeDtypeStruct((), jnp.float32),
+        3.0 * u.ms,
+    )
+    brainstate.nn.init_all_states(delay)
+    impulse = jnp.array([1.0, 0.0, 0.0, 0.0, 0.0])
+
+    def step(value):
+        delay.update(value)
+        return delay.retrieve_at_step(jnp.asarray(3, dtype=jnp.int32))
+
+    delayed = brainstate.transform.for_loop(step, impulse)
+
+assert jnp.array_equal(delayed, jnp.array([0.0, 0.0, 0.0, 1.0, 0.0]))
+```
+
+If retrieval occurs before `update(value)`, the buffer still represents the previous completed step and the index for the same observed latency changes by one. Do not compensate with an unexplained `d - 1`; choose one call order, document it beside the step, and lock the convention with an impulse assertion before interpreting neural output.
+
+Reinitialize the delay for every independent rollout. A silent input interval advances the buffer but does not establish an independent State lifecycle.
+
 ## General BrainState boundary
 
-Open the official BrainState [Delay Protocol](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html) when implementing `brainstate.nn.Delay`, `brainstate.nn.DelayAccess`, `brainstate.nn.StateWithDelay`, rotation versus concatenation buffers, named entries, manual `update(value)`, `retrieve_at_step`, `retrieve_at_time`, or linear-versus-round interpolation. Those mechanisms are more general than BrainPy projection delays and should not be reconstructed inside a projection unless the projection APIs cannot express the required history.
+Open the official BrainState [Delay Protocol](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html) when implementing `brainstate.nn.DelayAccess`, `brainstate.nn.StateWithDelay`, rotation versus concatenation buffers, named entries, multiple taps, or linear-versus-round interpolation. Those mechanisms are more general than BrainPy projection delays and should not be reconstructed inside a projection unless the projection APIs cannot express the required history.
 
 ## Official sources
 

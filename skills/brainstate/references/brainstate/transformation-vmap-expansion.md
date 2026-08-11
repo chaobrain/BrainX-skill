@@ -136,6 +136,8 @@ assert model.param.value == 1.0
 
 This bundles the State-axis decision with the executable pattern: each mapped element owns one `temp` value, while every element reads the same scalar parameter. For an ordinary `nn.Module` with no State-axis filters, the tutorial says Module states are typically shared, or broadcast, across the batch by default.
 
+A shared State remains unbatched and is omitted from the mapped State axis. Keep it read-only during the mapped call. Broadcasting identical values to shape `(batch, ...)` and then mapping axis 0 creates independent copies with batch-scaled storage; it does not share one State. Map a State that each lane may write, but keep an unbatched State shared only when concurrent lanes do not update it.
+
 ### Choose the State declaration contract
 
 The generated APIs use distinct, non-alias parameter names:

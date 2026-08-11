@@ -205,6 +205,14 @@ gradients through a long rollout make activation memory the binding constraint.
 Tune `base` by measuring peak memory and step time: it controls checkpoint
 granularity, so lower memory requires more backward recomputation.
 
+Choose the transform boundary from the State lifecycle, not from a goal of
+eliminating every host loop. Put all timesteps of one logical rollout in
+`for_loop` or `scan`. When trials must remain sequential because learned State
+passes from trial N to trial N+1, but neural and short-term State must reset at
+each trial boundary, compile one complete trial callable and use a small host
+loop across trials. Do not nest the trials in another transformed loop when
+that prevents the required selective reset.
+
 **Invariant:** Initialize recurrent State before each rollout, keep the
 checkpointed loop inside `loss_fn`, differentiate that loss, then JIT the whole
 training step. Checkpointing changes the memory/compute profile, not the

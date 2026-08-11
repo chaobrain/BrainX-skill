@@ -40,6 +40,18 @@ Select every row supported by the user's task. A single-scale task opens one mod
 
 Start from the scientific concept and use the selected BrainX skills to construct the workflow. Keep ordinary Python, NumPy, or JAX at explicit boundaries for documented dimensionless model inputs, host-side statistics, serialization, timing, device reporting, or custom presentation logic. Preserve units and State until that boundary, and verify an API gap before writing generic numerical infrastructure.
 
+## Enforce absolute coding simplicity
+
+Invest substantial effort before coding. Study every routed skill, relevant example and reference, and authoritative BrainX API needed to understand the task and discover which BrainX operations remove custom logic. Then deliver absolutely simple code. Simplicity is an output criterion, not permission to skip study or guess an API.
+
+Use the smallest clear composition that completely satisfies the scientific contract. Minimize concepts, layers, functions, classes, State objects, transforms, branches, conversions, dependencies, files, monitors, and outputs.
+
+Keep an element only when removing it would change scientific meaning, correctness, required performance, verification of a costly failure, or requested output quality. Remove pass-through wrappers, duplicate representations, speculative configuration, redundant transforms, repeated calculations, defensive branches for impossible inputs, and unrequested artifacts. Prefer one direct data flow, one owner for each State, one stable transform boundary, and one canonical execution path.
+
+Keep a one-off scientific demonstration concrete. Add a configuration object, result class, helper layer, command-line option, or extra artifact only when the request requires variation or reuse, or when that structure removes more complexity than it adds.
+
+Do not simplify away units, explicit State lifecycles, numerical validity, scientifically necessary mechanisms, performance-critical compilation or batching, focused checks, or requested output quality. These are requirements, not optional complexity.
+
 ## Prefer high-level BrainX APIs
 
 Use high-level APIs as the abstraction boundary: simulation code should state the scientific operation while BrainX handles array manipulation, unit propagation, State threading, numerical steps, and infrastructure.
@@ -77,7 +89,13 @@ Use the owning package's orchestrator for workflows it already implements. When 
 
 Do not add a transform only to construct parameter axes or satisfy a named-API checklist. When the owning package already represents independent conditions through a native batch or `size` axis, use that path and reserve `vmap` for a callable the owning package does not already batch.
 
-Do not use a Python loop for simulation timesteps, recurrent sequences, or other repeated State updates that should execute as one compiled operation.
+Map only independent operations. If trial N mutates weights or other State that trial N+1 consumes, keep those trials sequential; batch only independent evaluation trials or ensembles, with separate dynamical State and deliberately shared read-only State. Mapping input construction or offline scoring does not batch the stateful simulation itself. Open `skills/brainstate/references/brainstate/transformation-vmap-expansion.md` when a complete mapped operation reads or writes State, for the State-axis contracts and independent-lane pattern.
+
+Describe the transform that actually runs. Native batched State, vmapped input construction, and vmapped host scoring are not stateful `vmap`. When the user explicitly requires `vmap`, map the complete independent operation or report why the requirement cannot be met.
+
+Separate dependency order from State lifetime. When only learned or long-term State must carry from trial N to trial N+1, preserve that State but reset membrane, refractory, delay, trace, and other per-trial State at the logical boundary unless continuous carryover is part of the model. A silent interval advances State; it does not reset it.
+
+Do not use a Python loop for simulation timesteps, recurrent sequences, or repeated State updates inside one logical rollout. A small host loop is valid across causally sequential trials when each iteration calls one compiled trial rollout and the boundary must reset selected State while preserving learned State.
 
 Use raw JAX transformations only for pure array or PyTree functions that do not close over BrainState `State`.
 
@@ -86,7 +104,7 @@ Use raw JAX transformations only for pure array or PyTree functions that do not 
 - Generic NumPy or JAX used as the starting architecture for a BrainX simulation.
 - A custom BrainState loop that duplicates the selected package's runner, inputs, monitoring, initialization, or sampling.
 - Manual array or mathematical machinery that duplicates BrainUnit or BrainTools.
-- Python loops around stateful simulation or training steps.
+- Python timestep loops or host loops inside a stable logical rollout.
 - Raw `jax.jit`, `jax.grad`, or `jax.vmap` applied to State-aware code.
 - Host-side statistics, serialization, timing, device reporting, or custom presentation forced into BrainX without an owning API.
 - Fabricated APIs or signatures accepted without checking the owning documentation.

@@ -35,11 +35,12 @@ Align synaptic State to a neuron dimension instead of each connection, reduce th
 
 ### 1. Choose and run neuron dynamics
 
-A neuron call advances one `dt`, mutates its registered dynamical State, and exposes the current spike through `get_spike()`; initialize before every independent rollout and lower the complete time loop through `brainstate.transform`.
+A neuron call advances one `dt`, mutates its registered dynamical State, and exposes the current spike through `get_spike()`; initialize before every independent rollout, set `V_initializer` whenever startup voltage affects the result, and lower the complete time loop through `brainstate.transform`.
 
 | API | Description |
 |---|---|
-| `brainpy.state.LIFRef(...)` | Use for the canonical point-neuron rollout when leak and refractory timing are required; each call integrates one `dt`, updates membrane/refractory State, and returns the current spike. |
+| `brainpy.state.LIFRef(..., V_initializer=...)` | Use for the canonical point-neuron rollout when leak and refractory timing are required; each call integrates one `dt`, updates membrane/refractory State, and returns the current spike. `V_rest` sets the resting dynamics but does not set the initial membrane State, so pass an intentional initializer when startup spikes or transients matter. |
+| `braintools.init.Constant(value)` | Use as `V_initializer` when every neuron must start at one known voltage; initialization creates membrane State at that value. Use a documented distribution instead when initial heterogeneity is part of the model. |
 | `brainstate.nn.init_all_states(model, batch_size=...)` | Use after construction and before a rollout; it allocates or resets dynamical State across the Module graph and adds a leading batch dimension when `batch_size` is given. |
 | `brainstate.environ.context(dt=..., t=...)` | Use around the rollout for `dt` and inside the step for `t`; dynamics read the active values and the context restores previous settings on exit. |
 | `brainstate.environ.get_dt()` | Use when constructing the time axis or a numerical update from the active simulation step; it returns `dt` and raises when no value is set. |
@@ -50,6 +51,7 @@ A neuron call advances one `dt`, mutates its registered dynamical State, and exp
 ```python
 import brainpy
 import brainstate
+import braintools
 import brainunit as u
 
 with brainstate.environ.context(dt=0.1 * u.ms):
@@ -61,6 +63,7 @@ with brainstate.environ.context(dt=0.1 * u.ms):
         V_th=-50.0 * u.mV,
         V_reset=-60.0 * u.mV,
         tau_ref=5.0 * u.ms,
+        V_initializer=braintools.init.Constant(-60.0 * u.mV),
     )
     brainstate.nn.init_all_states(neuron)
     times = u.math.arange(
@@ -98,6 +101,7 @@ A projection deposits current into `post` before the postsynaptic neuron integra
 ```python
 import brainpy
 import brainstate
+import braintools
 import brainunit as u
 
 
@@ -111,6 +115,7 @@ class TwoPop(brainstate.nn.Module):
             V_rest=-60.0 * u.mV,
             V_th=-50.0 * u.mV,
             V_reset=-60.0 * u.mV,
+            V_initializer=braintools.init.Constant(-60.0 * u.mV),
         )
         self.post = brainpy.state.LIFRef(
             n_post,
@@ -119,6 +124,7 @@ class TwoPop(brainstate.nn.Module):
             V_rest=-60.0 * u.mV,
             V_th=-50.0 * u.mV,
             V_reset=-60.0 * u.mV,
+            V_initializer=braintools.init.Constant(-60.0 * u.mV),
         )
         self.proj = brainpy.state.AlignPostProj(
             comm=brainstate.nn.EventFixedProb(

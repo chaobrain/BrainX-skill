@@ -1,0 +1,11 @@
+prompt_bytes=666
+prompt_sha256=cadc2cd3bdf8be86e4744a271c5d3ff23f893985d8bf84afe3e3f363465883e5
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+exit_code=0
+isolation_valid=true
+skill_checkpoint=post-run0-refinement
+home=/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T//brainx-skill-eval.X8SVpI/home
+codex_home=/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T//brainx-skill-eval.X8SVpI/home/.codex
+keychain=explicit-login-keychain-path

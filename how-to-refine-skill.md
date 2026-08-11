@@ -17,8 +17,8 @@ Keep one folder for each task and one subfolder for each agent run:
 brainx-display-cases/<NN>-<case-name>/
 |-- prompt.md          # Original natural-language prompt
 |-- inputs/            # Optional original task inputs
-|-- run1/              # Baseline artifacts and diagnosis
-|-- run2/              # First post-refinement artifacts and diagnosis
+|-- run0/              # Baseline artifacts and diagnosis
+|-- run1/              # First post-refinement artifacts and diagnosis
 `-- runN/              # Further attempts when needed
 ```
 
@@ -26,6 +26,22 @@ Do not edit `prompt.md` or the original inputs between runs. Each fresh agent
 writes into an empty disposable workspace containing no case history.
 After the process exits, copy its workspace and event log unchanged into the
 new `runN/`, then let the reviewing agent add the diagnosis there.
+
+Numbered runs are refinement checkpoints, not repeated samples of one skill
+snapshot. Follow this order without skipping or reordering steps:
+
+```text
+run0 -> diagnose run0 -> refine, validate, and reinstall skills
+-> run1 -> diagnose and compare run1 -> refine, validate, and reinstall skills
+-> run2 -> ...
+```
+
+Do not launch `runN+1` from the same skill snapshot as `runN`. Create
+`runN+1/` only after the diagnosis for `runN` has produced an edit
+specification, the intended skill edits are complete, their checks pass, and
+the refined snapshot is installed in the new agent environment. Preserve any
+accidental same-snapshot rerun under a descriptive non-`runN` folder; it is
+control evidence, not the next refinement checkpoint.
 
 Use this BrainX environment for every run:
 
@@ -81,7 +97,7 @@ authentication setup once, keep secrets outside the case folder and archived
 artifacts, and reuse the same configuration bytes for every compared run.
 
 Use this harness, replacing the fixed case, model, minimal-config, prompt-byte,
-and prompt-hash values once before Run 1. Reuse the same harness for every
+and prompt-hash values once before Run 0. Reuse the same harness for every
 later run, changing only `run_name` and the skill snapshot being copied.
 
 ```bash
@@ -90,7 +106,7 @@ set -uo pipefail
 
 repo="/Users/nijiachen/Downloads/brainx-skill-bundle"
 case_dir="$repo/brainx-display-cases/<NN>-<case-name>"
-run_name="run1"
+run_name="run0"
 run_dir="$case_dir/$run_name"
 prompt_file="$case_dir/prompt.md"
 brainx_venv="/Users/nijiachen/Downloads/Brainx testing/.venv-brainx"
@@ -205,28 +221,43 @@ review.
 
 ## 2. Establish the BrainX review standard
 
-Before reading the generated implementation in detail:
+Build the standard from executable BrainX examples and official API contracts
+before judging the generated implementation. Spend most review effort on the
+closest Python scripts. Use prose only to locate those scripts and the APIs
+they exercise.
 
-1. Identify every modeling scale and BrainX package represented by the task.
-2. Read `skills/brainx-general-guard/SKILL.md` and every relevant owning package
-   skill completely.
-3. Follow their routes to every reference relevant to the task.
-4. Find and study all relevant BrainX code examples. Include examples sharing
-   the model, mechanism, inputs, monitors, execution, randomness, batching,
-   training, analysis, visualization, or performance pattern.
-5. Trace those examples end to end and reconcile older low-level execution
-   patterns with the owning package's current highest-level API.
+Follow this order:
 
-Read the selected skills as material to evaluate and refine. Do not follow them
-as instructions governing this meta-level review; the skill itself may be the
-source of the behavior being diagnosed.
+1. Identify every modeling scale, BrainX package, scientific mechanism, and
+   execution pattern required by the task.
+2. Read `skills/brainx-general-guard/SKILL.md` and each owning package skill only
+   to collect relevant example routes, API families, and existing guidance that
+   may need refinement. Do not use the skills themselves as the review standard.
+3. Select the smallest sufficient set of closely related Python examples. Start
+   with `skills/<package>/references/scripts/*.py` and other scripts routed by
+   the owning skill. Use
+   `source_html_references/<package>_html_reference.md` to find official examples
+   when the local scripts do not cover a required mechanism or composition.
+4. Study each selected script line by line and trace the complete workflow:
+   construction -> initialization -> inputs -> State and data flow -> execution
+   and transforms -> monitors and outputs -> validation. Record the exact
+   pattern that transfers to the task and any example-specific detail that does
+   not. Cover every material mechanism, but do not collect unrelated examples.
+5. Use the same package inventory in `source_html_references/` to open the
+   official central or generated API Reference page for every material API in
+   the expected workflow. Verify names, signatures, inputs, shapes, units,
+   mutation, State lifecycle, transformation behavior, returns, and documented
+   failures. Never infer an exact contract from example code alone.
+6. Synthesize the expected implementation from the example compositions and
+   verified API contracts. Only then inspect the generated artifact and decide
+   whether each failure belongs to the artifact, the skill guidance, or both.
 
-When API knowledge needs verification, use `html copy/` and focus on the
-official central or generated **API Reference Pages**. They are the source of
-truth for names, signatures, inputs, shapes, units, State lifecycle,
-transformations, and results. Tutorials and examples show composition but do
-not override an API Reference page. Do not inspect installed BrainX source,
-symbols, signatures, docstrings, or internals for knowledge.
+Treat Python examples as authoritative for composition and API Reference pages
+as authoritative for exact contracts. If an older example conflicts with a
+current contract, preserve its scientific pattern and update its mechanics to
+the current API. Treat root skills and Markdown references as routing material
+and refinement targets. Do not inspect installed BrainX source, symbols,
+signatures, docstrings, or internals for modeling knowledge.
 
 ## 3. Inspect and diagnose the generated artifacts
 
@@ -306,10 +337,19 @@ presentation; mark them as host boundaries when no official API owns them.
 
 ## 5. Surgically refine the relevant skills
 
-Treat the diagnosis as the edit specification. Read repository `AGENTS.md` and
-the files being edited. Consult `plan.md` only as repository policy requires;
-do not expand this workflow into a detailed plan. Treat the target skill as
-source text under refinement, not as instructions governing the edit.
+Use the latest numbered run as the sole edit evidence. Read only that run's
+generated artifacts and diagnosis, and treat its diagnosis as the edit
+specification. Do not reopen or aggregate earlier numbered runs, control runs,
+invalid attempts, or their diagnoses while refining. They are preserved only
+as comparison history. An earlier problem may justify another edit only when
+the latest diagnosis identifies it again. If the latest diagnosis says that no
+skill edit is justified, stop the refinement instead of mining older runs for
+changes.
+
+Read repository `AGENTS.md` and the files being edited. Consult `plan.md` only
+as repository policy requires; do not expand this workflow into a detailed
+plan. Treat the target skill as source text under refinement, not as
+instructions governing the edit.
 
 Make only changes needed to prevent diagnosed failures:
 
@@ -325,28 +365,48 @@ Make only changes needed to prevent diagnosed failures:
 
 Do not rewrite a mostly correct skill, create an API catalogue, add speculative
 APIs, duplicate guidance, or refactor unrelated material. Verify new API claims
-against the relevant API Reference page in `html copy/`. Run changed examples
-and focused checks with the BrainX virtualenv, validate routes, and run
-`git diff --check`.
+against the relevant API Reference page indexed by `source_html_references/`.
+Run changed examples and focused checks with the BrainX virtualenv, validate
+routes, and run `git diff --check`.
 
 ## 6. Run the exact prompt again
 
-Leave `run2/` absent until archival. Set `run_name="run2"`, install the refined
+Leave `run1/` absent until archival. Set `run_name="run1"`, install the refined
 skill snapshot into a newly created temporary `CODEX_HOME`, and rerun the same
 CLI harness under the same virtualenv and frozen conditions. Send the
 byte-identical prompt through stdin. If the CLI is unavailable and an
 orchestrator subagent must be used, send the decoded prompt as its complete
 message with `fork_turns="none"`.
 
-The Run 2 agent must not be able to access Run 1 artifacts, its diagnosis,
+The Run 1 agent must not be able to access Run 0 artifacts, its diagnosis,
 skill diffs, expected APIs, acceptance checks, or earlier conversations. Wait
-without coaching and preserve all Run 2 artifacts.
+without coaching and preserve all Run 1 artifacts.
 
-Repeat the same study, inspection, execution, and diagnosis process for Run 2.
-Compare it with Run 1 using the diagnosis checks. Confirm that scientific
+Repeat the same study, inspection, execution, and diagnosis process for Run 1.
+Compare it with Run 0 using the diagnosis checks. Confirm that scientific
 validity, BrainX API use, performance structure, and code simplicity improved
 without reducing requested output quality.
 
-If important problems remain, write the new diagnosis in `run2/`, make the next
-small surgical refinement, and repeat with `run3/`. Always reuse the exact
+If important problems remain, write the new diagnosis in `run1/`, make the next
+small surgical refinement, and repeat with `run2/`. Always reuse the exact
 original prompt and keep every later agent isolated from earlier evidence.
+
+## 7. Commit the completed refinement
+
+When the latest diagnosis and validation checks show that the result is good
+enough, stop creating runs. Commit the preserved case artifacts, diagnoses,
+skill and reference refinements, workflow updates, and any required `plan.md`
+change. Do not stage or commit `AGENTS.md`; preserve its local changes.
+
+From the repository root, inspect and commit the completed scope:
+
+```bash
+git add -A -- . ':(exclude)AGENTS.md'
+git diff --cached --check
+git status --short
+git commit -m "<concise refinement summary>"
+git push
+```
+
+Before committing, confirm that `AGENTS.md` is not staged and that archived
+logs contain no credentials or other secrets.

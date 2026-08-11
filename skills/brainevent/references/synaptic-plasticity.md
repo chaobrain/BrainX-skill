@@ -2,273 +2,106 @@
 
 Use this reference when binary pre- or postsynaptic events must modify stored synaptic weights. Plasticity is an overlay on the core `BinaryArray @ connectivity` workflow, not a prerequisite for ordinary event-driven communication.
 
-BrainEvent's event-driven plasticity operators touch only weights connected to neurons that fired, following the same event-sparsity principle as its matrix products.
+BrainEvent's event-driven plasticity operators touch only weights connected to neurons that fired. Keep persistent weights and temporal traces in BrainState State so the complete online update can run inside State-aware transforms.
 
 ## Choose the update operator
 
 | Weight storage | Presynaptic event triggers update | Postsynaptic event triggers update | Use when |
 |---|---|---|---|
-| CSR | `update_csr_on_binary_pre()` | `update_csr_on_binary_post()` | Connectivity is sparse and fixed; only stored synapses should be visited |
-| Dense | `update_dense_on_binary_pre()` | `update_dense_on_binary_post()` | A small fully connected layer already uses a dense weight matrix |
+| CSR | `update_csr_on_binary_pre()` | `update_csr_on_binary_post()` | Connectivity is sparse and fixed; only stored synapses should be visited. |
+| Dense | `update_dense_on_binary_pre()` | `update_dense_on_binary_post()` | A small fully connected layer already uses a dense weight matrix. |
 
-Use the `*_on_binary_pre` direction when the source neuron firing triggers the rule. Use the `*_on_binary_post` direction when the target neuron firing triggers it.
+Use the `*_on_binary_pre` direction when the source neuron firing triggers the rule. Use the `*_on_binary_post` direction when the target neuron firing triggers it. For a bidirectional STDP rule, apply both directions with the traces and signs defined by that rule; do not substitute one trigger direction for the other.
 
-## Canonical CSR STDP overlay
+## Run online plasticity through State
 
-The official tutorial maintains exponentially decaying pre/post traces, applies a spike-triggered update to the CSR `data`, and rebuilds the CSR object while preserving its structural arrays.
+Each timestep reads event arrays, advances trace State, and writes persistent weight State; lower that complete ordered update through `for_loop` and compile it with BrainState `jit`.
 
-```python
-import brainevent
-import brainstate
-import jax.numpy as jnp
-import numpy as np
-
-n_pre = 100
-n_post = 50
-connection_probability = 0.1
-
-# Create explicit sparse weights and convert their COO indices to CSR.
-brainstate.random.seed(42)
-mask = brainstate.random.bernoulli(
-    connection_probability,
-    size=(n_pre, n_post),
-)
-weights_dense = (
-    brainstate.random.uniform(0.0, 0.5, size=(n_pre, n_post))
-    * mask
-)
-row, col = jnp.where(weights_dense != 0)
-data = weights_dense[row, col]
-indptr, indices, order = brainevent.coo2csr(
-    row,
-    col,
-    shape=(n_pre, n_post),
-)
-csr_weights = brainevent.CSR(
-    (data[order], indices, indptr),
-    shape=(n_pre, n_post),
-)
-
-# Initialize traces and the official presynaptic-triggered STDP parameters.
-pre_trace = jnp.zeros(n_pre)
-post_trace = jnp.zeros(n_post)
-decay_pre = np.exp(-1.0 / 20.0)
-decay_post = np.exp(-1.0 / 20.0)
-A_plus = 0.005
-initial_mean = csr_weights.data.mean()
-
-brainstate.random.seed(100)
-for _ in range(500):
-    pre_spike = brainstate.random.bernoulli(0.05, size=(n_pre,))
-    post_spike = brainstate.random.bernoulli(0.05, size=(n_post,))
-
-    pre_trace = (
-        pre_trace * decay_pre
-        + pre_spike.astype(jnp.float32)
-    )
-    post_trace = (
-        post_trace * decay_post
-        + post_spike.astype(jnp.float32)
-    )
-
-    new_data = brainevent.update_csr_on_binary_pre(
-        weight=csr_weights.data,
-        indices=csr_weights.indices,
-        indptr=csr_weights.indptr,
-        pre_spike=pre_spike,
-        post_trace=post_trace * A_plus,
-        w_min=0.0,
-        w_max=1.0,
-        shape=csr_weights.shape,
-    )
-    csr_weights = brainevent.CSR(
-        (new_data, csr_weights.indices, csr_weights.indptr),
-        shape=csr_weights.shape,
-    )
-
-print("connections:", csr_weights.nse)
-print("initial mean weight:", initial_mean)
-print("final mean weight:", csr_weights.data.mean())
-print(
-    "final range:",
-    csr_weights.data.min(),
-    csr_weights.data.max(),
-)
-```
-
-This mirrors the official sparse-network construction and learning loop while using only the presynaptic CSR update API. Preserve `indices`, `indptr`, and `shape`; the operator updates weight values, not the sparse topology.
-
-For a bidirectional STDP rule, combine the corresponding pre- and post-triggered operators with the appropriate traces and signs from the learning rule. Do not silently substitute the pre-triggered operator for a post-triggered update.
-
-## Application: adaptive two-layer spiking network
-
-The official self-learning practice stores two CSR layers, propagates binary events through both, maintains decaying traces, and applies presynaptic-triggered updates after each sample.
+| API | Description |
+|---|---|
+| `brainstate.LongTermState(weight)` | Use for learned weights that must persist across trial resets and later rollouts; assign the update result through `.value`. |
+| `brainstate.ShortTermState(trace)` | Use for decaying pre- or postsynaptic traces that belong to one sequence; reset them at every independent sequence boundary. |
+| `update_csr_on_binary_pre(...)` | Use when active presynaptic rows update stored CSR data from a postsynaptic trace; it returns new data with the same shape and optionally clips it to `w_min` and `w_max`. |
+| `brainstate.transform.for_loop(step, *events)` | Use for the ordered event sequence; it slices the leading time axis and preserves State effects between steps. |
+| `brainstate.transform.jit(run)` | Use around the complete online sequence so State discovery and write-back remain transform-aware. |
 
 ```python
 import brainevent
 import brainstate
+import brainunit as u
 import jax.numpy as jnp
-import numpy as np
 
 
-def dense_to_csr(weights):
-    row, col = jnp.where(weights != 0)
-    data = weights[row, col]
-    indptr, indices, order = brainevent.coo2csr(
-        row,
-        col,
-        shape=weights.shape,
-    )
-    return brainevent.CSR(
-        (data[order], indices, indptr),
-        shape=weights.shape,
-    )
-
-
-class AdaptiveSpikingNetwork:
-    def __init__(
-        self,
-        n_input,
-        n_hidden,
-        n_output,
-        connection_probability=0.15,
-        seed=0,
-    ):
-        self.n_input = n_input
-        self.n_hidden = n_hidden
-        self.n_output = n_output
-
-        brainstate.random.seed(seed)
-        mask1 = brainstate.random.bernoulli(
-            connection_probability,
-            size=(n_input, n_hidden),
+class PlasticCSR(brainstate.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.shape = (3, 2)
+        self.indices = jnp.array([0, 1, 0, 1, 0, 1], dtype=jnp.int32)
+        self.indptr = jnp.array([0, 2, 4, 6], dtype=jnp.int32)
+        self.weight = brainstate.LongTermState(
+            jnp.full(6, 0.2, dtype=jnp.float32)
         )
-        weights1 = (
-            brainstate.random.uniform(
-                0.0,
-                0.3,
-                size=(n_input, n_hidden),
-            )
-            * mask1
-        )
-        self.w1 = dense_to_csr(weights1)
-
-        mask2 = brainstate.random.bernoulli(
-            connection_probability,
-            size=(n_hidden, n_output),
-        )
-        weights2 = (
-            brainstate.random.uniform(
-                0.0,
-                0.3,
-                size=(n_hidden, n_output),
-            )
-            * mask2
-        )
-        self.w2 = dense_to_csr(weights2)
-
-        self.input_trace = jnp.zeros(n_input)
-        self.hidden_trace = jnp.zeros(n_hidden)
-        self.output_trace = jnp.zeros(n_output)
-        self.decay = np.exp(-1.0 / 20.0)
-        self.learning_rate = 0.008
-
-    def forward(self, input_spikes, learning=True):
-        hidden_input = input_spikes @ self.w1
-        hidden_spikes = brainevent.BinaryArray(hidden_input > 0.5)
-        output_input = hidden_spikes @ self.w2
-        output_spikes = brainevent.BinaryArray(output_input > 0.8)
-
-        input_events = input_spikes.value
-        hidden_events = hidden_spikes.value
-        output_events = output_spikes.value
-        self.input_trace = (
-            self.input_trace * self.decay
-            + input_events.astype(jnp.float32)
-        )
-        self.hidden_trace = (
-            self.hidden_trace * self.decay
-            + hidden_events.astype(jnp.float32)
-        )
-        self.output_trace = (
-            self.output_trace * self.decay
-            + output_events.astype(jnp.float32)
+        self.post_trace = brainstate.ShortTermState(
+            jnp.zeros(2, dtype=jnp.float32)
         )
 
-        if learning:
-            new_w1 = brainevent.update_csr_on_binary_pre(
-                weight=self.w1.data,
-                indices=self.w1.indices,
-                indptr=self.w1.indptr,
-                pre_spike=input_events,
-                post_trace=self.hidden_trace * self.learning_rate,
-                w_min=0.0,
-                w_max=1.0,
-                shape=self.w1.shape,
-            )
-            self.w1 = brainevent.CSR(
-                (new_w1, self.w1.indices, self.w1.indptr),
-                shape=self.w1.shape,
-            )
-
-            new_w2 = brainevent.update_csr_on_binary_pre(
-                weight=self.w2.data,
-                indices=self.w2.indices,
-                indptr=self.w2.indptr,
-                pre_spike=hidden_events,
-                post_trace=self.output_trace * self.learning_rate,
-                w_min=0.0,
-                w_max=1.0,
-                shape=self.w2.shape,
-            )
-            self.w2 = brainevent.CSR(
-                (new_w2, self.w2.indices, self.w2.indptr),
-                shape=self.w2.shape,
-            )
-
-        return output_input, hidden_spikes, output_spikes
+    def update(self, pre_spike, post_spike):
+        decay = u.math.exp(-brainstate.environ.get_dt() / (20.0 * u.ms))
+        self.post_trace.value = (
+            self.post_trace.value * decay
+            + post_spike.astype(jnp.float32)
+        )
+        self.weight.value = brainevent.update_csr_on_binary_pre(
+            weight=self.weight.value,
+            indices=self.indices,
+            indptr=self.indptr,
+            pre_spike=pre_spike,
+            post_trace=self.post_trace.value * 0.01,
+            w_min=0.0,
+            w_max=1.0,
+            shape=self.shape,
+        )
+        return self.weight.value
 
 
-network = AdaptiveSpikingNetwork(
-    n_input=200,
-    n_hidden=100,
-    n_output=10,
-    connection_probability=0.12,
-    seed=2024,
+pre_events = jnp.array(
+    [[False, False, False], [True, False, False], [False, True, False]]
 )
-initial_w1 = network.w1.data.mean()
-initial_w2 = network.w2.data.mean()
-activity = []
+post_events = jnp.array(
+    [[True, False], [False, False], [False, True]]
+)
 
-brainstate.random.seed(0)
-for _ in range(50):
-    epoch_output_count = 0
-    for _ in range(20):
-        input_spikes = brainevent.BinaryArray(
-            brainstate.random.bernoulli(0.1, size=(200,))
-        )
-        output, _, output_spikes = network.forward(
-            input_spikes,
-            learning=True,
-        )
-        epoch_output_count += int(jnp.sum(output_spikes.value))
-    activity.append(epoch_output_count / 20)
+with brainstate.environ.context(dt=1.0 * u.ms):
+    rule = PlasticCSR()
 
-assert output.shape == (10,)
-assert network.w1.data.mean() >= initial_w1
-assert network.w2.data.mean() >= initial_w2
-print("W1 mean:", initial_w1, "->", network.w1.data.mean())
-print("W2 mean:", initial_w2, "->", network.w2.data.mean())
-print("final output activity:", activity[-1])
+    @brainstate.transform.jit
+    def learn():
+        return brainstate.transform.for_loop(
+            rule.update,
+            pre_events,
+            post_events,
+        )
+
+    weight_history = learn()
+
+learned = brainevent.CSR(
+    (rule.weight.value, rule.indices, rule.indptr),
+    shape=rule.shape,
+)
+drive = brainevent.BinaryArray(jnp.array([True, False, False])) @ learned
+
+assert weight_history.shape == (3, 6)
+assert drive.shape == (2,)
 ```
 
-This adapts “Practice: Building a Self-Learning Neural Network,” replaces manual CSR row assembly with `coo2csr()`, and removes visualization-only history. It demonstrates the tutorial’s potentiation path; add the post-triggered operator when the learning rule also requires depression.
+Preserve `indices`, `indptr`, and `shape`; the operator updates stored weight values, not sparse topology. When trials are independent except for learned weights, keep `weight` sequential but reset `post_trace`, neural State, delays, and other per-trial State at every trial boundary; a silent interval is not a reset. If mapped lanes learn independently, give each lane separate weight and trace State. Do not `vmap` sequential trials when trial N+1 must consume weights learned in trial N.
 
 ## Storage boundary
 
 - Prefer CSR plasticity for large sparse networks with fixed connectivity.
 - Prefer dense plasticity for small fully connected layers already represented densely.
 - Do not choose JITC when individual connection weights must be persistently updated; use stored CSR or dense weights.
+- Keep dimensionless efficacy weights dimensionless until a named synaptic or current boundary scales them into a physical quantity.
 
 ## Exact API routing
 
@@ -278,6 +111,17 @@ Open the Matrix Operations API for exact signatures and associated primitives:
 - Dense: `update_dense_on_binary_pre`, `update_dense_on_binary_post`, and their `*_p` primitives.
 
 API: https://brainx.chaobrain.com/brainevent/reference/apis/operations.html
+
+Open the official Synaptic Plasticity tutorial when choosing trace equations, update signs, or a bidirectional learning rule. The BrainEvent operator applies the supplied update; it does not choose the scientific learning rule.
+
+## Common failures
+
+- Storing learned weights or traces in ordinary attributes while a transformed timestep mutates them.
+- Running timesteps in a Python loop instead of one State-aware transformed sequence.
+- Resetting persistent learned weights together with per-sequence traces.
+- Updating CSR data while changing or discarding `indices`, `indptr`, or `shape`.
+- Using a presynaptic-triggered operator for a postsynaptic-triggered term.
+- Interpreting a potentiation-only example as a complete STDP rule.
 
 ## Sources
 
