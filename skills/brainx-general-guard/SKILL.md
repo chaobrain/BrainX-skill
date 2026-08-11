@@ -71,9 +71,21 @@ Write custom logic only when it expresses model behavior that the ecosystem does
 
 Use the highest-level API in the selected owning package that preserves the scientific operation. Open lower-level BrainState control flow only when the package orchestrator cannot express the required inputs, monitors, State effects, or stable compilation boundary.
 
+## Validate scientific claims
+
+Derive qualitative labels from observables that distinguish the claimed mechanism; validate the baseline and mechanism before tuning, and mark unsourced calibrated regimes as phenomenological.
+
+- Compare every intervention with a matched control at each nuisance setting, and show both at aligned times or event landmarks; a normalized summary is not a substitute.
+- Require time-resolved source-to-route-to-target order for propagation or pathway claims.
+- For categorical maps, retain and visualize every continuous boundary observable and verify each label's full predicate.
+
+Run independent controls and mechanism checks in the same mapped or batched path as the intervention.
+
 ## Keep visualization simple without lowering figure quality
 
-Use the simplest highest-level API that expresses the required scientific figure. Prefer the selected BrainX package's visualization API, such as `brainmass.viz`, then BrainTools visualization APIs, then high-level `matplotlib.pyplot`; use low-level Matplotlib `Figure`, `Axes`, `Artist`, or styling machinery only for a requirement those APIs cannot express.
+Use the simplest highest-level API that expresses the required scientific figure. Prefer the selected BrainX package's visualization API, such as `brainmass.viz`, then BrainTools visualization APIs, then high-level `matplotlib.pyplot`.
+
+When Matplotlib is necessary, compose each graph with the shortest clear `pyplot` sequence. Do not build custom `Figure`, `Axes`, or `Artist` plumbing, manual axes placement, style systems, or layout scaffolding unless a stated output requirement cannot be met otherwise.
 
 Simplicity applies to implementation, not scientific content or figure quality. Preserve intentional size, units, readable labels, title, comparison styles, legend, unclipped layout, and sufficient output resolution.
 

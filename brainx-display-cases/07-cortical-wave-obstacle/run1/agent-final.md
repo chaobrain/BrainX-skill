@@ -1,0 +1,5 @@
+Implemented the complete BrainX experiment in [cortical_wave_obstacle.py](/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.lnDPvC/workspace/cortical_wave_obstacle.py:1), with usage documented in [README.md](/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.lnDPvC/workspace/README.md:1).
+
+The generated [figure](/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.lnDPvC/workspace/outputs/cortical_wave_obstacle.png) shows the spark, intact propagation, obstacle interaction, and phase map. [Phase data](/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.lnDPvC/workspace/outputs/phase_map.csv) contains all 25 sweep conditions: 7 split, 3 bend, and 15 die.
+
+Verified with a full 26-lane mapped simulation, syntax checks, lesion-silence assertions, right-edge propagation checks, and artifact validation.

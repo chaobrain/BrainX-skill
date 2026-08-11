@@ -9,13 +9,16 @@ Choose components in dependency order so later decisions preserve earlier semant
 | Step | Decide | Result |
 |---|---|---|
 | 1 | Which firing mechanism must the neuron reproduce? | Neuron family and required numerical resolution |
-| 2 | Is the presynaptic source scheduled, stochastic, encoded, or injected directly into State? | Input generator or input function |
-| 3 | Which temporal response must a presynaptic event create? | Synaptic dynamics and the valid projection alignment |
-| 4 | Should synaptic activity become voltage-dependent conductance or voltage-independent current? | Synaptic output, weight units, signs, and scale |
-| 5 | Must efficacy change over recent presynaptic history? | Optional `STP` or `STD` |
-| 6 | What tensor and temporal statistic does the loss or analysis consume? | Readout Module or explicit time reduction |
+| 2 | Is the drive a direct current protocol, scheduled or stochastic spike source, encoded value, or direct State injection? | BrainTools current protocol, BrainPy input generator, encoder, or input function |
+| 3 | Which presynaptic/postsynaptic pairs exist, and does geometry or topology determine them? | Connection topology and a `ConnectionResult` when BrainTools owns pair selection |
+| 4 | Which temporal response must a presynaptic event create? | Synaptic dynamics and the valid projection alignment |
+| 5 | Should synaptic activity become voltage-dependent conductance or voltage-independent current? | Synaptic output, weight units, signs, and scale |
+| 6 | Must efficacy change over recent presynaptic history? | Optional `STP` or `STD` |
+| 7 | What tensor and temporal statistic does the loss or analysis consume? | Readout Module or explicit time reduction |
 
-Complete steps 3 through 5 whenever a point-neuron task names recurrent excitation, mutual inhibition, or spike-driven connectivity. Use explicit synapses, outputs, communication, and projections; do not substitute a scalar mean-spike feedback `State`. If scalar population rates and rate coupling are the scientific variables, route that scale to BrainMass or open both skills for an explicit hybrid model.
+Complete steps 3 through 6 whenever a point-neuron task names recurrent excitation, mutual inhibition, or spike-driven connectivity. Use explicit synapses, outputs, communication, and projections; do not substitute a scalar mean-spike feedback `State`. If scalar population rates and rate coupling are the scientific variables, route that scale to BrainMass or open both skills for an explicit hybrid model.
+
+When geometry, spatial distance, graph topology, Dale's principle, or compartment targeting determines the edge set, open `references/braintools/connectivity.md` and generate the `ConnectionResult` before selecting CSR, CSC, dense, generated, or fixed-degree BrainEvent storage. Let a projection communication operator own pair selection only when its documented fixed-probability or fixed-degree contract expresses the intended topology directly.
 
 After these choices, open `references/projection-patterns.md` to choose AlignPre versus AlignPost, communication, delay integration, and projection construction form.
 
@@ -111,6 +114,16 @@ Compare firing rate, adaptation, spike onset, and stability at the intended `dt`
 ## Input generators
 
 Choose the source from what is already known and where the generated input should be applied.
+
+### Direct current protocols
+
+Use a BrainTools current protocol when known time-varying values should enter a neuron's current argument rather than emit spikes or mutate target State.
+
+| API family | Use when |
+|---|---|
+| `braintools.input` | Use for unit-aware constant sections, steps, pulses, waveforms, stochastic current processes, and composed protocols; generate a time-major array under the intended `brainstate.environ.dt`. |
+
+Open `references/braintools/input-current.md` for API selection, composition, and the BrainPy-State rollout handoff. Generate the complete time-major current once under the rollout `dt`, pass it as an `xs` argument to `for_loop`, and apply spatial masks through unit-aware broadcasting after each sample is sliced. Do not rebuild named sections or pulses from time predicates inside the model step.
 
 ### Scheduled and autonomous spike sources
 

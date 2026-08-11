@@ -83,7 +83,7 @@ assert voltages.shape == (2000, 1)
 assert spikes.shape == (2000, 1)
 ```
 
-Open `references/array-creation.md` when constructing specialized unit-aware current ranges, grids, filled arrays, template-shaped arrays, or matrix patterns. Open `references/component-selection.md` when choosing among documented neuron, input, synapse, output, plasticity, or readout variants, for the decision boundary and complete category list. Open `references/braintools/brainstate-control-flow-patterns.md` when the rollout needs explicit carry, branching, or checkpointed control flow.
+Open `references/braintools/input-current.md` when a direct current protocol needs timed sections, pulses, waveforms, stochastic processes, or composition. Generate the complete time-major protocol once under the rollout `dt` and pass it as an input to `for_loop`; do not rebuild named sections or pulses from time predicates inside the model step. Open `references/array-creation.md` when constructing specialized unit-aware current ranges, grids, filled arrays, template-shaped arrays, or matrix patterns. Open `references/component-selection.md` when choosing among documented neuron, input, synapse, output, plasticity, or readout variants, for the decision boundary and complete category list. Open `references/braintools/brainstate-control-flow-patterns.md` when the rollout needs explicit carry, branching, or checkpointed control flow.
 
 ### 2. Compose synapses and projections
 
@@ -160,7 +160,7 @@ assert post_voltage.shape == (2000, 10)
 assert conductance.shape == (2000, 10)
 ```
 
-Open `references/projection-patterns.md` before implementing recurrent excitation, mutual inhibition, or other spike-driven connectivity; it owns AlignPre versus AlignPost, communication, delays, direct/delta input, short-term plasticity, and electrical coupling. Open `skills/brainevent/references/scripts/coba_ei_teaching.py` when a BrainPy network should use BrainEvent for efficient event-driven communication; it keeps BrainPy neuron and synapse dynamics while replacing the communication step with `BinaryArray @ connectivity` over fixed-degree, CSR, or dense storage.
+Open `references/braintools/connectivity.md` first when geometry, distance, degree, modules, or another named topology determines which neuron pairs connect; generate the topology before choosing its BrainEvent representation. Open `references/projection-patterns.md` before implementing recurrent excitation, mutual inhibition, or other spike-driven connectivity; it owns AlignPre versus AlignPost, communication, delays, direct/delta input, short-term plasticity, and electrical coupling. Open `skills/brainevent/references/scripts/coba_ei_teaching.py` when a BrainPy network should use BrainEvent for efficient event-driven communication; it keeps BrainPy neuron and synapse dynamics while replacing the communication step with `BinaryArray @ connectivity` over fixed-degree, CSR, or dense storage.
 
 ### 3. Train a spiking network
 
@@ -224,6 +224,8 @@ Open only the smallest reference that owns the decision.
 | Reference | Open when |
 |---|---|
 | `references/array-creation.md` | Constructing specialized unit-aware current ranges, grids, filled arrays, template-shaped arrays, or matrix patterns |
+| `references/braintools/connectivity.md` | Selecting spatial, topological, biological E/I, kernel, or compartment-aware connection pairs and exporting a `ConnectionResult` to BrainEvent storage |
+| `references/braintools/input-current.md` | Generating or composing direct unit-aware current sections, pulses, waveforms, or stochastic processes |
 | `references/component-selection.md` | Choosing a neuron, synapse, synaptic output, plasticity model, input generator, or readout from the documented native API families |
 | `references/projection-patterns.md` | Choosing projection alignment or API form, adding delays or short-term plasticity, using direct/delta projections, or adding gap junctions |
 | `references/nest-compatible/nest-workflow.md` | Using NEST/PyNEST model names, `Simulator`, devices, connection rules, spatial networks, parity, porting, or the bundled NEST-compatible full scripts |

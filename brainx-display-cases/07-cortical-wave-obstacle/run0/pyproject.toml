@@ -1,0 +1,22 @@
+[project]
+name = "cortical-wave-obstacle"
+version = "0.1.0"
+description = "A BrainX E/I cortical wave and silent-patch phase sweep"
+requires-python = ">=3.11"
+dependencies = [
+  "brainevent",
+  "brainpy-state",
+  "brainstate",
+  "braintools",
+  "brainunit",
+  "jax",
+  "matplotlib",
+  "numpy",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+python_files = ["test_*.py"]

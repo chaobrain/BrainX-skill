@@ -1,0 +1,16 @@
+prompt_bytes=836
+prompt_sha256=d7d2b25e043920fcc8d464a9b4c27a6971d9c264dc190fc513b5b4d91ab24847
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+exit_code=0
+isolation_valid=true
+isolation_basis=user-accepted-global-skill-resolution
+skill_checkpoint=refinement2
+skill_snapshot_sha256=d5881d45d26a2e1dd94b2fa5473b96debdf1d85edc5c53945de23bd1de1ba979
+installed_skill_snapshot_verified_identical=true
+resolved_skills=/Users/nijiachen/.agents/skills
+minimal_config_sha256=4aff8b102f79c74dd8703f537dd3724fd82915937ea2cb168c055b99358f6440
+stage=/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T//brainx-skill-eval.o1phQJ
+codex_home=/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T//brainx-skill-eval.o1phQJ/codex-home
+harness_shell=bash
