@@ -15,6 +15,8 @@ Choose components in dependency order so later decisions preserve earlier semant
 | 5 | Must efficacy change over recent presynaptic history? | Optional `STP` or `STD` |
 | 6 | What tensor and temporal statistic does the loss or analysis consume? | Readout Module or explicit time reduction |
 
+Complete steps 3 through 5 whenever a point-neuron task names recurrent excitation, mutual inhibition, or spike-driven connectivity. Use explicit synapses, outputs, communication, and projections; do not substitute a scalar mean-spike feedback `State`. If scalar population rates and rate coupling are the scientific variables, route that scale to BrainMass or open both skills for an explicit hybrid model.
+
 After these choices, open `references/projection-patterns.md` to choose AlignPre versus AlignPost, communication, delay integration, and projection construction form.
 
 ## Neuron models

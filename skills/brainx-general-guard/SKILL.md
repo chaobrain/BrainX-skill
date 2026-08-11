@@ -36,6 +36,8 @@ Select every row supported by the user's task. A single-scale task opens one mod
 | Cellular mechanisms coupled to aggregate neural-mass dynamics | BrainCell + BrainMass |
 | Cellular biophysics, point-neuron networks, and aggregate population dynamics interacting in one workflow | BrainCell + BrainPy-State + BrainMass |
 
+Keep the implementation at the selected scale. Do not introduce aggregate population-rate State into a point-neuron model, or point neurons into an aggregate model, merely to simplify execution. When both mechanisms are scientifically represented, treat the task as multiscale and open both owning skills.
+
 ## Write BrainX-native code
 
 Start from the scientific concept and use the selected BrainX skills to construct the workflow. Keep ordinary Python, NumPy, or JAX at explicit boundaries for documented dimensionless model inputs, host-side statistics, serialization, timing, device reporting, or custom presentation logic. Preserve units and State until that boundary, and verify an API gap before writing generic numerical infrastructure.
@@ -104,6 +106,7 @@ Use raw JAX transformations only for pure array or PyTree functions that do not 
 ## Boundaries and common failures
 
 - Generic NumPy or JAX used as the starting architecture for a BrainX simulation.
+- Point-neuron and aggregate population mechanisms mixed without selecting both owning skills or declaring the multiscale boundary.
 - A custom BrainState loop that duplicates the selected package's runner, inputs, monitoring, initialization, or sampling.
 - Manual array or mathematical machinery that duplicates BrainUnit or BrainTools.
 - Python timestep loops or host loops inside a stable logical rollout.

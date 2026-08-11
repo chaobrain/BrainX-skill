@@ -13,7 +13,7 @@ The official guide presents `brainstate.nn._collective_ops` through these public
 | Fix the execution order of methods | `brainstate.nn.call_order` | Lower order values run first. |
 | Call the same method on each model node | `brainstate.nn.call_all_fns`, `brainstate.nn.vmap_call_all_fns` | Filter nodes deliberately and verify the installed call signature. |
 | Initialise state variables everywhere | `brainstate.nn.init_all_states`, `brainstate.nn.vmap_init_all_states` | Run after construction and before the first rollout. |
-| Reset existing states everywhere | `brainstate.nn.reset_all_states`, `brainstate.nn.vmap_reset_all_states` | Reset at the intended sequence boundary, not every time step. |
+| Reset existing states everywhere | `brainstate.nn.reset_all_states`, `brainstate.nn.vmap_reset_all_states` | Reset at the intended sequence boundary; after vmapped reset, verify that every mapped dynamical State retains its leading lane axis. |
 | Restore values keyed by absolute state paths | `brainstate.nn.assign_state_values` | Inspect both returned mismatch collections. |
 
 ## Ordering calls with `call_order`
@@ -84,27 +84,28 @@ brainstate.nn.reset_all_states(rnn)
 
 As with `init_all_states`, reset can exclude nodes or receive additional arguments. `call_order` still governs the pass, allowing buffers to reset before hidden states when required.
 
-## Batched initialisation with `vmap_*`
+## Batched lifecycle operations with `vmap_*`
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
-For independent ensemble or Monte-Carlo instances, the vectorised variants insert a leading axis and manage a separate random key for each copy.
+API contract: https://brainx.chaobrain.com/brainstate/apis/generated/brainstate.nn.vmap_reset_all_states.html
+
+For independent ensemble or Monte-Carlo instances, `vmap_init_all_states` inserts a leading axis and manages a separate random key for each copy. Pass a `state_to_exclude` filter when selected States, such as statistics buffers, must remain shared; excluded States retain their original shape.
 
 ```python
-policy = brainstate.nn.Sequential(
-    brainstate.nn.Linear((4,), (64,)),
-    brainstate.nn.GELU(),
-    brainstate.nn.Linear((64,), (2,)),
-)
+rnn = brainstate.nn.ValinaRNNCell(num_in=4, num_out=8)
+axis_size = 8
+brainstate.nn.vmap_init_all_states(rnn, axis_size=axis_size)
 
-brainstate.nn.vmap_init_all_states(policy, axis_size=8)
-
-# ... run the batched rollout ...
-
-brainstate.nn.vmap_reset_all_states(policy, axis_size=8)
+hidden_shapes = {
+    path: state.value.shape
+    for path, state in rnn.states(brainstate.HiddenState).items()
+}
+assert hidden_shapes
+assert all(shape[0] == axis_size for shape in hidden_shapes.values())
 ```
 
-Pass a `state_to_exclude` filter to `vmap_init_all_states` when selected states, such as statistics buffers, must remain shared. Excluded states retain their original shape across the batch.
+The official `vmap_reset_all_states` contract intends to reset each lane independently, but the selected Module's `reset_state` implementation must still preserve the mapped State shape. Before selecting it for repeated rollouts, capture a direct-path snapshot, run one reset outside the transformed and timed path, and compare every mapped dynamical shape before and after. If any leading lane axis changes, restore the snapshot and use `assign_state_values` for subsequent exact resets instead of `vmap_reset_all_states`.
 
 ## Calling arbitrary methods collectively
 
@@ -146,7 +147,7 @@ The page identifies `brainstate.nn.vmap_call_all_fns` as the corresponding opera
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
-`assign_state_values` maps dictionary values back to state objects by absolute state path and returns mismatched keys as `(unexpected, missing)`. The guide constructs paths for dictionary-valued states by appending each inner key:
+`assign_state_values` maps values back to State objects by absolute State path and returns mismatched keys as `(unexpected, missing)`. Keep a dictionary-valued State intact under its State path; do not append its inner keys as if they were separate States.
 
 ```python
 autoencoder = brainstate.nn.Sequential(
@@ -156,13 +157,10 @@ autoencoder = brainstate.nn.Sequential(
 )
 brainstate.nn.init_all_states(autoencoder)
 
-state_snapshot = {}
-for path, state in autoencoder.states().items():
-    if isinstance(state.value, dict):
-        for key, value in state.value.items():
-            state_snapshot[path + (key,)] = value
-    else:
-        state_snapshot[path] = state.value
+state_snapshot = {
+    path: state.value
+    for path, state in autoencoder.states().items()
+}
 
 # ... modify weights or states ...
 
@@ -172,17 +170,17 @@ unexpected, missing = brainstate.nn.assign_state_values(
 )
 if unexpected or missing:
     raise ValueError(
-        f'checkpoint mismatch: unexpected={unexpected}, missing={missing}'
+        f"checkpoint mismatch: unexpected={unexpected}, missing={missing}"
     )
 ```
 
-The guide's own output reports flattened paths as unexpected and their parent state paths as missing. Therefore, the example demonstrates why both return collections must be inspected; it does not demonstrate a mismatch-free restore.
+Capture all States when exact whole-model restoration is required. A deliberately partial snapshot reports every omitted model State in `missing`; handle that result as an explicit partial-restore policy rather than ignoring it.
 
 ## Putting it all together
 
 Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
-The final guide example combines the earlier operations in this order: construct a `ValinaRNNCell`, call `vmap_init_all_states(..., axis_size=4)`, build the same absolute-path snapshot shown above, run a time-stepped rollout, call `vmap_reset_all_states(..., axis_size=4)`, and pass the snapshot to `assign_state_values`. It repeats the same dictionary-flattening restoration pattern and likewise produces unexpected and missing keys, so retain the mismatch check when adapting that lifecycle.
+Use this order for a batched recurrent workflow: construct the model, call `vmap_init_all_states(..., axis_size=...)`, verify mapped dynamical shapes, capture all values under their existing State paths, run the transformed rollout, then either use a shape-verified `vmap_reset_all_states` or restore the exact snapshot with `assign_state_values`. Reject unexpected or missing paths before the next rollout.
 
 ## Best practices
 
@@ -192,4 +190,5 @@ Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.htm
 - Decorate stateful methods with `call_order` when their interaction matters.
 - Use `node_to_exclude` and `state_to_exclude` filters to fine-tune traversal.
 - Inspect both return values from `assign_state_values` to catch mismatched checkpoints.
-- Use vmapped helpers for ensembles while accounting for the added leading axis.
+- Preserve dictionary-valued State under its existing absolute State path when taking a snapshot.
+- Use vmapped helpers for ensembles while accounting for the added leading axis, and verify that reset preserves that axis for the selected Modules.

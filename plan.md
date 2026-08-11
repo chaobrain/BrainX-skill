@@ -676,6 +676,7 @@ Route them through four workflow categories:
 - Projection roles: `comm`, `syn`, `out`, `post`.
 - AlignPre versus AlignPost.
 - Projection-before-post update order.
+- Recurrent excitation, mutual inhibition, and spike-driven connectivity in a point-neuron model require explicit projections; scalar population-rate feedback belongs to BrainMass or an explicitly routed hybrid model.
 #### Simulation techniques
 - Random Sampling rand, randn, randint, is useful for parameter intialization , basic random seed knowledge.
 - Use the local Braintools preprocessing reference when experimental or continuous data must become spike inputs.
@@ -799,6 +800,7 @@ Location for all NEST scripts: `references/nest-compatible/nest-workflow.md` ful
 - State not initialized or reset.
 - Time advanced with a Python loop.
 - Projection applied after postsynaptic update.
+- Recurrent point-neuron connectivity replaced by hand-written aggregate population-rate feedback without routing BrainMass or declaring a hybrid model.
 - `comm`, `syn`, `out`, and `post` treated as one role.
 - AlignPost used for unsuitable nonlinear synapse dynamics.
 - Unitless membrane or synaptic values.
@@ -975,6 +977,8 @@ The acceleration skill and its transform references route only to the local rand
 | Cellular biophysics, point-neuron networks, and aggregate population dynamics interacting in one workflow | BrainCell + BrainPy-State + BrainMass |
 
 Use the finest explicitly modeled unit to distinguish adjacent scales: point neurons select BrainPy-State, explicit cellular mechanisms select BrainCell, and aggregate population variables select BrainMass.
+
+Keep the implementation at the selected scale. Do not introduce aggregate population-rate State into a point-neuron model, or point neurons into an aggregate model, merely to simplify execution. When both mechanisms are scientifically represented, treat the task as multiscale and open both owning skills.
 
 #### Installed-package inspection boundary
 

@@ -87,7 +87,7 @@ Open `references/array-creation.md` when constructing specialized unit-aware cur
 
 ### 2. Compose synapses and projections
 
-A projection deposits current into `post` before the postsynaptic neuron integrates the step, while its alignment determines which neuron dimension owns synaptic State and which kinetics remain exact.
+A projection deposits current into `post` before the postsynaptic neuron integrates the step, while its alignment determines which neuron dimension owns synaptic State and which kinetics remain exact; when recurrent excitation, mutual inhibition, or spike-driven connectivity is a point-neuron mechanism, represent it with explicit projections instead of a hand-written population-rate feedback `State`, and route aggregate rate coupling to BrainMass.
 
 | API | Description |
 |---|---|
@@ -160,7 +160,7 @@ assert post_voltage.shape == (2000, 10)
 assert conductance.shape == (2000, 10)
 ```
 
-Open `references/projection-patterns.md` when selecting AlignPre versus either AlignPost API, adding short-term plasticity or delays, using direct/delta input, or composing electrical coupling. Open `skills/brainevent/references/scripts/coba_ei_teaching.py` when a BrainPy network should use BrainEvent for efficient event-driven communication; it keeps BrainPy neuron and synapse dynamics while replacing the communication step with `BinaryArray @ connectivity` over fixed-degree, CSR, or dense storage.
+Open `references/projection-patterns.md` before implementing recurrent excitation, mutual inhibition, or other spike-driven connectivity; it owns AlignPre versus AlignPost, communication, delays, direct/delta input, short-term plasticity, and electrical coupling. Open `skills/brainevent/references/scripts/coba_ei_teaching.py` when a BrainPy network should use BrainEvent for efficient event-driven communication; it keeps BrainPy neuron and synapse dynamics while replacing the communication step with `BinaryArray @ connectivity` over fixed-degree, CSR, or dense storage.
 
 ### 3. Train a spiking network
 

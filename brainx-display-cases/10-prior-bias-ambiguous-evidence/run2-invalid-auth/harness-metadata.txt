@@ -1,0 +1,9 @@
+prompt_bytes=829
+prompt_sha256=3b495bac0a5069de633b3f9bb0ac88d70e753eb1483d00957e66f2c0c469c699
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+exit_code=1
+isolation_valid=false
+failure=authentication unavailable in staged home
+stage=/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.fASmM6
