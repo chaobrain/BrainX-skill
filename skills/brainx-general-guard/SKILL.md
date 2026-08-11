@@ -91,6 +91,8 @@ Do not add a transform only to construct parameter axes or satisfy a named-API c
 
 Map only independent operations. If trial N mutates weights or other State that trial N+1 consumes, keep those trials sequential; batch only independent evaluation trials or ensembles, with separate dynamical State and deliberately shared read-only State. Mapping input construction or offline scoring does not batch the stateful simulation itself. Open `skills/brainstate/references/brainstate/transformation-vmap-expansion.md` when a complete mapped operation reads or writes State, for the State-axis contracts and independent-lane pattern.
 
+A mapped complete per-step transition called inside one `for_loop` is a stateful simulation batch: the mapping owns independent conditions and the loop owns time. Select mapped State by semantic role, such as `Any(OfType(HiddenState), OfType(ShortTermState))`; do not infer State ownership from array rank, shape, or a coincidental leading size. Open `skills/brainstate/references/brainstate/transformation-vmap-expansion.md` for the canonical initialization, mapping, and loop composition.
+
 Describe the transform that actually runs. Native batched State, vmapped input construction, and vmapped host scoring are not stateful `vmap`. When the user explicitly requires `vmap`, map the complete independent operation or report why the requirement cannot be met.
 
 Separate dependency order from State lifetime. When only learned or long-term State must carry from trial N to trial N+1, preserve that State but reset membrane, refractory, delay, trace, and other per-trial State at the logical boundary unless continuous carryover is part of the model. A silent interval advances State; it does not reset it.

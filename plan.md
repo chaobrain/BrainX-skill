@@ -777,6 +777,7 @@ Native scripts:
 - `skills/brainpy-state/references/scripts/106_COBA_HH_2007.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/106_COBA_HH_2007.py) — custom HH network; custom-model branch.
 - `skills/brainpy-state/references/scripts/107_gamma_oscillation_1996.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/107_gamma_oscillation_1996.py) — custom neuron/synapse; custom-model branch.
 - `skills/brainpy-state/references/scripts/109_fast_global_oscillation.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/109_fast_global_oscillation.py) — `DeltaProj` and delay; projection branch.
+- `skills/brainpy-state/references/scripts/sound_localization.py` — local validated teaching example — mapped integer delay bank, coincidence detection, and BrainEvent fixed fan-out; projection and delay branch.
 - `skills/brainpy-state/references/scripts/201_surrogate_grad_lif_fashion_mnist.py` — [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/201_surrogate_grad_lif_fashion_mnist.py) — real-data SNN training; training branch.
 - `skills/brainpy-state/references/scripts/training-snn.py` — [source](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html) — compact SNN training; training branch.
 

@@ -115,6 +115,8 @@ Use `brainstate.nn.EventFixedProb` for the canonical probabilistic sparse-spike 
 
 Open `references/scripts/103_COBA_2005.py` for a complete E/I COBA projection workflow. Open `references/scripts/109_fast_global_oscillation.py` when the projection uses `DeltaProj` with delayed recurrent input.
 
+Open `references/scripts/sound_localization.py` when independent conditions require a mapped bank of heterogeneous integer event taps feeding BrainEvent fixed-fan-out communication and coincidence detectors.
+
 ## Official sources
 
 - `https://brainx.chaobrain.com/brainpy-state/concepts/model-anatomy.html`

@@ -138,6 +138,47 @@ This bundles the State-axis decision with the executable pattern: each mapped el
 
 A shared State remains unbatched and is omitted from the mapped State axis. Keep it read-only during the mapped call. Broadcasting identical values to shape `(batch, ...)` and then mapping axis 0 creates independent copies with batch-scaled storage; it does not share one State. Map a State that each lane may write, but keep an unbatched State shared only when concurrent lanes do not update it.
 
+### Map a complete step inside one time loop
+
+Use `vmap_init_all_states` to allocate one dynamical State lane per independent rollout, map the complete per-step transition with semantic State-role filters, then call that mapped step from one `for_loop`. The mapping owns the condition axis and the loop owns time.
+
+```python
+from brainstate.util import filter as util_filter
+
+
+class Accumulator(brainstate.nn.Module):
+    def init_state(self):
+        self.total = brainstate.ShortTermState(jnp.asarray(0.0))
+
+    def update(self, value):
+        self.total.value = self.total.value + value
+        return self.total.value
+
+
+model = Accumulator()
+inputs = jnp.ones((5, 8))  # [time, independent condition]
+brainstate.nn.vmap_init_all_states(model, axis_size=inputs.shape[1])
+
+dynamical_state = util_filter.Any(
+    util_filter.OfType(brainstate.HiddenState),
+    util_filter.OfType(brainstate.ShortTermState),
+)
+mapped_step = vmap2(
+    model.update,
+    in_axes=0,
+    out_axes=0,
+    state_in_axes={0: dynamical_state},
+    state_out_axes={0: dynamical_state},
+    unexpected_out_state_mapping="raise",
+)
+outputs = brainstate.transform.for_loop(mapped_step, inputs)
+
+assert outputs.shape == (5, 8)
+assert jnp.allclose(outputs[-1], 5.0)
+```
+
+Do not select writable State with `.ndim`, shape, or path coincidences; those properties do not identify State ownership and can map a future parameter accidentally. Every State written by `mapped_step` needs a compatible per-lane axis. In particular, a delay buffer with per-lane history cannot share a mutable scalar write pointer merely because all lanes advance in lockstep; map the complete delay State or choose a delay representation whose writable State follows one axis policy.
+
 ### Choose the State declaration contract
 
 The generated APIs use distinct, non-alias parameter names:
@@ -315,6 +356,8 @@ Do not infer semantics for `vmap_new_states`, `vmap2_new_states`, `map`, `pmap2`
 - Use `vmap` for State-instance declarations and `vmap2` for filter-based State-axis policies; do not mix their parameter names.
 - Prefer an owning package's native batch or `size` axis when it already represents the independent conditions.
 - Decide whether mutable State is shared or mapped; use `state_in_axes` and `state_out_axes` together for per-instance State write-back.
+- Map a complete per-step transition inside one `for_loop` when the mapping owns independent conditions and the loop owns time.
+- Select mapped State by semantic role rather than array rank, shape, or leading-size coincidence.
 - Set `axis_size` when all inputs are static.
 - Declare State axes or set an explicit policy when automatic output-axis inference would be ambiguous.
 - Expect automatic independent `RandomState` keys; use the documented broadcast-key pattern only when shared randomness is intentional.

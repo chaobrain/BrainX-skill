@@ -1,0 +1,7 @@
+prompt_bytes=661
+prompt_sha256=ac287fcebbd17ad155da8d392605d19bfe026b186ff0cd5102492c04cd0abd4c
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+exit_code=0
+stage=/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T//brainx-skill-eval.9Rp4w3

@@ -94,6 +94,7 @@ Insert the current sample before retrieval so step 0 always means current and st
 | `delay.update(value)` | Insert the current sample once per step before any retrieval that should include the updated history. |
 | `delay.retrieve_at_step(step)` | Retrieve an integer-offset sample; after the current update, step 0 is `value` and step `d` is the value from `d` updates earlier. |
 | `delay.retrieve_at_time(time)` | Retrieve by a unit-bearing time when the model is defined in physical time; select the documented interpolation behavior rather than manually rounding an off-grid delay. |
+| `delay.register_entry(name, vector_delays, indices)` and `delay.at(name)` | Use for one named heterogeneous tap per selected source element; register before State initialization, then retrieve the selected delayed values after each update. |
 
 ```python
 import brainstate
@@ -121,6 +122,18 @@ assert jnp.array_equal(delayed, jnp.array([0.0, 0.0, 0.0, 1.0, 0.0]))
 If retrieval occurs before `update(value)`, the buffer still represents the previous completed step and the index for the same observed latency changes by one. Do not compensate with an unexplained `d - 1`; choose one call order, document it beside the step, and lock the convention with an impulse assertion before interpreting neural output.
 
 Reinitialize the delay for every independent rollout. A silent input interval advances the buffer but does not establish an independent State lifecycle.
+
+For grid-aligned binary spikes, retrieve exact integer steps or use named entries whose delays are integer multiples of `dt`. Linear time interpolation can produce fractional numeric values, which no longer satisfy binary-event semantics. Use continuous interpolation only when the modeled signal and off-grid timing require it.
+
+When a unit-bearing event time feeds an integer delay bank, convert `time / dt` to one documented integer step before the rollout and generate the event on that grid. Do not rediscover its step inside the time loop with a half-open `abs(t - arrival) < dt / 2` window; exact half-step results can depend on floating representation.
+
+## Map delay State across independent conditions
+
+Keep every writable part of a delay on one compatible mapped axis. A ring buffer whose history is per lane but whose mutable write pointer remains scalar cannot be shared across a mapped step, even when every lane advances in lockstep.
+
+Prefer `brainstate.nn.Delay` when its complete mutable State can be initialized and mapped per condition. If its bookkeeping cannot satisfy the State-axis policy, use a small pointer-free `HiddenState` shift register only for a fixed integer delay bank; keep step 0 as the current event and prove at least one nonzero tap with an impulse assertion. Do not generalize this fallback to long histories because shifting the full buffer costs work proportional to the maximum delay.
+
+Open `references/scripts/sound_localization.py` when building a mapped multi-tap coincidence detector, for the verified pointer-free fallback, semantic State filters, integer event taps, and impulse check.
 
 ## General BrainState boundary
 

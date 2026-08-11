@@ -239,5 +239,6 @@ Open only the smallest reference that owns the decision.
 | `references/scripts/106_COBA_HH_2007.py` | Reproducing a conductance-based E/I network with a custom Hodgkin-Huxley neuron |
 | `references/scripts/107_gamma_oscillation_1996.py` | Reproducing gamma oscillations with custom neuron and synapse dynamics |
 | `references/scripts/109_fast_global_oscillation.py` | Needing a complete `DeltaProj` network with delayed recurrent input |
+| `references/scripts/sound_localization.py` | Needing a mapped delay-line coincidence network with heterogeneous integer event taps and BrainEvent fixed fan-out |
 | `references/scripts/201_surrogate_grad_lif_fashion_mnist.py` | Needing a complete real-data surrogate-gradient LIF training workflow |
 | `references/scripts/training-snn.py` | Needing a complete runnable surrogate-gradient SNN training workflow |
