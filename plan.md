@@ -538,7 +538,10 @@ All five required Markdown references are skill-local and already exist. Applica
 
 - BrainMass implements neural mass models with BrainState for differentiable, JAX-based whole-brain modeling.
 - A `*Step` model defines regional dynamics; use `list_models()` for discovery and model selection.
-- `Simulator` runs a model, `Network` couples regional nodes, forward models map hidden activity to BOLD/EEG/MEG signals, and `Fitter` tunes trainable parameters to data.
+- `Simulator` is the canonical runner: use callable or time-major `inputs`, named/callable/dict monitors, transient removal, post-update sampling, State initialization, and JIT controls before writing custom execution.
+- `in_size` is each realization's region or decision-unit shape; `Simulator.run(batch_size=...)` adds independent State realizations and returns `(time, batch, in_size...)` trajectories.
+- For `WongWangStep`, choose thresholded `get_decision()` with an undecided state or explicit final `S1 - S2` dominance according to the scientific decision rule; do not treat them as equivalent.
+- `Network` couples regional nodes, forward models map hidden activity to BOLD/EEG/MEG signals, and `Fitter` tunes trainable parameters to data.
 - Attach stochastic noise to the model and seed every reported stochastic run.
 - Configure a `Network` with connectivity, distance, transmission speed, coupling, and delays only after establishing the simulation environment and global `dt`.
 - Prefer gradient-based fitting when the workflow is differentiable; route to gradient-free fitting only when the objective or model requires it.
@@ -550,8 +553,8 @@ All five required Markdown references are skill-local and already exist. Applica
 - Use BrainState random APIs such as `rand`, `randn`, and `randint` for stochastic initialization, with explicit seed control when results are reported.
 - Use `braintools.init` for reusable state and parameter initialization policies.
 - Use Braintools encoders only when experimental or task inputs must be converted into spikes.
-- Define simulation context with `brainstate.environ.context()`.
-- Execute timestamped steps with `brainstate.transform.for_loop(step, times)`; use transform-safe `for_loop`/`scan` rollout and checkpointing for long runs.
+- Use `brainmass.Simulator` for standard initialization, environment, transformed time loops, driven inputs, monitoring, and sampling.
+- Use `brainstate.environ.context()` with `brainstate.transform.for_loop` or `scan` only when `Simulator` cannot express required State effects, explicit carry, checkpointing, or a stable benchmark compilation boundary.
 
 #### Canonical Workflow Scripts Included in the Skill
 
@@ -569,6 +572,7 @@ All five required Markdown references are skill-local and already exist. Applica
 ```text
 brainmass/
 ├── modellibrary.md
+├── simulator-input-monitor-api.md
 ├── noiseprocesses.md
 ├── coupling-network-api.md
 ├── forward-observation-api.md
@@ -590,20 +594,21 @@ brainmass/
 └── parameter-sweeps-and-regime-analysis.md
 ```
 
-The skill defines ten BrainMass references, two local BrainState parameter references, and six local Braintools training references.
+The skill defines eleven BrainMass references, two local BrainState parameter references, and six local Braintools training references.
 
 Route them through four workflow categories:
 
 | Category | References |
 |---|---|
-| Modeling, simulation, and analysis | `modellibrary.md`, `noiseprocesses.md`, `datasets-api.md`, `coupling-network-api.md`, `forward-observation-api.md`, `visualization-analysis-api.md` |
+| Modeling, simulation, and analysis | `modellibrary.md`, `simulator-input-monitor-api.md`, `noiseprocesses.md`, `datasets-api.md`, `coupling-network-api.md`, `forward-observation-api.md`, `visualization-analysis-api.md` |
 | Fitting and regime exploration | `fitting-with-objectives-api.md`, `parameter-sweeps-and-regime-analysis.md` |
 | HORN task training | `horn-task-training.md`, `braintools/cogtask.md` |
 | Shared data, execution, and optimization support | `braintools/data-preprocessing.md`, `batch-transform-acceleration.md`, both `brainstate/` references, `braintools/metric.md`, `braintools/optimizer.md`, `braintools/parameter-initializer.md`, and `braintools/surrogate.md` |
 
 | Canonical reference | Need | Crafting source |
 |---|---|---|
-| `skills/brainmass/references/modellibrary.md` | Model inventory, categories, state variables, use cases, `list_models()`, and `ModelInfo` | [Models API](https://brainx.chaobrain.com/brainmass/reference/models.html), [utilities API](https://brainx.chaobrain.com/brainmass/reference/utilities.html) |
+| `skills/brainmass/references/modellibrary.md` | Model inventory, categories, state variables, use cases, `list_models()`, `ModelInfo`, and Wong-Wang decision semantics | [Models API](https://brainx.chaobrain.com/brainmass/reference/models.html), [utilities API](https://brainx.chaobrain.com/brainmass/reference/utilities.html) |
+| `skills/brainmass/references/simulator-input-monitor-api.md` | Standard runner inputs, monitor forms, sampling, initialization/JIT controls, and model-versus-trial axes | [Orchestration API](https://brainx.chaobrain.com/brainmass/reference/orchestration.html), [generated Simulator API](https://brainx.chaobrain.com/brainmass/reference/generated/brainmass.Simulator.html) |
 | `skills/brainmass/references/noiseprocesses.md` | Noise-family inventory, seeding, stochastic runs, and batched ensembles | [Noise API](https://brainx.chaobrain.com/brainmass/reference/noise.html), [noise tutorial](https://brainx.chaobrain.com/brainmass/tutorials/03_noise.html) |
 | `skills/brainmass/references/coupling-network-api.md` | Coupling mechanisms, delays, and network variants | [Coupling API](https://brainx.chaobrain.com/brainmass/reference/coupling.html), [network tutorial](https://brainx.chaobrain.com/brainmass/tutorials/04_building_a_network.html), [coupling/delays concept](https://brainx.chaobrain.com/brainmass/concepts/coupling_and_delays.html) |
 | `skills/brainmass/references/forward-observation-api.md` | HRFBold, kernels, TemporalAverage, BOLDSignal, EEG/MEG, and lead fields | [Forward API](https://brainx.chaobrain.com/brainmass/reference/forward.html), [observation API](https://brainx.chaobrain.com/brainmass/reference/observation.html), [forward-model tutorial](https://brainx.chaobrain.com/brainmass/tutorials/05_forward_models.html) |
@@ -806,99 +811,76 @@ Location for all NEST scripts: `references/nest-compatible/nest-workflow.md` ful
 
 ### braintrace
 
-#### Purpose
+#### Purpose and boundary
 
-- Boundary: relieve BPTT sequence-memory pressure and enable memory-efficient temporal training with BrainTrace layers, primitives, compiler graphs, and sequence drivers.
+- Boundary: relieve BPTT sequence-memory pressure and enable memory-efficient temporal training for recurrent and spiking networks with BrainTrace models, algorithms, compilation, and sequence drivers.
 - Treat online learning through eligibility traces as the mechanism for memory efficiency, not the primary routing goal.
-- Activate for D-RTRL, ES-D-RTRL, pp-prop, eligibility traces, `braintrace.compile`, hidden groups, ETP primitives, or excluded-weight debugging.
-- Primary path: define recurrent model → compile once → inspect graph → run online learner → differentiate → validate traced weights.
-- Advanced branches: primitives, algorithms, compiler diagnostics, hidden-state/batching modes.
+- Canonical path: compose prebuilt `braintrace.nn` layers → choose a built-in algorithm → compile and inspect → reset model and eligibility State → train → validate.
+- Escalate from prebuilt layers to built-in ETP operations, then to a custom ETP primitive, only as required.
+- Route general State, Module, transformation, and optimizer lifecycle to BrainState; route neuron and synapse dynamics to BrainPy-State or BrainCell; route offline BPTT without eligibility traces away from BrainTrace.
 
-#### Essential Concepts
+#### Underlying mental model
 
-- Relieve sequence-length-dependent BPTT memory with forward-maintained eligibility State.
-- Online learning and eligibility traces.
-- Use built-in`braintrace.nn` first.
-- `braintrace.compile`.
-- Decision Table: Algorithmn choice between `D_RTRL`, `ES_D_RTRL`, `pp_prop`.
-- Hidden State, `HiddenGroupState`, `HiddenTreeState`.
-- Inspecting `ETraceGraph` by `learner.report` and `show_graph()`.
-- Vmap compilation and per-sample State.
-- Compile-once shape stability.
-- Supported-control-flow limitations.
+- BPTT retains or rematerializes a sequence trajectory whose memory grows with sequence length; BrainTrace carries compressed gradient history forward in eligibility State instead.
+- Prebuilt `braintrace.nn` layers package ETP primitives, the low-level mechanism for temporal credit assignment.
+- Hidden State carries information between steps; `braintrace.compile()` discovers its parameter relationships and records them in `ETraceGraph`.
+- A BrainTrace algorithm updates eligibility State during the forward sequence and exposes gradients without retaining the full unrolled graph.
 
-#### Canonical Workflow Scripts Included in the Skill
+#### Three-level construction path
 
-1. Classify RNN/SNN and memory/accuracy requirements.
-2. Prefer a `braintrace.nn` model.
-3. Define hidden State.
-4. Compile once with representative input and algorithm.
-5. Inspect report and graph.
-6. Run the learner through transformed time execution.
-7. Differentiate selected `ParamState`.
-8. Validate traced/excluded weights, batch State, gradients, and reuse.
+| Level | Decision |
+|---|---|
+| 1. Prebuilt layers | Default to `braintrace.nn` layers and a built-in algorithm. |
+| 2. Built-in ETP operations | Build a custom layer or model only when prebuilt layers are insufficient. |
+| 3. Custom ETP primitive | Define a primitive only when built-in ETP operations cannot express the computation. |
 
-Minimal inline script: GRU → `braintrace.compile(..., D_RTRL, ...)` → State-targeted gradient.
+Keep level 1 complete in the root skill. Explain ETP only enough to predict compilation and gradients; route level 2 and 3 implementation to references.
 
-#### Reference Routing
+#### Canonical workflow included in the root skill
 
-```text
-braintrace/
-├── primitive-ops-and-transforms.md
-├── algorithms-customization.md
-├── compiler-graph-debugging.md
-├── state-batching-workflows.md
-├── braintools/metrics.md [shared]
-└── braintools/optimizers.md [shared]
-```
+1. Compose prebuilt `braintrace.nn` recurrent and readout layers.
+2. Compile once with built-in `D_RTRL` and a representative step.
+3. Inspect `learner.report` and `learner.show_graph()` before training.
+4. Register parameters and an optimizer; reset both model and eligibility State at sequence boundaries.
+5. Use `etrace_evolve()` for loss-free execution and `etrace_grad()` for sequence gradients, then update parameters.
+6. Verify loss, parameter changes, State shapes, and graph reuse.
 
-| Canonical reference | Need | Crafting source |
-|---|---|---|
-| `skills/braintrace/references/primitive-ops-and-transforms.md` | ETP primitives, matmul/conv/sparse/LoRA/element-wise ops, transform hooks, and custom registration | [Concepts](https://brainx.chaobrain.com/braintrace/quickstart/concepts.html), [compiler internals](https://brainx.chaobrain.com/braintrace/advanced/compiler_internals.html), [ETP primitives](https://brainx.chaobrain.com/braintrace/tutorials/etp_primitives.html), [custom transforms](https://brainx.chaobrain.com/braintrace/tutorials/customizing_primitive_transforms.html), [primitives API](https://brainx.chaobrain.com/braintrace/apis/primitives.html) |
-| `skills/braintrace/references/algorithms-and-customization.md` | Algorithm-by-algorithm selection and custom algorithm extension | [Algorithms API](https://brainx.chaobrain.com/braintrace/apis/algorithms.html), [custom algorithms](https://brainx.chaobrain.com/braintrace/advanced/custom_algorithms.html) |
-| `skills/braintrace/references/compiler-graph-debugging.md` | `ETraceGraph`, hidden groups, relations, diagnostics, exclusions, limitations, and workarounds | [Compiler internals](https://brainx.chaobrain.com/braintrace/advanced/compiler_internals.html), [limitations](https://brainx.chaobrain.com/braintrace/advanced/limitations.html), [graph visualization](https://brainx.chaobrain.com/braintrace/tutorials/graph_visualization.html) |
-| `skills/braintrace/references/state-batching-workflows.md` | Hidden-state variants, initialization/reset, single-sample mode, vmap batching, and multi-step input | [Hidden states](https://brainx.chaobrain.com/braintrace/tutorials/hidden_states.html), [batching](https://brainx.chaobrain.com/braintrace/tutorials/batching.html) |
+Keep this workflow inline. The current `skills/braintrace/` draft has no `scripts/` directory, so do not restore the obsolete external-example inventory from the previous plan.
 
-#### Script References
+Ground it in the [quickstart](https://brainx.chaobrain.com/braintrace/quickstart/quickstart.html), [core concepts](https://brainx.chaobrain.com/braintrace/quickstart/concepts.html), [hidden-State](https://brainx.chaobrain.com/braintrace/tutorials/hidden_states.html), [compilation](https://brainx.chaobrain.com/braintrace/tutorials/graph_compilation.html), and [visualization](https://brainx.chaobrain.com/braintrace/tutorials/visualization.html) sources already listed in `skills/braintrace/SKILL.md`.
 
-Core workflows:
+#### Reference routing
 
-- `rnn-online-learning.py` — [source](https://brainx.chaobrain.com/braintrace/quickstart/rnn_online_learning.html) — GRU copying-memory workflow; skill-body support.
-- `snn-online-learning.py` — [source](https://brainx.chaobrain.com/braintrace/quickstart/snn_online_learning.html) — recurrent SNN with ES-D-RTRL; algorithms branch.
+Route model construction through prebuilt layers, built-in ETP operations, and custom primitives in that order.
 
-Default bundle:
+| Canonical reference | Open when | Scope | Crafting sources |
+|---|---|---|---|
+| `skills/braintrace/references/pre-built-braintrace-layer.md` | Selecting or composing the default model | BrainTrace layer families and BrainState-owned supporting layers | [layers API](https://brainx.chaobrain.com/braintrace/apis/nn.html), [layers tutorial](https://brainx.chaobrain.com/braintrace/tutorials/neural_network_layers.html) |
+| `skills/braintrace/references/ETP operators.md` | Prebuilt layers cannot express a required custom layer or model | Built-in ETP operations, dispatch, units, transforms, and trace participation | [concepts API](https://brainx.chaobrain.com/braintrace/apis/concepts.html), [operators tutorial](https://brainx.chaobrain.com/braintrace/tutorials/five_primitive_functions.html) |
+| `skills/braintrace/references/Drtrl.md` | Using or validating canonical D-RTRL | Recurrence, sequence drivers, resets, memory, and BPTT boundary | [RNN online learning](https://brainx.chaobrain.com/braintrace/tutorials/rnn_online_learning.html), [D-RTRL tutorial](https://brainx.chaobrain.com/braintrace/tutorials/drtrl.html) |
+| `skills/braintrace/references/pp_pprop workflow.md` | D-RTRL trace memory is unsuitable or an SNN needs factorized traces | `pp_prop`, SNN integration, sequence training, and D-RTRL comparison | [SNN online learning](https://brainx.chaobrain.com/braintrace/tutorials/snn_online_learning.html), [pp-prop tutorial](https://brainx.chaobrain.com/braintrace/tutorials/pp_prop.html) |
+| `skills/braintrace/references/algorithm selection.md` | Choosing beyond D-RTRL | Estimator guarantees, configuration axes, and sequence-driver options | [algorithms API](https://brainx.chaobrain.com/braintrace/apis/algorithms.html) |
+| `skills/braintrace/references/batching.md` | Adding batch axes or multi-step wrappers | Mapping ownership, batched compilation, and data wrappers | [batching strategies](https://brainx.chaobrain.com/braintrace/advanced/batching.html) |
+| `skills/braintrace/references/custom ETP primitives.md` | Built-in ETP operations cannot express the computation | Primitive registration, ETP rules, compiler integration, and validation | [custom ETP primitives](https://brainx.chaobrain.com/braintrace/advanced/etp_primitives.html) |
+| `skills/braintrace/references/customizing_primitive_transforms.md` | Reparameterizing a weight or adding transform hooks | Trace attachment, chain-rule placement, units, and fast-path gating | [parameter transforms](https://brainx.chaobrain.com/braintrace/advanced/customizing_primitive_transforms.html) |
+| `skills/braintrace/references/custom algorithms.md` | Built-in algorithms cannot express the research method | Algorithm bases, trace lifecycle, solve hooks, and inspection | [custom algorithms](https://brainx.chaobrain.com/braintrace/advanced/custom_algorithms.html), [algorithms API](https://brainx.chaobrain.com/braintrace/apis/algorithms.html) |
+| `skills/braintrace/references/compiler_internal.md` | Root-level graph inspection cannot diagnose custom behavior | Discovery, graph execution, control-flow policy, and low-level diagnostics | [compiler internals](https://brainx.chaobrain.com/braintrace/advanced/compiler_internals.html), [compiler API](https://brainx.chaobrain.com/braintrace/apis/compiler.html) |
 
-- `examples/drtrl/09-classification-mnist.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/drtrl/09-classification-mnist.py) — D-RTRL classification; algorithms.
-- `examples/pp_prop/12-classification-neuromorphic.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/12-classification-neuromorphic.py) — pp-prop SNN; algorithms.
-- `examples/drtrl/02-batching-vmap.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/drtrl/02-batching-vmap.py) — per-sample State batching; state batching.
-- `examples/pp_prop/06-batching-batched.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/06-batching-batched.py) — directly batched primitive; state batching.
-- `examples/pp_prop/14-knob-vjp-method-contrast.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/14-knob-vjp-method-contrast.py) — temporal-credit contrast; algorithms.
-- `examples/drtrl/11-knob-fast-solve.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/drtrl/11-knob-fast-solve.py) — speed/equivalence knob; algorithms.
+Open `compiler_internal.md` only after `learner.report` and `learner.graph` cannot explain custom behavior.
 
-Operator branches:
+#### Boundaries and common failures
 
-- `examples/drtrl/07-operator-lora.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/drtrl/07-operator-lora.py) — LoRA primitive; primitive reference.
-- `examples/pp_prop/09-operator-sparse.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/09-operator-sparse.py) — masked/sparse connectivity; primitive reference.
-- `examples/pp_prop/11-operator-conv.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/11-operator-conv.py) — convolutional ETP; primitive reference.
-
-Optional specialized scripts:
-
-- `examples/003-snn-memory-and-speed-evaluation-all.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/003-snn-memory-and-speed-evaluation-all.py) — heavy benchmark; advanced algorithms/performance.
-- `examples/pp_prop/04-neurons-coba-ei-rsnn.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/04-neurons-coba-ei-rsnn.py) — Dale-law E/I RSNN; advanced algorithms.
-- `examples/pp_prop/_shared.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/_shared.py) — support dependency only.
-- `examples/drtrl/_shared.py` — [source](https://github.com/chaobrain/braintrace/blob/main/examples/drtrl/_shared.py) — support dependency only.
-
-#### Boundaries and Common Failures
-
-- Temporal recurrent weight uses ordinary `x @ w`.
-- Compiler invoked inside the training loop.
-- Hidden State or batch semantics designed manually before trying `compile(..., vmap=True)`.
-- Excluded readout weights assumed to be a compiler failure.
-- Custom model trusted without graph inspection.
-- Unsupported `lax` control flow or nested mapping inside `update()`.
-- Raw parameter transformation detaches eligibility traces.
-- BrainMass-derived rollout text copied without BrainTrace-specific validation.
-- Placeholder `scan` example retained without an official source.
+- The prebuilt → built-in ETP → custom primitive order is skipped.
+- Primitive or algorithm internals displace the prebuilt workflow in the root skill.
+- A valid exclusion is treated as a failure without reading its report reason.
+- The compiler runs inside the training loop or receives an example input with the wrong batch/feature shape.
+- Mapping is applied twice or bypassed through a mapped learner's `.module`.
+- Only recurrent State or only eligibility State is reset between independent sequences.
+- A hand-written scan duplicates `etrace_grad()` or `etrace_evolve()`, or `step_fn` calls the learner more than once.
+- D-RTRL or pp-prop is claimed to equal BPTT outside the estimator's documented mathematical regime and without a reduced-oracle check.
+- New code uses the historical `ES_D_RTRL` name instead of `pp_prop`.
+- Activation, normalization, or pooling layers are imported through deprecated `braintrace.nn` forwarding instead of their owning package.
+- Unsupported hidden-State control flow is used without following compiler policy or redesigning the step.
 
 ---
 
@@ -977,7 +959,7 @@ The acceleration skill and its transform references route only to the local rand
 
 - Open first for every BrainX modeling, simulation, training, review, debugging, or optimization task.
 - Identify every modeling scale explicitly represented, then open only the package skills that own those scales. Keep the guard active as the cross-cutting implementation layer.
-- Follow: classify represented scales → check only whether required packages are present → study the owning package skills and task-relevant example scripts → choose high-level BrainX APIs → compose readable code → transform stateful execution → validate scientific behavior.
+- Follow: classify represented scales → check only whether required packages are present → study the owning package skills and task-relevant example scripts → reconcile examples with the current root workflow → choose owning-package orchestration → compose readable code → transform only custom stateful execution → validate scientific behavior.
 
 #### Modeling-scale routing
 
@@ -1007,14 +989,15 @@ Use the finest explicitly modeled unit to distinguish adjacent scales: point neu
 2. Follow its exact routing instructions and open every reference required by the user's task.
 3. Open and study every referenced example script that is highly related to the task; reading only the root skill is incomplete.
 4. Trace model construction, initialization, State and data flow, execution, transformations, outputs, and validation through each relevant script.
-5. Derive the implementation from those canonical patterns before adapting it to the user's scientific model.
+5. Reconcile each script with the current root skill; preserve its scientific pattern while replacing superseded low-level infrastructure with the owning package's current canonical API.
+6. Derive the implementation from those reconciled patterns before adapting it to the user's scientific model.
 
 #### Essential principles
 
-1. Prioritize readability through high-level APIs. Use BrainX, BrainTools, and BrainUnit wrappers to own complex array manipulation, unit propagation, State threading, numerical steps, and infrastructure while simulation code states scientific intent.
-2. Write BrainX-native code. Keep BrainX abstractions intact; isolate generic NumPy or JAX code to explicit interoperability boundaries or verified API gaps.
-3. Transform stateful execution. Use `brainstate.transform` for State-aware compilation, differentiation, batching, and control flow; use `for_loop` when effects live in `State` and `scan` when an explicit carry must pass between steps.
-4. Keep plotting code short without lowering figure quality. Use high-level `matplotlib.pyplot` calls for standard scientific plots instead of low-level Figure, Axes, Artist, or styling machinery when both produce the same result. Code brevity must not remove an intentional figure size, units, readable labels, a descriptive title, comparison styles, a needed legend, an unclipped layout, or sufficient PNG resolution.
+1. Prioritize owning-package orchestration. Use the highest-level selected-package API that preserves the scientific operation, such as `brainmass.Simulator`, `Network`, `Fitter`, or `brainmass.viz`, before composing lower-level BrainState control flow.
+2. Write BrainX-native code. Keep BrainX abstractions intact; use BrainUnit and BrainTools for operations they own, and isolate generic Python, NumPy, or JAX to documented dimensionless model inputs, host statistics, serialization, timing, device reporting, custom presentation, or verified API gaps.
+3. Transform custom stateful execution. Use `brainstate.transform` only when the owning package cannot express required inputs, monitors, State effects, or a stable compilation boundary; use `for_loop` when effects live in `State` and `scan` when an explicit carry must pass between steps.
+4. Keep visualization simple without lowering figure quality. Use the simplest highest-level API that expresses the required scientific figure: prefer the selected BrainX package's visualization API, then BrainTools visualization APIs, then high-level `matplotlib.pyplot`. Use low-level Matplotlib `Figure`, `Axes`, or `Artist` APIs only for a requirement those APIs cannot express, and preserve intentional size, units, readable labels, title, comparison styles, legend, unclipped layout, and sufficient output resolution.
 
 #### Reference routing
 
@@ -1034,10 +1017,12 @@ Use the finest explicitly modeled unit to distinguish adjacent scales: point neu
 #### Boundaries and common failures
 
 - Generic NumPy or JAX used as the starting architecture.
+- Lower-level BrainState execution that duplicates an owning package's runner, initialization, inputs, monitoring, or sampling.
 - Manual math, array manipulation, or infrastructure that duplicates BrainUnit or BrainTools.
 - Python loops around repeated State updates in a simulation rollout.
 - Raw JAX transformations applied to State-aware code.
 - Units or State effects lost at raw-array boundaries.
+- Host-side statistics, serialization, timing, device reporting, or custom presentation forced into BrainX without an owning API.
 - BrainX API names or signatures invented without checking documentation.
 
 ---

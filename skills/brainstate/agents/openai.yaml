@@ -1,0 +1,4 @@
+interface:
+  display_name: "BrainState"
+  short_description: "Build stateful BrainState modules and transforms"
+  default_prompt: "Use $brainstate to build or debug a stateful BrainState model."

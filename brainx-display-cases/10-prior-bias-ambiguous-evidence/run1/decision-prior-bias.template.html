@@ -1,0 +1,786 @@
+<div id="decision-prior-bias-lab">
+  <div class="dp-header">
+    <div>
+      <h2>When a small prior changes the choice</h2>
+      <div class="text-small text-muted">Noisy Wong-Wang circuit · 256 matched-noise trials per evidence level</div>
+    </div>
+    <div class="viz-controls" aria-label="Trajectory controls">
+      <button type="button" class="btn btn-primary" id="dp-replay">
+        <i data-lucide="play" aria-hidden="true"></i>
+        <span>Replay</span>
+      </button>
+      <label class="form-label" for="dp-time">
+        Decision time <span id="dp-time-value">800 ms</span>
+        <input class="form-range" id="dp-time" type="range" min="0" max="800" step="5" value="800">
+      </label>
+    </div>
+  </div>
+
+  <section aria-labelledby="dp-trajectories-title">
+    <div class="dp-section-heading">
+      <h3 id="dp-trajectories-title">Ambiguous evidence: matched trials unfold</h3>
+      <div class="dp-legend" id="dp-choice-legend" aria-label="Final choice legend"></div>
+    </div>
+    <div class="dp-trajectory-grid">
+      <div class="dp-chart-panel">
+        <div class="dp-panel-title">Unbiased</div>
+        <div id="dp-traj-unbiased" class="dp-chart"></div>
+      </div>
+      <div class="dp-chart-panel">
+        <div class="dp-panel-title">Prior favors choice 1 by +0.02</div>
+        <div id="dp-traj-biased" class="dp-chart"></div>
+      </div>
+    </div>
+    <div class="dp-status text-small" id="dp-trajectory-status" aria-live="polite"></div>
+  </section>
+
+  <section aria-labelledby="dp-psychometric-title">
+    <div class="dp-section-heading">
+      <div>
+        <h3 id="dp-psychometric-title">Choice probability across evidence</h3>
+        <div class="text-small text-muted" id="dp-effect-summary"></div>
+      </div>
+      <div class="dp-legend" id="dp-probability-legend" aria-label="Probability series"></div>
+    </div>
+    <div id="dp-psychometric" class="dp-chart"></div>
+  </section>
+
+  <section aria-labelledby="dp-speed-title">
+    <div class="dp-section-heading">
+      <div>
+        <h3 id="dp-speed-title">Measured simulation throughput</h3>
+        <div class="text-small text-muted" id="dp-speed-context"></div>
+      </div>
+      <div class="dp-legend" id="dp-speed-legend" aria-label="Speed series"></div>
+    </div>
+    <div id="dp-speed" class="dp-chart"></div>
+  </section>
+
+  <div class="dp-method text-small text-muted" id="dp-method"></div>
+  <div class="tooltip dp-tooltip" role="tooltip" id="dp-tooltip" hidden></div>
+</div>
+
+<style>
+  #decision-prior-bias-lab {
+    position: relative;
+    width: 100%;
+    color: var(--foreground);
+    letter-spacing: 0;
+  }
+
+  #decision-prior-bias-lab .dp-header,
+  #decision-prior-bias-lab .dp-section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  #decision-prior-bias-lab .dp-header {
+    margin-bottom: 24px;
+  }
+
+  #decision-prior-bias-lab section {
+    margin: 0 0 28px;
+  }
+
+  #decision-prior-bias-lab h2,
+  #decision-prior-bias-lab h3,
+  #decision-prior-bias-lab .dp-panel-title {
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  #decision-prior-bias-lab .dp-section-heading {
+    margin-bottom: 10px;
+  }
+
+  #decision-prior-bias-lab .dp-panel-title {
+    margin-bottom: 6px;
+  }
+
+  #decision-prior-bias-lab .dp-trajectory-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  #decision-prior-bias-lab .dp-chart-panel {
+    min-width: 0;
+  }
+
+  #decision-prior-bias-lab .dp-chart {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #decision-prior-bias-lab .dp-chart svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+  }
+
+  #decision-prior-bias-lab .dp-chart .domain,
+  #decision-prior-bias-lab .dp-chart .tick line {
+    stroke: var(--border);
+  }
+
+  #decision-prior-bias-lab .dp-chart .tick text,
+  #decision-prior-bias-lab .dp-chart text {
+    fill: var(--foreground);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  #decision-prior-bias-lab .dp-chart .dp-grid line {
+    stroke: var(--border);
+    stroke-opacity: 0.45;
+  }
+
+  #decision-prior-bias-lab .dp-chart .dp-grid .domain {
+    display: none;
+  }
+
+  #decision-prior-bias-lab .dp-chart rect[data-chart-frame] {
+    fill: transparent;
+    stroke: var(--border);
+  }
+
+  #decision-prior-bias-lab .dp-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+  }
+
+  #decision-prior-bias-lab .dp-legend button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px;
+    border: 0;
+    background: transparent;
+    color: var(--foreground);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  #decision-prior-bias-lab .dp-legend button[aria-pressed="false"] {
+    opacity: 0.45;
+  }
+
+  #decision-prior-bias-lab .dp-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    flex: 0 0 auto;
+    background: currentColor;
+  }
+
+  #decision-prior-bias-lab .dp-swatch-circle {
+    border-radius: 50%;
+  }
+
+  #decision-prior-bias-lab .dp-swatch-diamond {
+    transform: rotate(45deg) scale(0.78);
+  }
+
+  #decision-prior-bias-lab .dp-status {
+    min-height: 1.4em;
+    margin-top: 8px;
+    color: var(--foreground);
+  }
+
+  #decision-prior-bias-lab .dp-method {
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+  }
+
+  #decision-prior-bias-lab .dp-tooltip {
+    position: absolute;
+    z-index: 20;
+    pointer-events: none;
+    max-width: min(280px, calc(100% - 24px));
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--foreground) 14%, transparent);
+  }
+
+  #decision-prior-bias-lab .dp-tooltip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    white-space: nowrap;
+  }
+
+  #decision-prior-bias-lab .dp-tooltip-row + .dp-tooltip-row {
+    margin-top: 4px;
+  }
+
+  #decision-prior-bias-lab .dp-tooltip-key {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  #decision-prior-bias-lab .dp-tooltip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  @media (max-width: 620px) {
+    #decision-prior-bias-lab .dp-trajectory-grid {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    #decision-prior-bias-lab .dp-header .viz-controls,
+    #decision-prior-bias-lab .dp-header .form-label {
+      width: 100%;
+    }
+
+    #decision-prior-bias-lab .dp-header .form-range {
+      width: 100%;
+    }
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>
+(() => {
+  const root = document.getElementById("decision-prior-bias-lab");
+  if (!root || !window.d3) return;
+
+  const DATA = __DECISION_DATA__;
+  const d3 = window.d3;
+  const tooltip = root.querySelector("#dp-tooltip");
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const colors = {
+    choice1: "var(--viz-series-1)",
+    choice2: "var(--viz-series-2)",
+    unbiased: "var(--viz-series-3)",
+    biased: "var(--viz-series-4)",
+    first: "var(--viz-series-5)",
+    steady: "var(--viz-series-6)"
+  };
+
+  const visible = {
+    choices: new Set(["Choice 1", "Choice 2"]),
+    probability: new Set(["Unbiased", "Prior +0.02"]),
+    speed: new Set(["First call", "Steady state"])
+  };
+
+  const percentPoints = value => `${Math.round(value * 100)} pp`;
+  const formatProbability = d3.format(".0%");
+  const formatThroughput = value => value >= 1000 ? d3.format(".2s")(value) : d3.format(".0f")(value);
+  const formatEvidence = value => `${value > 0 ? "+" : ""}${d3.format(".2f")(value)}`;
+  const escapeText = value => String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+  })[character]);
+
+  root.querySelector("#dp-effect-summary").textContent =
+    `Bias effect at zero evidence: +${percentPoints(DATA.zeroDelta)} · at |evidence| = 0.50: ${percentPoints(DATA.strongDelta)}`;
+  root.querySelector("#dp-speed-context").textContent =
+    `${DATA.device} (${DATA.platform}) · first call includes compile/cache setup; steady state is median of 3 runs`;
+  root.querySelector("#dp-method").textContent =
+    `${DATA.model}; dt ${DATA.dtMs} ms; duration ${DATA.durationMs} ms; Gaussian current noise σ ${DATA.noiseSigmaNa} nA; prior is a +${DATA.priorBias} top-down drive in coherence units.`;
+
+  function setButtonIcon(button, icon, label) {
+    button.innerHTML = `<i data-lucide="${icon}" aria-hidden="true"></i><span>${label}</span>`;
+    if (window.lucide) window.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+  }
+
+  function makeLegend(containerId, items, state, redraw) {
+    const container = root.querySelector(containerId);
+    container.replaceChildren();
+    items.forEach(item => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("aria-pressed", "true");
+      button.setAttribute("aria-label", `Toggle ${item.label}`);
+      const swatch = document.createElement("span");
+      swatch.className = `dp-swatch ${item.shape || ""}`;
+      swatch.style.color = item.color;
+      const label = document.createElement("span");
+      label.textContent = item.label;
+      button.append(swatch, label);
+      button.addEventListener("click", () => {
+        if (state.has(item.label) && state.size === 1) return;
+        if (state.has(item.label)) state.delete(item.label);
+        else state.add(item.label);
+        button.setAttribute("aria-pressed", String(state.has(item.label)));
+        redraw();
+      });
+      container.append(button);
+    });
+  }
+
+  function chartDimensions(container, height) {
+    const measured = Math.floor(container.getBoundingClientRect().width);
+    const width = Math.max(300, measured || 736);
+    return {
+      width,
+      height,
+      margin: { top: 14, right: 20, bottom: 46, left: 64 }
+    };
+  }
+
+  function createSvg(container, height, title, description) {
+    container.replaceChildren();
+    const dimensions = chartDimensions(container, height);
+    const svg = d3.select(container)
+      .append("svg")
+      .attr("class", "dp-plot")
+      .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height}`)
+      .attr("role", "img")
+      .attr("aria-label", `${title}. ${description}`);
+    svg.append("title").text(title);
+    svg.append("desc").text(description);
+    return { svg, ...dimensions };
+  }
+
+  function addFrameAndAxes(svg, x, y, dimensions, xAxis, yAxis, xTitle, yTitle) {
+    const { width, height, margin } = dimensions;
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
+    svg.append("rect")
+      .attr("data-chart-frame", "")
+      .attr("x", margin.left)
+      .attr("y", margin.top)
+      .attr("width", innerWidth)
+      .attr("height", innerHeight);
+
+    const gridAxis = d3.axisLeft(y)
+      .tickValues(yAxis.tickValues())
+      .tickArguments(yAxis.tickArguments())
+      .tickSize(-innerWidth)
+      .tickFormat("");
+
+    svg.append("g")
+      .attr("class", "dp-grid")
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(gridAxis);
+
+    svg.append("g")
+      .attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(xAxis);
+    svg.append("g")
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(yAxis.tickSizeOuter(0));
+
+    svg.append("text")
+      .attr("class", "axis-title")
+      .attr("data-axis", "x")
+      .attr("x", margin.left + innerWidth / 2)
+      .attr("y", height - 7)
+      .attr("text-anchor", "middle")
+      .text(xTitle);
+    svg.append("text")
+      .attr("class", "axis-title")
+      .attr("data-axis", "y")
+      .attr("transform", `translate(15,${margin.top + innerHeight / 2}) rotate(-90)`)
+      .attr("text-anchor", "middle")
+      .text(yTitle);
+  }
+
+  let currentTime = DATA.durationMs;
+  let animationFrame = null;
+
+  function drawTrajectory(containerId, conditionKey, title) {
+    const container = root.querySelector(containerId);
+    const dimensions = createSvg(
+      container,
+      246,
+      title,
+      `Six matched noisy decision-variable traces up to ${Math.round(currentTime)} milliseconds.`
+    );
+    const { svg, width, height, margin } = dimensions;
+    const allValues = DATA.examples.flatMap(example => [...example.unbiased, ...example.biased]);
+    const extent = d3.extent([...allValues, 0]);
+    const padding = Math.max((extent[1] - extent[0]) * 0.1, 0.001);
+    const x = d3.scaleLinear().domain([0, DATA.durationMs]).range([margin.left, width - margin.right]);
+    const y = d3.scaleLinear().domain([extent[0] - padding, extent[1] + padding]).nice().range([height - margin.bottom, margin.top]);
+    const xTicks = width < 430 ? 4 : 6;
+    const yAxis = d3.axisLeft(y).ticks(5).tickFormat(d3.format(".3f"));
+    addFrameAndAxes(
+      svg, x, y, dimensions,
+      d3.axisBottom(x).ticks(xTicks).tickSizeOuter(0),
+      yAxis,
+      "Time (ms)",
+      "Decision variable (S1 − S2)"
+    );
+
+    const clipId = `${containerId.slice(1)}-clip`;
+    svg.append("clipPath").attr("id", clipId).append("rect")
+      .attr("x", margin.left + 1).attr("y", margin.top + 1)
+      .attr("width", width - margin.left - margin.right - 2)
+      .attr("height", height - margin.top - margin.bottom - 2);
+
+    svg.append("line")
+      .attr("x1", margin.left).attr("x2", width - margin.right)
+      .attr("y1", y(0)).attr("y2", y(0))
+      .attr("stroke", "var(--border)")
+      .attr("stroke-width", 1);
+
+    const timeBisector = d3.bisector(value => value).center;
+    const endIndex = Math.max(0, timeBisector(DATA.timesMs, currentTime));
+    const line = d3.line()
+      .x((value, index) => x(DATA.timesMs[index]))
+      .y(value => y(value))
+      .curve(d3.curveMonotoneX);
+    const group = svg.append("g").attr("clip-path", `url(#${clipId})`);
+
+    DATA.examples.forEach(example => {
+      const choice = example[`${conditionKey}Choice`];
+      const label = `Choice ${choice}`;
+      if (!visible.choices.has(label)) return;
+      const values = example[conditionKey].slice(0, endIndex + 1);
+      const color = choice === 1 ? colors.choice1 : colors.choice2;
+      group.append("path")
+        .datum(values)
+        .attr("fill", "none")
+        .attr("stroke", color)
+        .attr("stroke-width", 1.5)
+        .attr("stroke-opacity", 0.72)
+        .attr("d", line);
+      const endpoint = values[values.length - 1];
+      group.append("circle")
+        .attr("cx", x(DATA.timesMs[Math.min(endIndex, DATA.timesMs.length - 1)]))
+        .attr("cy", y(endpoint))
+        .attr("r", 2.8)
+        .attr("fill", color);
+    });
+  }
+
+  function updateTrajectoryStatus() {
+    const timeBisector = d3.bisector(value => value).center;
+    const index = Math.max(0, timeBisector(DATA.timesMs, currentTime));
+    const countPositive = key => DATA.examples.filter(example => example[key][index] > 0).length;
+    root.querySelector("#dp-trajectory-status").textContent =
+      `At ${Math.round(currentTime)} ms: ${countPositive("unbiased")}/6 unbiased and ${countPositive("biased")}/6 biased trials lean toward choice 1.`;
+  }
+
+  function drawTrajectories() {
+    drawTrajectory("#dp-traj-unbiased", "unbiased", "Unbiased ambiguous decisions");
+    drawTrajectory("#dp-traj-biased", "biased", "Biased ambiguous decisions");
+    root.querySelector("#dp-time-value").textContent = `${Math.round(currentTime)} ms`;
+    root.querySelector("#dp-time").value = String(Math.round(currentTime / 5) * 5);
+    updateTrajectoryStatus();
+  }
+
+  function interpolateSeries(series, xValue, yKey) {
+    const bisect = d3.bisector(point => point.x).left;
+    const index = bisect(series, xValue);
+    if (index <= 0) return series[0][yKey];
+    if (index >= series.length) return series[series.length - 1][yKey];
+    const left = series[index - 1];
+    const right = series[index];
+    const proportion = (xValue - left.x) / (right.x - left.x);
+    return left[yKey] + proportion * (right[yKey] - left[yKey]);
+  }
+
+  function positionTooltip(event, html) {
+    tooltip.innerHTML = html;
+    tooltip.hidden = false;
+    const rootRect = root.getBoundingClientRect();
+    const left = event.clientX - rootRect.left + 12;
+    const top = event.clientY - rootRect.top + 12;
+    tooltip.style.left = `${Math.min(left, rootRect.width - tooltip.offsetWidth - 8)}px`;
+    tooltip.style.top = `${Math.max(8, top)}px`;
+  }
+
+  function hideTooltip() {
+    tooltip.hidden = true;
+  }
+
+  function drawPsychometric() {
+    const container = root.querySelector("#dp-psychometric");
+    const dimensions = createSvg(
+      container,
+      310,
+      "Choice probability across evidence",
+      "Unbiased and slightly biased Wong-Wang choice probabilities with 95 percent Wilson intervals."
+    );
+    const { svg, width, height, margin } = dimensions;
+    const xExtent = d3.extent(DATA.psychometric, point => point.evidence);
+    const xPadding = (xExtent[1] - xExtent[0]) * 0.06;
+    const x = d3.scaleLinear().domain([xExtent[0] - xPadding, xExtent[1] + xPadding]).range([margin.left, width - margin.right]);
+    const yExtent = d3.extent(DATA.psychometric.flatMap(point => [point.low, point.high, 0, 1]));
+    const yPadding = (yExtent[1] - yExtent[0]) * 0.035;
+    const y = d3.scaleLinear().domain([yExtent[0] - yPadding, yExtent[1] + yPadding]).range([height - margin.bottom, margin.top]);
+    const tickValues = width < 430 ? [-0.5, 0, 0.5] : [-0.5, -0.25, 0, 0.25, 0.5];
+    addFrameAndAxes(
+      svg, x, y, dimensions,
+      d3.axisBottom(x).tickValues(tickValues).tickFormat(value => value === 0 ? "0" : d3.format("+.2f")(value)).tickSizeOuter(0),
+      d3.axisLeft(y).tickValues([0, 0.25, 0.5, 0.75, 1]).tickFormat(d3.format(".0%")),
+      "Signed evidence (choice 2 ← 0 → choice 1)",
+      "P(choice 1)"
+    );
+
+    const seriesDefinitions = [
+      { label: "Unbiased", color: colors.unbiased, shape: "circle" },
+      { label: "Prior +0.02", color: colors.biased, shape: "square" }
+    ];
+    const series = seriesDefinitions.map(definition => ({
+      ...definition,
+      values: DATA.psychometric
+        .filter(point => point.condition === definition.label)
+        .map(point => ({ ...point, x: point.evidence, y: point.probability }))
+        .sort((a, b) => a.x - b.x)
+    }));
+
+    const line = d3.line().x(point => x(point.x)).y(point => y(point.y)).curve(d3.curveMonotoneX);
+    const area = d3.area().x(point => x(point.x)).y0(point => y(point.low)).y1(point => y(point.high)).curve(d3.curveMonotoneX);
+    const plot = svg.append("g");
+
+    series.filter(item => visible.probability.has(item.label)).forEach(item => {
+      const group = plot.append("g").attr("data-series", item.label);
+      group.append("path")
+        .datum(item.values)
+        .attr("fill", item.color)
+        .attr("fill-opacity", 0.10)
+        .attr("stroke", "none")
+        .attr("d", area);
+      group.append("path")
+        .datum(item.values)
+        .attr("fill", "none")
+        .attr("stroke", item.color)
+        .attr("stroke-width", 2)
+        .attr("d", line);
+      const symbolType = item.shape === "circle" ? d3.symbolCircle : d3.symbolSquare;
+      group.selectAll("path.dp-point")
+        .data(item.values)
+        .join("path")
+        .attr("class", "dp-point")
+        .attr("transform", point => `translate(${x(point.x)},${y(point.y)})`)
+        .attr("d", d3.symbol().type(symbolType).size(42))
+        .attr("fill", item.color);
+    });
+
+    const guide = svg.append("line")
+      .attr("data-chart-hover-guide", "")
+      .attr("y1", margin.top).attr("y2", height - margin.bottom)
+      .attr("stroke", "var(--foreground)")
+      .attr("stroke-opacity", 0.35)
+      .style("display", "none");
+    const markers = svg.append("g");
+    const overlay = svg.append("rect")
+      .attr("data-chart-hit", "")
+      .attr("data-chart-hover-overlay", "cross-series")
+      .attr("x", margin.left).attr("y", margin.top)
+      .attr("width", width - margin.left - margin.right)
+      .attr("height", height - margin.top - margin.bottom)
+      .attr("fill", "transparent")
+      .style("pointer-events", "all");
+
+    overlay.on("pointermove", event => {
+      const [pointerX] = d3.pointer(event, svg.node());
+      const clampedX = Math.max(margin.left, Math.min(width - margin.right, pointerX));
+      const evidence = x.invert(clampedX);
+      guide.attr("x1", clampedX).attr("x2", clampedX).style("display", null);
+      markers.selectAll("*").remove();
+      const rows = series.filter(item => visible.probability.has(item.label)).map(item => {
+        const probability = interpolateSeries(item.values, evidence, "y");
+        markers.append("circle")
+          .attr("data-chart-hover-marker", "")
+          .attr("cx", clampedX).attr("cy", y(probability)).attr("r", 4)
+          .attr("fill", item.color).attr("stroke", "var(--background)").attr("stroke-width", 1.5);
+        return `<div class="dp-tooltip-row"><span class="dp-tooltip-key" style="color:${item.color}"><span class="dp-tooltip-dot"></span><span style="color:var(--popover-foreground)">${escapeText(item.label)}</span></span><span>${formatProbability(probability)}</span></div>`;
+      }).join("");
+      positionTooltip(event, `<div class="dp-tooltip-row"><span>Evidence</span><span>${formatEvidence(evidence)}</span></div>${rows}`);
+    }).on("pointerleave", () => {
+      guide.style("display", "none");
+      markers.selectAll("*").remove();
+      hideTooltip();
+    });
+  }
+
+  function drawSpeed() {
+    const container = root.querySelector("#dp-speed");
+    const dimensions = createSvg(
+      container,
+      292,
+      "Measured simulation throughput",
+      "First-call and steady-state trial throughput across concurrent batch sizes."
+    );
+    const { svg, width, height, margin } = dimensions;
+    const values = DATA.speed.flatMap(point => [point.firstThroughput, point.steadyThroughput]);
+    const yExtent = d3.extent(values);
+    const xExtent = d3.extent(DATA.speed, point => point.batch);
+    const x = d3.scaleLog().domain(xExtent).range([margin.left + 5, width - margin.right - 5]);
+    const y = d3.scaleLog().domain([yExtent[0] / 1.3, yExtent[1] * 1.3]).range([height - margin.bottom, margin.top]);
+    const xTickValues = width < 430 ? [1, 64, 1024] : DATA.speed.map(point => point.batch);
+    const candidateYTicks = width < 430 ? [5, 50, 500, 1000] : [5, 10, 50, 100, 500, 1000];
+    const yTickValues = candidateYTicks.filter(value => value >= y.domain()[0] && value <= y.domain()[1]);
+    addFrameAndAxes(
+      svg, x, y, dimensions,
+      d3.axisBottom(x).tickValues(xTickValues).tickFormat(d3.format("~g")).tickSizeOuter(0),
+      d3.axisLeft(y).tickValues(yTickValues).tickFormat(d3.format("~s")),
+      "Concurrent trials (batch size, log scale)",
+      "Simulated trials / s (log scale)"
+    );
+
+    const series = [
+      {
+        label: "First call",
+        color: colors.first,
+        shape: "diamond",
+        values: DATA.speed.map(point => ({ x: point.batch, y: point.firstThroughput, seconds: point.firstSeconds }))
+      },
+      {
+        label: "Steady state",
+        color: colors.steady,
+        shape: "circle",
+        values: DATA.speed.map(point => ({ x: point.batch, y: point.steadyThroughput, seconds: point.steadySeconds }))
+      }
+    ];
+    const line = d3.line().x(point => x(point.x)).y(point => y(point.y)).curve(d3.curveMonotoneX);
+    const plot = svg.append("g");
+    series.filter(item => visible.speed.has(item.label)).forEach(item => {
+      const group = plot.append("g").attr("data-series", item.label);
+      group.append("path")
+        .datum(item.values)
+        .attr("fill", "none")
+        .attr("stroke", item.color)
+        .attr("stroke-width", 2)
+        .attr("d", line);
+      if (item.shape === "diamond") {
+        group.selectAll("path.dp-point")
+          .data(item.values)
+          .join("path")
+          .attr("class", "dp-point")
+          .attr("transform", point => `translate(${x(point.x)},${y(point.y)})`)
+          .attr("d", d3.symbol().type(d3.symbolDiamond).size(50))
+          .attr("fill", item.color);
+      } else {
+        group.selectAll("circle")
+          .data(item.values)
+          .join("circle")
+          .attr("cx", point => x(point.x)).attr("cy", point => y(point.y))
+          .attr("r", 3.5).attr("fill", item.color);
+      }
+    });
+
+    const guide = svg.append("line")
+      .attr("data-chart-hover-guide", "")
+      .attr("y1", margin.top).attr("y2", height - margin.bottom)
+      .attr("stroke", "var(--foreground)")
+      .attr("stroke-opacity", 0.35)
+      .style("display", "none");
+    const markers = svg.append("g");
+    const overlay = svg.append("rect")
+      .attr("data-chart-hit", "")
+      .attr("data-chart-hover-overlay", "cross-series")
+      .attr("x", margin.left).attr("y", margin.top)
+      .attr("width", width - margin.left - margin.right)
+      .attr("height", height - margin.top - margin.bottom)
+      .attr("fill", "transparent")
+      .style("pointer-events", "all");
+
+    overlay.on("pointermove", event => {
+      const [pointerX] = d3.pointer(event, svg.node());
+      const clampedX = Math.max(margin.left + 5, Math.min(width - margin.right - 5, pointerX));
+      const batch = x.invert(clampedX);
+      guide.attr("x1", clampedX).attr("x2", clampedX).style("display", null);
+      markers.selectAll("*").remove();
+      const rows = series.filter(item => visible.speed.has(item.label)).map(item => {
+        const throughput = interpolateSeries(item.values, batch, "y");
+        markers.append("circle")
+          .attr("data-chart-hover-marker", "")
+          .attr("cx", clampedX).attr("cy", y(throughput)).attr("r", 4)
+          .attr("fill", item.color).attr("stroke", "var(--background)").attr("stroke-width", 1.5);
+        return `<div class="dp-tooltip-row"><span class="dp-tooltip-key" style="color:${item.color}"><span class="dp-tooltip-dot"></span><span style="color:var(--popover-foreground)">${escapeText(item.label)}</span></span><span>${formatThroughput(throughput)}/s</span></div>`;
+      }).join("");
+      positionTooltip(event, `<div class="dp-tooltip-row"><span>Batch</span><span>${Math.round(batch)}</span></div>${rows}`);
+    }).on("pointerleave", () => {
+      guide.style("display", "none");
+      markers.selectAll("*").remove();
+      hideTooltip();
+    });
+  }
+
+  function drawAll() {
+    drawTrajectories();
+    drawPsychometric();
+    drawSpeed();
+  }
+
+  makeLegend("#dp-choice-legend", [
+    { label: "Choice 1", color: colors.choice1, shape: "dp-swatch-circle" },
+    { label: "Choice 2", color: colors.choice2 }
+  ], visible.choices, drawTrajectories);
+  makeLegend("#dp-probability-legend", [
+    { label: "Unbiased", color: colors.unbiased, shape: "dp-swatch-circle" },
+    { label: "Prior +0.02", color: colors.biased }
+  ], visible.probability, drawPsychometric);
+  makeLegend("#dp-speed-legend", [
+    { label: "First call", color: colors.first, shape: "dp-swatch-diamond" },
+    { label: "Steady state", color: colors.steady, shape: "dp-swatch-circle" }
+  ], visible.speed, drawSpeed);
+
+  const slider = root.querySelector("#dp-time");
+  const replayButton = root.querySelector("#dp-replay");
+
+  slider.addEventListener("input", () => {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    animationFrame = null;
+    replayButton.setAttribute("aria-pressed", "false");
+    setButtonIcon(replayButton, "play", "Replay");
+    currentTime = Number(slider.value);
+    drawTrajectories();
+  });
+
+  replayButton.addEventListener("click", () => {
+    if (animationFrame) {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+      replayButton.setAttribute("aria-pressed", "false");
+      setButtonIcon(replayButton, "play", "Replay");
+      return;
+    }
+    if (prefersReducedMotion) {
+      currentTime = DATA.durationMs;
+      drawTrajectories();
+      return;
+    }
+    currentTime = 0;
+    drawTrajectories();
+    replayButton.setAttribute("aria-pressed", "true");
+    setButtonIcon(replayButton, "pause", "Pause");
+    const startedAt = performance.now();
+    const animationDuration = 4800;
+    const animate = now => {
+      const progress = Math.min(1, (now - startedAt) / animationDuration);
+      currentTime = DATA.durationMs * progress;
+      drawTrajectories();
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        animationFrame = null;
+        replayButton.setAttribute("aria-pressed", "false");
+        setButtonIcon(replayButton, "rotate-ccw", "Replay");
+      }
+    };
+    animationFrame = requestAnimationFrame(animate);
+  });
+
+  let lastWidth = 0;
+  const resizeObserver = new ResizeObserver(entries => {
+    const width = Math.floor(entries[0].contentRect.width);
+    if (Math.abs(width - lastWidth) < 2) return;
+    lastWidth = width;
+    requestAnimationFrame(drawAll);
+  });
+  resizeObserver.observe(root);
+  drawAll();
+})();
+</script>

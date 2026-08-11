@@ -115,9 +115,49 @@ Keep the same body signature and result structure when switching. Validate both 
 
 ## Benchmark correctly
 
-- Warm up the exact function and shape once before timing.
-- Call `jax.block_until_ready(result)` before stopping the timer because JAX dispatch is asynchronous.
-- Compare steady-state compiled runs separately from first-call compilation.
+Define the step once, define the full rollout once, and transform that rollout once outside every timed call. The first call measures compilation plus execution; later compatible calls to the same callable measure steady execution.
+
+```python
+import time
+
+import brainmass
+import brainstate
+import brainunit as u
+import jax
+import jax.numpy as jnp
+
+dt = 0.1 * u.ms
+node = brainmass.HopfStep(in_size=64, a=0.25, w=0.3)
+brainstate.nn.init_all_states(node)
+steps = jnp.arange(300)
+
+def step(index):
+    with brainstate.environ.context(i=index, t=index * dt):
+        node.update()
+    return node.x.value
+
+def rollout():
+    with brainstate.environ.context(dt=dt):
+        return brainstate.transform.for_loop(step, steps)
+
+run_once = brainstate.transform.jit(rollout)
+
+start = time.perf_counter()
+first_result = run_once()
+jax.block_until_ready(first_result)
+first_call_seconds = time.perf_counter() - start
+
+steady_seconds = []
+for _ in range(5):
+    start = time.perf_counter()
+    result = run_once()
+    jax.block_until_ready(result)
+    steady_seconds.append(time.perf_counter() - start)
+```
+
+- Warm up the exact callable and shape once before reporting steady timing; report the first call separately when compilation cost matters.
+- Block every timed result before stopping the timer because JAX dispatch is asynchronous.
+- Restore the same initial State outside the timed region, or include the same reset inside every measured callable, when comparisons require identical starting conditions.
 - Batch enough work to occupy an accelerator; one small neural-mass node may run faster on CPU.
 - Keep `dt`, duration, shape, dtype, and monitor set identical across comparisons.
 
@@ -128,6 +168,7 @@ Keep the same body signature and result structure when switching. Validate both 
 - `scan` used when no explicit carry exists.
 - A model constructed outside a parameter-mapped function and mutated across mapped values.
 - Variable-shape or Python-object results returned from transformed loop bodies.
+- A step or rollout function reconstructed inside each timed repetition.
 - JAX timing measured without warmup or `block_until_ready`.
 - Checkpointing enabled before memory pressure is established.
 

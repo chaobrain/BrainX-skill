@@ -44,8 +44,8 @@ Every public regional model follows the same `*Step` contract, so choose by scie
 |---|---|
 | `brainmass.list_models()` | Use before choosing a model; it returns `ModelInfo` records with name, category, state-variable count, and use case. |
 | `brainmass.<Model>Step(in_size, **params)` | Use after selecting a model family; `in_size` sets the number of regions or parallel units and parameters broadcast to that shape. |
-| `brainmass.Simulator(model, dt=...)` | Use for the default, standard run path; it stores the model and integration step without changing the model equations. |
-| `Simulator.run(duration, ..., monitors=..., transient=...)` | Use to initialize State, execute the compiled loop, discard a warm-up interval, and return a dict of time-major trajectories plus unit-aware `ts`. |
+| `brainmass.Simulator(model, dt=...)` | Use for the default run path; it stores the model and integration step without changing the model equations. |
+| `Simulator.run(duration, *, inputs=None, monitors=None, transient=None, sample_every=None, batch_size=None, init_states=True, jit=True)` | Use to drive and observe the model through the standard runner; it initializes State by default, executes the complete State-aware loop with JIT by default, applies transient removal and post-update sampling, and returns time-major trajectories plus unit-aware `ts`. |
 
 ```python
 import brainmass
@@ -67,11 +67,13 @@ assert result["x"].shape == (1800, 1)
 assert result["ts"].shape == (1800,)
 ```
 
-Open `references/modellibrary.md` when choosing among model families, distinguishing similarly named Wong-Wang variants, comparing state cost, or locating a model's observable. Open `references/datasets-api.md` when the workflow needs bundled or registered input data.
+Use `Simulator` before constructing an environment context or transformed loop yourself. Open `references/simulator-input-monitor-api.md` when supplying driven inputs, defining callable or named monitors, controlling initialization/JIT, sampling outputs, or separating model and trial axes. Open `references/batch-transform-acceleration.md` only when `Simulator` cannot express the workflow or a benchmark requires one stable explicit compilation boundary.
+
+Open `references/modellibrary.md` when choosing among model families, distinguishing similarly named Wong-Wang variants or decision rules, comparing state cost, or locating a model's observable. Open `references/datasets-api.md` when the workflow needs bundled or registered input data.
 
 ## Noise and stochastic run
 
-Noise belongs to the model, while `batch_size` asks `Simulator` to initialize and run independent State realizations in one time-major result.
+Noise belongs to the model. Use `in_size` for each realization's region or decision-unit shape and `batch_size` for independent State realizations; stochastic output is ordered `(time, batch, in_size...)`.
 
 | API | Description |
 |---|---|
@@ -106,7 +108,9 @@ assert trials["x"].shape == (1000, 8, 1)
 
 Seed again before a repeated run when exact replay matters.
 
-Open `references/noiseprocesses.md` when choosing white, OU, Brownian, or colored noise, using a noise process directly, or checking units and State behavior. Open `references/batch-transform-acceleration.md` when batching parameters, writing a custom transformed loop, or checkpointing a long differentiated rollout.
+Do not flatten experimental conditions and stochastic trials into `in_size` unless a required external layout or numerical baseline demands it.
+
+Open `references/noiseprocesses.md` when choosing white, OU, Brownian, or colored noise, using a noise process directly, or checking units and State behavior. Open `references/simulator-input-monitor-api.md` when batching stochastic trials or driving multiple conditions. Open `references/batch-transform-acceleration.md` when batching parameters, writing a custom transformed loop that `Simulator` cannot express, or checkpointing a long differentiated rollout.
 
 ## Build a delay-coupled network
 
@@ -256,6 +260,7 @@ Choose the workflow category first, then open only the smallest reference that o
 | Reference | Open when |
 |---|---|
 | `references/modellibrary.md` | Choosing a model family, observable, state cost, or similarly named variant. |
+| `references/simulator-input-monitor-api.md` | Supplying model inputs, selecting monitor forms, sampling, controlling initialization/JIT, or separating model and trial axes. |
 | `references/noiseprocesses.md` | Selecting a noise spectrum, correlation structure, State behavior, units, or direct noise workflow. |
 | `references/datasets-api.md` | Loading, inspecting, generating, or registering BrainMass data containers. |
 | `references/coupling-network-api.md` | Selecting or configuring coupling, delays, connectivity conventions, direct coupling objects, or trainable network parameters. |

@@ -440,7 +440,7 @@ def train_step(x, y):
     return loss
 ```
 
-Return to `skills/brainstate/SKILL.md` for the general training structure. Open `references/braintools/optimizer.md` only for optimizer or scheduler selection.
+Return to `skills/brainstate/SKILL.md` for the general training structure. Open `references/braintools-optimizer-reference.md` only for optimizer or scheduler selection.
 
 Official source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 

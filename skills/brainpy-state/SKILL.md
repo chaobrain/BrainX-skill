@@ -227,7 +227,6 @@ Open only the smallest reference that owns the decision.
 
 
 ## Application script examples
-
 | Reference | Open when |
 |---|---|
 | `references/scripts/103_COBA_2005.py` | Needing a complete canonical E/I COBA network built from native BrainPy-State projections |

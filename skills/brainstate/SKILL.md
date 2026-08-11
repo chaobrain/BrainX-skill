@@ -3,7 +3,7 @@ name: brainstate
 description: BrainState is the central stateful execution infrastructure for BrainX modeling and simulation. Use this skill for mutable State and `.value`, ParamState and other State roles, Module graphs, environment-scoped simulations, state initialization, operational randomness, size-aware neural-network composition, state-aware jit/grad/vmap, or a BrainState training step.
 ---
 
-# BrainState
+# Brainstate
 
 ## Purpose and boundary
 
@@ -334,6 +334,13 @@ assert input_spikes.shape == (num_steps, batch_size, num_inputs)
 
 Open `references/brainstate/randomness-and-reproducibility.md` for independent `RandomState` streams, direct key control, stochastic mapping, exact replay, or checkpointed RNG State.
 
+## Script references
+
+- `scripts/integrator_rnn.py`: full stateful sequence-training workflow with a custom RNN cell, trainable initial state, optimization, compiled steps, and evaluation.
+- `scripts/lif_neuron_model.py`: extended combination of `HiddenState`, `ShortTermState`, and `ParamState` with explicit `.value` updates.
+- `scripts/modern_cnn.py`: full convolution, normalization, activation, pooling, dropout, and dense Module composition. Select it through the layer or activation branch.
+- `scripts/resnet.py`: residual Modules and dynamically registered child blocks.
+
 ## Reference routing
 
 Route by the outcome the task needs, then open only the smallest reference that owns that variant.
@@ -365,12 +372,12 @@ Route by the outcome the task needs, then open only the smallest reference that 
 | Reference | Open when |
 |---|---|
 | `references/brainstate/parameter-constraints-regularization.md` | Using `nn.Param` transforms, regularizers, priors, penalties, or `nn.Const` |
-| `references/braintools/optimizer.md` | Selecting a `braintools.optim`, Optax, SciPy, or Nevergrad optimizer or scheduler |
+| `references/braintools-optimizer-reference.md` | Selecting a `braintools.optim`, Optax, SciPy, or Nevergrad optimizer or scheduler |
 | `references/brainstate/randomness-and-reproducibility.md` | Creating independent random streams or exact stochastic replay across transforms and checkpoints |
 
 The remaining nested reference has one inbound route:
 
-- Only `references/brainstate/parameter-constraints-regularization.md` may open `references/brainstate/parameter-transforms-regularizers-catalog.md`.
+- Only `parameter-constraints-regularization.md` may open `parameter-transforms-regularizers-catalog.md`.
 
 ### Layer libraries
 
@@ -390,14 +397,3 @@ The remaining nested reference has one inbound route:
 | `references/brainstate/brainstate-transformed-diagnostics.md` | Debugging runtime values or enforcing invariants inside transformed stateful code |
 
 Do not route to dynamics or solver references from this skill; they are outside the architecture supplied for this BrainState skill.
-
-## Application script examples
-
-Open one script only when its pattern matches the task; each is a complete, runnable program.
-
-| Script | Open when |
-|---|---|
-| `scripts/integrator_rnn.py` | Building a full stateful sequence-training workflow with a custom RNN cell, trainable initial state, optimization, compiled steps, and evaluation. |
-| `scripts/lif_neuron_model.py` | Combining `HiddenState`, `ShortTermState`, and `ParamState` in one Module with explicit `.value` updates. |
-| `scripts/modern_cnn.py` | Composing convolution, normalization, activation, pooling, dropout, and dense Modules; select it through the layer or activation branch. |
-| `scripts/resnet.py` | Building residual Modules and dynamically registered child blocks. |

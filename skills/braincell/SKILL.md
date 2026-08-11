@@ -180,17 +180,3 @@ Open only the smallest reference that owns the non-canonical decision.
 | `references/mixions-for-adaptation.md` | Adding calcium-dependent adaptation, AHP/KCa currents, rebound, dynamic calcium, or multi-ion channel dependencies. |
 | `references/multicompartment/multicompartment-cell-workflow.md` | Extending the canonical `Morphology -> Cell -> paint/place -> run` path and selecting the exclusive multicompartment references. |
 | `references/solver-library-with-effects.md` | Comparing registered integrators, stability, accuracy, and solver-dependent trace effects. |
-
-## Application script examples
-
-Open one script only when its pattern matches the task; each is a complete, runnable program mirrored from the official BrainCell examples.
-
-| Script | Open when |
-|---|---|
-| `references/scripts/hh_neuron_basics.py` | Building one end-to-end `SingleCompartment` current-clamp simulation with Na/K/leak currents; this is the default full-script reference. |
-| `references/scripts/fi_curve.py` | Producing FI curves, current sweeps, spike counts, or firing rates, where `size=N` means N independent point neurons. |
-| `references/scripts/channel_ablation.py` | Comparing intact against ablated dynamics by setting a conductance such as `g_max` to zero while preserving the ion and channel structure. |
-| `references/scripts/calcium_channel_gating.py` | Inspecting voltage-dependent activation or inactivation curves through direct channel methods rather than simulating a membrane trace. |
-| `references/scripts/spike_frequency_adaptation.py` | Adding spike-frequency adaptation or calcium-dependent afterhyperpolarization with dynamic calcium and `MixIons`. |
-| `references/scripts/t_current_rebound.py` | Producing post-inhibitory rebound bursting from a hyperpolarizing step with T-type calcium and HCN currents. |
-| `references/scripts/thalamic_neurons.py` | Comparing several thalamic point-neuron phenotypes built from different ion and channel compositions in one script. |

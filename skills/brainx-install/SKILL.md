@@ -1,23 +1,21 @@
 ---
 name: brainx-install
-description: Gently check whether the BrainX meta-package is installed in the intended Python environment; if it is absent, open this skill. Use this skill to install, set up, upgrade, downgrade, pin, migrate, uninstall, or clean up BrainX.
+description: " Gently check whether the BrainX meta-package is installed in the intended Python environment; if it is absent, open this skill. use this skill to install, set up, upgrade, downgrade, pin, migrate, uninstall, or clean up BrainX."
 ---
 
-# BrainX install
+# BrainX Install
 
-## Purpose and boundary
+## Objective
 
 Install or remove BrainX in one confirmed Python virtual environment, verify, then report the result. For installation, treat each published BrainX release as an indivisible compatibility set; never assemble independently selected subpackage versions.
 
-This skill owns environment mutation only. It does not teach BrainX modeling, simulation, or training; once the environment is ready, hand the task to the BrainX general guard and the package skills it selects.
-
-## Request routing
+## Request Routing
 
 For an uninstall, removal, or BrainX package-cleanup request, open [references/uninstall-and-cleanup.md](references/uninstall-and-cleanup.md) and stop here. Follow that reference in full; do not apply the installation workflow's device or release selection.
 
 For installation, upgrade, downgrade, migration, device-target, or compatibility requests, continue with the workflow below.
 
-## Core rules
+## Core Rules
 
 1. BrainX package must use a Python interpreter at version `>=3.11`.
 2. For a clean environment with no requested version, prefer to use the unpinned BrainX install matching the confirmed device, but resolve and name the current latest Python-compatible BrainX date-style release before confirmation. Critically, if a BrainX component already exists in the environment, or a requested version is specified, you must open [compatibility-and-release-matching.md](references/compatibility-and-release-matching.md), use it as the primary release source, and select one non-separated release. Never mix component versions from different rows.
@@ -43,7 +41,7 @@ read-only inspection
 -> final report
 ```
 
-## 1. Read-only inspection
+## 1. Read-Only Inspection
 
 Record the intended run location first. Perform no package installation, or environment creation during inspection.
 
@@ -60,7 +58,7 @@ Collect enough evidence to identify:
 
 Prefer package metadata and platform-native tools over imports or newly installed helpers. Record missing evidence explicitly as `unknown`, `not_detected`, or a command error rather than guessing. Organize the result in whatever concise structured form best fits the task.
 
-## 2. Confirm the device target
+## 2. Confirm the Device Target
 
 Determine whether the intended installation is for:
 
@@ -77,7 +75,7 @@ Reflect the understood requirement back to the user before release selection. Us
 
 Replace the example values with the user's actual target. If evidence is uncertain, explain the ambiguity and ask a focused question instead of filling in a likely answer. Recommend `cpu` when accelerator support is absent or uncertain, but still require explicit confirmation. Do not proceed until the user confirms or corrects the reflected device target.
 
-## 3. Select one release
+## 3. Select One Release
 
 First case, When no BrainX meta-package or ecosystem component is installed and the user has not requested a specific version, do not open the compatibility reference. Use read-only official package-index metadata with the proposed interpreter to identify the exact latest Python-compatible BrainX release, then report it in the form `latest (vYYYY.M.D)`. For example, report `latest (v2026.7.9)` when `2026.7.9` is the verified current release.
 
@@ -89,7 +87,7 @@ Critically, for the second case, when BrainX packages are already installed or t
 - Treat an installed `BrainX` meta-package version as the release anchor, but surface any component drift from its row.
 - Do not use JAX or Optax alone as a legacy release anchor unless the user explicitly asks to preserve it.
 
-## 4. Choose the venv
+## 4. Choose the Venv
 
 Prefer reusing an existing relevant Python virtual environment whose interpreter is Python `>=3.11`. This includes environments managed by `venv`, Conda, or another environment manager; inspect the environment before proposing reuse.
 
@@ -99,7 +97,7 @@ Prefer reusing an existing relevant Python virtual environment whose interpreter
 
 Resolve the exact interpreter inside the proposed environment using the conventions of the confirmed platform and environment manager. Do not rely on shell activation or assume that a bare `python` or `pip` command targets the intended environment.
 
-## 5. Present the complete specification
+## 5. Present the Complete Specification
 
 The agent must report the complete proposed setup before any mutation. This is a mandatory reporting contract, not a rigid implementation script. Use concrete values and preserve the following visible structure:
 
@@ -135,7 +133,7 @@ End by asking the user to confirm the entire setup or correct it, and state expl
 
 Do not combine specification and installation in one turn unless the user has already confirmed this exact environment, release, and device extra.
 
-## 6. Install and verify
+## 6. Install and Verify
 
 Use exactly the confirmed venv, interpreter, device extra, and unpinned or pinned release method.
 
@@ -163,7 +161,7 @@ Verification passes only when:
 
 Do not modify manifests, lockfiles, requirements files, or unrelated environments.
 
-## 7. Report and post-install handoff
+## 7. Report and Post-install handoff
 
 Report:
 
@@ -178,11 +176,11 @@ After reporting a `PASS`, explicitly tell the user:
 > This session is for installation of the BrainX package. Installation is complete; Please open another codex chat so that the context is clean
 
 
-## Official commands to use
+## Official Commands to use
 
 Use these official BrainX documentation examples to understand the supported syntax. They are educational patterns, not a rigid workflow or permission to bypass the confirmed interpreter, venv, release behavior, or device choice.
 
-### Quick install and dependency resolution
+### Quick Install and Dependency Resolution
 
 When no BrainX meta-package or ecosystem component is already installed, prefer the official unpinned quick-install family:
 
@@ -198,7 +196,7 @@ For a new BrainX environment when user has no existing brainX packages, the bare
 | `pip install -U 'BrainX[cuda12]'` | Same as above | Same, plus CUDA 12 JAX dependencies |
 | `pip install 'BrainX==2025.9.15'` | Upgraded or downgraded to exactly `2025.9.15` if another version is installed | Replaced only when their installed versions do not satisfy `2025.9.15`'s requirements |
 
-### Hardware-specific installs
+### Hardware-Specific Installs
 
 For a clean environment, each unpinned command below is the default for its corresponding confirmed target. Choose the extra that matches the platform and CUDA toolchain:
 
@@ -216,7 +214,7 @@ pip install -U BrainX[cuda13]
 pip install -U BrainX[tpu]
 ```
 
-### Pin a specific BrainX release
+### Pin a Specific BrainX Release
 
 BrainX releases use date-style versions:
 
@@ -226,11 +224,10 @@ pip install BrainX==2025.9.15
 
 When an exact release is requested, preserve the confirmed hardware extra while applying the selected BrainX release pin.
 
-## Reference routing
+## Reference Routing
 
-| Reference | Open when |
-|---|---|
-| `references/uninstall-and-cleanup.md` | Uninstalling, removing, or cleaning up BrainX packages; it contains the exact package scopes and the mandatory uninstall specification. Do not narrow the cleanup set with the compatibility matrix. |
-| `references/compatibility-and-release-matching.md` | The target environment already contains BrainX or BrainX ecosystem packages, or the user requests a specific pinned BrainX version. Mandatory in the pinned case and read before release selection; it contains the release matrix used to match existing packages, reconcile version drift, evaluate pinned-version compatibility, and select one coherent release with its declared component versions. |
+Open [references/uninstall-and-cleanup.md](references/uninstall-and-cleanup.md) for any request to uninstall, remove, or clean up BrainX packages. Use its exact package scopes and mandatory uninstall specification; do not use the compatibility matrix to narrow the cleanup set.
 
-Do not open `references/compatibility-and-release-matching.md` for a clean installation when no BrainX packages are present and no specific version is requested; use the unpinned quick-install path instead.
+Open [references/compatibility-and-release-matching.md](references/compatibility-and-release-matching.md) when the target environment already contains BrainX or BrainX ecosystem packages, or when the user requests a specific pinned BrainX version. This reference is mandatory for that second case and must be read before release selection. Use its matrix to match existing packages, reconcile version drift, evaluate pinned-version compatibility, and select one coherent BrainX release with its declared component versions.
+
+Do not open this reference for a clean installation when no BrainX packages are present and no specific version is requested; use the unpinned quick-install path instead.

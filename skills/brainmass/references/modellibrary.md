@@ -74,6 +74,17 @@ assert result["output"].shape == (3000, 8)
 
 Use `JansenRitTR` only when its internal substep-to-TR behavior is explicitly required. Instantiate concrete model classes rather than shared bases such as `XY_Oscillator` or `WilsonCowanThreePopBase`.
 
+## Choose Wong-Wang decision semantics
+
+Choose the decision rule from the scientific definition; thresholded firing-rate decisions and final gating dominance are not equivalent.
+
+| API | Description |
+|---|---|
+| `WongWangStep.get_decision(threshold=15 * u.Hz)` | Use when a firing-rate threshold defines commitment; it returns `1`, `-1`, or `0` for population 1, population 2, or undecided. |
+| `(model.S1.value - model.S2.value) > 0` | Use when final gating dominance intentionally forces every trial into a binary choice; keep it as explicit model-analysis logic. |
+
+Do not replace one rule with the other without updating probability denominators, uncertainty calculations, and handling of undecided trials.
+
 ## Application scripts
 
 Open only the script that matches the selected model or scientific regime.
