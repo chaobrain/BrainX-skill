@@ -1,0 +1,7 @@
+(version 1)
+(allow default)
+
+(deny file-read*
+  (subpath "__REPO__")
+  (subpath "__NORMAL_CODEX_HOME__")
+  (subpath "__NORMAL_AGENTS_HOME__"))

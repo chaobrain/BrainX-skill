@@ -74,17 +74,6 @@ assert result["output"].shape == (3000, 8)
 
 Use `JansenRitTR` only when its internal substep-to-TR behavior is explicitly required. Instantiate concrete model classes rather than shared bases such as `XY_Oscillator` or `WilsonCowanThreePopBase`.
 
-## Choose an inhibitory intervention
-
-Match the intervention to the model's equations; similarly named inhibitory parameters do not represent the same mechanism or unit.
-
-| API | Description |
-|---|---|
-| `JansenRitStep(Ai=...)` | Use for inhibitory postsynaptic gain in an alpha/EEG cortical column; `Ai` is measured in mV and scales the inhibitory-population filter, so lowering it weakens the inhibitory postsynaptic potential represented in `eeg() = E - I`. |
-| `WilsonCowanStep(wEI=...)` | Use for inhibitory feedback onto the excitatory rate population; `wEI` is dimensionless I-to-E coupling and enters the excitatory equation subtractively, so lowering it weakens that coupling. |
-
-Change only the selected inhibitory parameter in a matched causal comparison. Treat defaults and source-documented estimation ranges as context, not as evidence for a chosen intervention magnitude. Label an unsourced, outcome-tuned, or outside-range value as phenomenological and show nearby sensitivity before claiming a robust regime change.
-
 ## Choose Wong-Wang decision semantics
 
 Choose the decision rule from the scientific definition; thresholded firing-rate decisions and final gating dominance are not equivalent.

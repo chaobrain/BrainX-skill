@@ -24,7 +24,7 @@ Strip units explicitly before a metric that operates on scale-free raw arrays. K
 |---|---|
 | `braintools.metric.functional_connectivity(signal)` | Compute pairwise correlation across regions from a `(time, regions)` trajectory. |
 | `braintools.metric.functional_connectivity_dynamics(signal, window_size, step_size)` | Slide an FC window and correlate windowed FC matrices to return an `(n_window, n_window)` FCD matrix. |
-| `braintools.metric.power_spectral_density(signal, dt, nperseg=None, noverlap=None, freq_range=None)` | Use for a one-sided Welch PSD of a `(time,)` or `(time, channels)` signal; pass `dt` as a time `Quantity` or a float in seconds, and it returns frequencies in Hz plus PSD shaped `(frequency,)` or `(frequency, channels)`. |
+| `braintools.metric.power_spectral_density(signal, dt_ms)` | Return frequencies and PSD for a one-dimensional signal; use a sampling interval in the expected raw unit. |
 | `brainmass.objectives.fc_corr()` | Score correlation between prediction and target FC without manually recomputing the comparison logic. |
 | `brainmass.objectives.fcd_distribution(fcd_matrix, ...)` | Estimate the off-diagonal FCD value distribution used by distributional FCD objectives. |
 
@@ -103,17 +103,17 @@ Use `as_loss=True` only when the score is passed to a minimizer. A high FC score
 Use one channel at a time unless the metric explicitly accepts multichannel input.
 
 ```python
-record_dt = result["ts"][1] - result["ts"][0]
+record_dt_ms = float(
+    (result["ts"][1] - result["ts"][0]).to(u.ms).mantissa
+)
 frequencies, power = braintools.metric.power_spectral_density(
     signal[:, 0],
-    record_dt,
+    record_dt_ms,
 )
 assert frequencies.shape == power.shape
 ```
 
-The returned frequencies are in hertz. A plain numeric `dt` is always interpreted in seconds; do not pass a value expressed in milliseconds without its unit. Use the difference between recorded timestamps because `sample_every` can make it differ from the integration step.
-
-Freeze a signal-amplitude or in-band-power floor before inspecting condition outcomes. Report the dominant frequency as undefined below that floor: `argmax` always selects a bin even when the trace contains no scientifically identifiable oscillation. Choose `nperseg` deliberately when the default resolution cannot distinguish the claimed frequency band.
+Convert cycles per millisecond to hertz only when the metric's returned frequency convention requires it. Do not infer a sampling frequency from the number of samples alone.
 
 ## Common failures
 

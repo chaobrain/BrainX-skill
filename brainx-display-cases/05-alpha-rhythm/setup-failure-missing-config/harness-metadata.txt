@@ -1,0 +1,6 @@
+prompt_bytes=577
+prompt_sha256=c6b42ffbed8f7f18ed64b1184e8c68ffb9491e63d8967f0234264075964a3f41
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+exit_code=1
