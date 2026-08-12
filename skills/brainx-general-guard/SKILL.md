@@ -73,11 +73,14 @@ Use the highest-level API in the selected owning package that preserves the scie
 
 ## Validate scientific claims
 
-Derive claims from observables that distinguish the mechanism; validate the baseline before calibration, and mark unsourced calibrated regimes as phenomenological.
+Derive claims from observables that distinguish the claimed mechanism; validate the baseline and mechanism before calibration, and mark unsourced calibrated regimes as phenomenological.
 
 - Freeze parameters, evaluation seeds, metrics or scores, thresholds or windows, and displayed cases before viewing intervention outcomes; otherwise calibrate separately and report held-out or nearby sensitivity.
-- At each causal branch, verify and save every relevant State and protocol input, then vary only the declared intervention. State causality at that intervention level; claim event mediation only when a mediator-specific manipulation and per-condition event dose agree with the outcome.
-- Apply each claim's full predicate to saved per-condition evidence: require time-resolved source-to-route-to-target order for propagation, and exact element order for sequence direction rather than a regression sign or proxy. Treat supplied drive or retained boundary State as an external seed even when stochastic. For categorical maps, save the exact threshold reduction, require departure before sustained recovery, and never force a category.
+- Validate each matched control independently, then compare and save control and intervention evidence at every nuisance setting and aligned physical time or event landmark; a normalized summary is not a substitute for those paired observables.
+- At each causal branch, verify and save every relevant State and protocol input, vary only the declared intervention, and preserve per-condition evidence plus its aggregation. State causality at the intervention level; claim event mediation only when a mediator-specific manipulation and per-condition event dose agree with the outcome.
+- Apply each claim's full temporal predicate: require time-resolved source-to-route-to-target order for propagation and exact element order for sequence direction rather than a regression sign or proxy. Identify supplied drive or retained boundary State as an external seed even when stochastic.
+- For categorical maps, retain every continuous boundary observable, plot and save the exact reduction tested at each threshold, and verify each label's full predicate. Require measured departure before sustained recovery, and never force a requested category to appear.
+- Claim an interval or region only when sampling resolves its extent across multiple points; otherwise report a sampled point or optimum and refine the sampling.
 
 Run independent controls and mechanism checks in the same mapped or batched path as the intervention.
 

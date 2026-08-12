@@ -99,6 +99,9 @@ artifacts, and reuse the same configuration bytes for every compared run.
 Use this harness, replacing the fixed case, model, minimal-config, prompt-byte,
 and prompt-hash values once before Run 0. Reuse the same harness for every
 later run, changing only `run_name` and the skill snapshot being copied.
+Save it as a script and invoke it explicitly with `/bin/bash`; do not source it
+or paste it into zsh because the captured pipeline status uses Bash
+`PIPESTATUS` semantics.
 
 ```bash
 #!/usr/bin/env bash
@@ -337,14 +340,32 @@ presentation; mark them as host boundaries when no official API owns them.
 
 ## 5. Surgically refine the relevant skills
 
-Use the latest numbered run as the sole edit evidence. Read only that run's
-generated artifacts and diagnosis, and treat its diagnosis as the edit
-specification. Do not reopen or aggregate earlier numbered runs, control runs,
-invalid attempts, or their diagnoses while refining. They are preserved only
-as comparison history. An earlier problem may justify another edit only when
-the latest diagnosis identifies it again. If the latest diagnosis says that no
-skill edit is justified, stop the refinement instead of mining older runs for
-changes.
+Use the latest numbered run as the sole evidence for proposing a new edit. Read
+only that run's generated artifacts and diagnosis, and treat its diagnosis as
+the edit specification. Do not reopen or aggregate earlier numbered runs,
+control runs, invalid attempts, or their diagnoses while refining. They are
+preserved only as comparison history. An earlier problem may justify another
+edit only when the latest diagnosis identifies it again.
+
+Treat the current skill guidance as a non-regression baseline. In particular,
+edit `brainx-general-guard` semantically append-only: preserve every existing
+invariant, add a rule only for a genuinely transferable gap exposed by the
+latest diagnosis, and combine similar old and new wording only when the merged
+text keeps their complete meanings explicit. Put package-specific guidance in
+the owning skill or smallest relevant reference, and leave case-specific
+observations in the diagnosis. If existing guidance already covers the failure,
+or the latest diagnosis justifies no skill edit, do not edit the guard.
+
+Before every guard edit, write a compact invariant audit with these columns:
+
+| Existing invariant | Proposed wording | Status | Evidence for addition |
+|---|---|---|---|
+| Complete decision rule or exception | Exact retained or merged wording | Retained or losslessly combined | Latest-run diagnosis, or none |
+
+After editing, repeat the audit against the final diff. Every pre-edit invariant
+must remain retained or losslessly combined; only the latest run may supply an
+addition. Stop and restore any meaning lost through condensation before
+validating or launching the next run.
 
 Read repository `AGENTS.md` and the files being edited. Consult `plan.md` only
 as repository policy requires; do not expand this workflow into a detailed

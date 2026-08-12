@@ -1,0 +1,13 @@
+prompt_bytes=797
+prompt_sha256=7b0bb765a428917b4b987bfa0ea6468479da57a46724e05154202e0fb63af87c
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+exit_code=0
+repo_commit=a6567351f842edb0950fae6be416b994b51ec53a
+brainx_venv=/Users/nijiachen/Downloads/Brainx testing/.venv-brainx
+minimal_config_source=/tmp/brainx-criticality-minimal-config.toml
+minimal_config_sha256=66230bfd1543f341c4c8f2482a5d7b75fa6b3620e1779369df754d86663f1ba1
+skill_snapshot_sha256=44a39c6d7b890e0b600f23617dba6b6ba3df711537a10ce8b8aea01391eaf87c
+skill_snapshot_hash_method=SHA-256 of sorted per-file SHA-256 lines rooted at codex-home
+disposable_workspace=/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T//edge-criticality-run1-eval.aVByru/workspace

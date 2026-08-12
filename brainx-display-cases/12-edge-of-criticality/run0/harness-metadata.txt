@@ -1,0 +1,16 @@
+prompt_bytes=797
+prompt_sha256=7b0bb765a428917b4b987bfa0ea6468479da57a46724e05154202e0fb63af87c
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+agent_turn_status=completed
+agent_turn_id=019ff448-ce5e-7e61-979f-81ff7a8630e2
+harness_exit_status=failed_after_agent_exit
+harness_error=zsh PIPESTATUS[0] parameter not set
+archive_recovery=workspace and logs copied unchanged after complete turn.completed event
+repo_commit=a6567351f842edb0950fae6be416b994b51ec53a
+brainx_venv=/Users/nijiachen/Downloads/Brainx testing/.venv-brainx
+minimal_config_source=/tmp/brainx-criticality-minimal-config.toml
+minimal_config_sha256=66230bfd1543f341c4c8f2482a5d7b75fa6b3620e1779369df754d86663f1ba1
+skill_snapshot_sha256=09905197785439dd193aa4e8f5c7ca2b4dc297b6319f77ae08072259c3f4a598
+disposable_workspace=/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/edge-criticality-run0-eval.Ot6FJ9/workspace

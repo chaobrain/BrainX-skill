@@ -1,0 +1,20 @@
+{
+  "selected_gain": 2.200000047683716,
+  "selected_size_cv": 1.9903030303030302,
+  "critical_region": [
+    2.200000047683716,
+    2.4000000953674316
+  ],
+  "stability_rule": "unstable_fraction <= 0.1; a realization is unstable if it never becomes quiet for 20 ms or its last 50 ms rate is >= 15 Hz/neuron",
+  "selection_rule": "maximum avalanche-size CV among stable gains",
+  "region_rule": "stable gains with CV >= 0.9 of the maximum",
+  "no_spark_spike_count_at_max_gain": 0,
+  "n_realizations": 4,
+  "n_neurons": 40,
+  "dt_ms": 0.2,
+  "duration_ms": 300.0,
+  "realization_seeds": [
+    1701,
+    1704
+  ]
+}
