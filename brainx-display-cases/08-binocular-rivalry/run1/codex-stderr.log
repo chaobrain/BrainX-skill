@@ -1,0 +1,7 @@
+2026-08-12T13:07:42.619014Z  WARN codex_core_plugins::manager: failed to warm featured plugin ids cache error=remote featured plugin request to https://chatgpt.com/backend-api/plugins/featured?platform=codex failed with status 401 Unauthorized: {"detail":"Unauthorized"}
+2026-08-12T13:07:43.689233Z ERROR codex_core_skills::loader: failed to walk skills root file:///Users/nijiachen/.agents/skills: Operation not permitted (os error 1)
+2026-08-12T13:07:56.444556Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.cFvf6S/codex-home/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-08-12T13:07:56.446716Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.cFvf6S/codex-home/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-08-12T13:18:28.621432Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to find expected lines in /private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.cFvf6S/workspace/binocular_rivalry.py:
+    print("Locked-observer fraction (decided but no switch after burn-in):")
+    print(np.array2string(metrics["locked_fraction"], precision=2))

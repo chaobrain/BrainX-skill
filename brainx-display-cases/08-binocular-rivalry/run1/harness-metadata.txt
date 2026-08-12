@@ -1,0 +1,9 @@
+prompt_bytes=718
+prompt_sha256=b8e98eb70a623270c82a1894d6b8229c9b8ca2f71034ca336433c41c24f477b1
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+host_read_isolation=macos-seatbelt
+minimal_config_sha256=d6403e767c9046617fc90967dd07f0641a7eb36bbdc550813e8f87e19ef3ba5d
+effective_config_sha256=0a18a089e582684dca695542f09eebfbacaaf24dcf118180dd7587042c7f0d88
+exit_code=0

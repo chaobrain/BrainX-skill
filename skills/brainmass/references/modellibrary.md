@@ -109,6 +109,47 @@ epileptor = brainmass.EpileptorStep(
 
 This construction represents one autonomous focus and enables a first-channel network current to affect both fast activity and the slow permittivity path. Set only the gains required by the declared mechanism. Do not conclude that Epileptor lacks driven inputs from a trial that leaves `Kvf`, `Kf`, and `Ks` at zero.
 
+## Extend Wong-Wang population currents
+
+Use stock `update()` for bounded sensory evidence; compose the public current, transfer, derivative, and integration APIs only when a mechanism adds a distinct population-specific current.
+
+| API | Description |
+|---|---|
+| `WongWangStep.update(coherence=...)` | Use for one standard decision step; `coherence` is motion evidence in `[-1, 1]`, not an arbitrary current. |
+| `WongWangStep.compute_inputs(coherence=..., noise_1_val=..., noise_2_val=...)` | Use when extending the current path; it combines valid coherence and actual stochastic currents and returns total population currents `I1` and `I2`. |
+| `WongWangStep.phi(I)` | Use after all current-valued mechanisms are applied; it maps one nA input current to a firing rate in Hz. |
+| `WongWangStep.dS1_dt(S1, r1)` | Use with the population-1 rate to preserve the model's public `S1` gating equation. |
+| `WongWangStep.dS2_dt(S2, r2)` | Use with the population-2 rate to preserve the model's public `S2` gating equation. |
+| `brainstate.nn.exp_euler_step(fn, state, *args)` | Use under an active `dt` context to advance each public gating derivative and return its next State value. |
+
+```python
+import brainmass
+import brainstate
+import brainunit as u
+
+model = brainmass.WongWangStep(in_size=1)
+brainstate.nn.init_all_states(model)
+
+adaptation_1 = 0.02 * u.nA
+adaptation_2 = 0.0 * u.nA
+with brainstate.environ.context(dt=0.1 * u.ms):
+    current_1, current_2 = model.compute_inputs(coherence=0.0)
+    rate_1 = model.phi(current_1 - adaptation_1)
+    rate_2 = model.phi(current_2 - adaptation_2)
+    model.S1.value = u.math.clip(
+        brainstate.nn.exp_euler_step(model.dS1_dt, model.S1.value, rate_1),
+        0.0,
+        1.0,
+    )
+    model.S2.value = u.math.clip(
+        brainstate.nn.exp_euler_step(model.dS2_dt, model.S2.value, rate_2),
+        0.0,
+        1.0,
+    )
+```
+
+Keep actual noise in `noise_1_val` and `noise_2_val`; apply adaptation, stimulation, or another named mechanism explicitly to the returned currents. Do not force a current through out-of-range coherence or copy the model equations when these public methods preserve them.
+
 ## Choose Wong-Wang decision semantics
 
 Choose the decision rule from the scientific definition; thresholded firing-rate decisions and final gating dominance are not equivalent.
@@ -139,6 +180,7 @@ Open only the script that matches the selected model or scientific regime.
 
 - Choosing a complex six-State model before a cheap model establishes the regime.
 - Treating `WongWangStep` and `WongWangExcInhStep` as interchangeable.
+- Passing an arbitrary current through bounded Wong-Wang `coherence` or hiding a non-noise mechanism in `noise_1_val` or `noise_2_val`.
 - Fitting a BOLD target without a suitable slow neural source and hemodynamic observation model.
 - Treating a neural-mass model as a point-neuron or cellular model.
 - Assuming the inventory from this file supersedes `list_models()` in another installed release.
@@ -146,5 +188,6 @@ Open only the script that matches the selected model or scientific regime.
 ## Official sources
 
 - `https://brainx.chaobrain.com/brainmass/reference/models.html`
+- `https://brainx.chaobrain.com/brainmass/reference/generated/brainmass.WongWangStep.html`
 - `https://brainx.chaobrain.com/brainmass/reference/utilities.html`
 - `https://brainx.chaobrain.com/brainmass/howto/choose_a_model.html`
