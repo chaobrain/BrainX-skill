@@ -1,0 +1,277 @@
+{
+  "parameters": {
+    "dt_ms": 1.0,
+    "places": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "cells_per_place": 5,
+    "learning_repeats": 8,
+    "sleep_duration_ms": 480.0,
+    "sleep_external_current_nA": 0.0,
+    "sleep_seed": "network-internal slow oscillator in place A",
+    "regime": "phenomenological demonstration; not a biological fit"
+  },
+  "learning_spikes_by_place": [
+    40,
+    40,
+    40,
+    40
+  ],
+  "learned_place_weights": [
+    [
+      0.0,
+      0.1809287965297699,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.16197469830513,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      0.16302669048309326
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  ],
+  "post_sleep_place_weights": {
+    "replay": [
+      [
+        0.0,
+        0.31313979625701904,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.2889125347137451,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.29246312379837036
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "suppressed": [
+      [
+        0.0,
+        0.1809287965297699,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.16197469830513,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.16302669048309326
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "sleep_replay": [
+    {
+      "condition": "replay",
+      "events": [
+        {
+          "event": 1,
+          "first_spike_ms": [
+            82.0,
+            87.0,
+            94.0,
+            100.0
+          ],
+          "slope_ms_per_place": 6.099999999999985,
+          "direction": "forward"
+        },
+        {
+          "event": 2,
+          "first_spike_ms": [
+            162.0,
+            166.0,
+            170.0,
+            174.0
+          ],
+          "slope_ms_per_place": 3.9999999999999805,
+          "direction": "forward"
+        },
+        {
+          "event": 3,
+          "first_spike_ms": [
+            242.0,
+            245.0,
+            249.0,
+            252.0
+          ],
+          "slope_ms_per_place": 3.3999999999999555,
+          "direction": "forward"
+        },
+        {
+          "event": 4,
+          "first_spike_ms": [
+            322.0,
+            325.0,
+            328.0,
+            331.0
+          ],
+          "slope_ms_per_place": 2.9999999999999893,
+          "direction": "forward"
+        },
+        {
+          "event": 5,
+          "first_spike_ms": [
+            402.0,
+            404.0,
+            407.0,
+            410.0
+          ],
+          "slope_ms_per_place": 2.699999999999931,
+          "direction": "forward"
+        }
+      ]
+    },
+    {
+      "condition": "suppressed",
+      "events": [
+        {
+          "event": 1,
+          "first_spike_ms": [
+            82.0,
+            null,
+            null,
+            null
+          ],
+          "slope_ms_per_place": null,
+          "direction": "incomplete"
+        },
+        {
+          "event": 2,
+          "first_spike_ms": [
+            162.0,
+            null,
+            null,
+            null
+          ],
+          "slope_ms_per_place": null,
+          "direction": "incomplete"
+        },
+        {
+          "event": 3,
+          "first_spike_ms": [
+            242.0,
+            null,
+            null,
+            null
+          ],
+          "slope_ms_per_place": null,
+          "direction": "incomplete"
+        },
+        {
+          "event": 4,
+          "first_spike_ms": [
+            322.0,
+            null,
+            null,
+            null
+          ],
+          "slope_ms_per_place": null,
+          "direction": "incomplete"
+        },
+        {
+          "event": 5,
+          "first_spike_ms": [
+            402.0,
+            null,
+            null,
+            null
+          ],
+          "slope_ms_per_place": null,
+          "direction": "incomplete"
+        }
+      ]
+    }
+  ],
+  "sleep_summary": {
+    "replay_complete_events": 5,
+    "replay_forward_events": 5,
+    "replay_backward_events": 0,
+    "suppressed_complete_events": 0,
+    "spikes_by_condition_and_place": {
+      "replay": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "suppressed": [
+        25,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "recall": [
+    {
+      "condition": "replay",
+      "first_spike_ms": [
+        3.0,
+        5.0,
+        7.0,
+        9.0
+      ],
+      "downstream_places_recalled": 3,
+      "completion": 1.0,
+      "order": 1.0,
+      "route_propagation_ms": 6.0,
+      "deadline_ms": 25.0,
+      "recall_score_percent": 76.0
+    },
+    {
+      "condition": "suppressed",
+      "first_spike_ms": [
+        3.0,
+        8.0,
+        15.0,
+        21.0
+      ],
+      "downstream_places_recalled": 3,
+      "completion": 1.0,
+      "order": 1.0,
+      "route_propagation_ms": 18.0,
+      "deadline_ms": 25.0,
+      "recall_score_percent": 28.000000000000004
+    }
+  ]
+}

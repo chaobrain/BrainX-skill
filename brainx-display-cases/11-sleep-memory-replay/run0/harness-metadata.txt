@@ -1,0 +1,13 @@
+prompt_bytes=824
+prompt_sha256=68bf7df3fc16e0046865630dc79a3fd10ced02728360b45d9b94b4f1ed087dd1
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+agent_exit_code=0
+repo_commit=914ab233dc532633254ca5cfcd1d42983dd1890e
+brainx_venv=/Users/nijiachen/Downloads/Brainx testing/.venv-brainx
+minimal_config_source=/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.9Rp4w3/codex-home/config.toml
+minimal_config_sha256=4aff8b102f79c74dd8703f537dd3724fd82915937ea2cb168c055b99358f6440
+skill_snapshot_sha256=af4894fe2f5ebcf5ba02aed4547bd04d09090a15dbb700a1eda01f3803772d76
+disposable_workspace=/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/sleep-memory-replay-run0-eval.4DaUuZ/workspace
+archive_note=manual post-exit archive after zsh wrapper failed on Bash-specific PIPESTATUS

@@ -1,0 +1,9 @@
+prompt_bytes=824
+prompt_sha256=68bf7df3fc16e0046865630dc79a3fd10ced02728360b45d9b94b4f1ed087dd1
+model=gpt-5.6-sol
+reasoning_effort=xhigh
+codex_version=codex-cli 0.147.0-alpha.1.2
+minimal_config_sha256=4aff8b102f79c74dd8703f537dd3724fd82915937ea2cb168c055b99358f6440
+agent_exit_code=0
+wrapper_exit_code=1
+wrapper_failure=zsh does not define Bash PIPESTATUS[0]; archival recovered from retained disposable stage

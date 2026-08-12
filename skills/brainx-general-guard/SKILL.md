@@ -73,11 +73,11 @@ Use the highest-level API in the selected owning package that preserves the scie
 
 ## Validate scientific claims
 
-Derive qualitative labels from observables that distinguish the claimed mechanism; validate the baseline and mechanism before tuning, and mark unsourced calibrated regimes as phenomenological.
+Derive claims from observables that distinguish the mechanism; validate the baseline before calibration, and mark unsourced calibrated regimes as phenomenological.
 
-- Validate each matched control independently, then compare its intervention at the same nuisance setting and aligned times or event landmarks; a normalized summary is not a substitute.
-- Require time-resolved source-to-route-to-target order for propagation or pathway claims.
-- For categorical maps, retain every boundary observable; plot and save the exact reduction tested at each threshold, not a proxy summary, and verify each label's full predicate. Call a condition recovered only when a measured departure precedes a sustained return window; otherwise label it spared, and never require a requested category to appear.
+- Freeze parameters, evaluation seeds, metrics or scores, thresholds or windows, and displayed cases before viewing intervention outcomes; otherwise calibrate separately and report held-out or nearby sensitivity.
+- At each causal branch, verify and save every relevant State and protocol input, then vary only the declared intervention. State causality at that intervention level; claim event mediation only when a mediator-specific manipulation and per-condition event dose agree with the outcome.
+- Apply each claim's full predicate to saved per-condition evidence: require time-resolved source-to-route-to-target order for propagation, and exact element order for sequence direction rather than a regression sign or proxy. Treat supplied drive or retained boundary State as an external seed even when stochastic. For categorical maps, save the exact threshold reduction, require departure before sustained recovery, and never force a category.
 
 Run independent controls and mechanism checks in the same mapped or batched path as the intervention.
 
@@ -85,7 +85,7 @@ Run independent controls and mechanism checks in the same mapped or batched path
 
 Use the simplest highest-level API that expresses the required scientific figure. Prefer the selected BrainX package's visualization API, such as `brainmass.viz`, then BrainTools visualization APIs, then high-level `matplotlib.pyplot`.
 
-Keep Matplotlib composition absolutely simple: create each figure with one `plt.subplots(...)` call, then use only basic high-level plotting methods. Use `plt.figure`, `GridSpec`, `add_subplot`, projection-specific axes, custom artists, manual axes placement, style systems, or layout scaffolding only when the user explicitly requests a result that `subplots()` cannot express.
+Write absolutely simple Matplotlib code: compose every figure with exactly one `plt.subplots(...)` call and only basic high-level plotting methods. Use `plt.figure`, `GridSpec`, `add_subplot`, projection-specific axes, custom artists, manual axes placement, style systems, or layout scaffolding only when the user explicitly requests a result that `subplots()` cannot express.
 
 Simplicity applies to implementation, not scientific content or figure quality. Preserve intentional size, units, readable labels, title, comparison styles, legend, unclipped layout, and sufficient output resolution.
 
