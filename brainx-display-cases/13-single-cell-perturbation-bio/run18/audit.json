@@ -1,0 +1,43 @@
+{
+  "source_run": "/home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/13-single-cell-perturbation/run17",
+  "status": "completed_frozen_run",
+  "all_pairing_checks_pass": true,
+  "csv_pair_rows": 5054,
+  "reported_eligible_pairs": 5054,
+  "all_numeric_results_finite": true,
+  "signal_correlation": {
+    "min": -0.3351775,
+    "max": 1.0,
+    "unique_values": 62,
+    "six_quantile_bin_counts": [
+      606,
+      0,
+      0,
+      0,
+      0,
+      4448
+    ],
+    "descriptive_plot_has_empty_bins": true
+  },
+  "tuning": {
+    "nonzero_direction_mean_fraction": 0.0796875,
+    "estimated_preference_counts": {
+      "0.0": 219,
+      "45.0": 6,
+      "90.0": 12,
+      "135.0": 21,
+      "180.0": 12,
+      "225.0": 14,
+      "270.0": 23,
+      "315.0": 13
+    },
+    "estimated_zero_degree_fraction": 0.684375
+  },
+  "failed_tests": [
+    "mean_suppression",
+    "center_surround",
+    "negative_signal_correlation_after_distance",
+    "strongest_suppression_for_matching_stimulus",
+    "dose_within_published_mean_plus_minus_sem"
+  ]
+}

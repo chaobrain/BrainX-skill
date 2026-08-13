@@ -37,21 +37,8 @@ Result
 
    The reported interval must contain adjacent samples, remain below the instability cap, and reach at least 90 percent of the stable susceptibility peak.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/12-edge-of-criticality/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/12-edge-of-criticality/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/12-edge-of-criticality/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/12-edge-of-criticality/experiment.py>`
-   - :download:`Focused tests <../_static/cases/12-edge-of-criticality/test_experiment.py>`
-   - :download:`Aggregate metrics <../_static/cases/12-edge-of-criticality/metrics.csv>`
-   - :download:`Run notes <../_static/cases/12-edge-of-criticality/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

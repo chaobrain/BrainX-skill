@@ -228,6 +228,7 @@ Open only the smallest reference that owns the decision.
 | `references/braintools/input-current.md` | Generating or composing direct unit-aware current sections, pulses, waveforms, or stochastic processes |
 | `references/component-selection.md` | Choosing a neuron, synapse, synaptic output, plasticity model, input generator, or readout from the documented native API families |
 | `references/projection-patterns.md` | Choosing projection alignment or API form, adding delays or short-term plasticity, using direct/delta projections, or adding gap junctions |
+| `references/perturbation-experiment-validity.md` | Estimating baseline tuning or features before matched point-neuron perturbations, calibrating delivered target dose, or deciding whether activity and analysis support justify a formal causal run |
 | `references/nest-compatible/nest-workflow.md` | Using NEST/PyNEST model names, `Simulator`, devices, connection rules, spatial networks, parity, porting, or the bundled NEST-compatible full scripts |
 | `references/brainPy(legacy)/brainpy legacy workflow.md` | Use as the only first-level legacy entry when existing legacy `brainpy` has no BrainUnit, unit-aware, or BrainTrace code and the user explicitly requests it; this workflow routes all second-level legacy references |
 | `skills/brainevent/SKILL.md` | Selecting sparse event representations, connectivity formats, event operators, plasticity kernels, or custom kernels |

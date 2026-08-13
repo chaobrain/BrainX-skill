@@ -39,19 +39,8 @@ Result
 
    Calcium provides the slow signal. Nonzero AHP conductance converts it into an outward current that progressively lengthens the firing interval.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/01-spike-frequency-adaptation/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/01-spike-frequency-adaptation/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/01-spike-frequency-adaptation/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/01-spike-frequency-adaptation/experiment.py>`
-   - :download:`Run notes <../_static/cases/01-spike-frequency-adaptation/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 A matched comparison belongs here after the same prompt, environment, hardware, seed policy, and verification criteria have been run with and without the BrainX skill.
 

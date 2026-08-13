@@ -37,20 +37,8 @@ Result
 
    Ordered onset times distinguish propagation from simultaneous activation, while the sweep shows where distal recruitment is absent or present.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/06-seizure-recruitment/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/06-seizure-recruitment/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/06-seizure-recruitment/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/06-seizure-recruitment/experiment.py>`
-   - :download:`Focused tests <../_static/cases/06-seizure-recruitment/test_experiment.py>`
-   - :download:`Run notes <../_static/cases/06-seizure-recruitment/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

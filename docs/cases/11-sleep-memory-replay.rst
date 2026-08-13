@@ -37,20 +37,8 @@ Result
 
    Pre-sleep learned weights match within every pair, and external place-cue input remains zero throughout sleep; the intervention isolates recurrent replay transmission.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/11-sleep-memory-replay/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/11-sleep-memory-replay/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/11-sleep-memory-replay/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/11-sleep-memory-replay/experiment.py>`
-   - :download:`Focused tests <../_static/cases/11-sleep-memory-replay/test_experiment.py>`
-   - :download:`Run notes <../_static/cases/11-sleep-memory-replay/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

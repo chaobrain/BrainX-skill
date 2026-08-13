@@ -1,0 +1,58 @@
+{
+  "seed": 20260812,
+  "n_excitatory": 80,
+  "n_inhibitory": 20,
+  "dt_ms": 0.5,
+  "duration_ms": 500.0,
+  "n_stimuli": 16,
+  "n_trials": 3,
+  "connection_probability": 0.25,
+  "target_excitatory_index": 0,
+  "base_current_mA": 17.5,
+  "stimulus_current_mA": 7.0,
+  "noise_sd_mA": 2.0,
+  "perturbation_event_times_ms": [
+    100.0,
+    150.0,
+    200.0,
+    250.0,
+    300.0,
+    350.0
+  ],
+  "perturbation_strength_events": 6,
+  "correlation_bin_edges": [
+    -1.0,
+    -0.35,
+    0.0,
+    0.35,
+    0.65,
+    0.85,
+    1.000001
+  ],
+  "regimes": {
+    "inhibition_dominant": {
+      "ee_strength_mS": 0.55,
+      "ee_specificity": 0.0,
+      "ei_strength_mS": 0.75,
+      "ei_specificity": 0.0,
+      "inh_strength_mS": 7.0,
+      "inh_specificity": 0.0
+    },
+    "broad_inhibition": {
+      "ee_strength_mS": 0.75,
+      "ee_specificity": 0.75,
+      "ei_strength_mS": 1.0,
+      "ei_specificity": 0.0,
+      "inh_strength_mS": 5.5,
+      "inh_specificity": 0.0
+    },
+    "specific_strong_ei": {
+      "ee_strength_mS": 0.75,
+      "ee_specificity": 0.75,
+      "ei_strength_mS": 1.25,
+      "ei_specificity": 0.9,
+      "inh_strength_mS": 5.5,
+      "inh_specificity": 0.85
+    }
+  }
+}

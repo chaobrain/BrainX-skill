@@ -37,19 +37,8 @@ Result
 
    Continuous heading error and bump coherence support the recovery labels rather than leaving them as visual judgments.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/09-neural-compass/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/09-neural-compass/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/09-neural-compass/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/09-neural-compass/experiment.py>`
-   - :download:`Run notes <../_static/cases/09-neural-compass/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

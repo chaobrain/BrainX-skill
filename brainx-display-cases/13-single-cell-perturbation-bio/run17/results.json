@@ -1,0 +1,251 @@
+{
+  "status": "completed_frozen_run",
+  "tests": {
+    "mean_suppression": false,
+    "center_surround": false,
+    "negative_signal_correlation_after_distance": false,
+    "strongest_suppression_for_matching_stimulus": false,
+    "dose_within_published_mean_plus_minus_sem": false
+  },
+  "sample_counts": {
+    "excitatory_neurons": 320,
+    "inhibitory_neurons": 80,
+    "targets": 16,
+    "tuning_trials": 64,
+    "matched_trial_pairs": 512,
+    "eligible_target_neighbor_pairs": 5054,
+    "pair_observations_before_averaging": 161728,
+    "bootstrap_target_resamples": 2000
+  },
+  "baseline_firing_rates_hz": {
+    "tuning_excitatory": {
+      "mean": 0.11308965729549528,
+      "sd": 0.5135293301555724,
+      "median": 0.0,
+      "q25": 0.0,
+      "q75": 0.0425749309360981,
+      "silent_fraction": 0.60625,
+      "neurons": 320
+    },
+    "tuning_inhibitory": {
+      "mean": 28.865270411968233,
+      "sd": 9.589066899648458,
+      "median": 28.2271785736084,
+      "q25": 22.468919277191162,
+      "q75": 34.155738830566406,
+      "silent_fraction": 0.0,
+      "neurons": 80
+    },
+    "mapping_excitatory": {
+      "mean": 0.10913152027933393,
+      "sd": 0.49695533337855086,
+      "median": 0.010643732734024525,
+      "q25": 0.005321866367012262,
+      "q75": 0.03193119913339615,
+      "silent_fraction": 0.2125,
+      "neurons": 320
+    },
+    "mapping_inhibitory": {
+      "mean": 28.850768637657165,
+      "sd": 9.552694137495774,
+      "median": 28.953614234924316,
+      "q25": 22.343855381011963,
+      "q75": 34.216938972473145,
+      "silent_fraction": 0.0,
+      "neurons": 80
+    }
+  },
+  "photostimulation": {
+    "intended_model_protocol": {
+      "sweeps": 4,
+      "sweep_ms": 32.0,
+      "frequency_hz": 15.0,
+      "somatic_square_current_nA": 0.12,
+      "onset_relative_to_visual_ms": 0.0
+    },
+    "published_benchmark": {
+      "added_spikes_mean": 6.38,
+      "added_spikes_sem": 1.01,
+      "cells": 9,
+      "window_description": "four sweeps over approximately 250 ms"
+    },
+    "measured_added_target_spikes_250ms": {
+      "mean": 0.52734375,
+      "ci95_target_bootstrap": [
+        0.326171875,
+        0.775390625
+      ],
+      "sd_across_all_trials": 0.8641785979270935,
+      "trials": 512
+    }
+  },
+  "effects": {
+    "mean_influence_spikes_per_367ms": {
+      "estimate": -0.00014221409219317138,
+      "ci95_target_bootstrap": [
+        -0.0003286109284090344,
+        5.564899038290605e-05
+      ]
+    },
+    "mean_influence_rate_change_hz": {
+      "estimate": -0.00038750433840101196,
+      "ci95_target_bootstrap": [
+        -0.0008953976250927368,
+        0.0001516321263839402
+      ]
+    },
+    "distance_bins": [
+      {
+        "range_um": "25-100",
+        "pairs": 584,
+        "targets_represented": 16,
+        "mean_influence_spikes": -0.0001605308207217604,
+        "ci95_target_bootstrap": [
+          -0.0004638674909074325,
+          5.621266000161991e-05
+        ]
+      },
+      {
+        "range_um": "100-300",
+        "pairs": 3310,
+        "targets_represented": 16,
+        "mean_influence_spikes": -0.00012273414176888764,
+        "ci95_target_bootstrap": [
+          -0.00035953528131358323,
+          0.00011264338372711773
+        ]
+      },
+      {
+        "range_um": ">=300",
+        "pairs": 1160,
+        "targets_represented": 16,
+        "mean_influence_spikes": -0.0001885775855043903,
+        "ci95_target_bootstrap": [
+          -0.0006923232605913654,
+          0.00027701395301846774
+        ]
+      }
+    ],
+    "center_surround_contrasts_spikes": {
+      "near_minus_middle": {
+        "estimate": -3.779667895287275e-05,
+        "ci95_target_bootstrap": [
+          -0.00035410249256528914,
+          0.0002934809512225906
+        ]
+      },
+      "far_minus_middle": {
+        "estimate": -6.584344373550266e-05,
+        "ci95_target_bootstrap": [
+          -0.0006559690373251215,
+          0.0004867545882007099
+        ]
+      }
+    },
+    "signal_correlation_regression": {
+      "coefficient_spikes_per_1sd_signal_correlation": 0.0003813008177509944,
+      "ci95_target_bootstrap": [
+        0.0001412383368852643,
+        0.0005889931202261916
+      ],
+      "distance_adjustment": "continuous segmented basis with knots at 100 and 300 um",
+      "pairs": 5054
+    },
+    "stimulus_match_bins": [
+      {
+        "orientation_difference_deg": 0.0,
+        "target_trial_observations": 128,
+        "mean_population_delta_spikes_per_neuron": 7.456471939804032e-05,
+        "ci95_target_bootstrap": [
+          -0.0001487625508161727,
+          0.0002959038072731346
+        ]
+      },
+      {
+        "orientation_difference_deg": 45.0,
+        "target_trial_observations": 256,
+        "mean_population_delta_spikes_per_neuron": -0.00023510915343649685,
+        "ci95_target_bootstrap": [
+          -0.000543213433411438,
+          4.944751244693179e-05
+        ]
+      },
+      {
+        "orientation_difference_deg": 90.0,
+        "target_trial_observations": 128,
+        "mean_population_delta_spikes_per_neuron": -0.00017393755842931569,
+        "ci95_target_bootstrap": [
+          -0.00044487352133728566,
+          0.00014787984800932458
+        ]
+      }
+    ],
+    "orthogonal_minus_match_spikes": {
+      "estimate": -0.0002485022705513984,
+      "ci95_target_bootstrap": [
+        -0.0006451093722716905,
+        0.00017180921859107908
+      ]
+    },
+    "mean_inhibitory_population_delta_spikes_per_neuron": 0.006420898251235485
+  },
+  "pairing_checks": {
+    "noise_and_stimulus_max_abs_difference_nA": 0.0,
+    "pre_photostim_exc_spike_mismatches": 0,
+    "pre_photostim_inh_spike_mismatches": 0,
+    "pairs": 512
+  },
+  "uncertainty_scope": "Percentile intervals resample photostimulated targets. They quantify target-sampling uncertainty within one frozen network realization, not model, seed, or parameter uncertainty.",
+  "connectivity": {
+    "EE": {
+      "candidate_edges": 8867,
+      "edges": 4035,
+      "density": 0.039404296875,
+      "mean_out_degree": 12.609375,
+      "mean_weight_nS": 0.3990569433371446,
+      "mean_distance_um": 74.88250739800579
+    },
+    "EI": {
+      "candidate_edges": 5292,
+      "edges": 2624,
+      "density": 0.1025,
+      "mean_out_degree": 8.2,
+      "mean_weight_nS": 0.4971086013999605,
+      "mean_distance_um": 119.11013784881668
+    },
+    "IE": {
+      "candidate_edges": 14577,
+      "edges": 8057,
+      "density": 0.3147265625,
+      "mean_out_degree": 100.7125,
+      "mean_weight_nS": 0.8540358288950352,
+      "mean_distance_um": 201.22399878743272
+    },
+    "II": {
+      "candidate_edges": 1109,
+      "edges": 500,
+      "density": 0.078125,
+      "mean_out_degree": 6.25,
+      "mean_weight_nS": 0.651981224387545,
+      "mean_distance_um": 117.34154269000187
+    }
+  },
+  "targets": [
+    13,
+    25,
+    47,
+    81,
+    92,
+    94,
+    137,
+    173,
+    177,
+    187,
+    200,
+    238,
+    243,
+    264,
+    297,
+    317
+  ]
+}

@@ -66,7 +66,7 @@ exclude_patterns = [
 
 html_theme = "sphinx_book_theme"
 html_title = "BrainX Skill"
-html_logo = "images/brainx-ecosystem.webp"
+html_logo = "images/image.png"
 html_favicon = html_logo
 html_baseurl = "https://brainx.chaobrain.com/skill/"
 html_copy_source = True

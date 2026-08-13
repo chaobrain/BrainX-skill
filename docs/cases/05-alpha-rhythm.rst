@@ -37,18 +37,8 @@ Result
 
    The trace, spectrum, and sensitivity panels report the same condition contrast rather than relying on a selected waveform alone.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/05-alpha-rhythm/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/05-alpha-rhythm/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/05-alpha-rhythm/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/05-alpha-rhythm/experiment.py>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

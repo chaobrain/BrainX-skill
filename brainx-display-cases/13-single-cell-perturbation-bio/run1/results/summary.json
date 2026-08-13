@@ -1,0 +1,177 @@
+{
+  "diagnostics": {
+    "inhibition_dominant": {
+      "baseline_mean_rate_hz": 57.1765625,
+      "perturbed_mean_rate_hz": 57.177083333333336,
+      "target_baseline_spikes_per_trial": 29.0,
+      "valid_neighbor_count": 79,
+      "qualitative_pattern": false
+    },
+    "broad_inhibition": {
+      "baseline_mean_rate_hz": 57.803125,
+      "perturbed_mean_rate_hz": 57.80416666666667,
+      "target_baseline_spikes_per_trial": 29.25,
+      "valid_neighbor_count": 79,
+      "qualitative_pattern": false
+    },
+    "specific_strong_ei": {
+      "baseline_mean_rate_hz": 57.848958333333336,
+      "perturbed_mean_rate_hz": 57.850520833333334,
+      "target_baseline_spikes_per_trial": 29.5625,
+      "valid_neighbor_count": 79,
+      "qualitative_pattern": false
+    }
+  },
+  "curves": {
+    "inhibition_dominant": [
+      {
+        "corr_low": -1.0,
+        "corr_high": -0.35,
+        "corr_center": -0.675,
+        "n": 31,
+        "mean_influence": 0.00011200716845878136,
+        "sem_influence": 0.00011200716845878138
+      },
+      {
+        "corr_low": -0.35,
+        "corr_high": 0.0,
+        "corr_center": -0.175,
+        "n": 10,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      },
+      {
+        "corr_low": 0.0,
+        "corr_high": 0.35,
+        "corr_center": 0.175,
+        "n": 6,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      },
+      {
+        "corr_low": 0.35,
+        "corr_high": 0.65,
+        "corr_center": 0.5,
+        "n": 10,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      },
+      {
+        "corr_low": 0.65,
+        "corr_high": 0.85,
+        "corr_center": 0.75,
+        "n": 10,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      },
+      {
+        "corr_low": 0.85,
+        "corr_high": 1.0,
+        "corr_center": 0.925,
+        "n": 12,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      }
+    ],
+    "broad_inhibition": [
+      {
+        "corr_low": -1.0,
+        "corr_high": -0.35,
+        "corr_center": -0.675,
+        "n": 31,
+        "mean_influence": 0.00011200716845878136,
+        "sem_influence": 0.00011200716845878139
+      },
+      {
+        "corr_low": -0.35,
+        "corr_high": 0.0,
+        "corr_center": -0.175,
+        "n": 11,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      },
+      {
+        "corr_low": 0.0,
+        "corr_high": 0.35,
+        "corr_center": 0.175,
+        "n": 5,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      },
+      {
+        "corr_low": 0.35,
+        "corr_high": 0.65,
+        "corr_center": 0.5,
+        "n": 10,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      },
+      {
+        "corr_low": 0.65,
+        "corr_high": 0.85,
+        "corr_center": 0.75,
+        "n": 10,
+        "mean_influence": 0.0003472222222222222,
+        "sem_influence": 0.00034722222222222224
+      },
+      {
+        "corr_low": 0.85,
+        "corr_high": 1.0,
+        "corr_center": 0.925,
+        "n": 12,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0004274010103449053
+      }
+    ],
+    "specific_strong_ei": [
+      {
+        "corr_low": -1.0,
+        "corr_high": -0.35,
+        "corr_center": -0.675,
+        "n": 32,
+        "mean_influence": 0.00010850694444444444,
+        "sem_influence": 0.00010850694444444442
+      },
+      {
+        "corr_low": -0.35,
+        "corr_high": 0.0,
+        "corr_center": -0.175,
+        "n": 10,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      },
+      {
+        "corr_low": 0.0,
+        "corr_high": 0.35,
+        "corr_center": 0.175,
+        "n": 5,
+        "mean_influence": 0.0006944444444444444,
+        "sem_influence": 0.0006944444444444443
+      },
+      {
+        "corr_low": 0.35,
+        "corr_high": 0.65,
+        "corr_center": 0.5,
+        "n": 9,
+        "mean_influence": 0.00038580246913580245,
+        "sem_influence": 0.00038580246913580245
+      },
+      {
+        "corr_low": 0.65,
+        "corr_high": 0.85,
+        "corr_center": 0.75,
+        "n": 11,
+        "mean_influence": 0.00031565656565656563,
+        "sem_influence": 0.0003156565656565657
+      },
+      {
+        "corr_low": 0.85,
+        "corr_high": 1.0,
+        "corr_center": 0.925,
+        "n": 12,
+        "mean_influence": 0.0,
+        "sem_influence": 0.0
+      }
+    ]
+  }
+}

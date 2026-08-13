@@ -43,21 +43,8 @@ Result
 
    The phase map connects each qualitative outcome to the continuous reach measurement used to classify it.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/07-cortical-wave-obstacle/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/07-cortical-wave-obstacle/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/07-cortical-wave-obstacle/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/07-cortical-wave-obstacle/experiment.py>`
-   - :download:`Focused tests <../_static/cases/07-cortical-wave-obstacle/test_experiment.py>`
-   - :download:`Measured outcomes <../_static/cases/07-cortical-wave-obstacle/outcomes.csv>`
-   - :download:`Run notes <../_static/cases/07-cortical-wave-obstacle/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

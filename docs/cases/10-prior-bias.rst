@@ -37,19 +37,8 @@ Result
 
    The behavioral effect and measured execution rate are reported in the same experiment without conflating first-call and steady compiled timing.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/10-prior-bias/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/10-prior-bias/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/10-prior-bias/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/10-prior-bias/experiment.py>`
-   - :download:`Run notes <../_static/cases/10-prior-bias/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

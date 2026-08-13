@@ -43,20 +43,8 @@ Result
 
 The selected run did not generate a plot. This structured result preserves the committed classification evidence without inventing a graph.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/03-sound-localization/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/03-sound-localization/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/03-sound-localization/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/03-sound-localization/experiment.py>`
-   - :download:`Focused tests <../_static/cases/03-sound-localization/test_experiment.py>`
-   - :download:`Run notes <../_static/cases/03-sound-localization/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

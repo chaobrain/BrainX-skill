@@ -1,0 +1,237 @@
+{
+  "summary": {
+    "baseline_exc_rate_hz": 13.391898148148147,
+    "baseline_inh_rate_hz": 13.699074074074074,
+    "perturbed_exc_rate_hz": 13.4,
+    "mean_neighbor_influence": 0.0007336267840469523,
+    "neighbor_influence_sem": 0.0004999181081376827,
+    "suppressed_fraction": 0.36134453781512604,
+    "enhanced_fraction": 0.5210084033613446,
+    "unchanged_fraction": 0.11764705882352941,
+    "target_index": 38,
+    "forced_target_action_potentials_per_trial": 6,
+    "measured_target_output_increase_mean": 5.972222222222222,
+    "measured_target_output_increase_min": 5.0,
+    "measured_target_output_increase_max": 7.0,
+    "valid_target_dose_trial_fraction": 1.0,
+    "valid_neighbor_count": 119,
+    "qualitative_results": {
+      "mean_suppression": "not reproduced",
+      "spatial_center_surround": "partially reproduced",
+      "similarity_dependent_suppression": "reproduced",
+      "preferred_stimulus_suppression": "reproduced"
+    }
+  },
+  "curves": {
+    "cortical_distance_um": [
+      {
+        "low": 0.0,
+        "high": 75.0,
+        "center": 37.5,
+        "n": 8,
+        "mean": 0.004952050264550265,
+        "sem": 0.002666337713099476
+      },
+      {
+        "low": 75.0,
+        "high": 150.0,
+        "center": 112.5,
+        "n": 27,
+        "mean": 0.0020061728395061726,
+        "sem": 0.0011678595845403211
+      },
+      {
+        "low": 150.0,
+        "high": 250.0,
+        "center": 200.0,
+        "n": 58,
+        "mean": -0.0001356960408684544,
+        "sem": 0.0007055156753360154
+      },
+      {
+        "low": 250.0,
+        "high": 400.0,
+        "center": 325.0,
+        "n": 26,
+        "mean": 5.3418803418803365e-05,
+        "sem": 0.0006400196656511796
+      },
+      {
+        "low": 400.0,
+        "high": null,
+        "center": 400.0,
+        "n": 0,
+        "mean": null,
+        "sem": null
+      }
+    ],
+    "rf_distance_deg": [
+      {
+        "low": 0.0,
+        "high": 4.0,
+        "center": 2.0,
+        "n": 15,
+        "mean": -4.409171075837737e-05,
+        "sem": 0.0009167622952146302
+      },
+      {
+        "low": 4.0,
+        "high": 8.0,
+        "center": 6.0,
+        "n": 34,
+        "mean": -8.753501400560224e-05,
+        "sem": 0.0007359775284637551
+      },
+      {
+        "low": 8.0,
+        "high": 12.0,
+        "center": 10.0,
+        "n": 43,
+        "mean": 0.0016426725729051306,
+        "sem": 0.0009564940976988894
+      },
+      {
+        "low": 12.0,
+        "high": 20.0,
+        "center": 16.0,
+        "n": 27,
+        "mean": 0.0007520086223789928,
+        "sem": 0.001196678868913601
+      },
+      {
+        "low": 20.0,
+        "high": null,
+        "center": 20.0,
+        "n": 0,
+        "mean": null,
+        "sem": null
+      }
+    ],
+    "signal_correlation": [
+      {
+        "low": -1.0,
+        "high": -0.3,
+        "center": -0.65,
+        "n": 40,
+        "mean": 0.0013359788359788359,
+        "sem": 0.0008696885219348855
+      },
+      {
+        "low": -0.3,
+        "high": 0.1,
+        "center": -0.09999999999999999,
+        "n": 21,
+        "mean": 0.000714915595867977,
+        "sem": 0.0013614246006151362
+      },
+      {
+        "low": 0.1,
+        "high": 0.4,
+        "center": 0.25,
+        "n": 13,
+        "mean": -0.00146011396011396,
+        "sem": 0.0014778465258510377
+      },
+      {
+        "low": 0.4,
+        "high": 0.7,
+        "center": 0.55,
+        "n": 26,
+        "mean": 0.0008648758648758648,
+        "sem": 0.0011714318245143063
+      },
+      {
+        "low": 0.7,
+        "high": 0.9,
+        "center": 0.8,
+        "n": 15,
+        "mean": 0.0013315696649029982,
+        "sem": 0.0009880844589384155
+      },
+      {
+        "low": 0.9,
+        "high": 1.000001,
+        "center": 0.9500005,
+        "n": 4,
+        "mean": -0.0011574074074074073,
+        "sem": 0.0011574074074074073
+      }
+    ],
+    "orientation_difference_deg": [
+      {
+        "low": 0.0,
+        "high": 15.0,
+        "center": 7.5,
+        "n": 22,
+        "mean": 6.613756613756635e-05,
+        "sem": 0.0009310855773274007
+      },
+      {
+        "low": 15.0,
+        "high": 30.0,
+        "center": 22.5,
+        "n": 25,
+        "mean": 0.0009338624338624336,
+        "sem": 0.0012639966909468836
+      },
+      {
+        "low": 30.0,
+        "high": 45.0,
+        "center": 37.5,
+        "n": 19,
+        "mean": -0.00020885547201336655,
+        "sem": 0.0013097134999007585
+      },
+      {
+        "low": 45.0,
+        "high": 67.5,
+        "center": 56.25,
+        "n": 26,
+        "mean": 0.0004298941798941799,
+        "sem": 0.0010035976489632373
+      },
+      {
+        "low": 67.5,
+        "high": 90.0001,
+        "center": 78.75005,
+        "n": 27,
+        "mean": 0.002047815010777974,
+        "sem": 0.0010887759497388567
+      }
+    ],
+    "direct_connection_mA": [
+      {
+        "low": -1e-12,
+        "high": 1e-12,
+        "center": 0.0,
+        "n": 108,
+        "mean": 0.0002872085048010976,
+        "sem": 0.0005076009438120812
+      },
+      {
+        "low": 1e-12,
+        "high": 0.07444698114748714,
+        "center": 0.037223490574243574,
+        "n": 4,
+        "mean": 0.0021990740740740738,
+        "sem": 0.001273148148148148
+      },
+      {
+        "low": 0.07444698114748714,
+        "high": 0.12190327252522487,
+        "center": 0.09817512683635601,
+        "n": 3,
+        "mean": 0.004783950617283951,
+        "sem": 0.0013453391801051464
+      },
+      {
+        "low": 0.12190327252522487,
+        "high": null,
+        "center": 0.12190327252522487,
+        "n": 4,
+        "mean": 0.00828373015873016,
+        "sem": 0.004022753238678651
+      }
+    ]
+  }
+}

@@ -352,6 +352,7 @@ Route by the outcome the task needs, then open only the smallest reference that 
 | `references/state-graph-operations.md` | Splitting, transforming, checkpointing, or reconstructing Module graphs while preserving sharing and cycles |
 | `references/state_collections_and_utilities.md` | Filtering, freezing, flattening, configuring, or inspecting supporting mappings without graph identity |
 | `references/collective_model_operations.md` | Initializing, resetting, restoring, or invoking methods across a Module graph, including vmapped lifecycle operations |
+| `references/paired-perturbation-execution.md` | Running matched baseline-perturbation simulations with exact causal branching, fixed-shape chunks, progressive resource gates, and explicit execution-versus-science outcome classification |
 
 ### Simulation environment
 

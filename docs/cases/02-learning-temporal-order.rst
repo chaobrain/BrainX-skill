@@ -37,21 +37,8 @@ Result
 
    The immediate failure after reversal establishes that the original mapping was learned; the later recovery shows plastic remapping in the same circuit.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/02-learning-temporal-order/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/02-learning-temporal-order/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/02-learning-temporal-order/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/02-learning-temporal-order/experiment.py>`
-   - :download:`Focused tests <../_static/cases/02-learning-temporal-order/test_experiment.py>`
-   - :download:`Numeric summary <../_static/cases/02-learning-temporal-order/summary.json>`
-   - :download:`Run notes <../_static/cases/02-learning-temporal-order/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

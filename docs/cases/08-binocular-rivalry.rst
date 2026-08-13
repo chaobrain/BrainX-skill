@@ -37,19 +37,8 @@ Result
 
    Stronger adaptation accelerates winner fatigue; stronger noise increases escape from the current attractor.
 
-Source artifacts
-----------------
-
-.. dropdown:: Open the selected run
-
-   - :download:`Exact prompt <../_static/cases/08-binocular-rivalry/prompt.md>`
-   - :download:`Complete agent event log <../_static/cases/08-binocular-rivalry/agent-log.jsonl>`
-   - :download:`Agent result summary <../_static/cases/08-binocular-rivalry/agent-final.md>`
-   - :download:`Generated experiment <../_static/cases/08-binocular-rivalry/experiment.py>`
-   - :download:`Run notes <../_static/cases/08-binocular-rivalry/README.md>`
-
-Future skill comparison
------------------------
+With-BrainX skill/Without skill comparison
+------------------------------------------
 
 .. grid:: 1 2 2 2
    :gutter: 2

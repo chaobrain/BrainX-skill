@@ -1,0 +1,75 @@
+{
+  "seed": 20260813,
+  "n_excitatory": 120,
+  "n_inhibitory": 30,
+  "cortical_field_um": 500.0,
+  "visual_field_deg": 20.0,
+  "dt_ms": 0.5,
+  "duration_ms": 500.0,
+  "n_orientations": 8,
+  "n_positions": 3,
+  "n_trials": 3,
+  "base_current_mA": 10.3,
+  "stimulus_current_mA": 2.8,
+  "noise_sd_mA": 0.7,
+  "rf_sigma_deg": 7.0,
+  "orientation_kappa": 2.0,
+  "p_floor": 0.015,
+  "p_scale": 0.42,
+  "exc_distance_um": 120.0,
+  "inh_distance_um": 220.0,
+  "exc_weight_mA": 0.75,
+  "inh_weight_mA": -2.6,
+  "tau_exc_ms": 5.0,
+  "tau_inh_ms": 10.0,
+  "perturbation_times_ms": [
+    100.0,
+    150.0,
+    200.0,
+    250.0,
+    300.0,
+    350.0
+  ],
+  "analysis_bins": {
+    "cortical_distance_um": [
+      0.0,
+      75.0,
+      150.0,
+      250.0,
+      400.0,
+      null
+    ],
+    "rf_distance_deg": [
+      0.0,
+      4.0,
+      8.0,
+      12.0,
+      20.0,
+      null
+    ],
+    "signal_correlation": [
+      -1.0,
+      -0.3,
+      0.1,
+      0.4,
+      0.7,
+      0.9,
+      1.000001
+    ],
+    "orientation_difference_deg": [
+      0.0,
+      15.0,
+      30.0,
+      45.0,
+      67.5,
+      90.0001
+    ],
+    "direct_connection_mA": [
+      -1e-12,
+      1e-12,
+      0.07444698114748714,
+      0.12190327252522487,
+      null
+    ]
+  }
+}

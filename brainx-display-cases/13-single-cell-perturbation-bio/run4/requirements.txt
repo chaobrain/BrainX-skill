@@ -1,0 +1,9 @@
+brainpy
+brainstate
+brainevent
+brainunit
+braintools
+jax
+matplotlib
+numpy
+scipy

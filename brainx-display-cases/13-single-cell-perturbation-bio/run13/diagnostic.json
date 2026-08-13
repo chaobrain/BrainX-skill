@@ -1,0 +1,9 @@
+{
+  "direct_duplicate_max_abs_difference_nS": 0.0,
+  "mapped_duplicate_max_abs_difference_nS": 0.0,
+  "direct_vs_mapped_mismatched_values": 0,
+  "shape": [
+    32,
+    320
+  ]
+}

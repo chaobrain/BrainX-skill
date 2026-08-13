@@ -149,36 +149,24 @@ Use these cases when state must persist across learning, reversal, sleep, or rec
 
       Compare matched networks with replay enabled or suppressed during sleep.
 
+Paper reproduction
+------------------
+
+Use this category to reconstruct published models and verify reported results with explicit BrainX experiments.
+
+:doc:`Open paper reproduction <paper-reproduction>`
+
 How to read a case
 ------------------
 
-Each case keeps the evidence chain visible: the exact prompt, the agent's modeling decisions, the selected successful run, and the generated result. Open the source log or generated code when you need the complete execution record. The comparison area is intentionally reserved for future matched runs with and without the skill; it does not imply benchmark data that has not yet been collected.
+Each case keeps the evidence chain visible: the exact prompt, the agent's modeling decisions, and the generated result. The comparison area is intentionally reserved for future matched runs with and without the skill; it does not imply benchmark data that has not yet been collected.
 
 .. toctree::
    :hidden:
-   :maxdepth: 1
-   :caption: Creative experiment verification
+   :maxdepth: 2
+   :caption: Experiments
 
-   cases/01-spike-frequency-adaptation
-   cases/05-alpha-rhythm
-   cases/06-seizure-recruitment
-   cases/08-binocular-rivalry
-   cases/09-neural-compass
-
-.. toctree::
-   :hidden:
-   :maxdepth: 1
-   :caption: Speed and performance
-
-   cases/03-sound-localization
-   cases/07-cortical-wave-obstacle
-   cases/10-prior-bias
-   cases/12-edge-of-criticality
-
-.. toctree::
-   :hidden:
-   :maxdepth: 1
-   :caption: Use the skill for training
-
-   cases/02-learning-temporal-order
-   cases/11-sleep-memory-replay
+   creative-experiment-verification
+   speed-and-performance
+   use-the-skill-for-training
+   paper-reproduction

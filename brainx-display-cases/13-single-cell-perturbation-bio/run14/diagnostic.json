@@ -1,0 +1,20 @@
+{
+  "initialized_state_max_pair_differences": {
+    "('E', 'V')": 0.0,
+    "('E', 'last_spike_time')": 0.0,
+    "('I', 'V')": 0.0,
+    "('I', 'last_spike_time')": 0.0,
+    "('ee_syn', 'g')": 0.0,
+    "('ei_syn', 'g')": 0.0,
+    "('ie_syn', 'g')": 0.0,
+    "('ii_syn', 'g')": 0.0
+  },
+  "exc_spike_mismatches": 0,
+  "inh_spike_mismatches": 0,
+  "first_exc_mismatch_time_step_trial_neuron": null,
+  "exc_spike_shape": [
+    200,
+    32,
+    320
+  ]
+}
