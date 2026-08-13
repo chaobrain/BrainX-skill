@@ -163,9 +163,17 @@ Each case keeps the evidence chain visible: the exact prompt, the agent's modeli
 
 .. toctree::
    :hidden:
-   :maxdepth: 2
+   :maxdepth: 1
+   :caption: Quickstart
 
-   Quick start <self>
+   installation
+   Quickstart <self>
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: Examples
+
    creative-experiment-verification
    speed-and-performance
    use-the-skill-for-training
