@@ -1,6 +1,23 @@
 Quickstart
 ==========
 
+1. Install
+----------
+
+.. code-block:: bash
+
+   npx brainx-skill install
+
+2. Prompt
+---------
+
+.. container:: prompt-bubble
+
+   Show why a neuron fires quickly at first but gradually slows during a steady input, then remove its adaptation current and reveal what changes.
+
+3. Collect the result
+---------------------
+
 .. raw:: html
 
    <div class="quickstart-media">
