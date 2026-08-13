@@ -116,6 +116,14 @@ Learn more
          :link: paper-reproduction
          :link-type: doc
 
+   .. grid-item::
+      :columns: 6 6 6 4
+
+      .. card:: :material-regular:`account_tree;2em` Skill reference
+         :class-card: sd-text-black sd-bg-light
+         :link: skill-reference
+         :link-type: doc
+
 ----
 
 See also the ecosystem
@@ -142,3 +150,10 @@ BrainX Skill is part of the `BrainX brain simulation ecosystem <https://brainx.c
    speed-and-performance
    use-the-skill-for-training
    paper-reproduction
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: Skill reference
+
+   skill-reference

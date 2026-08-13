@@ -51,6 +51,11 @@
   margin-bottom: 0;
 }
 
+.skill-reference-page li code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .agent-trace {
   margin: 1rem 0 2.25rem;
 }

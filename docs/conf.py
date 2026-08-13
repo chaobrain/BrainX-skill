@@ -16,6 +16,7 @@ release = "1.0.12"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
@@ -27,6 +28,13 @@ extensions = [
     "sphinx_math_dollar",
     "brainx_sphinx_header",
 ]
+
+extlinks = {
+    "skill-source": (
+        "https://github.com/chaobrain/BrainX-skill/blob/main/%s",
+        "source",
+    ),
+}
 
 source_suffix = [".rst", ".md", ".ipynb"]
 master_doc = "index"
