@@ -1,0 +1,182 @@
+/* Case-study components only. The Sphinx Book Theme and the shared BrainX
+   extension own all global typography, color, navigation, and page layout. */
+
+.quickstart-media {
+  margin: 1.5rem 0 2.5rem;
+}
+
+.quickstart-media video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 61 / 45;
+  border: 1px solid var(--pst-color-border);
+  background: var(--pst-color-surface);
+  object-fit: contain;
+}
+
+.quickstart-media figcaption,
+.evidence-caption {
+  margin-top: 0.5rem;
+  color: var(--pst-color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.prompt-bubble {
+  position: relative;
+  margin: 1rem 0 2.25rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--pst-color-border);
+  border-radius: 0.5rem;
+  background: var(--pst-color-surface);
+  color: var(--pst-color-text-base);
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.prompt-bubble::after {
+  position: absolute;
+  bottom: -0.6rem;
+  left: 1.2rem;
+  width: 1rem;
+  height: 1rem;
+  border-right: 1px solid var(--pst-color-border);
+  border-bottom: 1px solid var(--pst-color-border);
+  background: var(--pst-color-surface);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.prompt-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.agent-trace {
+  margin: 1rem 0 2.25rem;
+}
+
+.agent-trace ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: trace;
+}
+
+.agent-trace li {
+  position: relative;
+  min-height: 3.5rem;
+  padding: 0.7rem 0.75rem 0.7rem 2.75rem;
+  border-left: 2px solid var(--pst-color-primary);
+  background: var(--pst-color-surface);
+  counter-increment: trace;
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.agent-trace li::before {
+  position: absolute;
+  top: 0.72rem;
+  left: 0.75rem;
+  color: var(--pst-color-primary);
+  content: counter(trace, decimal-leading-zero);
+  font-family: var(--pst-font-family-monospace);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.agent-trace code {
+  overflow-wrap: anywhere;
+}
+
+.result-lede {
+  margin: 1rem 0 1.5rem;
+  padding: 0.9rem 1rem;
+  border-left: 3px solid var(--pst-color-primary);
+  background: var(--pst-color-surface);
+  color: var(--pst-color-text-base);
+}
+
+.result-lede p:last-child {
+  margin-bottom: 0;
+}
+
+.bd-article .result-figure {
+  margin: 1.25rem 0 2rem;
+}
+
+.bd-article img.result-figure,
+.bd-article .result-figure img {
+  width: 100%;
+  border: 1px solid var(--pst-color-border);
+  background: white;
+}
+
+.comparison-grid .sd-grid-item {
+  min-height: 10rem;
+  padding: 1rem;
+  border: 1px solid var(--pst-color-border);
+  border-radius: 0.25rem;
+  background: var(--pst-color-surface);
+}
+
+.pending-label {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+  color: var(--pst-color-text-muted);
+  font-family: var(--pst-font-family-monospace);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sound-evidence {
+  margin: 1rem 0 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--pst-color-border);
+  border-radius: 0.25rem;
+  background: var(--pst-color-surface);
+  color: var(--pst-color-text-base);
+  font-family: var(--pst-font-family-monospace);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.sound-evidence div {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--pst-color-border);
+}
+
+.sound-evidence div:last-child {
+  border-bottom: 0;
+}
+
+.sound-evidence strong {
+  color: var(--pst-color-primary);
+}
+
+@media (max-width: 700px) {
+  .agent-trace ol {
+    grid-template-columns: 1fr;
+  }
+
+  .sound-evidence div {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -53,9 +53,17 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 .ipynb_checkpoints/
+docs/_build/
+docs/_brand/
+docs/jupyter_execute/
+docs/_static/css/brainx-footer.css
+docs/_static/css/brainx-header.css
+docs/_static/js/brainx-footer.js
+docs/_static/js/brainx-header.js
 
 # Virtual environments
 .venv/
+.venv-docs/
 venv/
 env/
 ENV/
