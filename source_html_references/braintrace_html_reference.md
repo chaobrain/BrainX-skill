@@ -2,6 +2,18 @@
 
 Purpose: choose the official BrainTrace HTML page that directly supports an online-learning concept, model-building workflow, algorithm decision, compiler diagnostic, batching strategy, example, or API question.
 
+## Supported release boundary
+
+This repository targets BrainX `v2026.7.9`, which bundles BrainTrace `0.2.4`. Use the tagged `v0.2.4` sources below for exact APIs and executable composition. The live documentation routes later in this file describe BrainTrace `0.2.5` and must not be used to introduce `etrace_grad`, `etrace_evolve`, `SequenceDriverMixin`, `ETraceVmap`, `ETraceConfig`, or other post-`0.2.4` APIs into the supported skills.
+
+- [BrainTrace `v0.2.4` public API](https://github.com/chaobrain/braintrace/blob/v0.2.4/braintrace/__init__.py) - Public algorithms, compiler types, ETP operators, and input wrappers available in the bundled release.
+- [BrainTrace `v0.2.4` one-call compiler](https://github.com/chaobrain/braintrace/blob/v0.2.4/braintrace/_compile.py) - Exact `compile(...)` contract, native batching, compile-owned vmap, report behavior, and options.
+- [BrainTrace `v0.2.4` pp-prop examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/pp_prop) - SNN composition, working-memory and delayed-match tasks, scan gradient accumulation, and batching paths.
+- [BrainTrace `v0.2.4` D-RTRL examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/drtrl) - Parameter-dimensional online gradients, mapped and native batching, and VJP modes.
+- [BrainTrace `v0.2.4` algorithms API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/algorithms.rst) - Estimator classes and guarantees in the bundled release.
+- [BrainTrace `v0.2.4` compiler API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/compiler.rst) - Compilation reports, structured diagnostics, graph types, and executor contracts.
+- [BrainTrace release notes](https://brainx.chaobrain.com/braintrace/changelog.html) - Use only to identify release boundaries; sequence drivers begin in `0.2.5`.
+
 ## Root
 
 - [BrainTrace Documentation](https://brainx.chaobrain.com/braintrace/) — Main BrainTrace landing page for eligibility-trace online learning in stateful recurrent and spiking neural networks.

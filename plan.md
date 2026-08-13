@@ -821,7 +821,7 @@ Location for all NEST scripts: `references/nest-compatible/nest-workflow.md` ful
 
 #### Purpose and boundary
 
-- Boundary: relieve BPTT sequence-memory pressure and enable memory-efficient temporal training for recurrent and spiking networks with BrainTrace models, algorithms, compilation, and sequence drivers.
+- Boundary: relieve BPTT sequence-memory pressure and enable memory-efficient temporal training for recurrent and spiking networks with BrainTrace models, algorithms, compilation, and BrainState-owned temporal gradient accumulation.
 - Treat online learning through eligibility traces as the mechanism for memory efficiency, not the primary routing goal.
 - Canonical path: compose prebuilt `braintrace.nn` layers → choose a built-in algorithm → compile and inspect → reset model and eligibility State → train → validate.
 - Escalate from prebuilt layers to built-in ETP operations, then to a custom ETP primitive, only as required.
@@ -850,12 +850,12 @@ Keep level 1 complete in the root skill. Explain ETP only enough to predict comp
 2. Compile once with built-in `D_RTRL` and a representative step.
 3. Inspect `learner.report` and `learner.show_graph()` before training.
 4. Register parameters and an optimizer; reset both model and eligibility State at sequence boundaries.
-5. Use `etrace_evolve()` for loss-free execution and `etrace_grad()` for sequence gradients, then update parameters.
+5. Differentiate exactly one learner call per step, use `brainstate.transform.scan()` to accumulate gradients, then update parameters once per sequence.
 6. Verify loss, parameter changes, State shapes, and graph reuse.
 
 Keep this workflow inline. The current `skills/braintrace/` draft has no `scripts/` directory, so do not restore the obsolete external-example inventory from the previous plan.
 
-Ground it in the [quickstart](https://brainx.chaobrain.com/braintrace/quickstart/quickstart.html), [core concepts](https://brainx.chaobrain.com/braintrace/quickstart/concepts.html), [hidden-State](https://brainx.chaobrain.com/braintrace/tutorials/hidden_states.html), [compilation](https://brainx.chaobrain.com/braintrace/tutorials/graph_compilation.html), and [visualization](https://brainx.chaobrain.com/braintrace/tutorials/visualization.html) sources already listed in `skills/braintrace/SKILL.md`.
+Ground it in the BrainTrace `v0.2.4` [pp-prop examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/pp_prop), [D-RTRL examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/drtrl), [algorithms API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/algorithms.rst), and [compiler API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/compiler.rst). Treat live BrainTrace `0.2.5` documentation as newer-release material, not as the contract for BrainX `v2026.7.9`.
 
 #### Reference routing
 
@@ -865,10 +865,10 @@ Route model construction through prebuilt layers, built-in ETP operations, and c
 |---|---|---|---|
 | `skills/braintrace/references/pre-built-braintrace-layer.md` | Selecting or composing the default model | BrainTrace layer families and BrainState-owned supporting layers | [layers API](https://brainx.chaobrain.com/braintrace/apis/nn.html), [layers tutorial](https://brainx.chaobrain.com/braintrace/tutorials/neural_network_layers.html) |
 | `skills/braintrace/references/ETP operators.md` | Prebuilt layers cannot express a required custom layer or model | Built-in ETP operations, dispatch, units, transforms, and trace participation | [concepts API](https://brainx.chaobrain.com/braintrace/apis/concepts.html), [operators tutorial](https://brainx.chaobrain.com/braintrace/tutorials/five_primitive_functions.html) |
-| `skills/braintrace/references/Drtrl.md` | Using or validating canonical D-RTRL | Recurrence, sequence drivers, resets, memory, and BPTT boundary | [RNN online learning](https://brainx.chaobrain.com/braintrace/tutorials/rnn_online_learning.html), [D-RTRL tutorial](https://brainx.chaobrain.com/braintrace/tutorials/drtrl.html) |
-| `skills/braintrace/references/pp_pprop workflow.md` | D-RTRL trace memory is unsuitable or an SNN needs factorized traces | `pp_prop`, SNN integration, sequence training, and D-RTRL comparison | [SNN online learning](https://brainx.chaobrain.com/braintrace/tutorials/snn_online_learning.html), [pp-prop tutorial](https://brainx.chaobrain.com/braintrace/tutorials/pp_prop.html) |
-| `skills/braintrace/references/algorithm selection.md` | Choosing beyond D-RTRL | Estimator guarantees, configuration axes, and sequence-driver options | [algorithms API](https://brainx.chaobrain.com/braintrace/apis/algorithms.html) |
-| `skills/braintrace/references/batching.md` | Adding batch axes or multi-step wrappers | Mapping ownership, batched compilation, and data wrappers | [batching strategies](https://brainx.chaobrain.com/braintrace/advanced/batching.html) |
+| `skills/braintrace/references/Drtrl.md` | Using or validating canonical D-RTRL | Recurrence, scan accumulation, resets, memory, and BPTT boundary | [BrainTrace `v0.2.4` D-RTRL examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/drtrl), [algorithms API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/algorithms.rst) |
+| `skills/braintrace/references/pp_pprop workflow.md` | D-RTRL trace memory is unsuitable or an SNN needs factorized traces | `pp_prop`, SNN integration, masked sequence training, and memory validation | [BrainTrace `v0.2.4` pp-prop tutorial](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/tutorials/pp_prop.md), [pp-prop examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/pp_prop) |
+| `skills/braintrace/references/algorithm selection.md` | Choosing beyond D-RTRL | Public `0.2.4` estimators, guarantees, and constructor options | [BrainTrace `v0.2.4` algorithms API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/algorithms.rst), [public API](https://github.com/chaobrain/braintrace/blob/v0.2.4/braintrace/__init__.py) |
+| `skills/braintrace/references/batching.md` | Adding batch axes or multi-step wrappers | Mapping ownership, batched compilation, mapped resets, and data wrappers | [BrainTrace `v0.2.4` compile-mode tests](https://github.com/chaobrain/braintrace/blob/v0.2.4/examples/tests/test_compile_modes.py), [batching examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/pp_prop) |
 | `skills/braintrace/references/custom ETP primitives.md` | Built-in ETP operations cannot express the computation | Primitive registration, ETP rules, compiler integration, and validation | [custom ETP primitives](https://brainx.chaobrain.com/braintrace/advanced/etp_primitives.html) |
 | `skills/braintrace/references/customizing_primitive_transforms.md` | Reparameterizing a weight or adding transform hooks | Trace attachment, chain-rule placement, units, and fast-path gating | [parameter transforms](https://brainx.chaobrain.com/braintrace/advanced/customizing_primitive_transforms.html) |
 | `skills/braintrace/references/custom algorithms.md` | Built-in algorithms cannot express the research method | Algorithm bases, trace lifecycle, solve hooks, and inspection | [custom algorithms](https://brainx.chaobrain.com/braintrace/advanced/custom_algorithms.html), [algorithms API](https://brainx.chaobrain.com/braintrace/apis/algorithms.html) |
@@ -884,7 +884,7 @@ Open `compiler_internal.md` only after `learner.report` and `learner.graph` cann
 - The compiler runs inside the training loop or receives an example input with the wrong batch/feature shape.
 - Mapping is applied twice or bypassed through a mapped learner's `.module`.
 - Only recurrent State or only eligibility State is reset between independent sequences.
-- A hand-written scan duplicates `etrace_grad()` or `etrace_evolve()`, or `step_fn` calls the learner more than once.
+- The step gradient calls the learner more than once, the optimizer updates inside the temporal scan despite a sequence-level schedule, or the code uses sequence-driver APIs introduced after BrainTrace `0.2.4`.
 - D-RTRL or pp-prop is claimed to equal BPTT outside the estimator's documented mathematical regime and without a reduced-oracle check.
 - New code uses the historical `ES_D_RTRL` name instead of `pp_prop`.
 - Activation, normalization, or pooling layers are imported through deprecated `braintrace.nn` forwarding instead of their owning package.

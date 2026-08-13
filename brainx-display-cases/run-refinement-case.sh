@@ -11,6 +11,10 @@ brainx_venv="/Users/nijiachen/Downloads/Brainx testing/.venv-brainx"
 eval_model="gpt-5.6-sol"
 
 case "$case_name" in
+  04-online-working-memory)
+    expected_prompt_bytes="733"
+    expected_prompt_sha256="629e6b6f36083f51bf808a1e8c0014a272222b993511097c7068261728e00119"
+    ;;
   05-alpha-rhythm)
     expected_prompt_bytes="577"
     expected_prompt_sha256="c6b42ffbed8f7f18ed64b1184e8c68ffb9491e63d8967f0234264075964a3f41"
