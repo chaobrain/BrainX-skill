@@ -13,7 +13,7 @@ Quickstart
 
 .. container:: prompt-bubble
 
-   Show why a neuron fires quickly at first but gradually slows during a steady input, then remove its adaptation current and reveal what changes.
+   Model a thalamic relay neuron and demonstrate post inhibitory rebound bursting by injecting a negative current and then releasing it to zero. Then remove the T-type calcium channel as comparison. Show the effects with graph.
 
 3. Collect the result
 ---------------------
