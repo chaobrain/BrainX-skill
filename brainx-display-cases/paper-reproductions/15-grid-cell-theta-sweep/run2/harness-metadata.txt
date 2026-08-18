@@ -1,0 +1,12 @@
+prompt_bytes=2348
+prompt_sha256=8c684671317ad1b54e59afd3ec167c1c24df6baa59d3f108af5588fb38cf4fed
+execution=orchestrator_spawn_agent
+fork_turns=none
+reasoning_effort=xhigh
+model=inherited_orchestrator_model_not_exposed
+python=/Users/nijiachen/Downloads/Brainx testing/.venv-brainx/bin/python
+event_log=unavailable_for_spawn_agent
+isolated_workspace=false
+prior_case_runs_readable=true
+skill_snapshot_frozen=false
+exit_status=completed

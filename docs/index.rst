@@ -111,7 +111,7 @@ Learn more
    .. grid-item::
       :columns: 6 6 6 4
 
-      .. card:: :material-regular:`library_books;2em` Paper reproduction
+      .. card:: :material-regular:`library_books;2em` Paper reproductions
          :class-card: sd-text-black sd-bg-light
          :link: paper-reproduction
          :link-type: doc

@@ -1,8 +1,0 @@
-2026-08-11T15:49:13.285142Z  WARN codex_core_plugins::manager: failed to warm featured plugin ids cache error=remote featured plugin request to https://chatgpt.com/backend-api/plugins/featured?platform=codex failed with status 401 Unauthorized: {"detail":"Unauthorized"}
-2026-08-11T15:49:16.316080Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
-2026-08-11T15:49:44.296787Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///private/tmp/neural-compass-run3-eval.eaZNFf/codex-home/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
-2026-08-11T15:49:44.298271Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///private/tmp/neural-compass-run3-eval.eaZNFf/codex-home/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
-2026-08-11T15:52:21.319426Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
-2026-08-11T15:58:30.865198Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
-2026-08-11T16:04:39.633536Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
-2026-08-11T16:13:52.112735Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit

@@ -11,10 +11,11 @@ exact prompt -> clean BrainX run -> study relevant BrainX material
 
 ## Case and run folders
 
-Keep one folder for each task and one subfolder for each agent run:
+Group tasks by evaluation purpose. Keep one folder for each task and one
+subfolder for each agent run:
 
 ```text
-brainx-display-cases/<NN>-<case-name>/
+brainx-display-cases/<category>/<NN>-<case-name>/
 |-- prompt.md          # Original natural-language prompt
 |-- inputs/            # Optional original task inputs
 |-- run0/              # Baseline artifacts and diagnosis
@@ -108,7 +109,7 @@ or paste it into zsh because the captured pipeline status uses Bash
 set -uo pipefail
 
 repo="/Users/nijiachen/Downloads/brainx-skill-bundle"
-case_dir="$repo/brainx-display-cases/<NN>-<case-name>"
+case_dir="$repo/brainx-display-cases/<category>/<NN>-<case-name>"
 run_name="run0"
 run_dir="$case_dir/$run_name"
 prompt_file="$case_dir/prompt.md"

@@ -33,12 +33,6 @@ Examples
 
       Explain alternating percepts through adaptation, noise, and competition.
 
-   .. grid-item-card:: 09 — Neural compass
-      :link: cases/09-neural-compass
-      :link-type: doc
-
-      Rotate and lesion a ring attractor to map recovery and failure.
-
 .. toctree::
    :hidden:
    :maxdepth: 1
@@ -47,4 +41,3 @@ Examples
    cases/05-alpha-rhythm
    cases/06-seizure-recruitment
    cases/08-binocular-rivalry
-   cases/09-neural-compass

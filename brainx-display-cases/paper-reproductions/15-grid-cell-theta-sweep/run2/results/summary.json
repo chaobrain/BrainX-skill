@@ -1,0 +1,281 @@
+{
+  "artifact_version": "3.0",
+  "model_seed": 1405,
+  "shuffle_seed": 8128,
+  "n_shuffle": 4000,
+  "integration_dt_ms": 2.0,
+  "theta_frequency_hz": 10.0,
+  "grid_scales_cm": [
+    38.0,
+    55.0,
+    78.0
+  ],
+  "evaluation_theta_phase_rad": 3.141592653589793,
+  "minimum_sweep_angle_deg": 5.0,
+  "adaptation_sweep_transform": "brainstate.transform.vmap",
+  "conditions": {
+    "baseline": {
+      "n_cycles": 50,
+      "alternation_score": 0.9591836734693877,
+      "sweep_cycle_fraction": 0.96,
+      "shuffle_mean": 0.4691581632653061,
+      "shuffle_95_interval": [
+        0.32653061224489793,
+        0.6122448979591837
+      ],
+      "shuffle_p_upper": 0.00024993751562109475,
+      "mean_abs_direction_angle_deg": 22.926782936678865,
+      "mean_grid_length_cm": [
+        4.626514133848223,
+        6.859775602757955,
+        9.889267413458365
+      ],
+      "grid_alternation_score": [
+        0.9387755102040817,
+        0.9387755102040817,
+        0.9387755102040817
+      ],
+      "mean_alignment_cosine": [
+        0.9913613871383012,
+        0.9905280282087113,
+        0.990004417334727
+      ],
+      "phase_resolved_alignment_cosine": [
+        0.9923756414996321,
+        0.9913696455486135,
+        0.9907676222435126
+      ]
+    },
+    "no_adaptation": {
+      "n_cycles": 50,
+      "alternation_score": 0.0,
+      "sweep_cycle_fraction": 0.0,
+      "shuffle_mean": 0.0,
+      "shuffle_95_interval": [
+        0.0,
+        0.0
+      ],
+      "shuffle_p_upper": 1.0,
+      "mean_abs_direction_angle_deg": 0.0036546531356481415,
+      "mean_grid_length_cm": [
+        1.470389132962632,
+        2.3824524383983197,
+        3.621278575228752
+      ],
+      "grid_alternation_score": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_alignment_cosine": [
+        0.9990749365451635,
+        0.9986128383672827,
+        0.998303884904794
+      ],
+      "phase_resolved_alignment_cosine": [
+        0.9953135132062789,
+        0.9960168103605452,
+        0.9963983874518983
+      ]
+    },
+    "no_theta": {
+      "n_cycles": 50,
+      "alternation_score": 0.0,
+      "sweep_cycle_fraction": 0.0,
+      "shuffle_mean": 0.0,
+      "shuffle_95_interval": [
+        0.0,
+        0.0
+      ],
+      "shuffle_p_upper": 1.0,
+      "mean_abs_direction_angle_deg": 5.648891866963555e-06,
+      "mean_grid_length_cm": [
+        0.3010840185323614,
+        0.2565380393781651,
+        0.19549763904209172
+      ],
+      "grid_alternation_score": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_alignment_cosine": [
+        -0.9999969445825451,
+        -0.9999902576022477,
+        -0.9999701230951109
+      ],
+      "phase_resolved_alignment_cosine": [
+        null,
+        null,
+        null
+      ]
+    },
+    "no_coupling": {
+      "n_cycles": 50,
+      "alternation_score": 0.9591836734693877,
+      "sweep_cycle_fraction": 0.96,
+      "shuffle_mean": 0.4691581632653061,
+      "shuffle_95_interval": [
+        0.32653061224489793,
+        0.6122448979591837
+      ],
+      "shuffle_p_upper": 0.00024993751562109475,
+      "mean_abs_direction_angle_deg": 22.926782936678865,
+      "mean_grid_length_cm": [
+        0.46675108244078456,
+        0.348173921603175,
+        0.19020738107508084
+      ],
+      "grid_alternation_score": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_alignment_cosine": [
+        -0.917394236335137,
+        -0.9173526442389752,
+        -0.9171630880794447
+      ],
+      "phase_resolved_alignment_cosine": [
+        null,
+        null,
+        null
+      ]
+    }
+  },
+  "speed": {
+    "speed_cm_s": [
+      15.0,
+      30.0,
+      45.0
+    ],
+    "mean_grid_length_cm": [
+      [
+        2.371355325783748,
+        3.5151934912971448,
+        5.055950620442593
+      ],
+      [
+        4.731215655875558,
+        7.009512260687497,
+        10.098883839123538
+      ],
+      [
+        6.801871899517051,
+        10.08237461033987,
+        14.548393091389324
+      ]
+    ],
+    "mean_abs_direction_angle_deg": [
+      0.00019911489356151587,
+      16.263070709202353,
+      29.217567285021197
+    ],
+    "alternation_score": [
+      0.0,
+      0.7083333333333334,
+      1.0
+    ]
+  },
+  "turn": {
+    "n_cycles": 90,
+    "alternation_score": 0.9662921348314607,
+    "sweep_cycle_fraction": 0.9666666666666667,
+    "shuffle_mean": 0.4709157303370787,
+    "shuffle_95_interval": [
+      0.3707865168539326,
+      0.5617977528089888
+    ],
+    "shuffle_p_upper": 0.00024993751562109475,
+    "mean_abs_direction_angle_deg": 20.47030857622444,
+    "mean_grid_length_cm": [
+      3.670937153282332,
+      5.44851053915753,
+      7.853741136759532
+    ],
+    "grid_alternation_score": [
+      0.9550561797752809,
+      0.9550561797752809,
+      0.9550561797752809
+    ],
+    "mean_alignment_cosine": [
+      0.9906784847125567,
+      0.9899888165539563,
+      0.9895849628762423
+    ],
+    "phase_resolved_alignment_cosine": [
+      0.9918888598766883,
+      0.9911231678499138,
+      0.990671992501459
+    ]
+  },
+  "trajectory_vectors": {
+    "count": 10,
+    "time_s": [
+      2.152,
+      2.7520000000000002,
+      3.352,
+      4.0520000000000005,
+      4.652,
+      5.252,
+      5.952,
+      6.5520000000000005,
+      7.152,
+      7.852
+    ],
+    "direction_deg": [
+      20.82407777146761,
+      46.876973204814036,
+      72.4727806268779,
+      75.40994080840854,
+      100.42110707595309,
+      124.6964047173608,
+      179.41181630459164,
+      -154.34898180557371,
+      -128.1847918760005,
+      -125.44492238469226
+    ]
+  },
+  "adaptation_sweep": {
+    "strength": [
+      0.0,
+      0.5,
+      1.0,
+      1.5
+    ],
+    "mean_abs_direction_angle_deg": [
+      0.0036526343736876035,
+      11.467656301389646,
+      22.926580726794054,
+      0.0250134376449114
+    ],
+    "alternation_score": [
+      0.0,
+      0.3877551020408163,
+      0.9591836734693877,
+      0.0
+    ],
+    "mean_grid_length_cm": [
+      [
+        1.4703901936800992,
+        2.382453819288783,
+        3.6212802861314093
+      ],
+      [
+        4.2662154862680435,
+        6.349632984405746,
+        9.176335453957552
+      ],
+      [
+        4.626517360423662,
+        6.859780008204,
+        9.889273741491811
+      ],
+      [
+        4.997660867609376,
+        7.389744908316988,
+        10.63114402515295
+      ]
+    ]
+  }
+}
