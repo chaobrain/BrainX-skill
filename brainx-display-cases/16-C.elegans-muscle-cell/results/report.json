@@ -1,0 +1,235 @@
+{
+  "model": {
+    "dynamic_states": [
+      "V",
+      "m",
+      "h",
+      "n",
+      "p",
+      "q",
+      "Ca"
+    ],
+    "ionic_currents": [
+      "EGL-19",
+      "SHK-1",
+      "SLO-2",
+      "Kr",
+      "Na",
+      "Leak"
+    ],
+    "training_trace": 9,
+    "training_current_pA": 30.0,
+    "test_traces": [
+      6,
+      7,
+      8
+    ]
+  },
+  "inference": {
+    "method": "sequential rejection approximate Bayesian computation",
+    "parameter_names": [
+      "g_egl19_nS",
+      "g_shk1_nS",
+      "g_leak_nS",
+      "capacitance_pF",
+      "g_slo2_nS",
+      "v_shift_mV"
+    ],
+    "prior_low": {
+      "g_egl19_nS": 10.0,
+      "g_shk1_nS": 10.5,
+      "g_leak_nS": 0.0001,
+      "capacitance_pF": 10.0,
+      "g_slo2_nS": 0.1,
+      "v_shift_mV": 7.0
+    },
+    "prior_high": {
+      "g_egl19_nS": 25.0,
+      "g_shk1_nS": 45.0,
+      "g_leak_nS": 0.5,
+      "capacitance_pF": 30.0,
+      "g_slo2_nS": 4.0,
+      "v_shift_mV": 13.0
+    },
+    "posterior_mean": {
+      "g_egl19_nS": 14.436660388547487,
+      "g_shk1_nS": 41.07199384932764,
+      "g_leak_nS": 0.30500768466574046,
+      "capacitance_pF": 20.445743788525398,
+      "g_slo2_nS": 3.638483741656942,
+      "v_shift_mV": 10.699118542286108
+    },
+    "map": {
+      "g_egl19_nS": 12.873775615557587,
+      "g_shk1_nS": 44.69488065944146,
+      "g_leak_nS": 0.4087821517183255,
+      "capacitance_pF": 15.928524273207945,
+      "g_slo2_nS": 3.775522503763185,
+      "v_shift_mV": 11.49747114304262
+    },
+    "validation_parameters": "map",
+    "rounds": [
+      {
+        "round": 1,
+        "minimum_distance": 0.6273975185785923,
+        "elite_distance": 0.9348392958438072
+      },
+      {
+        "round": 2,
+        "minimum_distance": 0.4627044060514088,
+        "elite_distance": 0.7169588180603755
+      },
+      {
+        "round": 3,
+        "minimum_distance": 0.4422274899345671,
+        "elite_distance": 0.6202370012883611
+      }
+    ]
+  },
+  "metrics": {
+    "6": {
+      "current_pA": 15.0,
+      "split": "test",
+      "rmse_mV": 15.695870338864632,
+      "correlation": 0.098741981915536,
+      "experimental": {
+        "stimulus_spike_count": 3.0,
+        "stimulus_mean_isi_ms": 70.14999999999999,
+        "first_spike_latency_ms": 45.2,
+        "resting_mean_mV": -29.54975217391305,
+        "stimulus_mean_mV": -13.070886559520241,
+        "stimulus_std_mV": 12.70703137038179,
+        "stimulus_peak_mV": 24.5361,
+        "post_stimulus_spike_count": 0.0
+      },
+      "simulated": {
+        "stimulus_spike_count": 3.0,
+        "stimulus_mean_isi_ms": 61.09999999999998,
+        "first_spike_latency_ms": 76.8,
+        "resting_mean_mV": -29.2031307220459,
+        "stimulus_mean_mV": -13.588878631591797,
+        "stimulus_std_mV": 11.601398468017578,
+        "stimulus_peak_mV": 26.14134979248047,
+        "post_stimulus_spike_count": 1.0
+      },
+      "experimental_protocol": {
+        "stimulus_spike_count": 3,
+        "stimulus_mean_isi_ms": 70.14999999999999,
+        "post_stimulus_spike_count": 0
+      },
+      "simulated_protocol": {
+        "stimulus_spike_count": 3,
+        "stimulus_mean_isi_ms": 61.09999999999998,
+        "post_stimulus_spike_count": 1
+      }
+    },
+    "7": {
+      "current_pA": 20.0,
+      "split": "test",
+      "rmse_mV": 14.846571899560034,
+      "correlation": 0.12297641393033394,
+      "experimental": {
+        "stimulus_spike_count": 3.0,
+        "stimulus_mean_isi_ms": 60.49999999999999,
+        "first_spike_latency_ms": 37.30000000000001,
+        "resting_mean_mV": -29.182230434782607,
+        "stimulus_mean_mV": -12.872255488805598,
+        "stimulus_std_mV": 12.510204086161707,
+        "stimulus_peak_mV": 24.8413,
+        "post_stimulus_spike_count": 0.0
+      },
+      "simulated": {
+        "stimulus_spike_count": 3.0,
+        "stimulus_mean_isi_ms": 54.900000000000006,
+        "first_spike_latency_ms": 60.8,
+        "resting_mean_mV": -29.2031307220459,
+        "stimulus_mean_mV": -11.874197959899902,
+        "stimulus_std_mV": 12.441152572631836,
+        "stimulus_peak_mV": 25.57191276550293,
+        "post_stimulus_spike_count": 1.0
+      },
+      "experimental_protocol": {
+        "stimulus_spike_count": 3,
+        "stimulus_mean_isi_ms": 60.49999999999999,
+        "post_stimulus_spike_count": 0
+      },
+      "simulated_protocol": {
+        "stimulus_spike_count": 3,
+        "stimulus_mean_isi_ms": 54.900000000000006,
+        "post_stimulus_spike_count": 1
+      }
+    },
+    "8": {
+      "current_pA": 25.0,
+      "split": "test",
+      "rmse_mV": 14.357903183790713,
+      "correlation": 0.30289487319909447,
+      "experimental": {
+        "stimulus_spike_count": 4.0,
+        "stimulus_mean_isi_ms": 54.73333333333333,
+        "first_spike_latency_ms": 29.900000000000006,
+        "resting_mean_mV": -28.27520869565217,
+        "stimulus_mean_mV": -10.143715627586207,
+        "stimulus_std_mV": 13.180592450480871,
+        "stimulus_peak_mV": 24.4446,
+        "post_stimulus_spike_count": 0.0
+      },
+      "simulated": {
+        "stimulus_spike_count": 4.0,
+        "stimulus_mean_isi_ms": 49.03333333333334,
+        "first_spike_latency_ms": 48.900000000000006,
+        "resting_mean_mV": -29.2031307220459,
+        "stimulus_mean_mV": -9.747944831848145,
+        "stimulus_std_mV": 12.702899932861328,
+        "stimulus_peak_mV": 24.994726181030273,
+        "post_stimulus_spike_count": 0.0
+      },
+      "experimental_protocol": {
+        "stimulus_spike_count": 4,
+        "stimulus_mean_isi_ms": 54.73333333333333,
+        "post_stimulus_spike_count": 0
+      },
+      "simulated_protocol": {
+        "stimulus_spike_count": 4,
+        "stimulus_mean_isi_ms": 49.03333333333334,
+        "post_stimulus_spike_count": 0
+      }
+    },
+    "9": {
+      "current_pA": 30.0,
+      "split": "train",
+      "rmse_mV": 13.956458053662276,
+      "correlation": 0.3704458491802491,
+      "experimental": {
+        "stimulus_spike_count": 4.0,
+        "stimulus_mean_isi_ms": 51.23333333333333,
+        "first_spike_latency_ms": 27.5,
+        "resting_mean_mV": -29.133140000000004,
+        "stimulus_mean_mV": -9.904486778910544,
+        "stimulus_std_mV": 13.289041422114815,
+        "stimulus_peak_mV": 24.6582,
+        "post_stimulus_spike_count": 0.0
+      },
+      "simulated": {
+        "stimulus_spike_count": 4.0,
+        "stimulus_mean_isi_ms": 45.53333333333334,
+        "first_spike_latency_ms": 39.39999999999999,
+        "resting_mean_mV": -29.2031307220459,
+        "stimulus_mean_mV": -8.801612854003906,
+        "stimulus_std_mV": 12.648666381835938,
+        "stimulus_peak_mV": 24.506935119628906,
+        "post_stimulus_spike_count": 0.0
+      },
+      "experimental_protocol": {
+        "stimulus_spike_count": 4,
+        "stimulus_mean_isi_ms": 51.23333333333333,
+        "post_stimulus_spike_count": 0
+      },
+      "simulated_protocol": {
+        "stimulus_spike_count": 4,
+        "stimulus_mean_isi_ms": 45.53333333333334,
+        "post_stimulus_spike_count": 0
+      }
+    }
+  }
+}
