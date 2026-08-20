@@ -134,7 +134,6 @@ BrainX Skill is part of the `BrainX brain simulation ecosystem <https://brainx.c
 
    installation
    Quickstart <quickstart>
-   supported-agents
 
 .. toctree::
    :hidden:
