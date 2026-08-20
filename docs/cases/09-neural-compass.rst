@@ -1,5 +1,5 @@
-09 — Neural compass
-===================
+Neural compass
+==============
 
 This experiment builds a spiking ring attractor that stores heading as an activity bump, integrates a dark turn, and then maps recovery after a sector of the ring is silenced.
 

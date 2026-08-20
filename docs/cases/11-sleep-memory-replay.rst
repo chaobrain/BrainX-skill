@@ -1,5 +1,5 @@
-11 — Sleep memory replay
-========================
+Sleep memory replay
+===================
 
 This experiment learns a four-place route, runs matched networks through an uncued sleep period, suppresses recurrent replay in one group, and compares ordered recall after cueing only the first place.
 

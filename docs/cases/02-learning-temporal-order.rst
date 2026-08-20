@@ -1,5 +1,5 @@
-02 — Learning temporal order
-============================
+Learning temporal order
+=======================
 
 This experiment trains a small spiking circuit to identify which tone arrived first, reverses the requested label mapping without rebuilding the circuit, and continues the same plasticity process until the new rule is learned.
 

@@ -9,25 +9,25 @@ Examples
 .. grid:: 1 2 2 2
    :gutter: 2
 
-   .. grid-item-card:: 03 — Sound localization
+   .. grid-item-card:: Sound localization
       :link: cases/03-sound-localization
       :link-type: doc
 
       Batch precise auditory delays through an event-driven spiking circuit.
 
-   .. grid-item-card:: 07 — Cortical wave obstacle
+   .. grid-item-card:: Cortical wave obstacle
       :link: cases/07-cortical-wave-obstacle
       :link-type: doc
 
       Sweep lesion size and inhibition across a spatial spiking network.
 
-   .. grid-item-card:: 10 — Prior bias
+   .. grid-item-card:: Prior bias
       :link: cases/10-prior-bias
       :link-type: doc
 
       Measure a psychometric effect and compiled decision throughput.
 
-   .. grid-item-card:: 12 — Edge of criticality
+   .. grid-item-card:: Edge of criticality
       :link: cases/12-edge-of-criticality
       :link-type: doc
 

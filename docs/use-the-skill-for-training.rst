@@ -9,13 +9,13 @@ Examples
 .. grid:: 1 2 2 2
    :gutter: 2
 
-   .. grid-item-card:: 02 — Learning temporal order
+   .. grid-item-card:: Learning temporal order
       :link: cases/02-learning-temporal-order
       :link-type: doc
 
       Acquire a temporal rule, reverse it, and show relearning in the same circuit.
 
-   .. grid-item-card:: 11 — Sleep memory replay
+   .. grid-item-card:: Sleep memory replay
       :link: cases/11-sleep-memory-replay
       :link-type: doc
 

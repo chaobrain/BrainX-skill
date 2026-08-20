@@ -1,5 +1,5 @@
-06 — Seizure recruitment
-========================
+Seizure recruitment
+===================
 
 This experiment asks when a finite burst remains focal and when directed coupling recruits a chain of neighboring regions. The classification is tied to continuous regional activity and onset times.
 

@@ -1,5 +1,5 @@
-01 — Spike-frequency adaptation
-===============================
+Spike-frequency adaptation
+==========================
 
 This experiment isolates the slow current that turns rapid initial firing into adaptation during steady input. It uses a conductance-based cell, changes one mechanism, and checks the causal result in voltage, calcium, and interspike intervals.
 

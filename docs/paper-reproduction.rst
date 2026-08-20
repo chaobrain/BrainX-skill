@@ -9,13 +9,13 @@ Examples
 .. grid:: 1 2 2 2
    :gutter: 2
 
-   .. grid-item-card:: 09 — Neural compass
+   .. grid-item-card:: Neural compass
       :link: cases/09-neural-compass
       :link-type: doc
 
       Rotate and lesion a ring attractor based on published head-direction models.
 
-   .. grid-item-card:: 15 — Grid-cell theta sweep
+   .. grid-item-card:: Grid-cell theta sweep
       :link: cases/15-grid-cell-theta-sweep
       :link-type: doc
 

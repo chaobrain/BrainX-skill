@@ -1,5 +1,5 @@
-10 — Prior bias
-===============
+Prior bias
+==========
 
 This experiment tests whether a small prior changes choices mainly when sensory evidence is ambiguous. It measures the psychometric effect and the throughput of the compiled stateful rollout.
 

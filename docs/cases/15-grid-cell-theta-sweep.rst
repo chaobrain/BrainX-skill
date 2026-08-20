@@ -1,5 +1,5 @@
-15 — Grid-cell theta sweep
-==========================
+Grid-cell theta sweep
+=====================
 
 This experiment tests whether theta modulation and firing-rate adaptation can generate alternating direction and position sweeps in a coupled head-direction and grid-cell model motivated by published mechanisms.
 

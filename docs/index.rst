@@ -67,61 +67,55 @@ Learn more
 ^^^^^^^^^^
 
 .. grid::
+   :gutter: 2
+   :class-container: learn-more-grid
 
    .. grid-item::
-      :columns: 6 6 6 4
+      :columns: 12 12 6 6
 
       .. card:: :material-regular:`download;2em` Installation
-         :class-card: sd-text-black sd-bg-light
+         :class-card: learn-more-card learn-more-card-primary
          :link: installation
          :link-type: doc
 
    .. grid-item::
-      :columns: 6 6 6 4
+      :columns: 12 12 6 6
 
       .. card:: :material-regular:`rocket_launch;2em` Quickstart
-         :class-card: sd-text-black sd-bg-light
+         :class-card: learn-more-card learn-more-card-primary
          :link: quickstart
          :link-type: doc
 
    .. grid-item::
-      :columns: 6 6 6 4
+      :columns: 12 12 6 6
 
       .. card:: :material-regular:`science;2em` Creative experiment verification
-         :class-card: sd-text-black sd-bg-light
+         :class-card: learn-more-card
          :link: creative-experiment-verification
          :link-type: doc
 
    .. grid-item::
-      :columns: 6 6 6 4
+      :columns: 12 12 6 6
 
       .. card:: :material-regular:`speed;2em` Speed and performance
-         :class-card: sd-text-black sd-bg-light
+         :class-card: learn-more-card
          :link: speed-and-performance
          :link-type: doc
 
    .. grid-item::
-      :columns: 6 6 6 4
+      :columns: 12 12 6 6
 
       .. card:: :material-regular:`model_training;2em` Use the skill for training
-         :class-card: sd-text-black sd-bg-light
+         :class-card: learn-more-card
          :link: use-the-skill-for-training
          :link-type: doc
 
    .. grid-item::
-      :columns: 6 6 6 4
+      :columns: 12 12 6 6
 
       .. card:: :material-regular:`library_books;2em` Paper reproductions
-         :class-card: sd-text-black sd-bg-light
+         :class-card: learn-more-card
          :link: paper-reproduction
-         :link-type: doc
-
-   .. grid-item::
-      :columns: 6 6 6 4
-
-      .. card:: :material-regular:`account_tree;2em` Skill reference
-         :class-card: sd-text-black sd-bg-light
-         :link: skill-reference
          :link-type: doc
 
 ----
@@ -151,10 +145,3 @@ BrainX Skill is part of the `BrainX brain simulation ecosystem <https://brainx.c
    speed-and-performance
    use-the-skill-for-training
    paper-reproduction
-
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :caption: Skill reference
-
-   skill-reference

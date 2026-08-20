@@ -1,5 +1,5 @@
-12 — Edge of criticality
-========================
+Edge of criticality
+===================
 
 This experiment sweeps recurrent excitation across matched sparse spiking networks to locate a narrow, highly variable region that remains below a predefined instability limit.
 
