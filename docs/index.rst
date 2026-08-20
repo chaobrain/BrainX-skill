@@ -57,9 +57,13 @@ Features
 Installation
 ^^^^^^^^^^^^
 
+Install BrainX Skill with the guided installer. It requires Node.js 18 or newer and works on macOS, Linux, and Windows.
+
 .. code-block:: bash
 
    npx brainx-skill install
+
+Select one or more supported coding agents, then choose a project or global installation. See :doc:`Installation <installation>` for direct agent-specific commands, updates, and installation locations.
 
 ----
 
