@@ -158,10 +158,3 @@ BrainX Skill is part of the `BrainX brain simulation ecosystem <https://brainx.c
    :caption: Skill reference
 
    skill-reference
-
-.. toctree::
-   :hidden:
-   :maxdepth: 1
-   :caption: Project
-
-   releasing

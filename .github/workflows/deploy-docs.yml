@@ -74,10 +74,10 @@ jobs:
       - name: Prepare remote release
         uses: appleboy/ssh-action@v1.2.5
         with:
-          host:     ${{ secrets.DEPLOY_HOST }}
-          port:     ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          host:     ${{ secrets.DEPLOY_HOST_G }}
+          port:     ${{ secrets.DEPLOY_PORT_G }}
+          username: ${{ secrets.DEPLOY_USER_G }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY_G }}
           script: |
             set -e
             base="${{ env.DEPLOY_PATH }}"
@@ -89,10 +89,10 @@ jobs:
       - name: Upload docs to release
         uses: appleboy/scp-action@v1.0.0
         with:
-          host:     ${{ secrets.DEPLOY_HOST }}
-          port:     ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          host:     ${{ secrets.DEPLOY_HOST_G }}
+          port:     ${{ secrets.DEPLOY_PORT_G }}
+          username: ${{ secrets.DEPLOY_USER_G }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY_G }}
           source:   "docs/_build/html/*"
           target:   ${{ env.DEPLOY_PATH }}/releases/${{ steps.release.outputs.id }}
           strip_components: 3
@@ -100,10 +100,10 @@ jobs:
       - name: Activate release
         uses: appleboy/ssh-action@v1.2.5
         with:
-          host:     ${{ secrets.DEPLOY_HOST }}
-          port:     ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          host:     ${{ secrets.DEPLOY_HOST_G }}
+          port:     ${{ secrets.DEPLOY_PORT_G }}
+          username: ${{ secrets.DEPLOY_USER_G }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY_G }}
           script: |
             set -e
             base="${{ env.DEPLOY_PATH }}"
@@ -119,9 +119,9 @@ jobs:
       - name: Reload nginx (optional)
         uses: appleboy/ssh-action@v1.2.5
         with:
-          host:     ${{ secrets.DEPLOY_HOST }}
-          port:     ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          host:     ${{ secrets.DEPLOY_HOST_G }}
+          port:     ${{ secrets.DEPLOY_PORT_G }}
+          username: ${{ secrets.DEPLOY_USER_G }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY_G }}
           script: |
             nginx -t && systemctl reload nginx || true
