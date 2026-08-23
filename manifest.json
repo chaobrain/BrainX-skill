@@ -1,6 +1,8 @@
 {
   "schemaVersion": 1,
   "skills": [
+    "brainx-modeling-loop",
+    "brainx-acceleration",
     "brainx-general-guard",
     "braincell",
     "brainmass",

@@ -68,9 +68,8 @@ jobs:
 
           work="$(mktemp -d)"
           jq -r '.skills[]' manifest.json | sort > "$work/manifest"
-          find skills -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort > "$work/directories"
-          jq -r '.files[] | select(startswith("skills/")) | ltrimstr("skills/") | sub("/$"; "")' \
-            package.json | sort > "$work/published"
+          find skills -type f -name SKILL.md -printf '%h\n' | sort > "$work/source-paths"
+          sed 's#/$##; s#^.*/##' "$work/source-paths" | sort > "$work/directories"
 
           if ! diff --unified=0 --label manifest.json --label 'skills/ directories' \
             "$work/manifest" "$work/directories"; then
@@ -78,17 +77,22 @@ jobs:
             exit 1
           fi
 
-          if ! diff --unified=0 --label 'skills/ directories' --label 'package.json files' \
-            "$work/directories" "$work/published"; then
-            echo "package.json files does not publish every skill directory." >&2
-            exit 1
-          fi
+          while IFS= read -r skill_path; do
+            if ! jq -e --arg skill_path "$skill_path/" '
+              .files
+              | map(. as $published | select($skill_path | startswith($published)))
+              | length > 0
+            ' package.json > /dev/null; then
+              echo "package.json files does not publish $skill_path/." >&2
+              exit 1
+            fi
+          done < "$work/source-paths"
 
       - name: Validate every skill
         shell: bash
         run: |
           mapfile -d '' skill_dirs < <(
-            find skills -mindepth 1 -maxdepth 1 -type d -print0 | sort -z
+            find skills -type f -name SKILL.md -printf '%h\0' | sort -z
           )
 
           if (( ${#skill_dirs[@]} == 0 )); then

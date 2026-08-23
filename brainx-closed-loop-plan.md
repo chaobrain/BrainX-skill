@@ -1,313 +1,200 @@
 # BrainX closed-loop brain modeling workflow plan
 
-## 1. Purpose and boundary
+## Get started
 
-### Mission
+Read `brainmodeling-memory.md` first when it exists. Choose exactly one entry
+case.
 
-Build one first-level BrainX modeling skill that turns a researcher's idea into a
-specified, implemented, executed, reviewed, iterated, and visualized brain model.
-Make the loop resumable and make every accepted scientific statement traceable to
-immutable run evidence.
+| Entry case | Condition | Start position |
+|---|---|---|
+| `fresh-new` | No memory or prior loop artifact exists. | Create memory and start step 0. |
+| `resume` | Memory or any prior loop artifact exists. | Verify recorded artifacts and continue from the first unfinished action in the recorded step. |
 
-Use one loop and one independent review gate:
+Recover missing or inconsistent state inside `resume` by comparing memory with
+the existing specification, code, run artifacts, and review output. Do not add a
+third entry case or repeat completed experiments and reviews solely because the
+agent session changed.
 
-```text
-brainx-modeling-loop
+Use this complete append-only memory contract:
 
-idea
-  -> specification
-  -> BrainX implementation
-  -> optional training or fitting workflow
-  -> optional acceleration
-  -> production experiment
-  -> integrated result review + Codex neuroscience quality gate
-  -> accept, revise, revise specification, or stop
-  -> memory and visualization
+```markdown
+# Brain modeling memory
+
+## Checkpoint
+- Iteration: <integer>
+- Step: 0 | 1 | 2 | 3 | 4 | 5 | 6
+
+### Artifacts
+- `<path or stable identifier>`: <contents and status>
+
+### Important milestones
+- <decision, review outcome, blocker, or completed result with its evidence pointer>
 ```
 
-The Codex review is iterative because every revised experiment returns to the
-same quality gate. Do not add a separate review loop, experiment loop, or result
-review skill.
-
-### In scope
-
-- Convert a researcher-provided brain modeling idea into a concise scientific
-  specification.
-- Inspect user-provided data and define its mapping to a BrainX model.
-- Build BrainX-native models across cellular, point-neuron, event-driven,
-  population, regional, and multiscale representations.
-- Run forward simulation, perturbation, task training, and parameter fitting.
-- Route selectively to the existing BrainX package skills in `plan.md`.
-- Audit performance while preserving scientific behavior.
-- Run one Codex MCP neuroscience quality review after each completed experiment
-  iteration.
-- Iterate on implementation or experiment design within a locked specification.
-- Persist decisions, failed attempts, accepted evidence, and unresolved risks.
-- Produce diagnostic and final scientific figures.
-
-### Out of scope
-
-- Literature discovery, novelty search, citation management, and paper ranking.
-- Autonomous idea generation from literature.
-- Manuscript, grant, rebuttal, or submission-package writing.
-- General machine-learning experimentation unrelated to brain modeling.
-- A standalone neuroscience-review skill or generic reviewer score.
-- A second scientific loop nested inside the modeling loop.
-- Replacing researcher judgment when the hypothesis, biological abstraction,
-  data contract, or evidence criterion must change.
-
-The workflow may preserve citations or provenance supplied by the researcher,
-but it must not start a literature-search branch by itself.
-
-### Relationship to `plan.md`
-
-Keep `plan.md` as the source of truth for package skills and their progressive
-disclosure. Use this document as the source of truth for the end-to-end modeling
-loop, project artifacts, quality gate, and iteration policy.
-
-Do not duplicate package APIs here. The loop decides which package skills and
-references to open; those files remain authoritative for BrainX mechanics.
-
-## 2. Simplified architecture
-
-### Main decisions
-
-1. Use `brainx-modeling-loop` as the only first-level workflow skill.
-2. Use one scientific iteration loop from specification through Codex quality
-   review.
-3. Put the compact researcher-request and inspected-data contract for
-   `NeuroSpecification.md` directly in `brainx-modeling-loop/SKILL.md`.
-4. Put result-review rules and the condensed Codex neuroscience quality-review
-   contract directly in the same root skill as one integrated gate.
-5. Make the Codex call the single end-of-iteration quality gate. It reviews the
-   specification, code, execution evidence, and proposed result verdict together.
-6. Put training and parameter-fitting workflows in optional Markdown references
-   under `brainx-modeling-loop/references/`.
-7. Make every routed subflow compose the routed BrainX package knowledge. Do
-   not permit generic training, fitting, acceleration, execution, or visualization
-   workflows that merely wrap a BrainX model.
-8. Keep only the activation boundary and critical training/fitting warnings in the
-   root skill.
-9. Keep `brainx-experiment-runner` as a focused execution skill. It may retry
-   processes but does not own scientific iteration.
-10. Keep `brainx-visualization` as a focused optional skill.
-11. Reuse existing package skills and `brainx-acceleration-audit` selectively.
-12. Do not create `brainx-experiment-loop`, `brainx-training`,
-    `brainx-parameter-fitting`, `brainx-result-review`,
-    `brainx-neuro-specification`, or `brainx-neuroscience-review` as separate
-    skills.
-
-### Ownership
+At `fresh-new`, create only the file title and start iteration 1 at step 0. After
+every step, including a blocked step, append one checkpoint. `Iteration` and `Step` are metadata
+for the recorded step; `Artifacts` and `Important milestones` are its content.
+Never overwrite an earlier checkpoint. Append corrections with the same metadata
+and identify the checkpoint they supersede. On `resume`, read checkpoints in
+order, verify the latest artifact pointers, and continue after the latest valid
+checkpoint.
 
 ```text
-brainx-modeling-loop
-  owns:
-    scientific specification
-    iteration sequence
-    optional workflow routing
-    integrated result-review and Codex neuroscience quality gate
-    revision decision
-    memory and stopping policy
+fresh-new -> step 0 -> step 1 -> step 2 -> step 3 -> step 4 -> step 5
+                              ^                          |
+                              |-------- REFUSE ----------|
 
-  opens on demand:
-    references/training-workflow.md
-    references/parameter-fitting-workflow.md
-    package-specific BrainX skills and references
-    brainx-acceleration-audit
-    brainx-experiment-runner
-    brainx-visualization
+step 5 PASS -> step 6 -> complete
 ```
 
-The loop is the only scientific acceptance owner. The experiment runner only
-reports execution completion. The Codex reviewer supplies an independent gate
-verdict; it does not mutate project state or edit code.
+Keep full code, logs, results, and reviews in their owning artifacts and point to
+them from the checkpoint that records the step.
 
-## 3. Single-loop workflow
+## Step 0: Specification
 
-```text
-Researcher idea or existing project
-        |
-        v
-[S0] Initialize or resume
-        |  validate state, specification hash, memory, runs, open findings
-        v
-[S1] Parse the request, inspect available data, and write NeuroSpecification.md
-        |
-        +---- researcher locks scientific contract? ---- no --> clarify or stop
-        v
-[S2] Route modeling scales and implement BrainX model/protocol
-        |
-        +---- task learning? ---------> open training-workflow.md
-        +---- parameter inference? ---> open parameter-fitting-workflow.md
-        `---- forward simulation? ----> open neither
-        v
-[S3] Accelerate only when justified and prove parity
-        |
-        +---- parity failure ------------------------------> reject optimization
-        v
-[S4] Run immutable production experiment(s)
-        |
-        +---- execution failure ---------------------------> bounded same-config retry
-        v
-[S5] Build result assessment and invoke Codex MCP as one integrated quality gate
-        |
-        +---- ACCEPT --------------------------------------> S6
-        +---- REVISE --------------------------------------> earliest affected S2-S5
-        +---- SPEC_REVISION_REQUIRED ----------------------> S1 + new version + researcher
-        `---- BLOCK ---------------------------------------> stop for researcher
-        v
-[S6] Update memory, render accepted/diagnostic figures, and close
-     or define another iteration with explicit new evidence expected
-```
-
-One pass from S1/S2 through S5 is one modeling iteration. A `REVISE` verdict
-starts another iteration under the same locked specification. A scientific
-contract change starts a new specification version, not a hidden continuation.
-
-### What "good enough" means
-
-The Codex gate asks whether the completed iteration is good enough to support its
-proposed scientific outcome. "Good enough" does not mean positive, impressive,
-or publishable. It means:
-
-- the code faithfully implements the locked specification;
-- the run and analysis are valid and reproducible enough for the declared scope;
-- required controls and uncertainty are present;
-- the result verdict follows from raw evidence;
-- alternative explanations are bounded honestly;
-- no critical or major defect remains that could change the conclusion.
-
-A rigorous refutation or bounded inconclusive result may receive `ACCEPT`.
-
-## 4. `brainx-modeling-loop` root skill design
-
-### Purpose and boundary
-
-Use `brainx-modeling-loop` for a new, resumed, or revised BrainX modeling project.
-It owns the whole scientific lifecycle from specification to acceptance.
-
-It does not own exhaustive package APIs, platform-specific execution mechanics,
-or detailed training/fitting variants. Route those details precisely.
-
-### Mental model
-
-Treat each iteration as a falsifiable implementation of one locked scientific
-contract. The loop accepts an iteration only when the integrated result and Codex
-quality gate accepts the proposed outcome at its stated scope.
-
-### Canonical workflow
-
-1. Locate project root and current loop artifacts.
-2. Choose `new`, `resume`, `repair-state`, or `revise-specification` entry mode.
-3. Check BrainX package presence without inspecting installed package source;
-   route installation or compatibility work to `brainx-install` when needed.
-4. Parse the researcher request, inspect available data, and create or update
-   `NeuroSpecification.md` using the inline format below.
-5. Resolve blocking ambiguities and obtain researcher lock.
-6. Define the iteration goal and the new information expected.
-7. Invoke `brainx-general-guard`, classify represented scales, and open only
-   owning package skills.
-8. Implement the model, protocol, controls, observation, and required tests.
-9. Open the training or fitting reference only when its activation condition
-   matches.
-10. Invoke acceleration only when profiling or expected cost justifies it.
-11. Invoke `brainx-experiment-runner` for immutable production runs.
-12. Build the result assessment and invoke the future Codex MCP review-agent as
-    one integrated gate using the inline contract below.
-13. Store raw review and parse its gate verdict into the same iteration review.
-14. On `REVISE`, return to the earliest affected stage and start a new iteration.
-15. On `SPEC_REVISION_REQUIRED`, propose a new specification version and ask the
-    researcher.
-16. On `ACCEPT`, update memory and invoke visualization as needed.
-17. Close or define another iteration only when it expects new discriminating
-    evidence.
-
-## 5. Inline `NeuroSpecification.md` format
-
-Use this file as a compact handoff from researcher intent and inspected data to
-BrainX implementation. Do not turn it into a complete methods plan or duplicate
-decisions owned by routed workflows. Keep the format directly in
-`brainx-modeling-loop/SKILL.md`; do not create a separate specification skill,
-template, or authoritative reference.
-
-```text
-researcher request
-  -> concise intent summary
-  -> inspection of supplied data
-  -> observed data contract and model-data mapping
-  -> confirmation of unresolved decisions
-  -> locked NeuroSpecification.md
-```
+Inspect the researcher request and supplied data before writing
+`NeuroSpecification.md`. Keep the specification short and use these three
+sections:
 
 ```markdown
 # NeuroSpecification
 
-- ID:
-- Version:
-- Status: draft | locked | superseded
-- Parent version:
+- Status: draft | locked
 - Researcher approval:
 
 ## Researcher request
-- Goal in the researcher's words:
-- Question, hypothesis, or behavior to model:
-- Requested outputs or decisions:
-- Execution mode: forward-simulation | task-training | parameter-fitting | hybrid
-- Scope limits and user constraints:
 
 ## Inspected data contract
-- Mode: none | synthetic | observed | mixed
-- Source paths and immutable raw/processed identities:
-- Inspected files, variables, dtypes, shapes, and axes:
-- Sampling or time base, physical units, and independence unit:
-- Missingness, artifacts, exclusions, and quality limits:
-- Existing or required preprocessing and the subset that fits each transform:
-- Train/validation/test or fit/check boundaries, when applicable:
-- Mapping from source variables to model inputs, targets, and observables:
-- Unresolved schema, unit, leakage, or model-data mismatches:
-
-## BrainX modeling handoff
-- Represented biological scales and routed BrainX package skills:
-- Modeling abstraction or model family:
-- Inputs, interventions, baseline, and controls:
-- Latent-state-to-observation mapping:
-- Fixed, trainable, or fitted parameters and their units:
-- Essential run constraints: duration, sampling, seeds, compute, or precision:
 
 ## Acceptance boundary
-- Primary result and minimum evidence:
-- Invalid-result conditions:
-- Allowed interpretation and explicit non-claims:
-- Iteration, run, compute, and wall-clock limits:
-
-## Open decisions
-| ID | Missing decision or assumption | Consequence if wrong | Blocking stage | Owner |
-|---|---|---|---|---|
-
-## Revision history
-| Version | Change | Reason | Approved by | Supersedes |
-|---|---|---|---|---|
 ```
 
-### Specification rules
+The three sections must establish the modeling question and requested outputs,
+the inspected shapes/axes/units and preprocessing/data-to-model mapping, and the
+evidence that distinguishes success, failure, and an inconclusive result.
 
-- Parse the researcher's words into a testable request without inventing a
-  hypothesis, biological mechanism, or success threshold.
-- Inspect available data before writing the data contract. Record observed schema
-  and provenance; do not infer units, axes, parameter meaning, or independence
-  from names.
-- Keep raw data read-only, identify processed data separately, and fit
-  preprocessing only on permitted subsets.
-- When no data is supplied, declare `none` or `synthetic` and record the required
-  synthetic-data or observation assumptions.
-- Keep detailed equations, optimizer settings, fitting methods, and package APIs
-  out of the specification; route them to the owning BrainX workflow and skills.
-- Define the observation mapping and the minimum acceptance boundary before
-  production.
-- Mark unresolved decisions as implementation-blocking, production-blocking, or
-  interpretation-limiting.
-- Lock the specification by content hash and version.
-- Any post-result change to a locked scientific field creates a new version.
+Ask only for missing choices that change the model, data interpretation, or
+acceptance boundary. Lock the specification with researcher approval before
+step 1.
+
+**Result:** locked `NeuroSpecification.md`; memory points to step 1.
+
+## Step 1: Deep BrainX study
+
+Study the relevant BrainX skills and APIs before implementing.
+
+1. Open `brainx-general-guard` and identify every represented biological scale.
+2. Read the complete owning modeling skills: `braincell`, `brainpy-state`, and/or
+   `brainmass` according to the selected scales.
+3. Open `brainunit`, `brainstate`, `brainevent`, and `braintrace` only when their
+   capabilities participate in the model.
+4. Follow the selected skills into every reference and canonical script that can
+   change this implementation.
+5. Trace exact APIs, construction, initialization, State and data flow, update
+   order, execution, outputs, and validation.
+6. Record the selected skills, opened resources, API choices, lifecycle,
+   invariants, implementation design, and required optional coverage in memory.
+
+Do not implement during this step.
+
+**Result:** grounded BrainX study record and implementation design; memory points
+to step 2.
+
+## Optional training and fitting coverage
+
+Training and fitting are optional coverage additions for steps 2–5. They are
+not entry cases or standalone stages.
+
+| Specification mode | Coverage through steps 2–5 |
+|---|---|
+| `forward-simulation` | Open neither optional workflow. |
+| `task-training` | Open `references/training-workflow.md` at step 2 and keep it active through implementation, acceleration, experiment execution, and review. |
+| `parameter-fitting` | Open `references/parameter-fitting-workflow.md` at step 2 and keep it active through implementation, acceleration, experiment execution, and review. |
+| `hybrid` | Open `references/training-workflow.md` and `references/parameter-fitting-workflow.md` at step 2, then keep their objectives, State lifecycles, evidence, and review checks distinct through step 5. |
+
+A step is incomplete until both its modeling requirements and every active
+training/fitting requirement are satisfied. A step-5 refusal returns with the
+same coverage unless the locked specification changes outside this loop.
+
+## Step 2: Implementation
+
+Implement the BrainX model and experiment from the locked specification and the
+step-1 study record.
+
+- Open the selected training or parameter-fitting reference before coding.
+- Implement model dynamics, data processing, initialization, protocol, inputs,
+  controls, observation mapping, metrics, artifacts, and active optional
+  workflows through the owning BrainX APIs.
+- Preserve units, State lifecycle, update order, randomness, and biological
+  scale.
+- Add focused component, equation, shape, unit, initialization/reset, control,
+  observable, and metric checks.
+- Run only small checks needed to establish readiness for acceleration and the
+  experiment runner.
+
+On `REFUSE`, apply the review findings here, then repeat steps 3–5.
+
+**Result:** BrainX-native model and experiment code; memory points to step 3.
+
+## Step 3: Acceleration
+
+Open `brainx-acceleration`, apply its relevant workflow, and keep active
+training/fitting coverage in force. Establish a representative baseline before
+changing performance code and require parity in scientific outputs, State,
+units, randomness, and declared numerical tolerances.
+
+For training, also preserve loss, gradients, parameter updates, reset behavior,
+and checkpoint meaning. For fitting, also preserve the objective, parameter
+order and units, recovery behavior, and inference outputs.
+
+**Result:** accelerated code with parity evidence, or an explicit decision that
+no acceleration change is justified; memory points to step 4.
+
+## Step 4: Experiment runner
+
+Hand the locked specification, implementation, acceleration evidence, exact run
+configuration, seeds, expected outputs, artifact locations, and active optional
+coverage to `references/run-experiment.md`, then hand the launched run to
+`references/monitor-experiment.md`.
+
+Follow that reference through target-device smoke, immutable production or
+replication launch, monitoring, and artifact collection.
+
+**Result:** inspectable configuration, provenance, logs, raw results, metrics,
+optional training/fitting evidence, and artifact paths; memory points to step 5.
+
+## Step 5: MCP Codex review
+
+Use the configured BrainX Codex MCP server. Treat
+`mcp-servers/codex/system-prompt.md` as the sole review contract; the proxy
+injects it as `base-instructions` into every fresh `mcp__codex__codex` call.
+
+Start one fresh call per completed iteration and send the locked specification,
+study record, code and tests, acceleration evidence, run configuration, raw
+results, metrics, deterministic result assessment, claim-evidence matrix,
+proposed next action, and active training/fitting evidence. Preserve the raw
+response and returned `threadId`. Do not start a review with `codex-reply`, do not
+duplicate the system prompt in the request, and do not substitute self-review.
+If the configured MCP server is unavailable, checkpoint step 5 as blocked and
+preserve the experiment artifacts.
+
+| Review outcome | Transition |
+|---|---|
+| `REFUSE` | Preserve all findings, increment the iteration, return to step 2, and repeat steps 2–5. |
+| `PASS` | Preserve the accepted code/result scope and continue to step 6. |
+
+No other review outcome or transition belongs to the loop.
+
+## Step 6: Visualization
+
+Hand only review-passed specification, code, run artifacts, results, and accepted
+scope to `references/visualization-workflow.md`.
+
+This visualization instruction will be authored later. Do not invent its
+mechanics in the loop. Until the file exists, checkpoint step 6 as blocked and
+preserve the accepted artifacts.
+
+**Result:** figures linked to accepted runs; memory marks the loop complete.
 
 ## 6. Implementation and optional workflow routing
 
@@ -328,7 +215,7 @@ the owning skills and references.
 | `brainmass` | Own aggregate population, regional, network, and whole-brain dynamics. |
 | `brainpy-state` | Own point-neuron and spiking-network dynamics, projections, and training APIs. |
 | `braintrace` | Activate only for long temporal training where BPTT memory is the bottleneck. |
-| `brainx-acceleration-audit` | Own the representative baseline, profiling, performance changes, and parity proof. |
+| `brainx-acceleration` | Own the representative baseline, profiling, performance changes, and parity proof. |
 
 Record a route such as:
 
@@ -362,170 +249,33 @@ Each subflow must record the BrainX skills and references it consumes. Reject an
 implementation that could run unchanged as a generic PyTorch, JAX, SciPy, or
 inference recipe with BrainX appearing only at the simulator call boundary.
 
-### Optional workflow references
+### Optional workflows
 
 Keep the decision boundary in the root and the full workflow in one reference.
 
-| Execution mode | Root action | Exact reference |
+| Execution mode | Root action | Exact route |
 |---|---|---|
-| `forward-simulation` | Implement simulation, controls, observation, and metrics directly; open neither optional reference | None. |
+| `forward-simulation` | Implement simulation, controls, observation, and metrics directly; open neither optional workflow | None. |
 | `task-training` | Preserve parameter/state/reset/split/checkpoint invariants, then open the training workflow | `references/training-workflow.md`. |
 | `parameter-fitting` | Preserve units/observation/recovery/identifiability invariants, then open the fitting workflow | `references/parameter-fitting-workflow.md`. |
-| `hybrid` | Open both in the phase order locked by the specification; keep objectives, splits, checkpoints, and gates separate | Both references. |
+| `hybrid` | Open both in the phase order locked by the specification; keep objectives, splits, checkpoints, and gates separate | The training and parameter-fitting references. |
 
-Do not make `brainx-training` or `brainx-parameter-fitting` standalone skills.
-They are branches of one modeling loop.
+Keep task training and parameter fitting as modeling-loop references. Nest the
+complete BrainCell HH fitting script under the parameter-fitting reference.
 
-### `references/training-workflow.md` plan
-
-#### Purpose
-
-Compose task learning with the routed BrainX model, BrainState parameter and state
-lifecycle, BrainUnit quantities, the owning model package, and conditional
-BrainTrace behavior. Do not write a generic training guide or duplicate package
-APIs.
-
-#### Required contents
-
-1. Select trainable parameter state and exclude hidden/runtime state.
-2. Declare temporal, batch, sample, and target axes with units.
-3. Define train, validation, and held-out partitions by the correct independence
-   unit.
-4. Define state initialization and reset for trials, batches, subjects, sequences,
-   and evaluation.
-5. Route loss, surrogate, optimizer, schedule, and checkpoint mechanics to owning
-   local references.
-6. Verify finite gradients reach only intended parameters.
-7. Overfit a tiny batch or short sequence.
-8. Run an unchanged baseline before tuning.
-9. Tune only within a declared search space and budget using validation metrics.
-10. Select checkpoints on validation data and confirm with multiple seeds.
-11. Evaluate held-out data only after selection is complete.
-
-#### Monitoring split
-
-| Layer | Checks | Allowed action |
-|---|---|---|
-| Process health | Process, device, disk, checkpoints, log progress | Retry, resume, or stop broken execution. |
-| Training quality | NaN/Inf, gradients, loss/validation trend, state leakage, metric correctness | Continue, wait, declare invalid, or start a revised iteration. |
-
-Do not use monitoring as the final quality gate. The integrated review stage
-judges the completed iteration after production evidence exists.
-
-#### Hyperparameter rules
-
-- Record run 0 as the unchanged baseline.
-- Give each tunable value a type, range, scale, default, and rationale.
-- Change the smallest coherent set needed to test one tuning hypothesis.
-- Record every configuration, including failed and pruned runs.
-- Resume only when architecture, state shapes, optimizer state, and data semantics
-  remain compatible.
-- Never use held-out metrics to direct tuning.
-- Stop on budget, repeated non-improvement, invalid gradients, or leakage.
-
-#### Critical failures retained in the root route
-
-- differentiating hidden/runtime state;
-- state leakage across independent samples;
-- target or temporal-axis misalignment;
-- held-out leakage;
-- best-seed reporting instead of declared aggregation;
-- successful loss reduction mistaken for biological validity.
-
-### `references/parameter-fitting-workflow.md` plan
-
-#### Purpose
-
-Compose the inverse problem with a BrainX-native simulator, BrainUnit parameter
-and observation quantities, BrainState lifecycle and transformations, and the
-routed model package. Do not write a generic fitting guide, duplicate package
-APIs, or turn the root skill into an inference catalog.
-
-#### Method selection
-
-| Condition | Preferred family | Required validation |
-|---|---|---|
-| Differentiable simulator and objective | BrainState/BrainX gradient optimization | Gradient checks, multiple starts, recovery, held-out protocols. |
-| Nondifferentiable objective or simulator branch | Bounded derivative-free/search optimization | Multiple starts, budget trace, sensitivity/loss landscape, recovery. |
-| Intractable likelihood and required uncertainty | Simulation-based inference through an explicit external boundary | Prior predictive, recovery/calibration, posterior predictive checks. |
-| Tractable likelihood | Likelihood-based estimation | Likelihood tests, optimizer/sampler diagnostics, predictive checks. |
-
-#### Required contents
-
-1. Classify fitted, fixed, nuisance, hierarchical, and observation parameters.
-2. Preserve units and apply explicit constraint transforms.
-3. Record researcher-provided bounds or priors without inventing precision.
-4. Implement the observation model from simulator output to measured data.
-5. Define objective, likelihood, or distance with weights and reduction axes.
-6. Test nominal, boundary, and invalid parameter values.
-7. Run sensitivity or landscape diagnostics.
-8. Perform parameter recovery using the exact real-data fitting pipeline and
-   realistic duration, sampling, noise, missingness, and trial count.
-9. Check scale-aware error, bias, tradeoffs, boundary hits, coverage/calibration
-   when applicable, and failure by parameter region.
-10. Fit observed data only after recovery passes or the researcher accepts a
-    documented interpretation limit.
-11. Run held-out or posterior predictive checks and report uncertainty.
-
-#### Interpretation gate
-
-Classify each parameter as `interpretable`, `weakly-identified`, or
-`non-identifiable-under-this-protocol`. Good aggregate fit with poor recovery may
-permit prediction but not strong mechanistic interpretation.
-
-#### External inference boundary
-
-Keep the simulator BrainX-native. Convert units and stateful outputs only at a
-declared external-library boundary. Test target units, parameter order, output
-shape, batch semantics, and round-trip behavior.
-
-#### Critical failures retained in the root route
-
-- fitting latent state directly to measured data without an observation model;
-- trusting one optimizer start;
-- interpreting boundary-hitting or non-identifiable parameters;
-- recovery with more or cleaner data than the real protocol;
-- changing bounds or summaries after seeing the observed result;
-- stripping units at the inference boundary.
-
-## 7. Acceleration
-
-Invoke `brainx-acceleration-audit` only when profiling or expected production
-cost shows a material need. The audit owns the representative baseline execution
-and the parity proof; the modeling loop does not run a separate pre-acceleration
-correctness stage.
-
-Require the audit to consume the active package route and preserve the BrainX
-model's state, unit, event, solver, randomness, and transformation semantics. Do
-not treat generic JAX speedup as sufficient evidence.
-
-Use this contract:
-
-1. Define a representative baseline workload and the scientifically relevant
-   outputs, metrics, gradients, stochastic summaries, and parity tolerances.
-2. Profile before changing code.
-3. Record baseline outputs, compile time, runtime, peak memory, precision, device,
-   seeds, and environment.
-4. Apply one coherent optimization at a time.
-5. Execute the same workload and compare the declared outputs under the locked
-   tolerances.
-6. Separate compile time from steady-state runtime.
-7. Reject changes that fail parity.
-8. Treat any scientific-behavior change as implementation revision rather than
-   acceleration.
-
-The current repository plans `brainx-acceleration-audit` in `plan.md` but does not
-ship it in `manifest.json`. Until implemented or restored, mark acceleration
-`skipped` or `blocked`; never assume it passed.
 
 ## 8. Experiment execution
 
-### `brainx-experiment-runner` boundary
+### Experiment execution reference boundary
 
-Keep `brainx-experiment-runner` as a focused skill because process execution,
-checkpointing, environment handling, and artifact collection vary independently
-from the scientific loop. It must not contain a scientific iteration or result
-acceptance policy.
+Keep `references/run-experiment.md` as a focused modeling-loop reference because
+process execution, checkpointing, environment handling, and immutable run
+capture vary independently from the scientific loop. It must not contain a
+scientific iteration or result acceptance policy.
+
+Keep post-launch monitoring, stopping, retry, and collection in the single
+`references/monitor-experiment.md` companion. Do not split either workflow into
+additional Markdown references.
 
 Make the runner BrainX-aware: it launches the routed model under the declared
 BrainState environment, initialization, randomness, units, precision, and device
@@ -573,11 +323,11 @@ Mark completion `done`, not scientifically `accepted`.
 
 ## 9. Integrated result review and Codex quality gate
 
-Keep the deterministic assessment and the complete condensed Codex neuroscience
-quality-review contract together in `brainx-modeling-loop/SKILL.md`. They are one
-end-of-iteration stage with one output artifact. Do not create a
-`brainx-result-review` skill, reviewer skill, review prompt reference, or second
-copy of either contract.
+Keep deterministic assessment in the modeling loop. Keep the reviewer behavior
+and structured output contract only in `mcp-servers/codex/system-prompt.md`; the
+MCP proxy injects it into every fresh `codex` call. Keep only invocation mechanics
+and the artifact-path packet in `brainx-modeling-loop/SKILL.md`. Do not create a
+review skill, review prompt reference, or second copy of the system prompt.
 
 ### Mental model
 
@@ -610,7 +360,6 @@ interpretation, alternative explanation, and the next discriminating action.
 | `refuted` | A valid run contradicts the hypothesis under declared conditions | Ask Codex whether the negative conclusion is rigorous enough to close. |
 | `inconclusive` | A valid run cannot distinguish leading explanations | Ask Codex whether another in-spec iteration would add useful evidence. |
 | `invalid` | Code, data, numerical, leakage, metric, or provenance defects prevent interpretation | Propose revision; Codex identifies the minimum validity fix. |
-| `spec-revision-required` | The useful next action crosses a locked field | Return to researcher after Codex confirms the boundary. |
 
 ### Claim-evidence matrix
 
@@ -643,7 +392,7 @@ the locked specification explicitly permits it.
 
 ## Codex quality gate
 - Review ID:
-- Gate:
+- Outcome:
 - Scientific outcome:
 - Good-enough reason:
 - Next action:
@@ -658,13 +407,14 @@ the locked specification explicitly permits it.
 Write the deterministic sections to `ITERATION_REVIEW.md`, keep the stage
 `running`, and invoke Codex. Preserve its raw response separately, then append the
 parsed gate, outcome, findings, assumptions, and next action to the same artifact.
-Mark the artifact `accepted` only on `ACCEPT`; otherwise close it as `done` and
+Mark the artifact `accepted` only on `PASS`; otherwise close it as `done` and
 apply the returned transition.
 
 ### Review timing and packet
 
-Call the future Codex MCP review-agent tool exactly once after deterministic
-evidence synthesis in each modeling iteration. Provide paths for:
+Start one fresh `mcp__codex__codex` call after deterministic evidence synthesis
+in each modeling iteration. The proxy injects the authoritative system prompt.
+Provide concrete file paths for:
 
 - locked `NeuroSpecification.md`;
 - relevant model and experiment code;
@@ -677,66 +427,12 @@ evidence synthesis in each modeling iteration. Provide paths for:
 Do not call Codex before evidence synthesis is complete unless the loop is
 blocked and the researcher explicitly requests diagnostic review.
 
-### Contract
-
-```text
-Act as an independent computational-neuroscience quality reviewer.
-Do not edit files. Do not search literature. Read the supplied specification,
-code, tests, raw run artifacts, and deterministic result assessment.
-
-Question: Is this completed iteration good enough to accept its proposed
-scientific outcome under NeuroSpecification.md?
-
-Check:
-1. model equations/components and code match the declared biological abstraction;
-2. units, signs, axes, shapes, state lifecycle, reset, update order, delays, dt,
-   solver, initial conditions, and noise are correct;
-3. inputs, perturbation dose, controls, and observation mapping implement the
-   declared protocol;
-4. training parameter selection, target alignment, splits, reset, gradients,
-   checkpoint selection, seed aggregation, and held-out isolation are valid when
-   training is active;
-5. fitting parameter order/units, bounds or priors, objective, recovery,
-   identifiability, uncertainty, and predictive checks are valid when fitting is
-   active;
-6. acceleration preserves scientifically relevant behavior;
-7. reported metrics and exclusions match raw artifacts and the locked rules;
-8. controls, uncertainty, reproducibility, and provenance are sufficient for the
-   proposed result category;
-9. the claim-evidence matrix supports the exact claim scope and does not hide
-   alternative explanations or unfavorable runs;
-10. the proposed next action stays within the locked specification.
-
-Good enough means valid and sufficient for the scoped outcome. It does not mean
-positive, novel, or publishable. A rigorous refutation or bounded inconclusive
-result may be accepted.
-
-Return exactly:
-GATE: ACCEPT | REVISE | SPEC_REVISION_REQUIRED | BLOCK
-SCIENTIFIC_OUTCOME: SUPPORTED | PARTIALLY_SUPPORTED | REFUTED | INCONCLUSIVE | INVALID
-GOOD_ENOUGH_REASON: one concise evidence-based explanation
-FINDINGS:
-- ID: stable ID
-  SEVERITY: critical | major | minor
-  LOCATION: file and line or artifact path
-  PROBLEM: concrete defect
-  SCIENTIFIC_CONSEQUENCE: how it affects validity or interpretation
-  MINIMUM_FIX: smallest sufficient correction or experiment
-UNVERIFIED_ASSUMPTIONS:
-- assumption and why available artifacts cannot resolve it
-NEXT_ACTION: ACCEPT_AND_CLOSE | REVISE_IN_SPEC | ASK_RESEARCHER | STOP
-```
-
-Do not request or use a numeric quality score.
-
 ### Gate behavior
 
-| Gate | Loop action |
+| Outcome | Loop action |
 |---|---|
-| `ACCEPT` | Accept the Codex scientific outcome at its exact scope, update memory, and visualize or close. |
-| `REVISE` | Start a new iteration at the earliest affected stage; preserve the locked specification and prior evidence. |
-| `SPEC_REVISION_REQUIRED` | Stop automatic work, propose a versioned spec change, and ask the researcher. |
-| `BLOCK` | Stop and report the unresolved scientific or capability boundary. |
+| `PASS` | Accept the reviewed scope, append the review checkpoint, and advance to visualization. |
+| `REFUSE` | Preserve every finding, increment the iteration, return to step 2, and repeat steps 2-5. |
 
 ### Review invocation and finding lifecycle
 
@@ -748,7 +444,7 @@ Do not request or use a numeric quality score.
 4. Parse gate, outcome, findings, assumptions, and next action into
    `ITERATION_REVIEW.md` without rewriting reviewer language.
 5. Give findings stable IDs across iterations.
-6. For `REVISE`, record the code/test/run evidence expected to close each required
+6. For `REFUSE`, record the code/test/run evidence expected to close each required
    finding.
 7. On the next iteration, pass prior findings and actual changed artifacts.
 8. Close a finding only when Codex accepts its evidence.
@@ -758,8 +454,8 @@ Do not request or use a numeric quality score.
 
 ### Iterative review rule
 
-Use one Codex review per completed iteration. The review itself does not debate or
-spawn another review loop. A failed gate causes the modeling loop to revise,
+Use one fresh Codex review per completed iteration. The review itself does not debate or
+spawn another review loop. `REFUSE` causes the modeling loop to revise,
 rerun, rebuild `ITERATION_REVIEW.md`, and call Codex again in the next iteration.
 
 This preserves generator-reviewer separation without creating two orchestration
@@ -828,7 +524,7 @@ Close when:
 - the active specification is locked and traceable;
 - required runs and controls are valid;
 - `ITERATION_REVIEW.md` has one scoped result category;
-- the Codex gate returns `ACCEPT` for that category;
+- the Codex review returns `PASS` for that category;
 - every accepted claim has a claim-evidence row;
 - memory and machine state agree on closure;
 - final figures, if requested, link to accepted evidence;
@@ -879,55 +575,15 @@ Create only the directories activated by the project.
 | Artifact | Owner | Mutation rule |
 |---|---|---|
 | `NeuroSpecification.md` | Modeling loop | Versioned and researcher-locked. |
-| `brainmodeling-memory.md` | Modeling loop | Curated only from accepted or durable evidence. |
+| `brainmodeling-memory.md` | Modeling loop | Append one iteration/step checkpoint after every step, including blockers; never overwrite earlier checkpoints. |
 | `.brainx-loop/state.json` | Modeling loop | Atomic machine-readable transitions. |
 | `events.jsonl` and `decisions.jsonl` | Modeling loop | Append-only; corrections supersede. |
 | `ITERATION.md` | Modeling loop | Immutable after the integrated review stage. |
 | Run specs/config/provenance/logs/metrics | Experiment runner | Immutable after launch/completion. |
-| `ITERATION_REVIEW.md` | Modeling loop | `running` through evidence synthesis and Codex review; `accepted` only on `ACCEPT`. |
+| `ITERATION_REVIEW.md` | Modeling loop | `running` through evidence synthesis and Codex review; `accepted` only on `PASS`. |
 | Raw Codex review | Modeling loop | Store verbatim and never rewrite. |
 | Parsed gate and findings | Modeling loop | Append to `ITERATION_REVIEW.md`; preserve stable finding IDs. |
 | `FIGURE_MANIFEST.md` | Visualization | Update when figure or source evidence changes. |
-
-### Persistent memory format
-
-```markdown
-# Brain modeling memory
-
-## Current state
-- Active specification and hash:
-- Current iteration and stage:
-- Next obligation:
-- Remaining budgets:
-
-## Locked decisions
-| ID | Decision | Rationale | Specification | Evidence |
-|---|---|---|---|---|
-
-## Established findings
-| Finding | Scope | Evidence runs/reviews | Confidence | Superseded by |
-|---|---|---|---|---|
-
-## Failed or partial attempts
-| Attempt | Conditions | Outcome | Reusable lesson | Evidence |
-|---|---|---|---|---|
-
-## Open Codex findings and assumptions
-| ID | Issue | Required fix/discriminator | Source review | Status |
-|---|---|---|---|---|
-
-## Accepted artifacts
-| Artifact | Purpose | Specification | Provenance |
-|---|---|---|---|
-
-## Last checkpoint
-- Completed action:
-- Safe resume point:
-```
-
-Persist a conclusion only after Codex `ACCEPT`. Persist a failure when it prevents
-repetition or changes a future choice. Do not store raw logs, transient tool
-failures, unsupported guesses, or metrics without run IDs.
 
 ### Machine-readable state
 
@@ -1020,17 +676,14 @@ skills/
 |   |-- references/
 |   |   |-- training-workflow.md
 |   |   |-- parameter-fitting-workflow.md
-|   |   |-- persistence-and-resume.md
+|   |   |-- parameter-fitting-workflow/
+|   |   |   `-- scripts/fitting_hh_neuron.py
+|   |   |-- run-experiment.md
+|   |   |-- monitor-experiment.md
 |   |   `-- visualization-routing.md
 |   `-- scripts/
 |       |-- loop_state.py
 |       `-- artifact_lint.py
-|-- brainx-experiment-runner/
-|   |-- SKILL.md
-|   `-- references/
-|       |-- run-provenance.md
-|       |-- monitoring-and-recovery.md
-|       `-- checkpoint-compatibility.md
 |-- brainx-visualization/
 |   |-- SKILL.md
 |   `-- references/
@@ -1047,11 +700,11 @@ skills/
 |-- brainmass/                       # existing
 |-- brainpy-state/                   # existing
 |-- braintrace/                      # existing
-`-- brainx-acceleration-audit/       # planned in plan.md; implement or restore
+`-- brainx-acceleration/       # planned in plan.md; implement or restore
 ```
 
 Do not add separate skills for the experiment loop, specification, training,
-fitting, result review, or neuroscience review. Do not duplicate the inline
+result review, or neuroscience review. Do not duplicate the inline
 specification or integrated review contract in references.
 
 The root `SKILL.md` is intentionally larger because it owns the three essential
@@ -1065,7 +718,7 @@ Deliver:
 
 - final root workflow and legal transitions;
 - final inline specification format;
-- final integrated result-review and Codex quality-gate contract;
+- final Codex MCP invocation packet and verified system-prompt injection;
 - training/fitting reference boundaries;
 - machine state and append-only event/decision schemas;
 - three end-to-end fixture projects.
@@ -1079,13 +732,13 @@ Implement:
 
 1. `brainx-modeling-loop` with specification, package routing, implementation,
    integrated result/Codex review, iteration, memory, and resume;
-2. `brainx-experiment-runner` for local immutable runs;
+2. `references/run-experiment.md` plus `references/monitor-experiment.md` for local immutable runs;
 3. `brainx-visualization` for diagnostic and final traces.
 
 Use spike-frequency adaptation, neural compass, or binocular rivalry. Simulate
 Codex MCP responses through fixtures until the real review-agent tool exists.
 
-Exit when `REVISE` produces a new full iteration and the next Codex call can close
+Exit when `REFUSE` produces a new full iteration and the next Codex call can close
 stable findings without a second loop or reviewer skill.
 
 ### Phase 2: Add training reference
@@ -1101,18 +754,19 @@ leakage are caught before the quality gate.
 
 ### Phase 3: Add parameter-fitting reference
 
-Write `references/parameter-fitting-workflow.md` with one differentiable
-trace-fitting case. Add a likelihood-free branch only when it demonstrates a
-necessary distinct workflow. Keep the simulator, parameter quantities, state
-lifecycle, and observation mapping BrainX-native on both branches.
+Write `references/parameter-fitting-workflow.md` with the differentiable path,
+bounded derivative-free path, exact-pipeline recovery gate, and the routed
+BrainCell HH fitting source script nested under its reference directory. Keep the
+simulator, parameter quantities, State lifecycle, and observation mapping
+BrainX-native on both fitting paths.
 
 Exit when fitted parameters cannot be interpreted before recovery and
 non-identifiability returns a bounded conclusion.
 
 ### Phase 4: Integrate acceleration and real Codex MCP review
 
-Implement or restore `brainx-acceleration-audit`. Connect the real Codex MCP
-review-agent call to the root skill's inline contract. Preserve raw response,
+Implement or restore `brainx-acceleration`. Connect the real Codex MCP
+review call to its injected system prompt and the root skill's artifact-path packet. Preserve raw response,
 stable findings, closure evidence, and unavailable-tool behavior.
 
 Exit when every completed iteration has exactly one Codex review and acceleration
@@ -1139,16 +793,16 @@ traceable, and installer updates preserve project state.
 | Temporal-order learning | Training reference activation, target alignment, state reset, and bounded tuning. |
 | Sleep-memory replay | Long temporal training and conditional BrainTrace routing. |
 | Neural compass or grid-cell sweep | Aggregate dynamics, sweep discipline, and claim-evidence review. |
-| Single-cell perturbation failure | Valid negative/inconclusive result and `ACCEPT` without positive-result pressure. |
+| Single-cell perturbation failure | Valid negative/inconclusive result and `PASS` without positive-result pressure. |
 | Interrupted run | Stage state, checkpoint compatibility, immutable run identity, and resume. |
 | Codex MCP unavailable | Quality gate remains blocked without losing completed work. |
-| Specification drift attempt | Gate returns `SPEC_REVISION_REQUIRED`; loop creates a version and asks the researcher. |
+| Specification drift attempt | Review returns `REFUSE` with an out-of-contract finding; the locked specification is not changed silently. |
 
 ### Structural tests
 
 - Only `brainx-modeling-loop` owns scientific iteration.
-- The specification schema and integrated result/Codex contract each have exactly
-  one copy in the root `SKILL.md`.
+- The specification schema has one copy in the root skill; the review contract has
+  one copy in `mcp-servers/codex/system-prompt.md`.
 - Training and fitting exist as references, not skills.
 - Every subflow declares and composes its routed BrainX package knowledge; no
   subflow is a generic framework workflow around a simulator callback.
@@ -1168,12 +822,12 @@ traceable, and installer updates preserve project state.
 5. Inject unit, reset, update-order, observation, split, and metric defects; verify
    the integrated review stage blocks acceptance.
 6. Verify exactly one Codex call occurs per completed iteration.
-7. Verify `REVISE` starts a full new iteration and carries stable finding IDs.
+7. Verify `REFUSE` starts a full new iteration and carries stable finding IDs.
 8. Verify held-out data cannot direct training tuning.
 9. Verify poor recovery blocks mechanistic fitting interpretation.
 10. Reject training, fitting, acceleration, execution, and visualization fixtures
     that bypass routed BrainX state, unit, or model semantics.
-11. Verify a valid refutation or bounded inconclusive result can receive `ACCEPT`.
+11. Verify a valid refutation or bounded inconclusive result can receive `PASS`.
 12. Verify every repeat names the new information expected.
 13. Exhaust a budget and stop without relaxing the contract.
 
@@ -1209,15 +863,13 @@ Do not optimize evaluation for supported hypotheses or numeric reviewer scores.
 - From parameter-recovery guidance, adopt exact-pipeline recovery, realistic data
   volume/noise, bias/tradeoff analysis, and limited interpretation when recovery
   fails.
-- From simulation-based inference guidance, adopt predictive checks, calibration,
-  explicit simulator boundaries, and uncertainty reporting when selected.
 
 ### Do not adopt
 
 - literature search, novelty scoring, paper writing, venue scoring, or submission;
 - a universal research-quality score;
 - nested experiment or review loops;
-- separate specification, training, fitting, result-review, or reviewer skills;
+- separate specification, training, result-review, or reviewer skills;
 - duplicated contracts in references;
 - an unbounded auto-proceed workflow;
 - dependence on W&B, SSH, tmux, one GPU provider, or one operating system;
@@ -1231,7 +883,6 @@ Do not optimize evaluation for supported hypotheses or numeric reviewer scores.
 - [Training check](https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/blob/main/skills/training-check/SKILL.md)
 - [Automatic hyperparameter tuning](https://github.com/zxh0916/auto-hparam-tuning/blob/main/skills/auto-hparam-tuning/SKILL.md)
 - [Parameter recovery checker](https://github.com/NeuroAIHub/awesome_cognitive_and_neuroscience_skills/blob/master/skills/parameter-recovery-checker/SKILL.md)
-- [Simulation-based inference skill](https://github.com/smestern/sciagent/blob/main/docs/domains/computational-neuro/skills/sbi/SKILL.md)
 
 ## 17. Recommended first implementation
 
@@ -1244,7 +895,7 @@ brainx-modeling-loop
   -> optional acceleration
   -> experiment runner
   -> integrated result review + one Codex neuroscience quality gate
-       -> ACCEPT or full revised iteration
+       -> PASS or full revised iteration
   -> memory and visualization
 ```
 

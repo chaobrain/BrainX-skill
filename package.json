@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "type": "commonjs",
   "scripts": {
-    "test": "node --test .github/scripts/*.test.mjs",
+    "test": "node --test .github/scripts/*.test.mjs mcp-servers/codex/test/*.test.mjs",
     "prepublishOnly": "npm test"
   },
   "bin": {
@@ -14,14 +14,11 @@
   "files": [
     "adapters/",
     "installation/",
-    "skills/braincell/",
-    "skills/brainmass/",
+    "mcp-servers/codex/",
+    "skills/package-skills/",
+    "skills/brainx-modeling-loop/",
+    "skills/brainx-acceleration/",
     "skills/brainx-install/",
-    "skills/brainunit/",
-    "skills/brainstate/",
-    "skills/brainevent/",
-    "skills/brainpy-state/",
-    "skills/braintrace/",
     "skills/brainx-general-guard/",
     "manifest.json",
     "README.md",

@@ -17,4 +17,8 @@ test('invokes the Agent Skills validator through its Python CLI', () => {
     workflow,
     /python -c 'from skills_ref\.cli import main; main\(\)' validate "\$skill_dir"/,
   );
+  assert.match(
+    workflow,
+    /find skills -type f -name SKILL\.md -printf '%h\\0'/,
+  );
 });
