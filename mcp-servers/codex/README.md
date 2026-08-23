@@ -5,8 +5,13 @@ This server preserves the open-source Codex CLI MCP implementation while special
 The proxy changes only fresh `codex` calls:
 
 - `base-instructions` receives `system-prompt.md`;
-- `developer-instructions` identifies the allowed BrainX domain skills;
+- `developer-instructions` identifies the allowed BrainX domain skills and the
+  exact training and fitting review-reference paths;
 - `skills.config` exposes the skill directories listed in `skills.json`.
+
+The modeling-loop skill is not exposed to the reviewer. The reviewer opens only
+`training-workflow.md` and/or `parameter-fitting-workflow.md` when the supplied
+`ACTIVE_COVERAGE` requires them.
 
 All `codex-reply` calls and other MCP messages pass through unchanged.
 
@@ -31,13 +36,22 @@ For a project-scoped Codex host, add the equivalent STDIO server to `.codex/conf
 [mcp_servers.codex]
 command = "node"
 args = ["/absolute/path/to/brainx-skill-bundle/mcp-servers/codex/server.mjs"]
+tool_timeout_sec = 1800
 ```
+
+Keep `tool_timeout_sec` above the longest expected review turn. A full artifact
+review commonly exceeds Codex's default MCP tool-call budget; when the host
+cancels that call, the caller may report `user cancelled MCP tool call` even
+though no user cancelled it.
 
 Set `BRAINX_CODEX_BIN` only when `codex` is not on `PATH` for the MCP host.
 
 ## Use
 
-Start a review with `mcp__codex__codex`. Preserve its returned `threadId`, then use `mcp__codex__codex-reply` for follow-up messages in the same context.
+Start a review with `mcp__codex__codex`. Its returned `content` is the reviewer
+response available to the calling agent in the same turn. Preserve the returned
+`threadId`, then use `mcp__codex__codex-reply` only for a follow-up that must
+continue the reviewer's context.
 
 Edit `system-prompt.md` to change the reviewer contract. Edit `skills.json` to change the BrainX skills exposed to fresh reviewer sessions.
 

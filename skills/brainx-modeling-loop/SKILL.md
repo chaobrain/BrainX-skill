@@ -176,7 +176,11 @@ locked specification, step-1 study record, implementation and tests, acceleratio
 evidence, experiment configuration, raw run artifacts, metrics, deterministic
 result assessment, claim-evidence matrix, proposed next action, and all evidence
 required by active training/fitting coverage. Preserve the returned raw response
-and `threadId` as review artifacts.
+and `threadId` as review artifacts. Treat the returned `content` as the reviewer
+response in the calling agent's current turn: classify it immediately, update
+the loop checkpoint, and report or act on the verdict without asking the
+researcher to open another context. Preserve `threadId` for reviewer follow-up;
+it is not needed for the calling agent to read the initial response.
 
 Before calling, verify that every listed path exists. Set the MCP call's working
 directory to the project root when the tool exposes a working-directory argument,
@@ -236,6 +240,11 @@ Do not start an iteration review with `mcp__codex__codex-reply`; only a fresh
 `codex` call receives the injected system prompt. If the configured MCP server is
 unavailable, record step 5 as blocked in `brainmodeling-memory.md` and preserve
 all completed experiment artifacts.
+
+Configure the Codex MCP registration with `tool_timeout_sec = 1800`, or another
+explicit budget longer than the largest expected review. A host timeout may be
+reported as `user cancelled MCP tool call`; when no `threadId` or response is
+returned, diagnose the MCP budget before treating it as researcher cancellation.
 
 Record the full Codex response and one of two outcomes:
 

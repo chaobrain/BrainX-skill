@@ -34,11 +34,32 @@ const exposedSkills = skillNames.map((name) => ({
   enabled: true,
 }));
 
+const reviewReferences = {
+  training: resolve(
+    repositoryRoot,
+    'skills/brainx-modeling-loop/references/training-workflow.md',
+  ),
+  fitting: resolve(
+    repositoryRoot,
+    'skills/brainx-modeling-loop/references/parameter-fitting-workflow.md',
+  ),
+};
+
+for (const [name, path] of Object.entries(reviewReferences)) {
+  try {
+    readFileSync(path);
+  } catch {
+    throw new Error(`Configured BrainX ${name} review reference is missing: ${path}`);
+  }
+}
+
 const skillInstructions = [
   'Use only the BrainX skills listed below as domain guidance for this review.',
   'Open a skill only when its scope participates in the supplied model or evidence.',
   'Do not invoke workflow behavior from these skills; use them to verify BrainX APIs and invariants.',
   ...skillNames.map((name) => `- ${name}`),
+  `TRAINING_REVIEW_REFERENCE: ${reviewReferences.training}`,
+  `FITTING_REVIEW_REFERENCE: ${reviewReferences.fitting}`,
 ].join('\n');
 
 function transformMessage(message) {

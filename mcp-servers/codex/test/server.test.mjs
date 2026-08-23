@@ -51,7 +51,21 @@ test('injects the reviewer prompt and configured BrainX skills into fresh sessio
 
   const args = message.params.arguments;
   assert.match(args['base-instructions'], /independent computational-neuroscience/);
+  assert.match(args['base-instructions'], /Open and read `brainx-general-guard` first/);
+  assert.match(args['base-instructions'], /Is the result scientifically backed/);
+  assert.match(args['base-instructions'], /Is the code minimal and BrainX-native/);
+  assert.match(args['base-instructions'], /Is training or fitting good enough/);
+  assert.match(args['base-instructions'], /\*\*Loss closure:\*\*/);
+  assert.match(args['base-instructions'], /\*\*Architecture:\*\*/);
+  assert.match(args['base-instructions'], /\*\*Hyperparameters and method:\*\*/);
+  assert.match(args['base-instructions'], /BrainState's prebuilt `brainstate\.nn` layers/);
+  assert.match(args['base-instructions'], /braintools\.optim\.Adam/);
+  assert.match(args['base-instructions'], /LOSS_CLOSURE: NOT_APPLICABLE/);
+  assert.match(args['base-instructions'], /Keep plotting code minimal and clean/);
   assert.match(args['developer-instructions'], /brainx-general-guard/);
+  assert.match(args['developer-instructions'], /TRAINING_REVIEW_REFERENCE: \/.*\/training-workflow\.md/);
+  assert.match(args['developer-instructions'], /FITTING_REVIEW_REFERENCE: \/.*\/parameter-fitting-workflow\.md/);
+  assert.doesNotMatch(args['developer-instructions'], /^- brainx-modeling-loop$/m);
   assert.equal(args.config.model_reasoning_effort, 'xhigh');
   assert.equal(args.config['skills.config'].length, 8);
   assert.ok(args.config['skills.config'].every((skill) => skill.enabled));
