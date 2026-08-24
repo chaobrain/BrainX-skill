@@ -17,4 +17,6 @@ Upstream inspected on 2026-08-23:
 - JSON-RPC dispatch: `codex-rs/mcp-server/src/message_processor.rs`
 - License: Apache-2.0, the same license used by this repository
 
-Modified behavior is confined to `server.mjs`: fresh `codex` tool calls receive the BrainX system prompt and skill configuration before being forwarded upstream.
+Modified behavior is confined to `server.mjs`: fresh `codex` tool calls receive
+the BrainX system prompt and skill configuration and are forced to read-only,
+no-approval execution before being forwarded upstream.

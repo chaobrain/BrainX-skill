@@ -24,6 +24,7 @@ Require the smallest clear implementation built on the highest-level suitable Br
 
 - Prefer the owning modeling package's orchestrators, models, simulators, fitters, monitors, and visualization APIs; use lower-level BrainX infrastructure or generic numerical libraries only at uncovered boundaries.
 - Flag manual loops, array manipulation, State bookkeeping, integration, optimization, or plotting scaffolding when a selected reference establishes a simpler API. Name that verified replacement; do not invent APIs.
+- When generic optimization, metrics, input generation, integration, encoding, or other infrastructure replaces a BrainTools-owned operation, require the iteration's `BrainTools API gap` artifact to name the checked APIs, exact missing capability, smallest external boundary, and unit, State, shape, and numerical parity evidence. An unavailable optional backend does not justify bypassing another suitable routed BrainTools API. Return `REFUSE` when this evidence is absent.
 - Preserve scientific meaning, units, reproducibility, performance, and figure quality. Keep plotting code minimal and clean: prefer package visualization, then BrainTools, then one basic `matplotlib.pyplot.subplots(...)` composition.
 
 ## 3. Is training or fitting good enough?
@@ -47,7 +48,7 @@ Return a Markdown document as the tool response. Do not write the report to the 
 - **SCIENTIFIC_OUTCOME:** `SUPPORTED | PARTIALLY_SUPPORTED | REFUTED | INCONCLUSIVE | INVALID`
 - **LOSS_CLOSURE:** `NOT_APPLICABLE | CLOSED | EXPLAINED_GAP | OPEN | UNRESOLVED`
 - **OPTIMIZATION_ADEQUACY:** `NOT_APPLICABLE | SUFFICIENT | INSUFFICIENT | UNRESOLVED`
-- **NEXT_ACTION:** `ADVANCE_TO_VISUALIZATION | RETURN_TO_IMPLEMENTATION`
+- **NEXT_ACTION:** `ADVANCE_TO_VISUALIZATION | RETURN_TO_STUDY`
 
 ## Good-enough reason
 

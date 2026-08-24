@@ -44,6 +44,8 @@ test('injects the reviewer prompt and configured BrainX skills into fresh sessio
       name: 'codex',
       arguments: {
         prompt: 'Review iteration 4',
+        'approval-policy': 'on-request',
+        sandbox: 'danger-full-access',
         config: { model_reasoning_effort: 'xhigh' },
       },
     },
@@ -60,6 +62,8 @@ test('injects the reviewer prompt and configured BrainX skills into fresh sessio
   assert.match(args['base-instructions'], /\*\*Hyperparameters and method:\*\*/);
   assert.match(args['base-instructions'], /BrainState's prebuilt `brainstate\.nn` layers/);
   assert.match(args['base-instructions'], /braintools\.optim\.Adam/);
+  assert.match(args['base-instructions'], /BrainTools API gap/);
+  assert.match(args['base-instructions'], /RETURN_TO_STUDY/);
   assert.match(args['base-instructions'], /Return a Markdown document as the tool response/);
   assert.match(args['base-instructions'], /# BrainX iteration review/);
   assert.match(args['base-instructions'], /- \*\*OUTCOME:\*\* `PASS \| REFUSE`/);
@@ -72,6 +76,8 @@ test('injects the reviewer prompt and configured BrainX skills into fresh sessio
   assert.match(args['developer-instructions'], /FITTING_REVIEW_REFERENCE: \/.*\/parameter-fitting-workflow\.md/);
   assert.doesNotMatch(args['developer-instructions'], /^- brainx-modeling-loop$/m);
   assert.equal(args.config.model_reasoning_effort, 'xhigh');
+  assert.equal(args['approval-policy'], 'never');
+  assert.equal(args.sandbox, 'read-only');
   assert.equal(args.config['skills.config'].length, 8);
   assert.ok(args.config['skills.config'].every((skill) => skill.enabled));
   assert.ok(args.config['skills.config'].every((skill) => skill.path.startsWith('/')));

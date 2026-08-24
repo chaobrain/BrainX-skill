@@ -52,11 +52,13 @@ A `SingleCompartment` cell stores one membrane voltage per independent neuron an
 | `braincell.channel.*` | Use for membrane-current and gating dynamics; inspect `root_type` before attachment, and attach root-cell channels such as `IL` directly to the cell. |
 | `cell.init_state()` / `cell.reset_state()` | Use before the first step or to reseed an existing cell; they initialize or reset voltage, spike, ion, and channel State without changing the model declaration. |
 | `cell.update(I_ext)` | Use for one integration step; pass a current-density or total-current `Quantity`, let the cell area normalize total current, update all cellular State, and receive the spike output. |
+| `braintools.input.Constant(...)` | Use when a current-clamp protocol contains timed baseline and stimulation sections; generate one unit-aware time-major sample per step under the rollout `dt`. |
 | `brainstate.environ.context()` / `brainstate.transform.for_loop()` | Use to provide `dt` and `t` and to execute a transformed time loop that returns recorded State instead of mutating Python containers. |
 
 ```python
 import braincell
 import brainstate
+import braintools
 import brainunit as u
 
 
@@ -79,22 +81,27 @@ class HH(braincell.SingleCompartment):
 
 cell = HH(1)
 cell.init_state()
-current = 5.0 * u.uA / u.cm**2
 
 
-def step(t):
+def step(t, current):
     with brainstate.environ.context(t=t):
         spike = cell.update(current)
     return cell.V.value, spike
 
 
 with brainstate.environ.context(dt=0.01 * u.ms):
+    protocol = braintools.input.Constant([
+        (0.0 * u.uA / u.cm**2, 20.0 * u.ms),
+        (5.0 * u.uA / u.cm**2, 60.0 * u.ms),
+        (0.0 * u.uA / u.cm**2, 20.0 * u.ms),
+    ])
+    current = protocol()
     times = u.math.arange(
         0.0 * u.ms,
-        100.0 * u.ms,
+        protocol.duration,
         brainstate.environ.get_dt(),
     )
-    voltages, spikes = brainstate.transform.for_loop(step, times)
+    voltages, spikes = brainstate.transform.for_loop(step, times, current)
 
 assert voltages.shape[:1] == times.shape
 assert spikes.shape[:1] == times.shape
@@ -102,7 +109,7 @@ assert spikes.shape[:1] == times.shape
 
 Treat `V_th` only as the spike-event threshold; it does not change the membrane equation. Keep membrane capacitance and channel conductance density-based in the canonical path. `update()` accepts current density or total current and uses `SingleCompartment.area` to normalize total input; do not manually area-scale only part of the model. Use `size=N` for `N` independent cells, never for `N` compartments. For a multidimensional condition sweep, use the condition-grid shape as `size` and pass shape-aligned channel parameters and inputs; do not wrap identity functions in `vmap` merely to construct that grid.
 
-Open `references/area-scaled-hh-pattern.md` when changing cell geometry or explicitly converting density parameters to total quantities. Open `references/ion-library.md`, `references/channel-library.md`, or `references/mixions-for-adaptation.md` only when the classical fixed-ion HH path is insufficient.
+Open `references/braintools/input-current.md` when generating timed sections, pulses, waveforms, or stochastic injected current. Open `references/area-scaled-hh-pattern.md` when changing cell geometry or explicitly converting density parameters to total quantities. Open `references/ion-library.md`, `references/channel-library.md`, or `references/mixions-for-adaptation.md` only when the classical fixed-ion HH path is insufficient.
 
 ## Build and run a multicompartment cell
 
@@ -175,8 +182,11 @@ Open only the smallest reference that owns the non-canonical decision.
 |---|---|
 | `references/area-scaled-hh-pattern.md` | Changing single-compartment geometry or converting density parameters consistently to total capacitance and conductance. |
 | `references/braincell-custom-ion-channel-authoring.md` | Implementing a custom ion or channel after confirming that no built-in mechanism fits. |
+| `references/braintools/input-current.md` | Generating or composing unit-aware current sections, pulses, waveforms, or stochastic stimulation for a cellular rollout. |
+| `references/braintools/metric.md` | Selecting standard waveform losses or neuroscience metrics for cellular fitting or trace evaluation; keep custom observation features separate. |
+| `references/braintools/optimizer.md` | Selecting a gradient optimizer or a standalone SciPy or Nevergrad fitting boundary after the objective and reset lifecycle are fixed. |
 | `references/channel-library.md` | Selecting a built-in sodium, potassium, calcium, leak, HCN, or mixed-ion channel. |
-| `references/scripts/fitting_hh_neuron.py` | Studying the official complete HH fitting composition: custom sodium and potassium channels, trace loading, unit-bearing bounds, independent cell initialization, time-major rollout, voltage loss, candidate `vmap`, and Nevergrad. Supply the upstream trace CSVs and reconcile its source-version APIs with the current BrainCell and BrainState skills before adapting it. |
+| `references/scripts/fitting_hh_neuron.py` | Studying the official complete HH fitting composition: custom sodium and potassium channels, trace loading, unit-bearing bounds, independent cell initialization, time-major rollout, voltage loss, candidate `vmap`, and Nevergrad. Also open the three local `references/braintools/` files before adapting it; supply the upstream trace CSVs and reconcile its source-version APIs with the current BrainCell and BrainState skills. |
 | `references/ion-library.md` | Choosing fixed, Nernst-initialized, or dynamic ions and their concentration behavior. |
 | `references/mixions-for-adaptation.md` | Adding calcium-dependent adaptation, AHP/KCa currents, rebound, dynamic calcium, or multi-ion channel dependencies. |
 | `references/multicompartment/multicompartment-cell-workflow.md` | Extending the canonical `Morphology -> Cell -> paint/place -> run` path and selecting the exclusive multicompartment references. |

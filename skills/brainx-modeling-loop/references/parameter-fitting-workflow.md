@@ -27,7 +27,8 @@ Parameter recovery represents the interpretation gate. A fitted value may suppor
 | Aggregate population, region, or whole-brain fitting | Open `brainmass`. Prefer `brainmass.Fitter` and its routed fitting reference before building a custom optimizer loop. |
 | Physical parameters or observations | Open `brainunit`. Preserve quantities through parameter application, simulation, observation, and unit-compatible comparison. |
 | Constrained parameters or regularization | Open the active package's BrainState parameter reference. Record both the unconstrained optimizer value and constrained physical value. |
-| Objective or optimizer selection | Open the active package's Braintools metric or optimizer reference. Prefer package-owned BrainMass objectives when they express the scientific comparison. |
+| BrainCell input, objective, or optimizer selection | Open `braincell/references/braintools/input-current.md`, `metric.md`, or `optimizer.md` for the operation being selected. |
+| BrainPy-State or BrainMass objective or optimizer selection | Open the active package's routed Braintools metric or optimizer reference. Prefer package-owned BrainMass objectives when they express the scientific comparison. |
 
 Study the selected package skills and their fitting-related examples before implementing. Trace construction, initialization, parameter application, runtime State reset, protocol execution, observation, and reduction end to end.
 
@@ -55,20 +56,24 @@ Never rely on dictionary order or an unlabeled vector to preserve scientific mea
 
 ## Select the fitting backend
 
-Choose the simplest backend supported by the simulator and objective.
+Choose the simplest BrainX backend supported by the complete simulator-to-objective path. Check required optional dependencies before locking the estimator.
 
 | Condition | Use | Required checks |
 |---|---|---|
 | The complete simulator-to-objective path is differentiable and numerically stable | `brainmass.Fitter(..., backend="grad")` or `brainstate.transform.grad` with a Braintools gradient optimizer | Finite and nonzero gradients, a small finite-difference comparison, multiple starts, exact-pipeline recovery, and held-out prediction. |
-| A required branch, observation, or objective is discontinuous, discrete, black-box, or has unreliable gradients | Bounded `brainmass.Fitter` gradient-free backend or the routed Braintools `NevergradOptimizer` or `ScipyOptimizer` | Finite bounds, correct candidate-batch semantics, full evaluation budget, multiple starts, landscape or sensitivity evidence, recovery, and held-out prediction. |
+| A package-owned fitter supports the required gradient-free objective | Its bounded gradient-free backend | Finite bounds, full budget, multiple starts, landscape or sensitivity evidence, recovery, and held-out prediction. |
+| One scalar bounded or constrained objective matches a documented SciPy method | `braintools.optim.ScipyOptimizer` | Parameter order and unit reconstruction, method compatibility, finite bounds, stopping behavior, multiple starts, recovery, and held-out prediction. |
+| The objective is discontinuous, discrete, black-box, or benefits from population-batched candidates | `braintools.optim.NevergradOptimizer` when its optional dependency is available | One loss per candidate, candidate independence, unit-bearing bounds, total evaluation count, multiple starts, recovery, and held-out prediction. |
 
-Prefer gradients when they are valid. Do not select derivative-free fitting merely because the BrainCell example uses Nevergrad; that example establishes a custom candidate-evaluation pattern, not a universal backend choice.
+Prefer gradients when they are valid. Do not select derivative-free fitting merely because the BrainCell example uses Nevergrad; that example establishes a custom candidate-evaluation pattern, not a universal backend choice. If Nevergrad is unavailable, test whether `braintools.optim.ScipyOptimizer` satisfies the locked objective before changing libraries or requesting dependency installation.
+
+Use raw SciPy or another generic optimizer only when no routed BrainTools backend provides a required estimator strategy, vectorized candidate contract, callback, constraint, or stopping rule. Before implementation, save the `brainx-general-guard` API-gap artifact naming the checked BrainTools APIs, exact missing capability, smallest external boundary, and parity evidence. A missing optional Nevergrad dependency alone is not a BrainTools capability gap.
 
 ## Apply the scale-specific pattern
 
 | Route | Pattern to preserve |
 |---|---|
-| BrainCell | The HH fitting example constructs and initializes one cell rollout for each unit-bearing conductance and capacitance candidate, evaluates time-major current protocols, and batches derivative-free candidates. Preserve candidate independence and unit-bounded search; reconcile exact channel and State APIs with the current BrainCell skill. |
+| BrainCell | The HH fitting example constructs and initializes one cell rollout for each unit-bearing conductance and capacitance candidate, evaluates time-major current protocols, scores voltage with Braintools metrics, and batches derivative-free candidates. Preserve candidate independence and unit-bounded search; open the BrainCell Braintools input, metric, and optimizer references and reconcile exact channel and State APIs before adapting it. |
 | BrainPy-State | The training examples initialize runtime State at each independent sequence, differentiate only the selected `ParamState` collection, transform the complete loss step, and update parameters outside the temporal loop. Reuse that lifecycle for an inverse objective; task loss itself is not parameter fitting. |
 | BrainMass | The fitting examples prefer `Fitter`, mark fitted values with `brainstate.nn.Param(..., fit=True)`, and fit phase-appropriate observations such as settled amplitude rather than an unaligned oscillatory waveform. Use gradient fitting first and change backends only when the objective requires it. |
 | Braintools | Gradient optimizers register trainable State and consume matching gradient trees. `ScipyOptimizer` and `NevergradOptimizer` instead own a complete objective and do not use the register/update lifecycle; Nevergrad requires one loss per candidate. |
@@ -83,8 +88,37 @@ One candidate evaluation must apply parameters, reset independent runtime State,
 | `brainstate.nn.init_all_states(model, ...)` | Use at an independent rollout boundary when the selected model route requires model-wide runtime State initialization. Do not reset fitted parameter State. |
 | `brainstate.transform.grad(loss_fn, grad_states=..., return_value=True)` | Use for a custom stateful differentiable objective. Select only intended parameter State and transform the complete loss evaluation. |
 | `brainmass.Fitter(...)` | Use when BrainMass owns the simulator and its loss, prediction, objective, and backend interfaces express the inverse problem. |
+| `braintools.input.Constant(...)` | Use when the fitted cellular protocol contains timed constant sections; generate the unit-aware time-major current under the rollout `dt`. |
+| `braintools.metric.squared_error(...)` | Use for a standard waveform discrepancy; preserve time and candidate axes until the declared reduction and keep custom observation features separate. |
+| `braintools.optim.ScipyOptimizer(...)` | Use when one scalar objective and a documented SciPy method satisfy the fitting contract; it owns the standalone optimization and returns the SciPy result. |
 | `braintools.optim.NevergradOptimizer(...)` | Use for a custom black-box objective that accepts candidate-stacked parameters and returns one loss per candidate. Preserve unit-bearing bounds and independent runtime State. |
-| `braintools.metric.*` | Use when the selected model package has no owning objective. Declare orientation and reduction because many metrics return arrays. |
+
+For a BrainCell current-clamp fit, keep custom file parsing at the host boundary but generate the inferred protocol and standard waveform loss through BrainTools:
+
+```python
+import brainstate
+import braintools
+import brainunit as u
+
+
+with brainstate.environ.context(dt=0.1 * u.ms):
+    current = braintools.input.Constant([
+        (0.0 * u.pA, 50.0 * u.ms),
+        (25.0 * u.pA, 250.0 * u.ms),
+        (0.0 * u.pA, 200.0 * u.ms),
+    ])()
+
+
+def waveform_rmse_mV(predicted, observed):
+    mse = braintools.metric.squared_error(
+        predicted.to_decimal(u.mV),
+        observed.to_decimal(u.mV),
+        reduction="mean",
+    )
+    return u.math.sqrt(mse)
+```
+
+Keep a custom voltage-peak detector, observation transform, or domain penalty only when no routed BrainTools metric expresses the declared feature. Do not reimplement standard waveform losses merely because one objective component is custom.
 
 Use the BrainMass path as the canonical high-level workflow:
 
@@ -158,6 +192,7 @@ This proves only that one synthetic target is mechanically recoverable. It does 
 5. For gradient fitting, compare autodiff with finite differences on a small stable case and inspect zero, exploding, `NaN`, or parameter-missing gradients.
 6. For derivative-free fitting, verify candidate-axis shape, one loss per candidate, unit reconstruction, bounds, invalid-candidate behavior, and total evaluation count.
 7. Inspect sensitivity, tradeoffs, flat directions, discontinuities, and numerical boundaries before running the full fit.
+8. When a generic optimizer, input generator, metric, or integration utility replaces BrainTools, verify the saved API-gap artifact and its unit, State, shape, and numerical parity evidence.
 
 ## Run exact-pipeline parameter recovery
 
@@ -203,7 +238,10 @@ Fit observed data only after recovery passes the locked parameter-specific crite
 
 | Route | Open when |
 |---|---|
-| `parameter-fitting-workflow/scripts/fitting_hh_neuron.py` | Studying the official complete BrainCell HH derivative-free fitting composition: custom channels, unit-bearing bounds, per-candidate cell initialization, time-major rollout, voltage loss, candidate `vmap`, and Nevergrad. Supply the upstream `input_traces_hh.csv` and `output_traces_hh.csv` files, and reconcile its source-version BrainCell and BrainState APIs with the current package skills before adapting it. |
+| `parameter-fitting-workflow/scripts/fitting_hh_neuron.py` | Studying the official complete BrainCell HH derivative-free fitting composition: custom channels, unit-bearing bounds, per-candidate cell initialization, time-major rollout, voltage loss, candidate `vmap`, and Nevergrad. Also open the three BrainCell Braintools references below; supply the upstream trace CSVs and reconcile source-version APIs before adapting it. |
+| `braincell` -> `references/braintools/input-current.md` | Generating timed current sections, pulses, waveforms, or stochastic stimulation for a cellular fit. |
+| `braincell` -> `references/braintools/metric.md` | Selecting standard waveform losses or neuroscience metrics while separating custom observation features. |
+| `braincell` -> `references/braintools/optimizer.md` | Selecting gradient optimizers, `ScipyOptimizer`, or `NevergradOptimizer` and checking their lifecycle, unit, and dependency boundaries. |
 | `brainmass` -> `references/fitting-with-objectives-api.md` | Selecting `Fitter` interfaces, objectives, callbacks, `FitResult` fields, or gradient versus gradient-free backends. |
 | `brainmass` -> `references/scripts/eeg-fitting-with-gradients.py` | Studying a complete phase-insensitive EEG fitting and synthetic-recovery example. |
 | `brainmass` -> `references/scripts/gradient-free-fitting.py` | A bounded non-differentiable or black-box BrainMass objective requires Nevergrad or SciPy. |
@@ -219,6 +257,8 @@ Fit observed data only after recovery passes the locked parameter-specific crite
 - Treating a surrogate gradient as evidence that a fitted spiking parameter is identifiable.
 - Fitting raw oscillatory waveforms when phase is not experimentally aligned.
 - Selecting derivative-free fitting before checking whether gradients are valid.
+- Treating an unavailable optional Nevergrad dependency as permission to bypass another suitable BrainTools optimizer.
+- Replacing a BrainTools-owned optimizer, metric, input, or integrator without a recorded capability gap and parity evidence.
 - Changing bounds, summaries, exclusions, weights, or recovery criteria after inspecting observed-data results.
 - Running recovery with longer, cleaner, denser, or easier data than the real protocol.
 - Interpreting aggregate fit quality as parameter recovery.
