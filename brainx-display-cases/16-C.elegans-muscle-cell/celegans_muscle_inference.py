@@ -305,6 +305,8 @@ def summarize_traces(voltages_mV: np.ndarray, time_ms: np.ndarray):
 
 
 def summary_distance(simulated: np.ndarray, observed: np.ndarray):
+    # [ABC] This normalized discrepancy replaces an explicit likelihood:
+    # smaller values mean that simulated summaries are closer to the recording.
     residual = (simulated - observed[None, :]) / SUMMARY_SCALES
     invalid = ~np.all(np.isfinite(simulated), axis=1)
     distance = np.sqrt(np.mean(residual**2, axis=1))
@@ -313,6 +315,8 @@ def summary_distance(simulated: np.ndarray, observed: np.ndarray):
 
 
 def _local_samples(rng, elite, count):
+    # [ABC] Later-round proposals are fitted around the previously accepted
+    # elite samples, concentrating new simulations in promising prior regions.
     normalized = (elite - PRIOR_LOW) / (PRIOR_HIGH - PRIOR_LOW)
     covariance = np.cov(normalized, rowvar=False) + np.eye(normalized.shape[1]) * 0.0025
     center = np.mean(normalized, axis=0)
@@ -330,6 +334,9 @@ def infer_parameters(
     seed=2025,
 ):
     """Approximate the posterior with sequential rejection ABC."""
+    # [ABC 1] Reduce the observed 30 pA trace to the same eight summaries that
+    # will be computed for every simulated candidate. ABC compares summaries,
+    # not the full voltage waveform point by point.
     observed_summary = summarize_traces(observed_voltage_mV, time_ms)[0]
     rng = np.random.default_rng(seed)
     all_parameters = []
@@ -340,16 +347,25 @@ def infer_parameters(
 
     for round_index in range(rounds):
         if proposal is None:
+            # [ABC 2] Round one draws candidates across the uniform prior.
             unit_samples = qmc.LatinHypercube(
                 d=len(PARAMETER_NAMES), seed=seed
             ).random(samples_per_round)
             parameters = qmc.scale(unit_samples, PRIOR_LOW, PRIOR_HIGH)
         else:
+            # [ABC 3] Subsequent rounds draw near the previous round's accepted
+            # elite set instead of searching the full prior again.
             parameters = _local_samples(rng, proposal, samples_per_round)
 
+        # [ABC 4] Simulate every candidate, extract summaries, and score its
+        # discrepancy from the observed summaries. No neural likelihood or
+        # posterior estimator is trained in this implementation.
         voltages = simulate(parameters, np.full(samples_per_round, 30.0), time_ms)
         summaries = summarize_traces(voltages, time_ms)
         distances = summary_distance(summaries, observed_summary)
+
+        # [ABC 5] Rejection/acceptance step: retain only the candidates with the
+        # smallest discrepancies. These elite samples define the next proposal.
         elite_indices = np.argsort(distances)[: max(32, samples_per_round // 16)]
         proposal = parameters[elite_indices]
 
@@ -368,11 +384,17 @@ def infer_parameters(
     summaries = np.concatenate(all_summaries)
     distances = np.concatenate(all_distances)
     finite_indices = np.flatnonzero(np.isfinite(distances))
+
+    # [ABC 6] Treat the 128 lowest-discrepancy samples from all rounds as the
+    # approximate posterior retained by the rejection procedure.
     posterior_indices = finite_indices[np.argsort(distances[finite_indices])[:128]]
     posterior_parameters = parameters[posterior_indices]
     posterior_summaries = summaries[posterior_indices]
     posterior_distances = distances[posterior_indices]
 
+    # [ABC 7] Convert discrepancies into kernel weights for a posterior mean.
+    # "map_parameters" is the lowest-discrepancy retained sample; it is named
+    # MAP by this case, but it is not a density-estimated mathematical MAP.
     bandwidth = max(float(np.median(posterior_distances)), 1.0e-6)
     weights = np.exp(-0.5 * (posterior_distances / bandwidth) ** 2)
     weights /= weights.sum()
