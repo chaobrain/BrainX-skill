@@ -39,8 +39,13 @@ PARAMETER_NAMES = (
     "g_slo2_nS",
     "v_shift_mV",
 )
-PRIOR_LOW = np.array([10.0, 10.5, 1.0e-4, 10.0, 0.1, 7.0])
-PRIOR_HIGH = np.array([25.0, 45.0, 0.5, 30.0, 4.0, 13.0])
+PARAMETER_UNITS = ("nS", "nS", "nS", "pF", "nS", "mV")
+PRIOR_LOW = np.array([10.0, 10.5, 1.0e-4, 10.0, 1.5, 7.0])
+PRIOR_HIGH = np.array([25.0, 45.0, 0.5, 30.0, 2.5, 13.0])
+
+WAVEFORM_MAX_RMSE_MV = 5.0
+WAVEFORM_MIN_CORRELATION = 0.8
+WAVEFORM_MAX_LATENCY_ERROR_MS = 10.0
 
 SUMMARY_NAMES = (
     "stimulus_spike_count",
@@ -240,6 +245,7 @@ def simulate(
     time_ms: np.ndarray,
     *,
     solver: str = "exp_euler",
+    dt=DT,
 ):
     """Run independent parameter/current lanes through one BrainCell rollout."""
     parameters = np.asarray(parameters, dtype=np.float32)
@@ -261,21 +267,26 @@ def simulate(
     def rollout():
         return brainstate.transform.for_loop(step, times, protocol)
 
-    with brainstate.environ.context(dt=DT):
+    with brainstate.environ.context(dt=dt):
         voltages = rollout()
     return np.asarray(voltages.to_decimal(u.mV))
 
 
-def _spike_times(voltage_mV: np.ndarray, time_ms: np.ndarray, stop_ms=None):
+def _all_crossing_times(voltage_mV: np.ndarray, time_ms: np.ndarray):
     crossings = (voltage_mV[1:] >= SPIKE_THRESHOLD) & (
         voltage_mV[:-1] < SPIKE_THRESHOLD
     )
     indices = np.flatnonzero(crossings) + 1
+    return time_ms[indices]
+
+
+def _spike_times(voltage_mV: np.ndarray, time_ms: np.ndarray, stop_ms=None):
+    crossing_times = _all_crossing_times(voltage_mV, time_ms)
     on = STIMULUS_ON.to_decimal(u.ms)
-    selected = time_ms[indices] >= on
+    selected = crossing_times >= on
     if stop_ms is not None:
-        selected &= time_ms[indices] < stop_ms
-    return time_ms[indices[selected]]
+        selected &= crossing_times < stop_ms
+    return crossing_times[selected]
 
 
 def summarize_traces(voltages_mV: np.ndarray, time_ms: np.ndarray):
@@ -305,8 +316,6 @@ def summarize_traces(voltages_mV: np.ndarray, time_ms: np.ndarray):
 
 
 def summary_distance(simulated: np.ndarray, observed: np.ndarray):
-    # [ABC] This normalized discrepancy replaces an explicit likelihood:
-    # smaller values mean that simulated summaries are closer to the recording.
     residual = (simulated - observed[None, :]) / SUMMARY_SCALES
     invalid = ~np.all(np.isfinite(simulated), axis=1)
     distance = np.sqrt(np.mean(residual**2, axis=1))
@@ -315,8 +324,6 @@ def summary_distance(simulated: np.ndarray, observed: np.ndarray):
 
 
 def _local_samples(rng, elite, count):
-    # [ABC] Later-round proposals are fitted around the previously accepted
-    # elite samples, concentrating new simulations in promising prior regions.
     normalized = (elite - PRIOR_LOW) / (PRIOR_HIGH - PRIOR_LOW)
     covariance = np.cov(normalized, rowvar=False) + np.eye(normalized.shape[1]) * 0.0025
     center = np.mean(normalized, axis=0)
@@ -332,11 +339,9 @@ def infer_parameters(
     samples_per_round=1024,
     rounds=3,
     seed=2025,
+    current_pA=30.0,
 ):
     """Approximate the posterior with sequential rejection ABC."""
-    # [ABC 1] Reduce the observed 30 pA trace to the same eight summaries that
-    # will be computed for every simulated candidate. ABC compares summaries,
-    # not the full voltage waveform point by point.
     observed_summary = summarize_traces(observed_voltage_mV, time_ms)[0]
     rng = np.random.default_rng(seed)
     all_parameters = []
@@ -347,25 +352,20 @@ def infer_parameters(
 
     for round_index in range(rounds):
         if proposal is None:
-            # [ABC 2] Round one draws candidates across the uniform prior.
             unit_samples = qmc.LatinHypercube(
                 d=len(PARAMETER_NAMES), seed=seed
             ).random(samples_per_round)
             parameters = qmc.scale(unit_samples, PRIOR_LOW, PRIOR_HIGH)
         else:
-            # [ABC 3] Subsequent rounds draw near the previous round's accepted
-            # elite set instead of searching the full prior again.
             parameters = _local_samples(rng, proposal, samples_per_round)
 
-        # [ABC 4] Simulate every candidate, extract summaries, and score its
-        # discrepancy from the observed summaries. No neural likelihood or
-        # posterior estimator is trained in this implementation.
-        voltages = simulate(parameters, np.full(samples_per_round, 30.0), time_ms)
+        voltages = simulate(
+            parameters,
+            np.full(samples_per_round, current_pA),
+            time_ms,
+        )
         summaries = summarize_traces(voltages, time_ms)
         distances = summary_distance(summaries, observed_summary)
-
-        # [ABC 5] Rejection/acceptance step: retain only the candidates with the
-        # smallest discrepancies. These elite samples define the next proposal.
         elite_indices = np.argsort(distances)[: max(32, samples_per_round // 16)]
         proposal = parameters[elite_indices]
 
@@ -384,31 +384,126 @@ def infer_parameters(
     summaries = np.concatenate(all_summaries)
     distances = np.concatenate(all_distances)
     finite_indices = np.flatnonzero(np.isfinite(distances))
-
-    # [ABC 6] Treat the 128 lowest-discrepancy samples from all rounds as the
-    # approximate posterior retained by the rejection procedure.
     posterior_indices = finite_indices[np.argsort(distances[finite_indices])[:128]]
     posterior_parameters = parameters[posterior_indices]
     posterior_summaries = summaries[posterior_indices]
     posterior_distances = distances[posterior_indices]
 
-    # [ABC 7] Convert discrepancies into kernel weights for a posterior mean.
-    # "map_parameters" is the lowest-discrepancy retained sample; it is named
-    # MAP by this case, but it is not a density-estimated mathematical MAP.
     bandwidth = max(float(np.median(posterior_distances)), 1.0e-6)
     weights = np.exp(-0.5 * (posterior_distances / bandwidth) ** 2)
     weights /= weights.sum()
     estimate = np.average(posterior_parameters, axis=0, weights=weights)
-    map_parameters = posterior_parameters[np.argmin(posterior_distances)]
+    best_fit = posterior_parameters[np.argmin(posterior_distances)]
     return {
         "estimate": estimate,
-        "map": map_parameters,
+        "best_fit": best_fit,
         "observed_summary": observed_summary,
         "posterior_parameters": posterior_parameters,
         "posterior_summaries": posterior_summaries,
         "posterior_distances": posterior_distances,
         "weights": weights,
         "rounds": round_reports,
+    }
+
+
+def _weighted_quantile(values, quantiles, weights):
+    order = np.argsort(values)
+    values = np.asarray(values)[order]
+    weights = np.asarray(weights)[order]
+    cumulative = np.cumsum(weights) - 0.5 * weights
+    cumulative /= np.sum(weights)
+    return np.interp(quantiles, cumulative, values)
+
+
+def posterior_diagnostics(result):
+    parameters = result["posterior_parameters"]
+    weights = result["weights"]
+    widths = PRIOR_HIGH - PRIOR_LOW
+    diagnostics = {}
+    for index, name in enumerate(PARAMETER_NAMES):
+        values = parameters[:, index]
+        quantiles = _weighted_quantile(values, [0.05, 0.5, 0.95], weights)
+        near_boundary = (values <= PRIOR_LOW[index] + 0.05 * widths[index]) | (
+            values >= PRIOR_HIGH[index] - 0.05 * widths[index]
+        )
+        diagnostics[name] = {
+            "unit": PARAMETER_UNITS[index],
+            "weighted_q05": float(quantiles[0]),
+            "weighted_median": float(quantiles[1]),
+            "weighted_q95": float(quantiles[2]),
+            "near_prior_boundary_fraction": float(np.average(near_boundary, weights=weights)),
+        }
+    return diagnostics
+
+
+def estimate_measurement_noise_mV(voltage_mV, time_ms):
+    baseline = np.asarray(voltage_mV)[time_ms < STIMULUS_ON.to_decimal(u.ms)]
+    differences = np.diff(baseline)
+    median = np.median(differences)
+    mad = np.median(np.abs(differences - median))
+    return float(max(mad / 0.67448975 / np.sqrt(2.0), 0.01))
+
+
+def run_parameter_recovery(
+    time_ms,
+    observed_voltage_mV,
+    *,
+    cases,
+    samples_per_round,
+    rounds,
+    seed,
+):
+    """Run exact-budget synthetic recovery as an identifiability diagnostic."""
+    if cases <= 0:
+        return None
+
+    unit_truths = qmc.LatinHypercube(d=len(PARAMETER_NAMES), seed=seed + 1000).random(cases)
+    truths = qmc.scale(unit_truths, PRIOR_LOW, PRIOR_HIGH)
+    latent = simulate(truths, np.full(cases, 30.0), time_ms)
+    noise_sd_mV = estimate_measurement_noise_mV(observed_voltage_mV, time_ms)
+    rng = np.random.default_rng(seed + 2000)
+    recovered = []
+    distances = []
+
+    for case_index in range(cases):
+        synthetic_observation = latent[:, case_index] + rng.normal(
+            0.0, noise_sd_mV, size=len(time_ms)
+        )
+        fit = infer_parameters(
+            synthetic_observation,
+            time_ms,
+            samples_per_round=samples_per_round,
+            rounds=rounds,
+            seed=seed + 3000 + case_index,
+        )
+        recovered.append(fit["best_fit"])
+        distances.append(float(np.min(fit["posterior_distances"])))
+
+    recovered = np.asarray(recovered)
+    normalized_errors = (recovered - truths) / (PRIOR_HIGH - PRIOR_LOW)
+    normalized_rmse = np.sqrt(np.mean(normalized_errors**2, axis=0))
+    correlations = np.full(len(PARAMETER_NAMES), np.nan)
+    if cases >= 3:
+        for index in range(len(PARAMETER_NAMES)):
+            correlations[index] = np.corrcoef(truths[:, index], recovered[:, index])[0, 1]
+
+    return {
+        "cases": int(cases),
+        "samples_per_round": int(samples_per_round),
+        "rounds": int(rounds),
+        "noise_sd_mV": noise_sd_mV,
+        "truths": truths,
+        "recovered": recovered,
+        "best_distances": np.asarray(distances),
+        "normalized_rmse": normalized_rmse,
+        "correlations": correlations,
+        "interpretation": (
+            "diagnostic-only; fewer than eight recovery cases do not support "
+            "parameter-level identifiability claims"
+            if cases < 8
+            else "parameter-level interpretation requires low normalized error, "
+            "strong recovery association, and no boundary concentration"
+        ),
     }
 
 
@@ -442,9 +537,86 @@ def trace_metrics(experimental, simulated, time_ms):
     }
 
 
-def save_outputs(result, time_ms, traces, output_dir: Path):
+def solver_parity(best_fit, time_ms):
+    currents = np.asarray(list(CURRENT_BY_TRACE.values()))
+    parameters = np.repeat(np.asarray(best_fit)[None, :], len(currents), axis=0)
+    coarse = simulate(parameters, currents, time_ms, dt=DT)
+    fine_dt = 0.05 * u.ms
+    fine_time_ms = np.arange(
+        time_ms[0],
+        time_ms[-1] + DT.to_decimal(u.ms),
+        fine_dt.to_decimal(u.ms),
+    )
+    fine = simulate(parameters, currents, fine_time_ms, dt=fine_dt)[::2][: len(time_ms)]
+    spike_count_match = []
+    for lane in range(len(currents)):
+        coarse_count = summarize_traces(coarse[:, lane], time_ms)[0, 0]
+        fine_count = summarize_traces(fine[:, lane], time_ms)[0, 0]
+        spike_count_match.append(bool(coarse_count == fine_count))
+    return {
+        "reference_dt_ms": fine_dt.to_decimal(u.ms),
+        "rmse_mV": float(np.sqrt(np.mean((coarse - fine) ** 2))),
+        "max_abs_error_mV": float(np.max(np.abs(coarse - fine))),
+        "stimulus_spike_counts_match": spike_count_match,
+        "all_stimulus_spike_counts_match": bool(all(spike_count_match)),
+    }
+
+
+def validation_assessment(metrics):
+    held_out = [metrics[str(trace)] for trace in (6, 7, 8)]
+    spike_counts_match = all(
+        item["experimental_protocol"]["stimulus_spike_count"]
+        == item["simulated_protocol"]["stimulus_spike_count"]
+        for item in held_out
+    )
+    experimental_isi = [
+        item["experimental_protocol"]["stimulus_mean_isi_ms"] for item in held_out
+    ]
+    simulated_isi = [
+        item["simulated_protocol"]["stimulus_mean_isi_ms"] for item in held_out
+    ]
+    experimental_isi_decreases = bool(np.all(np.diff(experimental_isi) < 0.0))
+    simulated_isi_decreases = bool(np.all(np.diff(simulated_isi) < 0.0))
+    waveform_passes = []
+    for item in held_out:
+        latency_error = abs(
+            item["simulated"]["first_spike_latency_ms"]
+            - item["experimental"]["first_spike_latency_ms"]
+        )
+        waveform_passes.append(
+            item["rmse_mV"] <= WAVEFORM_MAX_RMSE_MV
+            and item["correlation"] >= WAVEFORM_MIN_CORRELATION
+            and latency_error <= WAVEFORM_MAX_LATENCY_ERROR_MS
+        )
+    protocol_consistent = bool(
+        spike_counts_match and experimental_isi_decreases and simulated_isi_decreases
+    )
+    waveform_consistent = bool(all(waveform_passes))
+    if protocol_consistent and not waveform_consistent:
+        conclusion = "qualitative protocol-level agreement, but not waveform-level agreement"
+    elif protocol_consistent and waveform_consistent:
+        conclusion = "protocol-level and waveform-level agreement under the locked criteria"
+    else:
+        conclusion = "held-out behavior is not consistent under the locked protocol criteria"
+    return {
+        "held_out_spike_counts_match": spike_counts_match,
+        "experimental_isi_decreases_with_current": experimental_isi_decreases,
+        "simulated_isi_decreases_with_current": simulated_isi_decreases,
+        "protocol_consistent": protocol_consistent,
+        "waveform_thresholds": {
+            "max_rmse_mV": WAVEFORM_MAX_RMSE_MV,
+            "min_correlation": WAVEFORM_MIN_CORRELATION,
+            "max_first_spike_latency_error_ms": WAVEFORM_MAX_LATENCY_ERROR_MS,
+        },
+        "held_out_waveform_passes": waveform_passes,
+        "waveform_consistent": waveform_consistent,
+        "conclusion": conclusion,
+    }
+
+
+def save_outputs(result, time_ms, traces, output_dir: Path, recovery=None):
     output_dir.mkdir(parents=True, exist_ok=True)
-    estimate = result["map"]
+    estimate = result["best_fit"]
     currents = np.array(list(CURRENT_BY_TRACE.values()))
     simulated = simulate(np.repeat(estimate[None, :], 4, axis=0), currents, time_ms)
 
@@ -457,6 +629,18 @@ def save_outputs(result, time_ms, traces, output_dir: Path):
             **trace_metrics(traces[trace_number], simulated[:, lane], time_ms),
         }
 
+    no_current = simulate(estimate, np.array([0.0]), time_ms)[:, 0]
+    no_current_crossings = _all_crossing_times(no_current, time_ms)
+    control = {
+        "no_current_pre_stimulus_spike_count": int(
+            np.sum(no_current_crossings < STIMULUS_ON.to_decimal(u.ms))
+        ),
+        "no_current_total_spike_count": int(len(no_current_crossings)),
+        "finite": bool(np.all(np.isfinite(no_current))),
+    }
+    parity = solver_parity(estimate, time_ms)
+    assessment = validation_assessment(metrics)
+
     report = {
         "model": {
             "dynamic_states": ["V", "m", "h", "n", "p", "q", "Ca"],
@@ -464,19 +648,52 @@ def save_outputs(result, time_ms, traces, output_dir: Path):
             "training_trace": 9,
             "training_current_pA": 30.0,
             "test_traces": [6, 7, 8],
+            "source_variant": (
+                "six requested currents; SLO-2 includes the voltage-dependent "
+                "z_inf^3 factor from the paper equation"
+            ),
         },
         "inference": {
             "method": "sequential rejection approximate Bayesian computation",
             "parameter_names": list(PARAMETER_NAMES),
+            "parameter_units": dict(zip(PARAMETER_NAMES, PARAMETER_UNITS)),
             "prior_low": dict(zip(PARAMETER_NAMES, PRIOR_LOW.tolist())),
             "prior_high": dict(zip(PARAMETER_NAMES, PRIOR_HIGH.tolist())),
             "posterior_mean": dict(zip(PARAMETER_NAMES, result["estimate"].tolist())),
-            "map": dict(zip(PARAMETER_NAMES, result["map"].tolist())),
-            "validation_parameters": "map",
+            "best_fit": dict(zip(PARAMETER_NAMES, result["best_fit"].tolist())),
+            "validation_parameters": "lowest-summary-discrepancy ABC sample",
+            "posterior_diagnostics": posterior_diagnostics(result),
+            "claim_boundary": (
+                "ABC kernel weights are approximate and the best-fit sample is not "
+                "a mathematical MAP estimate"
+            ),
             "rounds": result["rounds"],
         },
+        "controls": control,
+        "solver_parity": parity,
         "metrics": metrics,
+        "held_out_assessment": assessment,
     }
+    if recovery is not None:
+        report["parameter_recovery"] = {
+            "cases": recovery["cases"],
+            "samples_per_round": recovery["samples_per_round"],
+            "rounds": recovery["rounds"],
+            "noise_sd_mV": recovery["noise_sd_mV"],
+            "normalized_rmse": dict(
+                zip(PARAMETER_NAMES, recovery["normalized_rmse"].tolist())
+            ),
+            "recovered_vs_true_correlation": dict(
+                zip(
+                    PARAMETER_NAMES,
+                    [
+                        float(value) if np.isfinite(value) else None
+                        for value in recovery["correlations"]
+                    ],
+                )
+            ),
+            "interpretation": recovery["interpretation"],
+        }
     (output_dir / "report.json").write_text(json.dumps(report, indent=2) + "\n")
 
     with (output_dir / "posterior_samples.csv").open("w", newline="") as file:
@@ -488,6 +705,27 @@ def save_outputs(result, time_ms, traces, output_dir: Path):
             result["weights"],
         ):
             writer.writerow([*parameter, distance, weight])
+
+    if recovery is not None:
+        with (output_dir / "recovery_results.csv").open("w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(
+                [
+                    "case",
+                    *[f"true_{name}" for name in PARAMETER_NAMES],
+                    *[f"recovered_{name}" for name in PARAMETER_NAMES],
+                    "best_distance",
+                ]
+            )
+            for case_index in range(recovery["cases"]):
+                writer.writerow(
+                    [
+                        case_index,
+                        *recovery["truths"][case_index],
+                        *recovery["recovered"][case_index],
+                        recovery["best_distances"][case_index],
+                    ]
+                )
 
     with (output_dir / "trace_predictions.csv").open("w", newline="") as file:
         writer = csv.writer(file)
@@ -530,6 +768,7 @@ def parse_args():
     parser.add_argument("--samples-per-round", type=int, default=1024)
     parser.add_argument("--rounds", type=int, default=3)
     parser.add_argument("--seed", type=int, default=2025)
+    parser.add_argument("--recovery-cases", type=int, default=3)
     parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
     return parser.parse_args()
 
@@ -545,7 +784,15 @@ def main():
         rounds=args.rounds,
         seed=args.seed,
     )
-    report = save_outputs(result, time_ms, traces, args.output_dir)
+    recovery = run_parameter_recovery(
+        time_ms,
+        traces[9],
+        cases=args.recovery_cases,
+        samples_per_round=args.samples_per_round,
+        rounds=args.rounds,
+        seed=args.seed,
+    )
+    report = save_outputs(result, time_ms, traces, args.output_dir, recovery=recovery)
     print(json.dumps(report, indent=2))
 
 

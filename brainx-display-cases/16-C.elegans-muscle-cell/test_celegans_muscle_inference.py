@@ -31,6 +31,9 @@ class CelegansMuscleInferenceTest(unittest.TestCase):
             [name for name in ("m", "h", "n", "p", "q", "ca") if hasattr(cell.currents, name)],
             ["m", "h", "n", "p", "q", "ca"],
         )
+        for current in components.values():
+            converted = current.to_decimal(case.u.pA)
+            self.assertTrue(np.all(np.isfinite(converted)))
 
     def test_short_rollout_is_finite(self):
         parameters = np.array([19.8, 37.0, 0.1, 22.0, 3.6, 10.0])
@@ -38,6 +41,34 @@ class CelegansMuscleInferenceTest(unittest.TestCase):
         voltage = case.simulate(parameters, np.array([0.0]), time_ms)
         self.assertEqual(voltage.shape, (20, 1))
         self.assertTrue(np.all(np.isfinite(voltage)))
+
+    def test_parameter_map_and_source_bounds(self):
+        self.assertEqual(len(case.PARAMETER_NAMES), 6)
+        self.assertEqual(len(case.PARAMETER_UNITS), 6)
+        self.assertTrue(np.all(case.PRIOR_LOW < case.PRIOR_HIGH))
+        self.assertEqual(case.PRIOR_LOW[4], 1.5)
+        self.assertEqual(case.PRIOR_HIGH[4], 2.5)
+
+    def test_candidate_lanes_are_independent(self):
+        parameters = np.array(
+            [
+                [19.8, 37.0, 0.1, 22.0, 2.1, 10.0],
+                [15.0, 30.0, 0.2, 18.0, 1.8, 9.0],
+            ]
+        )
+        time_ms = np.arange(0.0, 2.0, 0.1)
+        batched = case.simulate(parameters, np.array([0.0, 0.0]), time_ms)
+        first = case.simulate(parameters[0], np.array([0.0]), time_ms)[:, 0]
+        second = case.simulate(parameters[1], np.array([0.0]), time_ms)[:, 0]
+        np.testing.assert_allclose(batched[:, 0], first, rtol=1e-5, atol=1e-5)
+        np.testing.assert_allclose(batched[:, 1], second, rtol=1e-5, atol=1e-5)
+
+    def test_held_out_traces_are_not_passed_to_inference(self):
+        time_ms, traces = case.load_experimental_traces()
+        observed = traces[9]
+        self.assertFalse(np.shares_memory(observed, traces[6]))
+        summary = case.summarize_traces(observed, time_ms)
+        self.assertEqual(summary.shape, (1, len(case.SUMMARY_NAMES)))
 
 
 if __name__ == "__main__":

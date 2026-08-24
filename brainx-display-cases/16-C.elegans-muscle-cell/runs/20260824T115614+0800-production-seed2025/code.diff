@@ -1,0 +1,13 @@
+Git base: 8599500a6c2b0e7e81e0ab433bfe3a207c575ee8
+
+Tracked modifications at freeze:
+- celegans_muscle_inference.py: 284 insertions, 37 deletions; SHA-256 be586c6f7e1de866ad8af846ff4b980b81c384718151a96f494a6a9adf75aa63
+- test_celegans_muscle_inference.py: 31 insertions; SHA-256 a09794ece8d905cf4864c2ccd882312105f142a6a0068a60b902930ef9ba5bc8
+
+New specification/evidence files at freeze:
+- NeuroSpecification.md: SHA-256 89a5e6afb0db65687ccb3a4917ec22eb3af8e5d59ef4da7630595013ac62770f
+- brainx-study-record.md: SHA-256 19f401f33957477a19c047241c798794ab72dac0729ec715de45fa1e0350637b
+- acceleration-and-parity.md: SHA-256 48e9b85d4d3273c46eb56bb62be778bb3a498b4b433a11d945aeb2f88fb1e70a
+- brainmodeling-memory.md: append-only loop state; later checkpoints are expected to change this file.
+
+The pre-existing user change removing explanatory ABC comments is preserved.
