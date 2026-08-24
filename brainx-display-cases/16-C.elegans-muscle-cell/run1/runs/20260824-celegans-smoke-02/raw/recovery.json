@@ -1,0 +1,146 @@
+[
+  {
+    "case": 0,
+    "noise_sd_mV": 0.08074743744070131,
+    "selected_loss": 0.862586110830307,
+    "selected_parameters": [
+      1.8754210262099102,
+      0.019033161346926508,
+      0.1742284413355959,
+      0.9913804986378691,
+      0.9399896056524508,
+      0.02818610304743411,
+      2.1310979431040207
+    ],
+    "selected_seed": 2025,
+    "starts": [
+      {
+        "candidate_batches": [
+          {
+            "best_baseline_rmse_mV": 0.12252408266067505,
+            "best_spike_count_penalty": 0.0,
+            "best_spike_timing_penalty": 0.0,
+            "best_total_rmse_mV": 1.6160701513290405,
+            "call": 0,
+            "candidates": 28,
+            "cumulative_best": 1.677332192659378,
+            "finite": 28,
+            "invalid": 0,
+            "maximum": 56.96773290634155,
+            "median": 28.30295778438449,
+            "minimum": 1.677332192659378
+          },
+          {
+            "best_baseline_rmse_mV": 0.34531229734420776,
+            "best_spike_count_penalty": 0.0,
+            "best_spike_timing_penalty": 0.0,
+            "best_total_rmse_mV": 0.6899299621582031,
+            "call": 1,
+            "candidates": 28,
+            "cumulative_best": 0.862586110830307,
+            "finite": 28,
+            "invalid": 0,
+            "maximum": 40.58650469779968,
+            "median": 8.39216884225607,
+            "minimum": 0.862586110830307
+          },
+          {
+            "best_baseline_rmse_mV": 0.1553141325712204,
+            "best_spike_count_penalty": 0.0,
+            "best_spike_timing_penalty": 0.0,
+            "best_total_rmse_mV": 0.8760174512863159,
+            "call": 2,
+            "candidates": 28,
+            "cumulative_best": 0.862586110830307,
+            "finite": 28,
+            "invalid": 0,
+            "maximum": 46.221811920404434,
+            "median": 5.697746187448502,
+            "minimum": 0.9536745175719261
+          }
+        ],
+        "candidate_evaluations": 84,
+        "closure_reason": "maximum-budget-without-closure",
+        "initial_components": {
+          "baseline_rmse_mV": 0.604254424571991,
+          "spike_count_penalty": 24.0,
+          "spike_timing_penalty": 0.0,
+          "total": 35.0506566464901,
+          "total_rmse_mV": 10.748529434204102
+        },
+        "initial_loss": 35.0506566464901,
+        "initial_parameters": [
+          1.0,
+          0.02500000037252903,
+          0.029999999329447746,
+          1.0,
+          1.0,
+          0.003000000026077032,
+          1.0
+        ],
+        "loss": 0.862586110830307,
+        "loss_closed": false,
+        "message": "Maximum number of iterations has been exceeded.",
+        "nfev": 3,
+        "nit": 2,
+        "parameter_vector": [
+          1.8754210262099102,
+          0.019033161346926508,
+          0.1742284413355959,
+          0.9913804986378691,
+          0.9399896056524508,
+          0.02818610304743411,
+          2.1310979431040207
+        ],
+        "parameters": {
+          "capacitance": {
+            "unit": "uF / cm^2",
+            "value": 2.1310979431040207
+          },
+          "g_egl19": {
+            "unit": "mS / cm^2",
+            "value": 0.019033161346926508
+          },
+          "g_kr": {
+            "unit": "mS / cm^2",
+            "value": 0.9913804986378691
+          },
+          "g_leak": {
+            "unit": "mS / cm^2",
+            "value": 0.02818610304743411
+          },
+          "g_na": {
+            "unit": "mS / cm^2",
+            "value": 0.9399896056524508
+          },
+          "g_shk1": {
+            "unit": "mS / cm^2",
+            "value": 1.8754210262099102
+          },
+          "g_slo2": {
+            "unit": "mS / cm^2",
+            "value": 0.1742284413355959
+          }
+        },
+        "seed": 2025,
+        "success": false
+      }
+    ],
+    "truth": [
+      1.8511545084449303,
+      0.04645258106331948,
+      0.15331796850255858,
+      1.3332491082306728,
+      0.736538704105623,
+      0.02262269601710996,
+      2.1883322740793805
+    ],
+    "truth_objective_components": {
+      "baseline_rmse_mV": 0.08228864520788193,
+      "spike_count_penalty": 0.0,
+      "spike_timing_penalty": 0.0,
+      "total": 0.1202794499695301,
+      "total_rmse_mV": 0.07913512736558914
+    }
+  }
+]

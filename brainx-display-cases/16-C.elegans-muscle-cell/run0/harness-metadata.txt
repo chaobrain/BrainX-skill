@@ -1,0 +1,11 @@
+prompt_bytes=1180
+prompt_sha256=6b300fde60e35720f6d84ff358bedb6558420446f1100f33e67cbdc8a6e577ff
+model=gpt-5.6-sol
+model_provider=wangchaoming
+reasoning_effort=high
+codex_version=codex-cli 0.147.0-alpha.6.5
+brainx_python=/Users/nijiachen/Downloads/Brainx testing/.venv-brainx/bin/python
+skills=11 local BrainX skills; visualization excluded
+mcp=local mcp-servers/codex/server.mjs
+exit_code=0
+isolation_caveat=workspace-write prevented outside writes but did not prevent host reads; the agent discovered existing case paths during filesystem search

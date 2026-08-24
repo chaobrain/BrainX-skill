@@ -1,0 +1,21 @@
+{
+  "backend": "cpu",
+  "brainstate_platform": "cpu",
+  "devices": ["cpu:0"],
+  "interpreter": "/Users/nijiachen/Downloads/Brainx testing/.venv-brainx/bin/python",
+  "operating_system": "macOS 26.2 (25C56)",
+  "packages": {
+    "BrainX": "2026.7.9",
+    "braincell": "0.1.0",
+    "brainstate": "0.5.2",
+    "braintools": "0.3.0",
+    "brainunit": "0.5.1",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "matplotlib": "3.11.1",
+    "numpy": "2.4.6",
+    "scipy": "1.18.0"
+  },
+  "precision": "JAX default float32 simulation; float64 host scoring",
+  "python": "3.12.12"
+}

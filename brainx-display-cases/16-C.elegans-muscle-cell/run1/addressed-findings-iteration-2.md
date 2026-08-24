@@ -1,0 +1,9 @@
+# Iteration 2 addressed findings
+
+- `FIT-001`: Increased only the derivative-free budget to a predeclared maximum of 100 generations, added a 20-generation/0.01 cumulative-best plateau rule, and retained initial objective, candidate counts, cumulative-best, and best-candidate component histories for every start.
+- `CONTRACT-001`: Added the unchanged ordered parameter map, physical units, bounds and provenance, exact objective formula and weights, estimator settings, seeds, stopping rule, and training-only selection rule to the researcher-authorized locked specification.
+- `FIT-002`: Added raw and metric outputs for all three start vectors on every training and held-out protocol while retaining the lowest-Trace-#8-objective selection rule.
+- `FIT-003`: Predeclared 16 Latin-hypercube recovery truths, retained latent and noisy observations and truth objectives, added boundary/failure/error-correlation evidence and one-dimensional objective profiles, and conservatively withheld every parameter interpretation.
+- `NUM-001`: Added frozen-parameter RK4 refinement at 0.05 ms, downsampled at matching integration endpoints, with waveform, spike-count, and first-spike comparisons for every protocol.
+- `VALID-001`: Added nominal/lower/upper full-State validation for voltage, all implemented gates, and intracellular calcium; pre-stimulus spikes are now detected explicitly on 0-50 ms rather than through the stimulus-window detector.
+- `API-001`: Added a separate no-install optimizer-boundary check for the same BrainCell objective, unit-bearing bounds, and 28-candidate semantics. The optional `nevergrad` dependency is unavailable, so canonical `braintools.optim.NevergradOptimizer` execution is recorded as unavailable rather than fabricated; the unchanged, validated SciPy estimator remains the production boundary.

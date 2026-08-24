@@ -14,3 +14,9 @@ command = "/usr/bin/security"
 args = ["find-generic-password", "-a", "nijiachen", "-s", "codex-wangchaoming-api-key", "-w"]
 timeout_ms = 5000
 refresh_interval_ms = 0
+
+[mcp_servers.codex]
+command = "node"
+args = ["/Users/nijiachen/Downloads/brainx-skill-bundle/mcp-servers/codex/server.mjs"]
+default_tools_approval_mode = "approve"
+tool_timeout_sec = 1800

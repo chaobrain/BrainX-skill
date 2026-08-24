@@ -1,0 +1,26 @@
+{
+  "backend": "cpu",
+  "comparison": {"iteration_1_selected_loss": 6.967266731558755},
+  "data_path": "/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.ny74AR/workspace/Fig4A-D.txt",
+  "data_stride": 2,
+  "optimizer": {
+    "maxiter": 2,
+    "plateau_generations": 20,
+    "plateau_tolerance": 0.01,
+    "popsize": 4,
+    "seeds": [2025]
+  },
+  "passive_seed": 3101,
+  "recovery": {
+    "domain_margin_fraction": 0.1,
+    "max_normalized_error_limit": 0.2,
+    "median_normalized_error_limit": 0.15,
+    "noise_seed": 9511,
+    "truth_count": 1,
+    "truth_seed": 8417
+  },
+  "run_dir": "/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.ny74AR/workspace/runs/20260824-celegans-smoke-02",
+  "run_id": "20260824-celegans-smoke-02",
+  "run_level": "smoke",
+  "simulation_seed": 4041
+}

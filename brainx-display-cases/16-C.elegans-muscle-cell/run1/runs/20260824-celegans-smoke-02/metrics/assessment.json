@@ -1,0 +1,43 @@
+{
+  "active_model_beats_passive": true,
+  "claim_evidence_matrix": {
+    "held-out prediction": [
+      "raw/per_start_predictions.npz",
+      "metrics/per_start_metrics.json"
+    ],
+    "numerical validity": [
+      "metrics/metrics.json:full_state_checks",
+      "metrics/numerical_refinement.json"
+    ],
+    "parameter interpretation": [
+      "raw/recovery.json",
+      "raw/recovery_observations.npz",
+      "metrics/recovery_tradeoffs.json"
+    ],
+    "passive control": [
+      "raw/passive_fit.json",
+      "metrics.json:passive_trace_8_metrics"
+    ],
+    "training fit": [
+      "raw/predictions.npz",
+      "metrics.json:trace_metrics.8"
+    ]
+  },
+  "explicit_non_claims": [
+    "No unique biological parameter identification without recovery support.",
+    "No exact reproduction of the Du et al. 2025 supplementary parameterization.",
+    "No generalization outside 15-30 pA or beyond this single recording series."
+  ],
+  "mechanically_valid": true,
+  "overall_predictive_result": "supported-under-tested-protocol",
+  "parameter_claims": {
+    "capacitance": "non-identifiable-under-this-protocol",
+    "g_egl19": "non-identifiable-under-this-protocol",
+    "g_kr": "non-identifiable-under-this-protocol",
+    "g_leak": "non-identifiable-under-this-protocol",
+    "g_na": "non-identifiable-under-this-protocol",
+    "g_shk1": "non-identifiable-under-this-protocol",
+    "g_slo2": "non-identifiable-under-this-protocol"
+  },
+  "predictive_consistency_pass": true
+}

@@ -1,0 +1,138 @@
+{
+  "active_model_beats_passive_training_rmse": true,
+  "boundary_checks": {
+    "lower": {
+      "finite": true,
+      "maximum_mV": 12.362576484680176,
+      "minimum_mV": -28.41356658935547
+    },
+    "upper": {
+      "finite": true,
+      "maximum_mV": 10.819267272949219,
+      "minimum_mV": -43.271034240722656
+    }
+  },
+  "parameter_recovery": {
+    "capacitance": {
+      "classification": "interpretable",
+      "max_normalized_error": 0.041700863468638105,
+      "median_absolute_error": 0.07971070527637547,
+      "median_normalized_error": 0.039855352638187735
+    },
+    "g_egl19": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.3689507108231317,
+      "median_absolute_error": 0.013412842997962138,
+      "median_normalized_error": 0.09001908052323583
+    },
+    "g_kr": {
+      "classification": "interpretable",
+      "max_normalized_error": 0.15859203447657927,
+      "median_absolute_error": 0.06415933879940194,
+      "median_normalized_error": 0.012961482585737765
+    },
+    "g_leak": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.3959215808413169,
+      "median_absolute_error": 0.004803901004773093,
+      "median_normalized_error": 0.16066558544391615
+    },
+    "g_na": {
+      "classification": "interpretable",
+      "max_normalized_error": 0.10276778595646069,
+      "median_absolute_error": 0.23542020965059507,
+      "median_normalized_error": 0.04755963831325153
+    },
+    "g_shk1": {
+      "classification": "interpretable",
+      "max_normalized_error": 0.1366466304515797,
+      "median_absolute_error": 0.6634794625793781,
+      "median_normalized_error": 0.13403625506654102
+    },
+    "g_slo2": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.510571796146495,
+      "median_absolute_error": 0.055862596215936366,
+      "median_normalized_error": 0.2807165638991777
+    }
+  },
+  "passive_trace_8_metrics": {
+    "correlation": 0.4769174028191608,
+    "first_spike_error_ms": null,
+    "mae_mV": 12.713345149529037,
+    "observed_first_spike_ms": 90.7,
+    "observed_spike_count": 4,
+    "predicted_first_spike_ms": null,
+    "predicted_spike_count": 0,
+    "rmse_mV": 17.17906088796382,
+    "spike_count_error": 4
+  },
+  "prediction_assessment": {
+    "first_spike_latency_monotone": false,
+    "held_out_count_passes": 2,
+    "held_out_latency_passes": 2,
+    "predicted_first_spikes_ms_15_20_25_30_pA": [
+      null,
+      97.19999999999999,
+      87.0,
+      81.8
+    ],
+    "predicted_spike_counts_15_20_25_30_pA": [
+      0,
+      3,
+      4,
+      5
+    ],
+    "predictive_consistency_pass": false,
+    "spike_count_monotone": true
+  },
+  "selected_start_seed": 2025,
+  "selected_training_objective": 6.967266731558755,
+  "trace_metrics": {
+    "6": {
+      "correlation": 0.41152368729774247,
+      "first_spike_error_ms": null,
+      "mae_mV": 6.556494642876208,
+      "observed_first_spike_ms": 106.1,
+      "observed_spike_count": 3,
+      "predicted_first_spike_ms": null,
+      "predicted_spike_count": 0,
+      "rmse_mV": 10.541477637052392,
+      "spike_count_error": 3
+    },
+    "7": {
+      "correlation": 0.6822644113580746,
+      "first_spike_error_ms": 0.9000000000000199,
+      "mae_mV": 6.024304065686544,
+      "observed_first_spike_ms": 98.10000000000001,
+      "observed_spike_count": 3,
+      "predicted_first_spike_ms": 97.19999999999999,
+      "predicted_spike_count": 3,
+      "rmse_mV": 8.443152633915641,
+      "spike_count_error": 0
+    },
+    "8": {
+      "correlation": 0.8754281001124372,
+      "first_spike_error_ms": 3.700000000000003,
+      "mae_mV": 4.362506206778367,
+      "observed_first_spike_ms": 90.7,
+      "observed_spike_count": 4,
+      "predicted_first_spike_ms": 87.0,
+      "predicted_spike_count": 4,
+      "rmse_mV": 6.56317173089716,
+      "spike_count_error": 0
+    },
+    "9": {
+      "correlation": 0.6475995007947022,
+      "first_spike_error_ms": 6.5,
+      "mae_mV": 5.186115182715229,
+      "observed_first_spike_ms": 88.3,
+      "observed_spike_count": 4,
+      "predicted_first_spike_ms": 81.8,
+      "predicted_spike_count": 5,
+      "rmse_mV": 9.742098128112625,
+      "spike_count_error": 1
+    }
+  },
+  "zero_current_spike_count": 0
+}

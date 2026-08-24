@@ -1,0 +1,19 @@
+{
+  "BrainX": "2026.7.9",
+  "braincell": "0.1.0",
+  "brainstate": "0.5.2",
+  "braintools": "0.3.0",
+  "brainunit": "0.5.1",
+  "jax": "0.10.2",
+  "jaxlib": "0.10.2",
+  "numpy": "2.4.6",
+  "scipy": "1.18.0",
+  "python": "3.12",
+  "backend": "cpu",
+  "devices": ["CpuDevice(id=0)"],
+  "environment_overrides": {
+    "JAX_PLATFORMS": "cpu",
+    "MPLCONFIGDIR": "/tmp/matplotlib",
+    "XDG_CACHE_HOME": "/tmp/cache"
+  }
+}

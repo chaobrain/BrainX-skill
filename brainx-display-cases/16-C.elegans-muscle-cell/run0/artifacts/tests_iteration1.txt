@@ -1,0 +1,13 @@
+Command: MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp/cache python -m unittest discover -s tests -v
+Result: PASS
+Tests run: 6
+Elapsed: 1.805 s
+
+- channel currents use total-current units and reverse at fixed potentials
+- stimulus contains exactly 4000 nonzero samples in [50, 250) ms
+- ATF shape/time base and immutable train/test split are valid
+- nominal zero-current rollout is finite and event-free
+- explicit parameter map round-trips in the declared order
+- runtime reset produces deterministic replay
+
+Pytest was not installed; the tests use the Python standard-library unittest runner.

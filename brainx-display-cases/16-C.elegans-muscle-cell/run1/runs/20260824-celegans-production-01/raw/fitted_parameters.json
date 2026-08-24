@@ -1,0 +1,274 @@
+{
+  "candidate_batches": [
+    {
+      "call": 0,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 45.33458489725648,
+      "median": 27.453157188439107,
+      "minimum": 14.645283623476672
+    },
+    {
+      "call": 1,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 38.884395530273636,
+      "median": 26.431506636534515,
+      "minimum": 14.782818574836346
+    },
+    {
+      "call": 2,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 55.7699125152416,
+      "median": 23.233330799597123,
+      "minimum": 13.41593517693933
+    },
+    {
+      "call": 3,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 31.31573443726988,
+      "median": 23.562287672194877,
+      "minimum": 14.917415884243258
+    },
+    {
+      "call": 4,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 35.73091048426462,
+      "median": 23.249717498706975,
+      "minimum": 10.338335274646028
+    },
+    {
+      "call": 5,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 39.183150516187105,
+      "median": 19.88534479155861,
+      "minimum": 9.531963988859573
+    },
+    {
+      "call": 6,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 32.91585150626729,
+      "median": 19.77189739432873,
+      "minimum": 9.986318724315888
+    },
+    {
+      "call": 7,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 32.80493771062124,
+      "median": 18.810322123383543,
+      "minimum": 10.15153902327652
+    },
+    {
+      "call": 8,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 37.39044335093035,
+      "median": 16.29862383173844,
+      "minimum": 8.201844029225908
+    },
+    {
+      "call": 9,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 31.072351658272307,
+      "median": 18.15842440621806,
+      "minimum": 8.952664128841674
+    },
+    {
+      "call": 10,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 30.546042546270407,
+      "median": 15.730460025476994,
+      "minimum": 8.227527435368271
+    },
+    {
+      "call": 11,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 39.320647695414145,
+      "median": 19.298514709974086,
+      "minimum": 7.700053886913956
+    },
+    {
+      "call": 12,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 34.99714929573983,
+      "median": 19.165145859280702,
+      "minimum": 9.77528007555646
+    },
+    {
+      "call": 13,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 36.637355058284925,
+      "median": 18.06020056899858,
+      "minimum": 9.422531698599757
+    },
+    {
+      "call": 14,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 36.82217036206184,
+      "median": 14.889335302969549,
+      "minimum": 8.384699795517385
+    },
+    {
+      "call": 15,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 32.71212598962402,
+      "median": 16.870856825802484,
+      "minimum": 8.384948266062016
+    },
+    {
+      "call": 16,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 36.481909372330946,
+      "median": 16.4867050768272,
+      "minimum": 7.869109498969309
+    },
+    {
+      "call": 17,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 38.98538952593935,
+      "median": 16.58213156914235,
+      "minimum": 7.724322263853789
+    },
+    {
+      "call": 18,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 34.80097981671083,
+      "median": 11.426061548938907,
+      "minimum": 7.446809095899003
+    },
+    {
+      "call": 19,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 22.188432822952148,
+      "median": 13.363382392191433,
+      "minimum": 7.625456125791631
+    },
+    {
+      "call": 20,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 20.187247849181993,
+      "median": 10.21405085670596,
+      "minimum": 7.2704754313972355
+    },
+    {
+      "call": 21,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 36.84272435397851,
+      "median": 16.461980214123855,
+      "minimum": 7.227602381453717
+    },
+    {
+      "call": 22,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 35.11543324856564,
+      "median": 15.153188769933095,
+      "minimum": 7.465773513279164
+    },
+    {
+      "call": 23,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 22.212036064137184,
+      "median": 11.378431076863722,
+      "minimum": 6.967266731558755
+    },
+    {
+      "call": 24,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 25.92296047990752,
+      "median": 10.199571693113807,
+      "minimum": 7.152792038769304
+    }
+  ],
+  "loss": 6.967266731558755,
+  "message": "Maximum number of iterations has been exceeded.",
+  "nfev": 25,
+  "nit": 24,
+  "parameter_vector": [
+    1.4103545191384725,
+    0.0033761385427622803,
+    0.16566660694451943,
+    0.74519734439967,
+    2.8515965949076736,
+    0.027589871407747674,
+    2.221800057534283
+  ],
+  "parameters": {
+    "capacitance": {
+      "unit": "uF / cm^2",
+      "value": 2.221800057534283
+    },
+    "g_egl19": {
+      "unit": "mS / cm^2",
+      "value": 0.0033761385427622803
+    },
+    "g_kr": {
+      "unit": "mS / cm^2",
+      "value": 0.74519734439967
+    },
+    "g_leak": {
+      "unit": "mS / cm^2",
+      "value": 0.027589871407747674
+    },
+    "g_na": {
+      "unit": "mS / cm^2",
+      "value": 2.8515965949076736
+    },
+    "g_shk1": {
+      "unit": "mS / cm^2",
+      "value": 1.4103545191384725
+    },
+    "g_slo2": {
+      "unit": "mS / cm^2",
+      "value": 0.16566660694451943
+    }
+  },
+  "seed": 2025,
+  "success": false
+}
