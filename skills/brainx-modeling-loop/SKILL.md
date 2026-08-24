@@ -175,12 +175,13 @@ Start one fresh `mcp__codex__codex` call for each completed iteration. Send the
 locked specification, step-1 study record, implementation and tests, acceleration
 evidence, experiment configuration, raw run artifacts, metrics, deterministic
 result assessment, claim-evidence matrix, proposed next action, and all evidence
-required by active training/fitting coverage. Preserve the returned raw response
-and `threadId` as review artifacts. Treat the returned `content` as the reviewer
-response in the calling agent's current turn: classify it immediately, update
-the loop checkpoint, and report or act on the verdict without asking the
-researcher to open another context. Preserve `threadId` for reviewer follow-up;
-it is not needed for the calling agent to read the initial response.
+required by active training/fitting coverage. The returned `content` is the
+reviewer's Markdown report in the calling agent's current turn. Before
+classifying it, save it verbatim as `reviews/iteration-<N>.md`; do not reformat,
+summarize, or mix the main agent's analysis into that file. Then read its verdict,
+update the loop checkpoint with the report path, and report or act on it without
+asking the researcher to open another context. Preserve the returned `threadId`
+in the checkpoint for reviewer follow-up; it is not needed to read the report.
 
 Before calling, verify that every listed path exists. Set the MCP call's working
 directory to the project root when the tool exposes a working-directory argument,
@@ -228,7 +229,7 @@ PRIOR_REVIEW_EVIDENCE:
 - <path to prior raw reviews and addressed findings, or none>
 
 Read every listed artifact and review this iteration using the injected reviewer
-contract. Do not edit files. Return the required structured outcome.
+contract. Do not edit files. Return only the required Markdown report.
 ```
 
 List concrete files, not only directories. Keep large data in place and provide
@@ -246,7 +247,7 @@ explicit budget longer than the largest expected review. A host timeout may be
 reported as `user cancelled MCP tool call`; when no `threadId` or response is
 returned, diagnose the MCP budget before treating it as researcher cancellation.
 
-Record the full Codex response and one of two outcomes:
+Record the verbatim Markdown report path, `threadId`, and one of two outcomes:
 
 | Outcome | Transition |
 |---|---|
@@ -255,7 +256,7 @@ Record the full Codex response and one of two outcomes:
 
 Do not argue with a refusal inside step 5 and do not substitute self-review for the MCP Codex call. The next Codex call occurs only after the revised implementation has passed again through acceleration and experiment execution.
 
-**Step result:** a preserved Codex response and either a return to step 2 or a memory checkpoint pointing to step 6.
+**Step result:** a preserved `reviews/iteration-<N>.md` report and either a return to step 2 or a memory checkpoint pointing to step 6.
 
 ## Step 6: Visualize the accepted result
 

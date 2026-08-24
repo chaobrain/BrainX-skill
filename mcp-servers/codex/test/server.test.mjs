@@ -60,7 +60,12 @@ test('injects the reviewer prompt and configured BrainX skills into fresh sessio
   assert.match(args['base-instructions'], /\*\*Hyperparameters and method:\*\*/);
   assert.match(args['base-instructions'], /BrainState's prebuilt `brainstate\.nn` layers/);
   assert.match(args['base-instructions'], /braintools\.optim\.Adam/);
-  assert.match(args['base-instructions'], /LOSS_CLOSURE: NOT_APPLICABLE/);
+  assert.match(args['base-instructions'], /Return a Markdown document as the tool response/);
+  assert.match(args['base-instructions'], /# BrainX iteration review/);
+  assert.match(args['base-instructions'], /- \*\*OUTCOME:\*\* `PASS \| REFUSE`/);
+  assert.match(args['base-instructions'], /- \*\*LOSS_CLOSURE:\*\* `NOT_APPLICABLE/);
+  assert.match(args['base-instructions'], /## Findings/);
+  assert.doesNotMatch(args['base-instructions'], /```text\s+OUTCOME:/);
   assert.match(args['base-instructions'], /Keep plotting code minimal and clean/);
   assert.match(args['developer-instructions'], /brainx-general-guard/);
   assert.match(args['developer-instructions'], /TRAINING_REVIEW_REFERENCE: \/.*\/training-workflow\.md/);

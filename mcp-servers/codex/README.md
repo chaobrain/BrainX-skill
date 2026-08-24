@@ -49,9 +49,11 @@ Set `BRAINX_CODEX_BIN` only when `codex` is not on `PATH` for the MCP host.
 ## Use
 
 Start a review with `mcp__codex__codex`. Its returned `content` is the reviewer
-response available to the calling agent in the same turn. Preserve the returned
-`threadId`, then use `mcp__codex__codex-reply` only for a follow-up that must
-continue the reviewer's context.
+response available to the calling agent in the same turn. The response is a
+complete Markdown document; the reviewer remains read-only and does not create
+the file. The calling modeling agent saves `content` verbatim as
+`reviews/iteration-<N>.md`, records that path and the returned `threadId`, and
+uses `codex-reply` only for a follow-up that must continue the reviewer's context.
 
 Edit `system-prompt.md` to change the reviewer contract. Edit `skills.json` to change the BrainX skills exposed to fresh reviewer sessions.
 

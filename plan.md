@@ -121,10 +121,12 @@ step 4 to `references/run-experiment.md` and then `references/monitor-experiment
 `mcp-servers/codex/system-prompt.md`; the MCP proxy injects it into fresh `codex`
 calls. Keep the exact `mcp__codex__codex` invocation and required artifact-path
 packet in the step-5 skill body. Require an explicit MCP tool timeout long enough
-for full artifact review, consume returned `content` in the calling agent's
-current turn, and retain `threadId` only for reviewer-context follow-up. Until a
-required planned instruction or configured MCP server exists, its step remains
-blocked and memory preserves the last completed artifacts.
+for full artifact review, require the reviewer to return only a Markdown document
+in `content`, and have the calling agent save it verbatim as
+`reviews/iteration-<N>.md` before classification. Retain `threadId` only for
+reviewer-context follow-up. Until a required planned instruction or configured
+MCP server exists, its step remains blocked and memory preserves the last
+completed artifacts.
 
 Keep model construction and train-step mechanics in the owning package skills.
 Keep the experimental contract, mechanical gates, run discipline, evidence,

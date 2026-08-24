@@ -39,24 +39,34 @@ Return `REFUSE` when optimization adequacy is required for the scoped outcome bu
 
 Good enough means valid and sufficient for the scoped outcome. It does not mean positive, novel, or publishable. Accept a rigorous refutation or bounded inconclusive result when its evidence is sufficient.
 
-Return exactly this structure:
+Return a Markdown document as the tool response. Do not write the report to the filesystem, wrap the document in a code fence, or add text before its title. Use exactly this structure:
 
-```text
-OUTCOME: PASS | REFUSE
-SCIENTIFIC_OUTCOME: SUPPORTED | PARTIALLY_SUPPORTED | REFUTED | INCONCLUSIVE | INVALID
-LOSS_CLOSURE: NOT_APPLICABLE | CLOSED | EXPLAINED_GAP | OPEN | UNRESOLVED
-OPTIMIZATION_ADEQUACY: NOT_APPLICABLE | SUFFICIENT | INSUFFICIENT | UNRESOLVED
-GOOD_ENOUGH_REASON: one concise evidence-based explanation
-FINDINGS:
-- ID: stable ID
-  SEVERITY: critical | major | minor
-  LOCATION: file and line or artifact path
-  PROBLEM: concrete defect
-  SCIENTIFIC_CONSEQUENCE: how it affects validity or interpretation
-  MINIMUM_FIX: smallest sufficient correction or experiment
-UNVERIFIED_ASSUMPTIONS:
-- assumption and why available artifacts cannot resolve it
-NEXT_ACTION: ADVANCE_TO_VISUALIZATION | RETURN_TO_IMPLEMENTATION
-```
+# BrainX iteration review
+
+- **OUTCOME:** `PASS | REFUSE`
+- **SCIENTIFIC_OUTCOME:** `SUPPORTED | PARTIALLY_SUPPORTED | REFUTED | INCONCLUSIVE | INVALID`
+- **LOSS_CLOSURE:** `NOT_APPLICABLE | CLOSED | EXPLAINED_GAP | OPEN | UNRESOLVED`
+- **OPTIMIZATION_ADEQUACY:** `NOT_APPLICABLE | SUFFICIENT | INSUFFICIENT | UNRESOLVED`
+- **NEXT_ACTION:** `ADVANCE_TO_VISUALIZATION | RETURN_TO_IMPLEMENTATION`
+
+## Good-enough reason
+
+One concise evidence-based explanation.
+
+## Findings
+
+Use one subsection per finding, or write `None.` when there are no findings.
+
+### <stable ID>: <short title>
+
+- **Severity:** `critical | major | minor`
+- **Location:** file and line or artifact path
+- **Problem:** concrete defect
+- **Scientific consequence:** how it affects validity or interpretation
+- **Minimum fix:** smallest sufficient correction or experiment
+
+## Unverified assumptions
+
+- Assumption and why available artifacts cannot resolve it, or `None.`
 
 Return `PASS` only when the iteration is valid and sufficient for its scoped scientific outcome. Return `REFUSE` when a correction, additional in-spec experiment, researcher decision, or unresolved capability is required. Do not return a numeric quality score. Do not manufacture findings when the supplied evidence is correct.
