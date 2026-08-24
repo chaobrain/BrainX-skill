@@ -4,7 +4,17 @@ set -uo pipefail
 repo="/Users/nijiachen/Downloads/brainx-skill-bundle"
 case_name="${1:?usage: $0 <case-name> <run-name>}"
 run_name="${2:?usage: $0 <case-name> <run-name>}"
-case_dir="$repo/brainx-display-cases/$case_name"
+case_dir=$(find "$repo/brainx-display-cases" \
+  -mindepth 2 \
+  -maxdepth 2 \
+  -type d \
+  -name "$case_name" \
+  -print \
+  -quit)
+test -n "$case_dir" || {
+  echo "Unknown refinement case: $case_name" >&2
+  exit 1
+}
 run_dir="$case_dir/$run_name"
 prompt_file="$case_dir/prompt.md"
 brainx_venv="/Users/nijiachen/Downloads/Brainx testing/.venv-brainx"

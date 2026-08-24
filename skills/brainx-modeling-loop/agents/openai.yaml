@@ -1,0 +1,4 @@
+interface:
+  display_name: "BrainX Modeling Loop"
+  short_description: "Run rigorous iterative BrainX modeling projects"
+  default_prompt: "Use $brainx-modeling-loop to start or resume my iterative BrainX model, with training or fitting coverage when required."

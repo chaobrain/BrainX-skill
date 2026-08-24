@@ -42,17 +42,21 @@ Keep the implementation at the selected scale. Do not introduce aggregate popula
 
 Start from the scientific concept and use the selected BrainX skills to construct the workflow. Keep ordinary Python, NumPy, or JAX at explicit boundaries for documented dimensionless model inputs, host-side statistics, serialization, timing, device reporting, or custom presentation logic. Preserve units and State until that boundary, and verify an API gap before writing generic numerical infrastructure.
 
+## Import package namespaces once
+
+Import each required BrainX package once, then access its APIs through the package namespace. Use `import brainunit as u` for BrainUnit and the full package name for other BrainX packages. This keeps API ownership visible and avoids parallel aliases for the same package.
+
+```python
+import brainmass
+import brainstate
+import braintools
+import brainunit as u
+```
+Do not import functions or classes individually.
 ## Enforce absolute coding simplicity
 
 Invest substantial effort before coding. Study every routed skill, relevant example and reference, and authoritative BrainX API needed to understand the task and discover which BrainX operations remove custom logic. Then deliver absolutely simple code. Simplicity is an output criterion, not permission to skip study or guess an API.
 
-Use the smallest clear composition that completely satisfies the scientific contract. Minimize concepts, layers, functions, classes, State objects, transforms, branches, conversions, dependencies, files, monitors, and outputs.
-
-Keep an element only when removing it would change scientific meaning, correctness, required performance, verification of a costly failure, or requested output quality. Remove pass-through wrappers, duplicate representations, speculative configuration, redundant transforms, repeated calculations, defensive branches for impossible inputs, and unrequested artifacts. Prefer one direct data flow, one owner for each State, one stable transform boundary, and one canonical execution path.
-
-Keep a one-off scientific demonstration concrete. Add a configuration object, result class, helper layer, command-line option, or extra artifact only when the request requires variation or reuse, or when that structure removes more complexity than it adds.
-
-Do not simplify away units, explicit State lifecycles, numerical validity, scientifically necessary mechanisms, performance-critical compilation or batching, focused checks, or requested output quality. These are requirements, not optional complexity.
 
 ## Prefer high-level BrainX APIs
 
@@ -106,9 +110,9 @@ Use the owning package's orchestrator for workflows it already implements. When 
 
 Do not add a transform only to construct parameter axes or satisfy a named-API checklist. When the owning package already represents independent conditions through a native batch or `size` axis, use that path and reserve `vmap` for a callable the owning package does not already batch.
 
-Map only independent operations. If trial N mutates weights or other State that trial N+1 consumes, keep those trials sequential; batch only independent evaluation trials or ensembles, with separate dynamical State and deliberately shared read-only State. Mapping input construction or offline scoring does not batch the stateful simulation itself. Open `skills/brainstate/references/brainstate/transformation-vmap-expansion.md` when a complete mapped operation reads or writes State, for the State-axis contracts and independent-lane pattern.
+Map only independent operations. If trial N mutates weights or other State that trial N+1 consumes, keep those trials sequential; batch only independent evaluation trials or ensembles, with separate dynamical State and deliberately shared read-only State. Mapping input construction or offline scoring does not batch the stateful simulation itself. Open `skills/package-skills/brainstate/references/brainstate/transformation-vmap-expansion.md` when a complete mapped operation reads or writes State, for the State-axis contracts and independent-lane pattern.
 
-A mapped complete per-step transition called inside one `for_loop` is a stateful simulation batch: the mapping owns independent conditions and the loop owns time. Select mapped State by semantic role, such as `Any(OfType(HiddenState), OfType(ShortTermState))`; do not infer State ownership from array rank, shape, or a coincidental leading size. Open `skills/brainstate/references/brainstate/transformation-vmap-expansion.md` for the canonical initialization, mapping, and loop composition.
+A mapped complete per-step transition called inside one `for_loop` is a stateful simulation batch: the mapping owns independent conditions and the loop owns time. Select mapped State by semantic role, such as `Any(OfType(HiddenState), OfType(ShortTermState))`; do not infer State ownership from array rank, shape, or a coincidental leading size. Open `skills/package-skills/brainstate/references/brainstate/transformation-vmap-expansion.md` for the canonical initialization, mapping, and loop composition.
 
 Describe the transform that actually runs. Native batched State, vmapped input construction, and vmapped host scoring are not stateful `vmap`. When the user explicitly requires `vmap`, map the complete independent operation or report why the requirement cannot be met.
 
@@ -121,6 +125,7 @@ Use raw JAX transformations only for pure array or PyTree functions that do not 
 ## Boundaries and common failures
 
 - Generic NumPy or JAX used as the starting architecture for a BrainX simulation.
+- BrainX functions or classes imported individually when the package namespace already exposes them.
 - Point-neuron and aggregate population mechanisms mixed without selecting both owning skills or declaring the multiscale boundary.
 - A custom BrainState loop that duplicates the selected package's runner, inputs, monitoring, initialization, or sampling.
 - Manual array or mathematical machinery that duplicates BrainUnit or BrainTools.

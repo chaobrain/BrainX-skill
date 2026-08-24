@@ -136,14 +136,14 @@ test('renderReleaseNotes includes details, files, commits, and comparison link',
         sha: 'abcdef0123456789',
         subject: 'feat(brainstate): add diagnostics',
         body: 'Adds probe-aware state diagnostics and regression coverage.',
-        files: ['skills/brainstate/SKILL.md', 'test/diagnostics.test.js'],
+        files: ['skills/package-skills/brainstate/SKILL.md', 'test/diagnostics.test.js'],
       },
     ],
   });
 
   assert.match(notes, /## New features/);
   assert.match(notes, /Adds probe-aware state diagnostics/);
-  assert.match(notes, /skills\/brainstate\/SKILL\.md/);
+  assert.match(notes, /skills\/package-skills\/brainstate\/SKILL\.md/);
   assert.match(notes, /commit\/abcdef0123456789/);
   assert.match(notes, /compare\/v1\.0\.3\.\.\.v1\.0\.4/);
 });

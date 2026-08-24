@@ -1,0 +1,85 @@
+{
+  "artifact_version": "1.0",
+  "seed": 17,
+  "shuffle_seed": 2025,
+  "dt_ms": 1.0,
+  "theta_frequency_hz": 10.0,
+  "grid_scales_cm": [
+    45.0,
+    72.0
+  ],
+  "conditions": {
+    "baseline": {
+      "alternation": 0.3050847457627119,
+      "shuffle_mean": 0.5077966101694915,
+      "shuffle_95": [
+        0.3728813559322034,
+        0.6440677966101694
+      ],
+      "shuffle_p_upper": 1.0,
+      "mean_alignment": 0.358266787103561,
+      "mean_sweep_length_cm": [
+        13.493220804672324,
+        25.751213069465795
+      ],
+      "mean_abs_sweep_angle_deg": 60.53115037279484
+    },
+    "no_adaptation": {
+      "alternation": 0.2033898305084746,
+      "shuffle_mean": 0.48086440677966097,
+      "shuffle_95": [
+        0.3559322033898305,
+        0.6101694915254238
+      ],
+      "shuffle_p_upper": 1.0,
+      "mean_alignment": -0.9216398627694337,
+      "mean_sweep_length_cm": [
+        3.9016977531299064,
+        0.4698175731343079
+      ],
+      "mean_abs_sweep_angle_deg": 172.65894729973368
+    },
+    "no_theta": {
+      "alternation": 0.4067796610169492,
+      "shuffle_mean": 0.5071864406779661,
+      "shuffle_95": [
+        0.3728813559322034,
+        0.6440677966101694
+      ],
+      "shuffle_p_upper": 0.951048951048951,
+      "mean_alignment": 0.11047251037019054,
+      "mean_sweep_length_cm": [
+        15.062048336889513,
+        19.155011848208638
+      ],
+      "mean_abs_sweep_angle_deg": 80.4387780425569
+    },
+    "no_coupling": {
+      "alternation": 0.2711864406779661,
+      "shuffle_mean": 0.4731016949152542,
+      "shuffle_95": [
+        0.3559322033898305,
+        0.5932203389830508
+      ],
+      "shuffle_p_upper": 1.0,
+      "mean_alignment": 0.45560957258901985,
+      "mean_sweep_length_cm": [
+        11.662972831647933,
+        24.135947976183996
+      ],
+      "mean_abs_sweep_angle_deg": 55.876146016559474
+    }
+  },
+  "grid_scale_length_spearman": 0.9999999999999999,
+  "speed_length_spearman": -1.0,
+  "adaptation_alternation_spearman": 1.0,
+  "tuning_width_skipping_spearman": {
+    "rho": 0.03590085589627535,
+    "p": 0.7853723104899545
+  },
+  "turn_phase_coding": {
+    "n_cells": 60,
+    "median_abs_correlation": 0.9999999999999909,
+    "median_slope_rad_per_rad": 80.00000982507328
+  }
+}

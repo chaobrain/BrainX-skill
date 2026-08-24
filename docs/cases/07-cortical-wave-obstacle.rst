@@ -1,5 +1,5 @@
-07 — Cortical wave obstacle
-===========================
+Cortical wave obstacle
+======================
 
 This experiment launches a spiking activity wave across an excitatory and inhibitory sheet, places a silent circular obstacle in its path, and maps whether the wave crosses, bends, splits, or dies.
 

@@ -1,5 +1,5 @@
-08 — Binocular rivalry
-======================
+Binocular rivalry
+=================
 
 This experiment models two continuously driven visual populations whose competition, fatigue, and noise produce alternating percepts. It maps the mechanism across a population of simulated observers instead of relying on one trace.
 

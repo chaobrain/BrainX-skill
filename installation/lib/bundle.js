@@ -41,6 +41,44 @@ async function validatePortableTree(root, fsApi, pathApi) {
   }
 }
 
+async function discoverSkillDirectories(skillsRoot, fsApi, pathApi) {
+  const discovered = new Map();
+
+  async function walk(container) {
+    const entries = await fsApi.readdir(container, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) {
+        throw new BundleValidationError(
+          `Skill source groups may contain only skill directories: ${pathApi.join(container, entry.name)}`,
+        );
+      }
+
+      const entryPath = pathApi.join(container, entry.name);
+      const skillFile = pathApi.join(entryPath, 'SKILL.md');
+      let skillStat;
+      try {
+        skillStat = await fsApi.lstat(skillFile);
+      } catch (error) {
+        if (error.code !== 'ENOENT') {
+          throw new BundleValidationError(`Cannot inspect ${skillFile}: ${error.message}`);
+        }
+      }
+
+      if (skillStat) {
+        if (discovered.has(entry.name)) {
+          throw new BundleValidationError(`Duplicate skill source directory: ${entry.name}`);
+        }
+        discovered.set(entry.name, entryPath);
+      } else {
+        await walk(entryPath);
+      }
+    }
+  }
+
+  await walk(skillsRoot);
+  return discovered;
+}
+
 async function validateBundle(packageRoot, options = {}) {
   const fsApi = options.fsApi || fs;
   const pathApi = options.pathApi || path;
@@ -78,32 +116,32 @@ async function validateBundle(packageRoot, options = {}) {
     throw new BundleValidationError('manifest.json must declare at least one skill');
   }
 
-  let topLevelEntries;
+  let sourceByName;
   try {
-    topLevelEntries = await fsApi.readdir(skillsRoot, { withFileTypes: true });
+    sourceByName = await discoverSkillDirectories(skillsRoot, fsApi, pathApi);
   } catch (error) {
+    if (error instanceof BundleValidationError) {
+      throw error;
+    }
     throw new BundleValidationError(`Cannot read skills directory: ${error.message}`);
   }
 
-  const actualNames = [];
-  for (const entry of topLevelEntries) {
-    if (!entry.isDirectory()) {
-      throw new BundleValidationError(
-        `The skills directory may contain only declared skill directories: ${entry.name}`,
-      );
-    }
-    actualNames.push(entry.name);
-  }
-  const missing = skillNames.filter((name) => !actualNames.includes(name));
+  const missing = skillNames.filter((name) => !sourceByName.has(name));
   if (missing.length) {
     throw new BundleValidationError(
       `Manifest declares missing skill directories: ${missing.join(', ')}`,
     );
   }
+  const undeclared = [...sourceByName.keys()].filter((name) => !seen.has(name));
+  if (undeclared.length) {
+    throw new BundleValidationError(
+      `Skill directories missing from manifest: ${undeclared.join(', ')}`,
+    );
+  }
 
   const skills = [];
   for (const name of skillNames) {
-    const sourcePath = pathApi.join(skillsRoot, name);
+    const sourcePath = sourceByName.get(name);
     const skillFile = pathApi.join(sourcePath, 'SKILL.md');
     let stat;
     try {

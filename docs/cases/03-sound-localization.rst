@@ -1,5 +1,5 @@
-03 — Sound localization
-=======================
+Sound localization
+==================
 
 This experiment uses only the submillisecond difference between left- and right-ear arrival times to drive a spiking direction readout. Exact delay taps, event communication, and batched independent state make timing semantics the core of the implementation.
 

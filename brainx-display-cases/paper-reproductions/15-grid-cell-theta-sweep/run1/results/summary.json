@@ -1,0 +1,272 @@
+{
+  "artifact_version": "2.0",
+  "brainx_release": "2026.7.9",
+  "model_seed": 1405,
+  "shuffle_seed": 8128,
+  "integration_dt_ms": 2.0,
+  "theta_frequency_hz": 10.0,
+  "grid_scales_cm": [
+    38.0,
+    55.0,
+    78.0
+  ],
+  "evaluation_phase_rad": 3.141592653589793,
+  "minimum_sweep_angle_deg": 5.0,
+  "conditions": {
+    "baseline": {
+      "n_cycles": 50,
+      "alternation_score": 0.9591836734693877,
+      "sweep_cycle_fraction": 0.96,
+      "shuffle_mean": 0.4691581632653061,
+      "shuffle_95_interval": [
+        0.32653061224489793,
+        0.6122448979591837
+      ],
+      "shuffle_p_upper": 0.00024993751562109475,
+      "mean_abs_direction_angle_deg": 22.92986566785556,
+      "mean_grid_length_cm": [
+        4.6264679852386665,
+        6.859709716349382,
+        9.889175216697575
+      ],
+      "grid_alternation_score": [
+        0.9387755102040817,
+        0.9387755102040817,
+        0.9387755102040817
+      ],
+      "mean_alignment_cosine": [
+        0.9913597866163361,
+        0.9905263124442694,
+        0.9900026299378648
+      ],
+      "phase_resolved_alignment_cosine": [
+        0.9923745716757231,
+        0.9913684460519105,
+        0.9907663438118165
+      ]
+    },
+    "no_adaptation": {
+      "n_cycles": 50,
+      "alternation_score": 0.0,
+      "sweep_cycle_fraction": 0.0,
+      "shuffle_mean": 0.0,
+      "shuffle_95_interval": [
+        0.0,
+        0.0
+      ],
+      "shuffle_p_upper": 1.0,
+      "mean_abs_direction_angle_deg": 0.003636499152341039,
+      "mean_grid_length_cm": [
+        1.470388541722619,
+        2.382451766710139,
+        3.621277517453984
+      ],
+      "grid_alternation_score": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_alignment_cosine": [
+        0.9990749265827591,
+        0.998612828834291,
+        0.9983038700343008
+      ],
+      "phase_resolved_alignment_cosine": [
+        0.9953134966799737,
+        0.9960168012280136,
+        0.9963983803762905
+      ]
+    },
+    "no_theta": {
+      "n_cycles": 50,
+      "alternation_score": 0.0,
+      "sweep_cycle_fraction": 0.0,
+      "shuffle_mean": 0.0,
+      "shuffle_95_interval": [
+        0.0,
+        0.0
+      ],
+      "shuffle_p_upper": 1.0,
+      "mean_abs_direction_angle_deg": 5.113416583493782e-06,
+      "mean_grid_length_cm": [
+        0.30108379866495577,
+        0.25653782705033046,
+        0.19549730796521
+      ],
+      "grid_alternation_score": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_alignment_cosine": [
+        -0.9999969445289364,
+        -0.9999902590905407,
+        -0.9999701229317498
+      ],
+      "phase_resolved_alignment_cosine": [
+        null,
+        null,
+        null
+      ]
+    },
+    "no_coupling": {
+      "n_cycles": 50,
+      "alternation_score": 0.9591836734693877,
+      "sweep_cycle_fraction": 0.96,
+      "shuffle_mean": 0.4691581632653061,
+      "shuffle_95_interval": [
+        0.32653061224489793,
+        0.6122448979591837
+      ],
+      "shuffle_p_upper": 0.00024993751562109475,
+      "mean_abs_direction_angle_deg": 22.92986566785556,
+      "mean_grid_length_cm": [
+        0.4667506758829893,
+        0.34817338365984524,
+        0.1902067801997685
+      ],
+      "grid_alternation_score": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_alignment_cosine": [
+        -0.9173827767704746,
+        -0.9173412277886306,
+        -0.9171509860907279
+      ],
+      "phase_resolved_alignment_cosine": [
+        null,
+        null,
+        null
+      ]
+    }
+  },
+  "turn": {
+    "n_cycles": 90,
+    "alternation_score": 0.9662921348314607,
+    "sweep_cycle_fraction": 0.9666666666666667,
+    "shuffle_mean": 0.4709157303370787,
+    "shuffle_95_interval": [
+      0.3707865168539326,
+      0.5617977528089888
+    ],
+    "shuffle_p_upper": 0.00024993751562109475,
+    "mean_abs_direction_angle_deg": 20.471559648693784,
+    "mean_grid_length_cm": [
+      3.6709255534138157,
+      5.4484939555026735,
+      7.853717628903914
+    ],
+    "grid_alternation_score": [
+      0.9550561797752809,
+      0.9550561797752809,
+      0.9550561797752809
+    ],
+    "mean_alignment_cosine": [
+      0.9906779716488983,
+      0.989988260509256,
+      0.9895843815660594
+    ],
+    "phase_resolved_alignment_cosine": [
+      0.9918884046034151,
+      0.991122662515445,
+      0.9906714579478887
+    ]
+  },
+  "speed": {
+    "speed_cm_s": [
+      15.0,
+      30.0,
+      45.0
+    ],
+    "mean_grid_length_cm": [
+      [
+        2.3713555346265283,
+        3.515193803716182,
+        5.055950472023164
+      ],
+      [
+        4.763156350593649,
+        7.055986027249199,
+        10.165527351202316
+      ],
+      [
+        6.808009172961683,
+        10.092496354613843,
+        14.565284408284189
+      ]
+    ],
+    "mean_abs_direction_angle_deg": [
+      0.00019639572799396273,
+      13.598501565596822,
+      29.34780883827877
+    ],
+    "alternation_score": [
+      0.0,
+      0.5862068965517241,
+      1.0
+    ]
+  },
+  "adaptation": {
+    "scale": [
+      0.0,
+      0.5,
+      1.0,
+      1.5
+    ],
+    "mean_abs_direction_angle_deg": [
+      0.003636499152341039,
+      11.472413100592727,
+      22.92986566785556,
+      0.024702200156252803
+    ],
+    "alternation_score": [
+      0.0,
+      0.3877551020408163,
+      0.9591836734693877,
+      0.0
+    ],
+    "mean_grid_length_cm": [
+      [
+        1.470388541722619,
+        2.382451766710139,
+        3.621277517453984
+      ],
+      [
+        4.266214608341279,
+        6.349630456495561,
+        9.176330106382524
+      ],
+      [
+        4.6264679852386665,
+        6.859709716349382,
+        9.889175216697575
+      ],
+      [
+        4.9976614820722105,
+        7.389745957587744,
+        10.631145267782424
+      ]
+    ]
+  },
+  "grid_scale_length_spearman": {
+    "rho": 1.0,
+    "p": 0.0
+  },
+  "speed_length_spearman_smallest_module": {
+    "rho": 1.0,
+    "p": 0.0
+  },
+  "single_cell": {
+    "n_direction_cells": 72,
+    "median_theta_skipping_index": 0.18239200115203857,
+    "tuning_width_skipping_spearman": {
+      "rho": 0.9776364171768315,
+      "p": 3.8588521872761514e-49
+    },
+    "n_cells_with_turn_phase_code": 54,
+    "median_abs_turn_phase_correlation": 0.8201283402898115,
+    "median_turn_phase_slope_rad_per_rad": -2.3232976656616042
+  }
+}

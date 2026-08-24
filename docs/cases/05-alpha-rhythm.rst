@@ -1,5 +1,5 @@
-05 — Alpha rhythm
-=================
+Alpha rhythm
+============
 
 This experiment constructs an interpretable cortical population rhythm and measures what changes when inhibition is weakened. The evidence combines time-domain traces, spectra, alpha-band power, and sensitivity to initial conditions.
 

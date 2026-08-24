@@ -11,10 +11,11 @@ exact prompt -> clean BrainX run -> study relevant BrainX material
 
 ## Case and run folders
 
-Keep one folder for each task and one subfolder for each agent run:
+Group tasks by evaluation purpose. Keep one folder for each task and one
+subfolder for each agent run:
 
 ```text
-brainx-display-cases/<NN>-<case-name>/
+brainx-display-cases/<category>/<NN>-<case-name>/
 |-- prompt.md          # Original natural-language prompt
 |-- inputs/            # Optional original task inputs
 |-- run0/              # Baseline artifacts and diagnosis
@@ -95,6 +96,10 @@ Create a fresh temporary `CODEX_HOME` containing only:
 Do not copy the normal Codex home wholesale. Prepare the minimal provider and
 authentication setup once, keep secrets outside the case folder and archived
 artifacts, and reuse the same configuration bytes for every compared run.
+When the evaluated workflow can call the BrainX Codex reviewer, include its
+local MCP registration in that minimal config and set `tool_timeout_sec = 1800`.
+The complete review can exceed the default MCP call budget; a timeout may be
+surfaced misleadingly as `user cancelled MCP tool call`.
 
 Use this harness, replacing the fixed case, model, minimal-config, prompt-byte,
 and prompt-hash values once before Run 0. Reuse the same harness for every
@@ -108,7 +113,7 @@ or paste it into zsh because the captured pipeline status uses Bash
 set -uo pipefail
 
 repo="/Users/nijiachen/Downloads/brainx-skill-bundle"
-case_dir="$repo/brainx-display-cases/<NN>-<case-name>"
+case_dir="$repo/brainx-display-cases/<category>/<NN>-<case-name>"
 run_name="run0"
 run_dir="$case_dir/$run_name"
 prompt_file="$case_dir/prompt.md"
