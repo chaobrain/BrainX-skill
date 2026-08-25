@@ -1180,6 +1180,88 @@ The acceleration skill and its transform references route only to the local rand
 
 ---
 
+### brainx-visualization
+
+#### Purpose and boundary
+
+- Boundary: create and review diagnostic or final scientific figures from an already selected BrainX route and its run artifacts.
+- Preserve the biological meaning, axes, units, observation mapping, conditions, and provenance established by the active package route.
+- Canonical path: state the figure question -> bind source evidence -> validate the data contract -> choose the highest-level visualization API -> render -> compare with raw values -> export and record provenance.
+- Visualization communicates evidence; it does not compute acceptance, repair an invalid model or observation mapping, or substitute appearance for scientific validation.
+
+#### Underlying mental model
+
+- A figure maps selected BrainX evidence through declared transformations to visual encodings that answer one scientific question.
+- The active BrainX route defines the meaning of every State, event, compartment, region, quantity, and observation; array shape does not define that meaning.
+- A figure contract binds mode, source runs, variables, axes, units, transformations, aggregation, uncertainty, controls, destination, and output settings.
+- `diagnostic` figures may use unaccepted runs when labeled; `final` figures use accepted run IDs unless failed or null evidence is intentionally shown and labeled.
+- Classify work separately as `audit`, `adapt`, or `create`: audits preserve originals, adaptations preserve scientific meaning while fitting the layout to real data, and creation writes scripts and outputs in the research project rather than the installed skill.
+
+#### General visualization layer
+
+Prefer the selected package visualization API, then `braintools.visualize`, then high-level `matplotlib.pyplot` composition. Keep the root skill's representative BrainTools routes limited to decisions that affect the canonical path:
+
+Classify each figure by scientific or manuscript role rather than file extension: pair validation overlays with residuals when useful, uncertainty summaries with raw samples and declared `n`, phase or regime views with their sampling rule, time-frequency views with the recorded interval and colorbar quantity, and training or fitting summaries with held-out and residual evidence.
+
+| Data or question | Representative route |
+|---|---|
+| Time-major traces | `line_plot(...)` or `population_activity(...)` |
+| Flat spike events | `spike_raster(...)` |
+| Dense `(time, neuron)` spikes | `raster_plot(...)` |
+| Connectivity or other matrices | `connectivity_matrix(...)` or the matching statistical heatmap |
+| Low-dimensional dynamics | `neural_trajectory(...)` or `phase_portrait(...)` |
+| Stimulus-response behavior | `tuning_curve(...)` |
+| Distributional evidence | `distribution_plot(...)` and the matching statistical helper |
+| Training or fitting diagnostics | `learning_curve(...)` or `residual_plot(...)` |
+| Hover, zoom, or dashboard exploration | Interactive BrainTools APIs returning Plotly figures |
+| Spatial depth or time evolution | BrainTools 3D or animation APIs only when depth or evolution is part of the question |
+
+The root canonical example composes a spike raster and population activity with one `plt.subplots(...)` call, passes `ax=` to each BrainTools helper, labels units, exports once, and closes the figure.
+
+Keep concrete general BrainTools families in three progressive-disclosure references:
+
+| Route | Open when | Scope |
+|---|---|---|
+| `skills/brainx-visualization/references/neural-data-visualization.md` | Selecting neural event, activity, connectivity, dynamical, topology, tuning, spatial, or general 3D figures. | Event-list versus dense-raster contracts, time-major activity, source-to-target matrices, trajectories, phase portraits, tuning, topology, 3D selection, and comparison integrity. |
+| `skills/brainx-visualization/references/statistical-and-model-visualization.md` | Inspecting assumptions or distributions, comparing groups, diagnosing regression, or evaluating classification and learning behavior. | Raw-data and uncertainty rules, statistical helpers, residual diagnostics, ROC-versus-precision-recall decisions, learning curves, and model-comparison integrity. |
+| `skills/brainx-visualization/references/interactive-and-visualization-styling.md` | Adding Plotly exploration, dashboards, themes, palettes, colormaps, export, or animation. | Plotly return behavior, stable interactive encodings, scoped styles, color semantics, output selection, animation contracts, and performance boundaries. |
+
+The root selects among these families and contains one static neural composition. It does not duplicate their API tables, variant workflows, export mechanics, or animation details.
+
+#### Figure integrity and publication output
+
+- Freeze displayed cases, thresholds, smoothing, aggregation, exclusions, normalization, axis limits, and color limits before inspecting intervention outcomes.
+- Preserve raw per-condition evidence beside aggregates and declare sample size and uncertainty.
+- Follow the destination specification first; otherwise use intentional single- or double-column physical dimensions, vector output for line art, and sufficient raster resolution.
+- Use explicit units, one readable font system, consistent panel labels and comparison styles, accessible palettes, unclipped layout, and legends or grids that remain secondary to data.
+- Adapt a reference figure by scientific role and real data geometry rather than cloning its layout; reduce markers and overplotting before enlarging dense figures, and use an inset only for a scientifically important local detail in unused space.
+- Render and inspect every export for blank output, clipping, overlap, misleading scale, overplotting, and disagreement with source values.
+- Record work type, scientific role, question, mode, source run IDs and hashes, acceptance status, variables and units, transformations, uncertainty, controls, plotting source, output settings, and verification in `FIGURE_MANIFEST.md`.
+
+#### Second-layer routes
+
+| Route | Open when | Scope |
+|---|---|---|
+| `skills/package-skills/braincell/references/multicompartment/topology-building-and-visualization.md` | BrainCell morphology branches, CVs, runtime nodes, selector placement, topology, or mechanism values must be visualized. | Branch/CV/node selection, initialization, physical versus topological views, selector coverage, and value coloring. |
+| `skills/package-skills/brainmass/references/visualization-analysis-api.md` | BrainMass trajectories, phase portraits, connectivity, FC/FCD, or spectra must be computed or plotted. | `brainmass.viz`, BrainTools metrics, time-major and sampling rules, unit boundaries, analysis workflows, and failures. |
+
+Do not duplicate these package-specific workflows inside `skills/brainx-visualization/`.
+
+#### Boundaries and common failures
+
+- The figure is designed before its question, mode, evidence, and destination are fixed.
+- Biological meaning, time axis, region order, or units are guessed from shape.
+- Dense spike matrices and flat event arrays are sent to the wrong raster API.
+- Integration `dt` is used after recording subsampling changed the plotted interval.
+- Package-owned morphology or BrainMass analysis is rebuilt with generic plotting code.
+- Comparison scales, smoothing, normalization, or exclusions vary without disclosure.
+- A reference figure is cloned without adapting its layout to the scientific role and real data geometry.
+- Existing figures are overwritten, or plotting scripts and outputs are written into the installed skill directory.
+- Diagnostic output is presented as final evidence, or a visual pattern is treated as scientific acceptance.
+- Final artifacts are delivered without source provenance and render inspection.
+
+---
+
 ### brainx-general-guard
 
 #### Purpose and boundary

@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "skills": [
     "brainx-modeling-loop",
+    "brainx-visualization",
     "brainx-acceleration",
     "brainx-general-guard",
     "braincell",

@@ -1,0 +1,4 @@
+interface:
+  display_name: "BrainX Visualization"
+  short_description: "Create rigorous figures from BrainX results"
+  default_prompt: "Use $brainx-visualization to create or review diagnostic or final scientific figures from my BrainX results."
