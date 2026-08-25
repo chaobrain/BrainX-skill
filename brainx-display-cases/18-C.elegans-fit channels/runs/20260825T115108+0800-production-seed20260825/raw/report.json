@@ -1,0 +1,141 @@
+{
+  "protocol": {
+    "holding_potential_mV": -60.0,
+    "step_duration_ms": 100.0,
+    "shk_voltages_mV": [
+      0.0,
+      20.0,
+      40.0,
+      60.0,
+      80.0,
+      100.0
+    ],
+    "egl_voltages_mV": [
+      -20.0,
+      -10.0,
+      0.0,
+      10.0,
+      20.0,
+      30.0,
+      40.0
+    ]
+  },
+  "observation_model": {
+    "SHK-1": "processed Igor WT-minus-shk-1(lf), baseline corrected, first 0.5 ms excluded",
+    "EGL-19": "isolated WT calcium current, baseline corrected, first 1.0 ms excluded"
+  },
+  "parameters": {
+    "SHK-1": {
+      "g_max_nS": 28.885305603820306,
+      "e_rev_mV": -30.0,
+      "n_v_offset_mV": 14.25459763398042,
+      "n_slope_mV": 30.676427013973004,
+      "tau_min_ms": 1.243978894078331,
+      "tau_amp_ms": 63.609976961355756,
+      "tau_v_offset_mV": 164.55061852438627,
+      "tau_slope_mV": 3.777975398968298
+    },
+    "EGL-19": {
+      "g_max_nS": 44.07940141389635,
+      "e_rev_mV": 60.0,
+      "v_half_m_mV": -5.298051043994752,
+      "k_m_mV": 9.131663796931456,
+      "tau_m_min_ms": 2.4729722929981643,
+      "tau_m_amp_ms": 24.159666629852747,
+      "v_tau_m_mV": 39.99999999999999,
+      "k_tau_m_mV": 5.056255561005805,
+      "h_min": 0.04139253163680701,
+      "h_max": 0.9597511633702202,
+      "v_half_h_mV": -49.99999999999999,
+      "k_h_mV": 31.064743301395623,
+      "tau_h_ms": 3.556882436080477
+    }
+  },
+  "metrics": {
+    "SHK-1": {
+      "rmse_pA": [
+        54.71463605086045,
+        124.66826866269584,
+        115.96686495578268,
+        89.1038779599918,
+        115.48925000648968,
+        173.45112619351116
+      ],
+      "nrmse_by_range": [
+        0.18521611189768125,
+        0.12674928919237188,
+        0.06387622854668903,
+        0.03413720250253185,
+        0.03510528477534484,
+        0.04476722670697563
+      ],
+      "correlation": [
+        0.4853854434687411,
+        0.7893845963086968,
+        0.926698306145199,
+        0.9651940615021983,
+        0.9554310840099126,
+        0.9123718568796527
+      ],
+      "aggregate_rmse_pA": 117.86061222872047
+    },
+    "EGL-19": {
+      "rmse_pA": [
+        3.439879327688619,
+        5.36569148025958,
+        16.72482477657602,
+        12.207954531472243,
+        10.786208421023602,
+        6.175131796684579,
+        6.40887754472076
+      ],
+      "nrmse_by_range": [
+        0.07041200713578304,
+        0.04974958258627013,
+        0.07197627523747478,
+        0.054531079353433744,
+        0.0812976655149112,
+        0.07718210459151324,
+        0.04981374901847987
+      ],
+      "correlation": [
+        0.6237744291149905,
+        0.8282772745447141,
+        0.7803958320838896,
+        0.833159751170448,
+        0.7006671215212105,
+        0.9569886124175269,
+        0.9565157641766995
+      ],
+      "aggregate_rmse_pA": 9.746249012469697
+    }
+  },
+  "data_provenance": {
+    "Fig1C D I-V K currents.pxp": "f107d3dd2feadcbb48df1dea85592c783a6557d2c44b802e0510bcc61a21ba2d",
+    "Fig. 3A I-V Ca currents.pxp": "6c7ba942579bc976707738b6f41c28b12beae5a05d27fe8ee98be19ba7390bd4",
+    "SHK-1_waves": [
+      "wave160",
+      "wave161",
+      "wave162",
+      "wave163",
+      "wave164",
+      "wave165"
+    ],
+    "EGL-19_waves": [
+      "wave16",
+      "wave17",
+      "wave18",
+      "wave19",
+      "wave20",
+      "wave21",
+      "wave22"
+    ]
+  },
+  "environment": {
+    "python": "3.11.15",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "seed": 20260825
+  },
+  "claim_boundary": "Population-average phenomenological fits over the measured voltage ranges; no unique single-cell parameter claim.",
+  "runtime_seconds": 35.772245400999964
+}

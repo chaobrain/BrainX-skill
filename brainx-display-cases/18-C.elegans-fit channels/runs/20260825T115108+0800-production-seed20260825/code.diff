@@ -1,0 +1,8 @@
+The case directory was untracked at launch, so a parent-commit diff cannot represent it.
+Authoritative launch-file SHA-256 values:
+
+- fit_channels.py: 8d32d10ad99d551fab4ae7f3b98a08860e6d215dddc182665cb393dad707ef3c
+- test_fit_channels.py: fb9881841cf39eb0a3f23f4c5b8f3436a0953d9a9d4632cde5762721c61feddd
+- NeuroSpecification.md: 94a5d192d8ff025571f455f2bbe00dd8c705c380c8e8b47bace17e6a206fca53
+
+The complete files remain in the project root and are bound to this run by these hashes.

@@ -1,0 +1,19 @@
+{
+  "run_id": "20260825T120001+0800-production-seed20260825",
+  "status": "done",
+  "artifacts": {
+    "raw/report.json": "89b9ad19fe7f67927cdfdd667bfb255b181abec7a079511610de2ee0eceefb03",
+    "raw/fit_data.npz": "4ed024e2201c5add271c90a1b3495da68ecb05431437b3f400fab823e79b0123",
+    "raw/shk1_current_fits.png": "01968b1781044b3d1caea92c5ba64f39cc4aa600778ae4c2cea3325a4cc3d964",
+    "raw/shk1_gating.png": "03eaddbc926ecd279f41f62da10ecb99e79b01c59a872c74d0db39acbaaf08bf",
+    "raw/egl19_current_fits.png": "6c27aaaba5540a06a9d8ddb3fe4adbb5898cf17575cb4c7a9371d265f6e4203f",
+    "raw/egl19_gating.png": "935eae91d2059fd8d16d06c175202e547989a0d852d6f41dd7aeac5b90a7d267",
+    "run.log": "89b9ad19fe7f67927cdfdd667bfb255b181abec7a079511610de2ee0eceefb03"
+  },
+  "checks": {
+    "json_parseable": true,
+    "npz_arrays_finite": true,
+    "pngs_nonblank": true,
+    "required_artifacts_complete": true
+  }
+}
