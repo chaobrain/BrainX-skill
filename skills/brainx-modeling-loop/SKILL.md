@@ -13,7 +13,7 @@ Read `brainmodeling-memory.md` first when it exists, then choose exactly one ent
 |---|---|---|
 | `fresh-new` | `brainmodeling-memory.md` does not exist and no prior loop work must be preserved. | Create the memory file, set the current position to step 0, and start the specification. |
 | `resume` | `brainmodeling-memory.md` or prior loop artifacts exist. | Read the recorded step, verify its referenced artifacts, and continue from the first unfinished action in that step. |    
-#这个地方是不是应该改成continue from the first unfinished action after the latest valid checkpoint.  因为如果step 3已经完成了，但是step 4没有完成，那么就应该从step 4开始，而不是step 3。/而且如果用户在有memory的情况下提出了一个新的建模需求，仍然应该是fresh-new。
+
 
 Do not create another entry case. Recover missing or inconsistent state inside `resume` by using existing artifacts to locate the earliest unfinished step. Do not repeat a completed experiment or Codex review merely because terminal context was lost.
 
