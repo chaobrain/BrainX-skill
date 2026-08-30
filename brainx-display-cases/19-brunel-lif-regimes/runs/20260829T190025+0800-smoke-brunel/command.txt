@@ -1,0 +1,1 @@
+MPLCONFIGDIR=/tmp/matplotlib-cache JAX_PLATFORMS=cpu /home/yixinliu/anaconda3/envs/braincell-released/bin/python brunel_lif_regimes.py --smoke --output-dir runs/20260829T190025+0800-smoke-brunel/results

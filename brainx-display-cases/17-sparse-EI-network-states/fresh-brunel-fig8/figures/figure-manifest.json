@@ -1,0 +1,44 @@
+{
+  "review_gate": {
+    "path": "reviews/iteration-1-review.md",
+    "outcome": "PASS",
+    "next_action": "ADVANCE_TO_VISUALIZATION"
+  },
+  "command": "MPLCONFIGDIR=/tmp/matplotlib-case17-fresh JAX_PLATFORMS=cpu python brunel_fig8.py --figure-from runs/20260830T100605Z-production-fresh-isolated/results --figure-path figures/brunel_fig8_reproduction.png",
+  "raw_inputs": [
+    {
+      "path": "runs/20260830T100605Z-production-fresh-isolated/results/raw/panel-A_synchronous_regular.npz",
+      "bytes": 52342,
+      "sha256": "dd4c9dc5638d4e7bbc716cdb8ac521f978049ac1f185397e486fcd699c821b13"
+    },
+    {
+      "path": "runs/20260830T100605Z-production-fresh-isolated/results/raw/panel-B_fast_synchronous_irregular.npz",
+      "bytes": 155653,
+      "sha256": "643005792e7f50c39ddc1637f811f06f08b4477c332b4bb071b8abc51d734513"
+    },
+    {
+      "path": "runs/20260830T100605Z-production-fresh-isolated/results/raw/panel-C_asynchronous_irregular.npz",
+      "bytes": 151123,
+      "sha256": "d8d3f63cdb57ec7a70fe5f2def651158a3444f5c26e5e7e30f5e7323638ac25a"
+    },
+    {
+      "path": "runs/20260830T100605Z-production-fresh-isolated/results/raw/panel-D_slow_synchronous_irregular.npz",
+      "bytes": 121460,
+      "sha256": "2ce5169faeef9b4cbf6cdda6d9621512e4cf833d4bb278961fffc15241e8dad0"
+    }
+  ],
+  "figure": {
+    "path": "figures/brunel_fig8_reproduction.png",
+    "bytes": 498431,
+    "sha256": "3285b03609cb8e1db213711ce344a1b26b748816f9c1980f2b13201d43fb89ad",
+    "width_px": 3300,
+    "height_px": 2400,
+    "nonwhite_fraction": 0.09612361111111112,
+    "rgb_channel_standard_deviation": [
+      65.23136600544026,
+      65.23136600544026,
+      65.23136600544026
+    ],
+    "visual_inspection": "All four raster/activity pairs render, axes and labels fit, traces are nonblank, and no panels overlap."
+  }
+}

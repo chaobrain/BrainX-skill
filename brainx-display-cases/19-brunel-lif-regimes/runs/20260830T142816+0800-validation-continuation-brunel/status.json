@@ -1,0 +1,13 @@
+{
+  "run_id": "20260830T142816+0800-validation-continuation-brunel",
+  "status": "done",
+  "level": "production validation continuation",
+  "backend": "cpu",
+  "parent_run_id": "20260829T231314+0800-continuation-brunel-missing7",
+  "process_exit_code": 0,
+  "completed_conditions": 20,
+  "expected_conditions": 20,
+  "manifest_entries": 28,
+  "raw_byte_identical_to_parent": true,
+  "reason": "Hardened manifest and scientific-contract validation completed"
+}

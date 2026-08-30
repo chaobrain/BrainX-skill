@@ -1,0 +1,14 @@
+{
+  "mode": "production",
+  "seed": 17729,
+  "output_dir": "runs/20260830T100605Z-production-fresh-isolated/results",
+  "network": {
+    "n_exc": 10000,
+    "n_inh": 2500,
+    "exc_indegree": 1000,
+    "inh_indegree": 250,
+    "external_indegree": 1000,
+    "burn_ms": 500.0,
+    "analysis_ms": 2000.0
+  }
+}

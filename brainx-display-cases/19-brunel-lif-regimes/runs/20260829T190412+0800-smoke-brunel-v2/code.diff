@@ -1,0 +1,6 @@
+The case-19 implementation is untracked, so immutable source identity is recorded by SHA-256.
+
+- `brunel_lif_regimes.py`: `2217e881ea9e41df61307eb1f500e509088c96a69fc6a66fc7a0ba87844ddeee`
+- `test_brunel_lif_regimes.py`: `d1751bd298039272261c47bbb021179b20f17203a18569f3e7163e899eb22a59`
+- `NeuroSpecification.md`: `a65381e684812fab05f7a379df67733a82883a6d516982b862e3f97852082dcb`
+- `brainx-study-record.md`: `c49bf025dd4d472a76622b2072719bd17b09cf02af55517efd147c08f75b1093`

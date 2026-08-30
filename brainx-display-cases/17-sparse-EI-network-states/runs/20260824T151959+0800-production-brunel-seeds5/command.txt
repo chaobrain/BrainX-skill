@@ -1,3 +1,0 @@
-Working directory: /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states
-
-bash runs/20260824T151959+0800-production-brunel-seeds5/launch.sh

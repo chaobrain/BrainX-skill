@@ -1,0 +1,7 @@
+The case-19 implementation is untracked in the parent worktree, so no Git diff can encode it without staging. Immutable source identity is recorded by SHA-256 instead.
+
+- `brunel_lif_regimes.py`: `02513d6ecf9309e5593ebc3bbe2289395213765dc13ecd0d3c696996970b7b46`
+- `test_brunel_lif_regimes.py`: `d1751bd298039272261c47bbb021179b20f17203a18569f3e7163e899eb22a59`
+- `NeuroSpecification.md`: `a65381e684812fab05f7a379df67733a82883a6d516982b862e3f97852082dcb`
+- `brainx-study-record.md`: `c49bf025dd4d472a76622b2072719bd17b09cf02af55517efd147c08f75b1093`
+- `acceleration-and-parity.md`: `dc13e56b5084cd54524f7981a538f0de11567f0e81be0f3540d177097426e827`

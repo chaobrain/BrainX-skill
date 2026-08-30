@@ -1,0 +1,8 @@
+Continuation adds validated host orchestration only; model and analysis semantics are unchanged.
+
+- `brunel_lif_regimes.py`: `347114bc1bc2d132621847a8d657b47405651dbff436abd9dd116909adc9c413`
+- `test_brunel_lif_regimes.py`: `a47ae1c0f9b495500d7e1fff6be205f5ee615b8c905ba1d8ccbe58fb37546cf9`
+- `NeuroSpecification.md`: `a65381e684812fab05f7a379df67733a82883a6d516982b862e3f97852082dcb`
+- `brainx-study-record.md`: `c49bf025dd4d472a76622b2072719bd17b09cf02af55517efd147c08f75b1093`
+- `test-results.md`: `ae9ef27907f710ac8e6ce83ff7821206285b2002fb2eef5681e6347b3324ee47`
+- `acceleration-and-parity.md`: `251fe167ebcd635cc1e60d7ebfa4028623139407ee992867961a195e9b4079cc`

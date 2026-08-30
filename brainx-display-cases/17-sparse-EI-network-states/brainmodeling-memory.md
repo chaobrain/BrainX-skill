@@ -5,75 +5,82 @@
 - Step: 0
 
 ### Artifacts
-- `prompt.md`: researcher request, verified present.
-- `NeuroSpecification.md`: prospective draft awaiting researcher approval.
+- `NeuroSpecification.md`: Locked fresh-project scientific model, Fig. 8 protocol, observables, controls, and prospective acceptance boundary.
 
 ### Important milestones
-- Fresh-new entry selected because the case contained only the prompt and no prior loop artifacts.
-- Canonical Brunel model-A parameters and the four Figure 8 parameter points were verified against the source paper.
-- Step 0 is blocked pending approval of the proposed 500 ms burn-in, 2,000 ms analysis, five fixed-seed repeats, and prospective regime predicates.
-
-## Checkpoint
-- Iteration: 1
-- Step: 0
-
-### Artifacts
-- `NeuroSpecification.md`: locked prospective specification.
-
-### Important milestones
-- Researcher approved the proposed numerical protocol and regime predicates on 2026-08-24 without changes; this checkpoint supersedes the earlier blocked step-0 milestone.
-- Step 0 is complete; continue to step 1.
+- Selected entry case `fresh-new` under the researcher's explicit instruction not to read prior memory.
+- Did not read or reuse any prior case-17 or case-19 memory, code, results, or figures.
+- Fixed the paper-derived parameters and acceptance tests before observing any new simulation result.
+- The loop advances to step 1.
 
 ## Checkpoint
 - Iteration: 1
 - Step: 1
 
 ### Artifacts
-- `brainx-study-record.md`: selected BrainX abstractions, source-model contract, update order, randomness, fixed metrics, checks, and implementation design.
+- `brainx-study-record.md`: Complete paper-to-BrainX translation, package/API selection, update order, lifecycle, output reduction, tests, and implementation boundary.
 
 ### Important milestones
-- Selected scale: point-neuron spiking network, owned by BrainPy-State; BrainEvent, BrainUnit, and BrainState provide fixed-fan-in communication, units, delay/random State, and compiled execution.
-- Active optional coverage: none (forward simulation).
-- All task-relevant routed references and canonical scripts were traced before implementation.
-- Step 1 is complete; continue to step 2.
+- Selected BrainPy-State as the sole biological-scale owner with BrainEvent, BrainState, and BrainUnit support.
+- Chose explicit exact fixed fan-in, one 15-step recurrent delay, independent per-neuron aggregate external Poisson input, and one compiled State-aware time loop.
+- Optional training/fitting coverage is none.
+- Finished study before implementation; the loop advances to step 2.
 
 ## Checkpoint
 - Iteration: 1
 - Step: 2
 
 ### Artifacts
-- `sparse_ei_network.py`: BrainPy-State LIF model, BrainEvent fixed-fan-in communication, BrainState delays/randomness/compiled rollout, analysis, classification, and artifact writer.
-- `test_sparse_ei_network.py`: eight focused implementation and lifecycle checks.
-- `test-results.md`: passing focused suite and reduced end-to-end smoke record.
-- `/tmp/brainx-sparse-ei-smoke-v1`: mechanically complete reduced smoke artifacts; excluded from scientific claims.
+- `sparse_ei_network.py`: Fresh BrainX-native Brunel Model A network, exact fixed-fan-in graph, compiled experiment runner, host analyses, compact raw artifacts, deterministic assessment, provenance, manifest, and review-gated Fig. 8 renderer.
+- `test_sparse_ei_network.py`: Focused scientific and execution contract tests.
+- `test-results.md`: Nine passing CPU implementation checks.
 
 ### Important milestones
-- Focused suite passed: 8 tests in 23.12 s on CPU.
-- Reduced four-condition smoke completed with exit code 0 and emitted configuration, topology hashes, per-repeat metrics, robustness summary, provenance, raster probes, rates, and spectra.
-- BrainEvent fixed-degree topology must be attached to the Module before tracing; each repeat compiles one graph-specific runner reused across all four dynamic `(g, eta)` conditions.
-- Step 2 is complete; continue to step 3.
+- Implemented the four paper parameter points without reading or reusing prior project code or results.
+- Kept the complete timestep sequence in one State-aware compiled loop and reduced results only at the explicit host boundary.
+- Verified exact replay and eager/JIT parity after complete State and RNG reset.
+- Step 2 passes and the loop advances to acceleration step 3.
 
 ## Checkpoint
 - Iteration: 1
 - Step: 3
 
 ### Artifacts
-- `acceleration-and-parity.md`: hot-path inventory, unchanged acceleration decision, deterministic parity, cold/warm timing, memory accounting, and remaining risks.
+- `acceleration-and-parity.md`: Hot-path inventory, unchanged acceleration decision, benchmark, exact parity, memory rationale, and remaining risks.
+- `benchmark_parity.py`: Reproducible cold/warm reset-parity benchmark.
 
 ### Important milestones
-- The accepted acceleration path is one graph-specific `brainstate.transform.jit(for_loop)` per repeat with population-wide LIF State and BrainEvent fixed-degree communication.
-- A 1,000-neuron, 100 ms benchmark took 12.3306 s cold and 0.9256 s warm on CPU; replay produced bit-identical spikes and `0.0 mV` final-voltage difference.
-- Batching conditions/repeats and generated-probability connectivity were rejected because they increase full-history memory or violate exact-indegree semantics.
-- Step 3 is complete; continue to step 4.
+- Preserved the already-fused population/event path and one complete compiled time loop.
+- Measured 25.5102 s cold and 2.5236 s warm on CPU for the representative workload.
+- Proved bit-identical spike histories and `0.0 mV` final-voltage difference after complete reset/reseed.
+- Rejected panel mapping because it multiplies independent writable State and 312.5 MB histories.
+- Step 3 passes and the loop advances to experiment execution step 4.
 
 ## Checkpoint
 - Iteration: 1
-- Step: 2
+- Step: 4
 
 ### Artifacts
-- `sparse_ei_network.py`: adds an exact immutable production-config loader without changing model or analysis semantics.
-- `test_sparse_ei_network.py`: adds a locked-config round-trip check.
-- `test-results.md`: superseding focused result, 9 tests passed in 26.87 s.
+- `runs/20260830T162520+0800-smoke-brunel-fresh/`: Mechanically complete reduced CPU smoke with immutable contract, four finite rows, four raw files, in-process provenance, and verified manifest.
+- `runs/20260830T163045+0800-production-brunel-fresh/`: Mechanically complete full paper-scale production run with immutable contract, exact graph/probe hashes, four raw panels, metrics, provenance, deterministic assessment, and verified manifest.
 
 ### Important milestones
-- This execution-plumbing correction supersedes the earlier eight-test count; model, approved parameters, metrics, thresholds, and acceleration design are unchanged.
+- Production completed on CPU in about 67.6 minutes with exit code zero and all declared artifacts.
+- Panel A reproduced synchronous regular activity; panel B reproduced fast synchronous irregular activity with `60.550 Hz` firing and `173.340 Hz` global frequency.
+- Panel C matched the paper's mean firing rate (`37.898 Hz`) but failed the locked AI irregularity and stationarity predicates.
+- Panel D matched the paper's low firing rate and slow frequency (`5.838 Hz`, `19.531 Hz`) but failed the locked `ISI CV >= 0.7` predicate.
+- Preserved all unfavorable findings without parameter or threshold tuning.
+- Step 4 is complete and advances to mandatory Codex review step 5.
+
+## Checkpoint
+- Iteration: 1
+- Step: 5
+
+### Artifacts
+- `reviews/iteration-1-review.md`: Preserved raw refusal summary and thread ID `01a0520b-3931-78c0-9027-d746bfb868a7`.
+
+### Important milestones
+- Reviewer outcome is `REFUSE`; scientific outcome is `INVALID` under the locked no-reuse condition.
+- Critical `FRESH-001` requires an isolated clean addition-only workspace; major `BRAINPY-001` requires the BrainPy-State neuron owner.
+- Minor `ASSESS-001` removes undeclared A/C rate-CV verdict thresholds; minor `REPORT-001` removes the premature figure-provenance claim.
+- The corrective run will be a genuinely isolated fresh project under `fresh-brunel-fig8/`, still inside the researcher-selected case-17 directory.

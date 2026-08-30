@@ -1,0 +1,9 @@
+{
+  "state": "done",
+  "run_id": "20260830T162520+0800-smoke-brunel-fresh",
+  "level": "smoke",
+  "started_at": "2026-08-30T16:27:00+08:00",
+  "finished_at": "2026-08-30T16:30:00+08:00",
+  "exit_code": 0,
+  "mechanical_validation": "passed"
+}

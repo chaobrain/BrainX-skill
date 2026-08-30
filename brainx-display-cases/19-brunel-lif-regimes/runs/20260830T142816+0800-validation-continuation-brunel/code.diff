@@ -1,0 +1,11 @@
+Iteration 4 addresses Codex review findings PROV-001 and RESUME-001 without changing model dynamics or analysis.
+
+- `NeuroSpecification.md`: `a65381e684812fab05f7a379df67733a82883a6d516982b862e3f97852082dcb`
+- `brainx-study-record.md`: `c49bf025dd4d472a76622b2072719bd17b09cf02af55517efd147c08f75b1093`
+- `brunel_lif_regimes.py`: `37028f8da7ecbf3f0841045064a06942318492e55002d8ba439a0bdf1c939673`
+- `test_brunel_lif_regimes.py`: `0f0fe2445806b6b4f9a8f5559655698dca2631b43bc39c973f335e91cc704a65`
+- `test-results.md`: `e8aa7ef1d697f85025ec68301e4a3d154cfb5f5fc709e278a5e377ba46c70f43`
+- `acceleration-and-parity.md`: `ad6a347083dfbe46e2ca008203acadd9587ef455d63d6b37eed47fd3723c919f`
+- `provenance-reconciliation.md`: `98a15551d7ed7da3402afe01ca6dd4e986cedbb9f7ecd49f0425771710feb94e`
+- `reviews/iteration-3-review.md`: `a18c9cc014e7139d26271b1ba94e3b1708ab4ada78ae7978c78a9c39727fdf43`
+- Git commit: `01631e950fa654285483a79e278ae2e0a23324fb`

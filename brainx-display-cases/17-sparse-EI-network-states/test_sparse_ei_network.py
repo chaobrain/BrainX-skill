@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-import json
-import numpy as np
-
 import brainstate
 import brainunit as u
 import jax
 import jax.numpy as jnp
+import numpy as np
 
 import sparse_ei_network as model
 
 
-def small_config():
+def small_config() -> model.NetworkConfig:
     return model.NetworkConfig(
         n_exc=16,
         n_inh=4,
@@ -23,106 +21,101 @@ def small_config():
     )
 
 
-def test_canonical_units_and_external_rate_conversion():
+def test_units_and_external_rate_conversion():
     assert np.isclose(model.NU_THRESHOLD.to_decimal(u.Hz), 10.0)
     assert int(round(model.DELAY / model.DT)) == 15
     for eta in (0.9, 2.0, 4.0):
-        aggregate_lambda = (
-            1_000 * model.NU_THRESHOLD * eta * model.DT
-        )
+        aggregate_lambda = 1000 * eta * model.NU_THRESHOLD * model.DT
         assert np.isclose(aggregate_lambda, eta)
 
 
-def test_fixed_indegree_unique_in_range_and_no_autapses():
-    cfg = small_config()
-    _, _, exc, inh = model.make_connectivity(cfg, repeat_seed=17)
-    assert exc.shape == (cfg.num_neurons, cfg.exc_indegree)
-    assert inh.shape == (cfg.num_neurons, cfg.inh_indegree)
-    assert np.all((0 <= exc) & (exc < cfg.n_exc))
-    assert np.all((0 <= inh) & (inh < cfg.n_inh))
-    assert all(np.unique(row).size == cfg.exc_indegree for row in exc)
-    assert all(np.unique(row).size == cfg.inh_indegree for row in inh)
-    assert all(target not in exc[target] for target in range(cfg.n_exc))
+def test_fixed_indegree_is_unique_in_range_and_has_no_autapses():
+    config = small_config()
+    _, _, exc, inh = model.make_connectivity(config, graph_seed=11)
+    assert exc.shape == (config.num_neurons, config.exc_indegree)
+    assert inh.shape == (config.num_neurons, config.inh_indegree)
+    assert np.all((0 <= exc) & (exc < config.n_exc))
+    assert np.all((0 <= inh) & (inh < config.n_inh))
+    assert all(np.unique(row).size == config.exc_indegree for row in exc)
+    assert all(np.unique(row).size == config.inh_indegree for row in inh)
+    assert all(target not in exc[target] for target in range(config.n_exc))
     assert all(
-        target - cfg.n_exc not in inh[target]
-        for target in range(cfg.n_exc, cfg.num_neurons)
+        target - config.n_exc not in inh[target]
+        for target in range(config.n_exc, config.num_neurons)
     )
 
 
-def test_delay_impulse_arrives_at_step_15_only():
+def test_delay_impulse_arrives_after_exactly_15_elapsed_steps():
     with brainstate.environ.context(dt=model.DT):
         delay = brainstate.nn.Delay(
             jax.ShapeDtypeStruct((1,), jnp.bool_), model.DELAY
         )
         brainstate.nn.init_all_states(delay)
-        values = jnp.arange(20) == 0
+        inputs = jnp.arange(20) == 0
 
         def step(value):
+            delayed = delay.retrieve_at_step(jnp.asarray(15, dtype=jnp.int32))[0]
             delay.update(jnp.asarray([value]))
-            delayed = delay.retrieve_at_step(jnp.asarray(15, dtype=jnp.int32))
-            return delayed[0]
+            return delayed
 
-        observed = np.asarray(brainstate.transform.for_loop(step, values))
+        observed = np.asarray(brainstate.transform.for_loop(step, inputs))
     expected = np.zeros(20, dtype=bool)
-    expected[15] = True
+    # The impulse is emitted at the end of source step 0. Index 16 is the
+    # receiving update 15 complete dt intervals later.
+    expected[16] = True
     assert np.array_equal(observed, expected)
+    elapsed_ms = (
+        (np.flatnonzero(observed)[0] - 1) * model.DT
+    ).to_decimal(u.ms)
+    assert np.isclose(elapsed_ms, model.DELAY.to_decimal(u.ms))
 
 
 def test_lif_threshold_reset_and_refractory_jump_insensitivity():
     with brainstate.environ.context(dt=model.DT):
         neuron = model.BrunelLIF(1)
         brainstate.nn.init_all_states(neuron)
+        times = u.math.arange(0.0 * u.ms, 2.3 * u.ms, model.DT)
+        jumps = jnp.zeros(times.size).at[0].set(10.1).at[1:22].set(100.0) * u.mV
 
         def step(t, jump):
             with brainstate.environ.context(t=t):
                 return neuron(jump), neuron.V.value
 
-        times = u.math.arange(0.0 * u.ms, 2.3 * u.ms, model.DT)
-        jumps = jnp.zeros(times.size).at[0].set(10.1).at[1:22].set(100.0) * u.mV
-        spikes, voltages = brainstate.transform.for_loop(step, times, jumps)
+        spikes, voltage = brainstate.transform.for_loop(step, times, jumps)
     spikes = np.asarray(spikes[:, 0])
-    voltages_mv = np.asarray(voltages[:, 0].to_decimal(u.mV))
+    voltage_mv = np.asarray(voltage[:, 0].to_decimal(u.mV))
     assert spikes[0]
     assert not spikes[1:21].any()
-    assert np.allclose(voltages_mv[0:21], 10.0)
+    assert np.allclose(voltage_mv[:21], 10.0)
 
 
-def test_compiled_small_rollout_replays_exactly():
-    cfg = small_config()
+def test_compiled_rollout_replays_after_complete_reset():
+    config = small_config()
     with brainstate.environ.context(dt=model.DT):
-        exc_conn, inh_conn, _, _ = model.make_connectivity(cfg, repeat_seed=7)
-        net = model.SparseEINetwork(
-            cfg, external_seed=9, exc_conn=exc_conn, inh_conn=inh_conn
-        )
+        exc_conn, inh_conn, _, _ = model.make_connectivity(config, graph_seed=7)
+        net = model.SparseEINetwork(config, exc_conn, inh_conn, external_seed=9)
         brainstate.nn.init_all_states(net)
         runner = model.build_runner(net)
         model.reset_run(net, initial_seed=8, external_seed=9)
         first = np.asarray(runner(jnp.asarray(5.0), jnp.asarray(2.0)))
+        first_v = np.asarray(net.neurons.V.value.to_decimal(u.mV))
         model.reset_run(net, initial_seed=8, external_seed=9)
         replay = np.asarray(runner(jnp.asarray(5.0), jnp.asarray(2.0)))
-    assert first.shape == (cfg.num_steps, cfg.num_neurons)
+        replay_v = np.asarray(net.neurons.V.value.to_decimal(u.mV))
+    assert first.shape == (config.num_steps, config.num_neurons)
     assert np.array_equal(first, replay)
+    assert np.array_equal(first_v, replay_v)
 
 
-def test_small_rollout_eager_and_compiled_parity():
-    cfg = small_config()
+def test_eager_and_compiled_rollouts_match():
+    config = small_config()
     with brainstate.environ.context(dt=model.DT):
-        eager_exc, eager_inh, eager_exc_indices, eager_inh_indices = (
-            model.make_connectivity(cfg, repeat_seed=7)
-        )
-        compiled_exc, compiled_inh, compiled_exc_indices, compiled_inh_indices = (
-            model.make_connectivity(cfg, repeat_seed=7)
-        )
-        assert np.array_equal(eager_exc_indices, compiled_exc_indices)
-        assert np.array_equal(eager_inh_indices, compiled_inh_indices)
-        times = u.math.arange(0.0 * u.ms, cfg.num_steps * model.DT, model.DT)
-        indices = jnp.arange(cfg.num_steps, dtype=jnp.int32)
-
-        eager_net = model.SparseEINetwork(
-            cfg, external_seed=9, exc_conn=eager_exc, inh_conn=eager_inh
-        )
+        exc_a, inh_a, _, _ = model.make_connectivity(config, graph_seed=7)
+        eager_net = model.SparseEINetwork(config, exc_a, inh_a, external_seed=9)
         brainstate.nn.init_all_states(eager_net)
         model.reset_run(eager_net, initial_seed=8, external_seed=9)
+        times = u.math.arange(0.0 * u.ms, config.num_steps * model.DT, model.DT)
+        indices = jnp.arange(config.num_steps, dtype=jnp.int32)
         eager = np.asarray(
             brainstate.transform.for_loop(
                 lambda t, i: eager_net.update(t, i, 5.0, 2.0),
@@ -130,64 +123,65 @@ def test_small_rollout_eager_and_compiled_parity():
                 indices,
             )
         )
+        eager_v = np.asarray(eager_net.neurons.V.value.to_decimal(u.mV))
 
-        compiled_net = model.SparseEINetwork(
-            cfg, external_seed=9, exc_conn=compiled_exc, inh_conn=compiled_inh
-        )
+        exc_b, inh_b, _, _ = model.make_connectivity(config, graph_seed=7)
+        compiled_net = model.SparseEINetwork(config, exc_b, inh_b, external_seed=9)
         brainstate.nn.init_all_states(compiled_net)
-        runner = model.build_runner(compiled_net)
         model.reset_run(compiled_net, initial_seed=8, external_seed=9)
         compiled = np.asarray(
-            runner(jnp.asarray(5.0), jnp.asarray(2.0))
+            model.build_runner(compiled_net)(jnp.asarray(5.0), jnp.asarray(2.0))
         )
+        compiled_v = np.asarray(compiled_net.neurons.V.value.to_decimal(u.mV))
     assert np.array_equal(eager, compiled)
+    assert np.array_equal(eager_v, compiled_v)
 
 
 def test_no_recurrence_external_drive_is_finite_and_active():
-    cfg = small_config()
+    config = small_config()
     with brainstate.environ.context(dt=model.DT):
-        exc_conn, inh_conn, _, _ = model.make_connectivity(cfg, repeat_seed=11)
+        exc_conn, inh_conn, _, _ = model.make_connectivity(config, graph_seed=13)
         exc_conn.data = jnp.asarray(0.0)
         inh_conn.data = jnp.asarray(0.0)
-        net = model.SparseEINetwork(
-            cfg, external_seed=12, exc_conn=exc_conn, inh_conn=inh_conn
-        )
+        net = model.SparseEINetwork(config, exc_conn, inh_conn, external_seed=15)
         brainstate.nn.init_all_states(net)
-        runner = model.build_runner(net)
-        model.reset_run(net, initial_seed=10, external_seed=12)
+        model.reset_run(net, initial_seed=14, external_seed=15)
         spikes = np.asarray(
-            runner(jnp.asarray(5.0), jnp.asarray(2.0))
+            model.build_runner(net)(jnp.asarray(5.0), jnp.asarray(4.0))
         )
-    assert np.isfinite(np.asarray(net.neurons.V.value.to_decimal(u.mV))).all()
+        voltage = np.asarray(net.neurons.V.value.to_decimal(u.mV))
+    assert np.isfinite(voltage).all()
     assert spikes.any()
 
 
-def test_metric_classifier_contract():
-    base = {
-        "overall_firing_rate_hz": 5.0,
-        "population_rate_cv_1ms": 0.3,
-        "spectral_peak_to_background": 10.0,
-        "dominant_frequency_hz": 22.0,
+def test_assessment_contract():
+    common = {
+        "overall_firing_rate_hz": 60.7,
         "isi_cv_all_mean": 0.9,
+        "population_rate_cv_1ms": 0.4,
+        "dominant_frequency_hz": 180.0,
     }
-    assert model.classify_metrics(base) == "slow_synchronous_irregular"
-    assert model.classify_metrics({**base, "dominant_frequency_hz": 180.0}) == (
-        "fast_synchronous_irregular"
+    assert model.assess_condition("fast_synchronous_irregular", common) == (
+        "reproduced",
+        [],
     )
-    assert model.classify_metrics({**base, "spectral_peak_to_background": 2.0}) == (
-        "asynchronous_irregular"
+    verdict, failures = model.assess_condition(
+        "asynchronous_irregular",
+        {
+            **common,
+            "overall_firing_rate_hz": 37.7,
+            "population_rate_cv_1ms": 0.1,
+        },
     )
-    assert model.classify_metrics({**base, "isi_cv_all_mean": 0.2}) == (
-        "synchronous_regular"
-    )
+    assert verdict == "reproduced"
+    assert failures == []
 
 
-def test_locked_run_contract_round_trip(tmp_path):
-    path = tmp_path / "config.json"
-    path.write_text(
-        json.dumps(model.config_payload(model.NetworkConfig(), model.REPEAT_SEEDS)),
-        encoding="ascii",
-    )
-    config, seeds = model.load_run_contract(path)
-    assert config == model.NetworkConfig()
-    assert seeds == model.REPEAT_SEEDS
+def test_probe_selection_is_fixed_and_stratified():
+    config = model.NetworkConfig()
+    first = model.choose_probe_indices(config, probe_seed=303)
+    replay = model.choose_probe_indices(config, probe_seed=303)
+    assert np.array_equal(first, replay)
+    assert first.shape == (50,)
+    assert (first[:40] < config.n_exc).all()
+    assert (first[40:] >= config.n_exc).all()

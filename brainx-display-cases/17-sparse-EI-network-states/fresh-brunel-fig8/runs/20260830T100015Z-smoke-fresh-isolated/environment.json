@@ -1,0 +1,22 @@
+{
+  "sys_executable": "/home/yixinliu/anaconda3/envs/braincell-released/bin/python",
+  "python_version": "3.11.15",
+  "python_implementation": "CPython",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "jax_backend": "cpu",
+  "jax_devices": ["cpu:0"],
+  "dependencies": {
+    "BrainX": "2026.7.9",
+    "brainevent": "0.1.2",
+    "brainpy": "2.8.1",
+    "brainpy-state": "0.1.0",
+    "brainstate": "0.5.2",
+    "brainunit": "0.5.1",
+    "braintools": "0.3.0",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "matplotlib": "3.10.8",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1"
+  }
+}

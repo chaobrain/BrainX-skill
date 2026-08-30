@@ -1,0 +1,32 @@
+[
+  {
+    "exc_indices_sha256": "6b96c1c6efd4c125813fe2ebbbbc866fbc67654f01988102dc465058087423a9",
+    "inh_indices_sha256": "a47d742360a53663352f63888e2cb0fa4805d90fa4eb5a8d063f2f1b082ef1ed",
+    "repeat": 0,
+    "seed": 1729
+  },
+  {
+    "exc_indices_sha256": "38f31fc98f42917b3ad215d9e7a0e41a984afa5da0d13f78508ea9890c5e4497",
+    "inh_indices_sha256": "4ca9056332a7a532442a6fb36857b0eea306e46d1a89f9ced2e8e712af5c310c",
+    "repeat": 1,
+    "seed": 2718
+  },
+  {
+    "exc_indices_sha256": "174792caa224184a5488165405686a00ca9a3053faa87636c94b31f5471a59f2",
+    "inh_indices_sha256": "7b98bba7f42335745e9fcfb418376160bac4c5f3a04309356b9ae1f3db1fa768",
+    "repeat": 2,
+    "seed": 3141
+  },
+  {
+    "exc_indices_sha256": "f28bebd01aa578066eafb10894eecd623ca7999fff309cce1e1f21a0e6350915",
+    "inh_indices_sha256": "e4e331c028956fd88b2ace9dac21a3b2f2a6587321c7df5e9455e486eef8d1e0",
+    "repeat": 3,
+    "seed": 5772
+  },
+  {
+    "exc_indices_sha256": "9b3d65180fa55423bdf9d1b0f24f6ff2c9aef6e8d7bc198113546838fc678556",
+    "inh_indices_sha256": "2bf0b49b46c1eeec87e93d95f9cf1574e16efa65cfc56ea8f0f8308d8e9ac7b6",
+    "repeat": 4,
+    "seed": 8119
+  }
+]
