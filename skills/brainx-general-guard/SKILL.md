@@ -75,6 +75,22 @@ Write custom logic only when it expresses model behavior that the ecosystem does
 
 Use the highest-level API in the selected owning package that preserves the scientific operation. Open lower-level BrainState control flow only when the package orchestrator cannot express the required inputs, monitors, State effects, or stable compilation boundary.
 
+### Verify external infrastructure gaps
+
+Before replacing a BrainTools-owned input, metric, optimizer, integration, encoding, or other infrastructure operation with SciPy, raw JAX, or custom code, record a compact API-gap artifact:
+
+```markdown
+## BrainTools API gap
+- Operation and required capability:
+- BrainTools APIs checked:
+- Observed limitation or unavailable dependency:
+- Why another routed BrainTools API does not satisfy the contract:
+- Smallest external boundary:
+- Unit, State, shape, and numerical parity evidence:
+```
+
+An unavailable optional backend does not establish a general BrainTools gap when another routed BrainTools API covers the operation. Keep host Python for file formats, serialization, statistics, or observation logic that no routed BrainX API owns; do not manufacture BrainTools use at those legitimate boundaries.
+
 ## Validate scientific claims
 
 Derive claims from observables that distinguish the claimed mechanism; validate the baseline and mechanism before calibration, and mark unsourced calibrated regimes as phenomenological.
@@ -129,6 +145,7 @@ Use raw JAX transformations only for pure array or PyTree functions that do not 
 - Point-neuron and aggregate population mechanisms mixed without selecting both owning skills or declaring the multiscale boundary.
 - A custom BrainState loop that duplicates the selected package's runner, inputs, monitoring, initialization, or sampling.
 - Manual array or mathematical machinery that duplicates BrainUnit or BrainTools.
+- Generic infrastructure replacing a BrainTools-owned operation without a recorded capability gap and parity evidence.
 - Python timestep loops or host loops inside a stable logical rollout.
 - Raw `jax.jit`, `jax.grad`, or `jax.vmap` applied to State-aware code.
 - Host-side statistics, serialization, timing, device reporting, or custom presentation forced into BrainX without an owning API.

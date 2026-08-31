@@ -1,0 +1,30 @@
+{
+  "candidate_count": 8,
+  "time_steps": 1000,
+  "batch_shape": [
+    1000,
+    8
+  ],
+  "serial_shape": [
+    1000,
+    8
+  ],
+  "batch_cold_seconds": 0.6963082090078387,
+  "batch_warm_seconds": 0.2799002079991624,
+  "serial_cold_seconds": 2.710449374993914,
+  "serial_warm_seconds": 2.311851457998273,
+  "warm_speedup": 8.259556055796827,
+  "max_abs_error_mV": 3.814697265625e-06,
+  "full_state_max_abs_errors": {
+    "calcium_i": 4.656612873077393e-10,
+    "egl19_h": 0.0,
+    "egl19_m": 5.960464477539063e-08,
+    "kr_n": 2.9802322387695312e-08,
+    "na_h": 5.960464477539063e-08,
+    "na_m": 5.960464477539063e-08,
+    "shk1_h": 8.940696716308594e-08,
+    "shk1_m": 4.470348358154297e-08,
+    "voltage": 3.814697265625e-06
+  },
+  "finite": true
+}

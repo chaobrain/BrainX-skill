@@ -1,0 +1,14 @@
+{
+  "brainstate_dt_ms": 0.1,
+  "data_sha256": "7f6ff6a74b17e79a7d1122dc85ea4e00daf3f30a7b07d6bc2b7f60e8a4cd7df7",
+  "data_source": "/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.ny74AR/workspace/Fig4A-D.txt",
+  "deterministic_simulation": true,
+  "duration_seconds": 1964.132337808609,
+  "jax_backend": "cpu",
+  "jax_devices": [
+    "cpu:0"
+  ],
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:34) [Clang 21.1.4 ]",
+  "run_id": "20260824-celegans-production-02"
+}

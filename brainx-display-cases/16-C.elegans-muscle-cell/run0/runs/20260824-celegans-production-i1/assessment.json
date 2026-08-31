@@ -1,0 +1,21 @@
+{
+  "initial_training_loss_mV2": 251.11698732163327,
+  "fitted_training_loss_mV2": 82.01480865478516,
+  "training_loss_improved": true,
+  "all_predictions_finite": true,
+  "held_out_spike_counts_nondecreasing": false,
+  "predicted_spike_counts_15_20_25_30_pA": [
+    1,
+    1,
+    2,
+    1
+  ],
+  "zero_current_spike_count": 0,
+  "dt_refinement_rmse_mV": 4.544167995452881,
+  "recovery_relative_error": {
+    "g_na": 0.0001036961839417927,
+    "g_kr": 0.10422173142433167
+  },
+  "parameter_interpretation": "withheld: single-trace conductances are not identifiable",
+  "predictive_claim": "limited to held-out 15, 20, and 30 pA protocols"
+}

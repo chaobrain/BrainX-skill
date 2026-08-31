@@ -1,0 +1,18 @@
+{
+  "backend": "cpu",
+  "devices": ["cpu:0"],
+  "packages": {
+    "BrainX": "2026.7.9",
+    "braincell": "0.1.0",
+    "brainstate": "0.5.2",
+    "braintools": "0.3.0",
+    "brainunit": "0.5.1",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "numpy": "2.4.6",
+    "scipy": "1.18.0"
+  },
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "python": "3.12.12",
+  "python_executable": "/Users/nijiachen/Downloads/Brainx testing/.venv-brainx/bin/python"
+}

@@ -1,0 +1,19 @@
+{
+  "candidate_count": 8,
+  "time_steps": 1000,
+  "batch_shape": [
+    1000,
+    8
+  ],
+  "serial_shape": [
+    1000,
+    8
+  ],
+  "batch_cold_seconds": 0.8281792089983355,
+  "batch_warm_seconds": 0.30647825000050943,
+  "serial_cold_seconds": 3.140494708000915,
+  "serial_warm_seconds": 2.3148197919945233,
+  "warm_speedup": 7.552965967375092,
+  "max_abs_error_mV": 3.814697265625e-06,
+  "finite": true
+}

@@ -92,8 +92,10 @@ function transformMessage(message) {
       arguments: {
         ...args,
         config,
+        'approval-policy': 'never',
         'base-instructions': systemPrompt,
         'developer-instructions': skillInstructions,
+        sandbox: 'read-only',
       },
     },
   };

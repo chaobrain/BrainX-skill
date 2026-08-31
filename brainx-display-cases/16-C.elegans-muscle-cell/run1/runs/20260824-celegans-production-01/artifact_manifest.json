@@ -1,0 +1,72 @@
+[
+  {
+    "bytes": 2543,
+    "path": "RESULT_ASSESSMENT.md",
+    "sha256": "b4ce8e2397398eec6c59a95f18e6c37b4454ad7454bcff9e671e090da6eebc5c"
+  },
+  {
+    "bytes": 2533,
+    "path": "RUN_SPEC.md",
+    "sha256": "1794fecb1dc63dbec1725535485b91e33957e69a26994241b35887e8469b4022"
+  },
+  {
+    "bytes": 1265,
+    "path": "code.diff",
+    "sha256": "4262619a9d027eceff5673cbdeefed3babdcbb6edf4deb97981181ee7c751d23"
+  },
+  {
+    "bytes": 327,
+    "path": "command.txt",
+    "sha256": "fb73d28bd3ce6f4a9ad4916bec98962be59b9f6324fdb454d3a8727cf742c6ec"
+  },
+  {
+    "bytes": 735,
+    "path": "config.json",
+    "sha256": "1a31c2aeeedbc217c88a34c4a339153f49a8a697861df19f912174872bee7d33"
+  },
+  {
+    "bytes": 573,
+    "path": "environment.json",
+    "sha256": "814921c67e0786a1ce059f401d28f7619d0b27e2416def1fd2eba2e793c32ba7"
+  },
+  {
+    "bytes": 1342,
+    "path": "metrics/assessment.json",
+    "sha256": "6cb837b8f4d82d93b33a4abbccb061fe0087232b2494f7d2ac2ad9c7a2e34847"
+  },
+  {
+    "bytes": 4294,
+    "path": "metrics/metrics.json",
+    "sha256": "51768b4038f9dd997d6a51a6d47919bb586bafc3cc86fcfd5d2c724cd3f4696f"
+  },
+  {
+    "bytes": 19788,
+    "path": "raw/fit_starts.json",
+    "sha256": "d63b7ad593210f4253c6714cd07f81a7bc5c57c8613ddb09f3be2daebe836c08"
+  },
+  {
+    "bytes": 6046,
+    "path": "raw/fitted_parameters.json",
+    "sha256": "a7f90445ef09e75d787ca239cc91ae39f290485ee24f4ec2ba7eb5509054b990"
+  },
+  {
+    "bytes": 836,
+    "path": "raw/passive_fit.json",
+    "sha256": "d3f329d2e44dffce02d11e23ea1d1b592eedade459a85056cc38940dbdd1a225"
+  },
+  {
+    "bytes": 218882,
+    "path": "raw/predictions.npz",
+    "sha256": "e246922f563a29d02aef3e8b7435b12da7bca2f7af6f6120cafff52fa3bd206e"
+  },
+  {
+    "bytes": 70962,
+    "path": "raw/recovery.json",
+    "sha256": "e811dbea2ec58cfd5ec5aa9ee081e8d9be3cd9ac8eea25e66195e843498bbf35"
+  },
+  {
+    "bytes": 535,
+    "path": "raw/run_provenance.json",
+    "sha256": "35e77f7bad33414b987b2ea68d2212f66e5d7bfad2ebcaf415c80c20d55d302c"
+  }
+]

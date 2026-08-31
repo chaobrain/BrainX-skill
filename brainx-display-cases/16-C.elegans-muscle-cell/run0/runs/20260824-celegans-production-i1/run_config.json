@@ -1,0 +1,32 @@
+{
+  "data": "/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-celegans-baseline.URaiSD/workspace/Fig4A-D.txt",
+  "data_sha256": "7f6ff6a74b17e79a7d1122dc85ea4e00daf3f30a7b07d6bc2b7f60e8a4cd7df7",
+  "train_trace": 8,
+  "test_traces": [
+    6,
+    7,
+    9
+  ],
+  "trace_currents_pA": {
+    "6": 15.0,
+    "7": 20.0,
+    "8": 25.0,
+    "9": 30.0
+  },
+  "stimulus_window_ms": [
+    50.0,
+    250.0
+  ],
+  "dt_ms": 0.05,
+  "duration_ms": 500.0,
+  "solver": "ind_exp_euler",
+  "optimizer": "braintools.optim.ScipyOptimizer/Nelder-Mead",
+  "max_iterations_per_start": 40,
+  "number_of_starts": 3,
+  "elapsed_seconds": 303.1357629299164,
+  "python": "3.12.12",
+  "jax_backend": "cpu",
+  "jax_devices": [
+    "cpu:0"
+  ]
+}

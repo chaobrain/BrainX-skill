@@ -1,0 +1,634 @@
+{
+  "active_model_beats_passive_training_rmse": true,
+  "boundary_checks": {
+    "lower": {
+      "finite": true,
+      "maximum_mV": 12.362576484680176,
+      "minimum_mV": -28.41356658935547
+    },
+    "nominal": {
+      "finite": true,
+      "maximum_mV": 10.496020317077637,
+      "minimum_mV": -41.44855880737305
+    },
+    "upper": {
+      "finite": true,
+      "maximum_mV": 10.819267272949219,
+      "minimum_mV": -43.271034240722656
+    }
+  },
+  "full_state_checks": {
+    "lower": {
+      "calcium_i": {
+        "finite": true,
+        "maximum": 0.00047516977065242827,
+        "minimum": 0.0001010677297017537,
+        "positive": true,
+        "unit": "mM"
+      },
+      "egl19_h": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9999997019767761,
+        "minimum": 0.09516250342130661,
+        "unit": "dimensionless"
+      },
+      "egl19_m": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9730847477912903,
+        "minimum": 0.0019389793742448092,
+        "unit": "dimensionless"
+      },
+      "kr_n": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.7679712772369385,
+        "minimum": 0.0005128996563144028,
+        "unit": "dimensionless"
+      },
+      "na_h": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.7432507872581482,
+        "minimum": 0.01473941095173359,
+        "unit": "dimensionless"
+      },
+      "na_m": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9827620387077332,
+        "minimum": 0.0045219543389976025,
+        "unit": "dimensionless"
+      },
+      "shk1_h": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.499940425157547,
+        "minimum": 0.0011854242766276002,
+        "unit": "dimensionless"
+      },
+      "shk1_m": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9126753211021423,
+        "minimum": 0.0009333318448625505,
+        "unit": "dimensionless"
+      },
+      "voltage": {
+        "finite": true,
+        "maximum": 12.362576484680176,
+        "minimum": -28.41356658935547,
+        "unit": "mV"
+      }
+    },
+    "nominal": {
+      "calcium_i": {
+        "finite": true,
+        "maximum": 0.0025198953226208687,
+        "minimum": 0.00019943324150517583,
+        "positive": true,
+        "unit": "mM"
+      },
+      "egl19_h": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9999997019767761,
+        "minimum": 0.09516250342130661,
+        "unit": "dimensionless"
+      },
+      "egl19_m": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9156778454780579,
+        "minimum": 0.0019388742512091994,
+        "unit": "dimensionless"
+      },
+      "kr_n": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.5117636322975159,
+        "minimum": 0.0005128789343871176,
+        "unit": "dimensionless"
+      },
+      "na_h": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9613612294197083,
+        "minimum": 0.01473963912576437,
+        "unit": "dimensionless"
+      },
+      "na_m": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9685611128807068,
+        "minimum": 0.0032764384523034096,
+        "unit": "dimensionless"
+      },
+      "shk1_h": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.8708981275558472,
+        "minimum": 0.0011854454642161727,
+        "unit": "dimensionless"
+      },
+      "shk1_m": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.7502114176750183,
+        "minimum": 0.0009332873742096126,
+        "unit": "dimensionless"
+      },
+      "voltage": {
+        "finite": true,
+        "maximum": 10.496020317077637,
+        "minimum": -41.44855880737305,
+        "unit": "mV"
+      }
+    },
+    "upper": {
+      "calcium_i": {
+        "finite": true,
+        "maximum": 0.006819505710154772,
+        "minimum": 0.0002354327152715996,
+        "positive": true,
+        "unit": "mM"
+      },
+      "egl19_h": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9999997019767761,
+        "minimum": 0.09516250342130661,
+        "unit": "dimensionless"
+      },
+      "egl19_m": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.8894190192222595,
+        "minimum": 0.001938536181114614,
+        "unit": "dimensionless"
+      },
+      "kr_n": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.46180790662765503,
+        "minimum": 0.0005128122284077108,
+        "unit": "dimensionless"
+      },
+      "na_h": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9593570232391357,
+        "minimum": 0.014740372076630592,
+        "unit": "dimensionless"
+      },
+      "na_m": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.9632589221000671,
+        "minimum": 0.0023671481758356094,
+        "unit": "dimensionless"
+      },
+      "shk1_h": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.8141583800315857,
+        "minimum": 0.001185513916425407,
+        "unit": "dimensionless"
+      },
+      "shk1_m": {
+        "finite": true,
+        "in_gate_range": true,
+        "maximum": 0.7020410299301147,
+        "minimum": 0.0009331446490250528,
+        "unit": "dimensionless"
+      },
+      "voltage": {
+        "finite": true,
+        "maximum": 10.819267272949219,
+        "minimum": -43.271034240722656,
+        "unit": "mV"
+      }
+    }
+  },
+  "iteration_1_selected_training_objective": 6.967266731558755,
+  "numerical_refinement": {
+    "6": {
+      "coarse_dt_ms": 0.1,
+      "coarse_first_spike_ms": 110.9,
+      "coarse_spike_count": 3,
+      "fine_downsampling": "indices 1::2, matching integration endpoints",
+      "fine_dt_ms": 0.05,
+      "fine_first_spike_ms": 110.9,
+      "fine_spike_count": 3,
+      "first_spike_shift_ms": 0.0,
+      "spike_count_difference": 0,
+      "waveform_rmse_mV": 0.0013336598640307784
+    },
+    "7": {
+      "coarse_dt_ms": 0.1,
+      "coarse_first_spike_ms": 94.8,
+      "coarse_spike_count": 4,
+      "fine_downsampling": "indices 1::2, matching integration endpoints",
+      "fine_dt_ms": 0.05,
+      "fine_first_spike_ms": 94.8,
+      "fine_spike_count": 4,
+      "first_spike_shift_ms": 0.0,
+      "spike_count_difference": 0,
+      "waveform_rmse_mV": 0.0008655088604427874
+    },
+    "8": {
+      "coarse_dt_ms": 0.1,
+      "coarse_first_spike_ms": 85.8,
+      "coarse_spike_count": 4,
+      "fine_downsampling": "indices 1::2, matching integration endpoints",
+      "fine_dt_ms": 0.05,
+      "fine_first_spike_ms": 85.8,
+      "fine_spike_count": 4,
+      "first_spike_shift_ms": 0.0,
+      "spike_count_difference": 0,
+      "waveform_rmse_mV": 5.999604763928801e-05
+    },
+    "9": {
+      "coarse_dt_ms": 0.1,
+      "coarse_first_spike_ms": 80.9,
+      "coarse_spike_count": 5,
+      "fine_downsampling": "indices 1::2, matching integration endpoints",
+      "fine_dt_ms": 0.05,
+      "fine_first_spike_ms": 80.9,
+      "fine_spike_count": 5,
+      "first_spike_shift_ms": 0.0,
+      "spike_count_difference": 0,
+      "waveform_rmse_mV": 5.889551903237589e-05
+    }
+  },
+  "observed_fit_closure": {
+    "2025": "predeclared-plateau",
+    "2026": "estimator-converged",
+    "2027": "predeclared-plateau"
+  },
+  "observed_fit_loss_closed": true,
+  "parameter_recovery": {
+    "capacitance": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.6969683585075355,
+      "median_absolute_error": 0.011297098790033044,
+      "median_normalized_error": 0.005648549395016522,
+      "passes_error_gate": false
+    },
+    "g_egl19": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.38715957965149833,
+      "median_absolute_error": 0.0014255266407596345,
+      "median_normalized_error": 0.009567292891004258,
+      "passes_error_gate": false
+    },
+    "g_kr": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.027233702028851278,
+      "median_absolute_error": 0.013284696515722505,
+      "median_normalized_error": 0.0026837770738833344,
+      "passes_error_gate": true
+    },
+    "g_leak": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.11484430158820237,
+      "median_absolute_error": 0.00039239184715999034,
+      "median_normalized_error": 0.013123473149163557,
+      "passes_error_gate": true
+    },
+    "g_na": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.34066692315403346,
+      "median_absolute_error": 0.031564678326662765,
+      "median_normalized_error": 0.006376702692255104,
+      "passes_error_gate": false
+    },
+    "g_shk1": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.2677617775856398,
+      "median_absolute_error": 0.03909492252262914,
+      "median_normalized_error": 0.007897964145985686,
+      "passes_error_gate": false
+    },
+    "g_slo2": {
+      "classification": "non-identifiable-under-this-protocol",
+      "max_normalized_error": 0.7899888862014943,
+      "median_absolute_error": 0.03432756464610325,
+      "median_normalized_error": 0.1725003248547902,
+      "passes_error_gate": false
+    }
+  },
+  "passive_trace_8_metrics": {
+    "correlation": 0.4769174028191608,
+    "first_spike_error_ms": null,
+    "mae_mV": 12.713345149529037,
+    "observed_first_spike_ms": 90.7,
+    "observed_spike_count": 4,
+    "predicted_first_spike_ms": null,
+    "predicted_spike_count": 0,
+    "rmse_mV": 17.17906088796382,
+    "spike_count_error": 4
+  },
+  "per_start_trace_metrics": {
+    "2025": {
+      "6": {
+        "correlation": 0.4389737174232964,
+        "first_spike_error_ms": 4.800000000000011,
+        "mae_mV": 6.450653146164622,
+        "observed_first_spike_ms": 106.1,
+        "observed_spike_count": 3,
+        "predicted_first_spike_ms": 110.9,
+        "predicted_spike_count": 3,
+        "rmse_mV": 10.579250368028053,
+        "spike_count_error": 0
+      },
+      "7": {
+        "correlation": 0.7109714167841942,
+        "first_spike_error_ms": 3.3000000000000114,
+        "mae_mV": 5.89682012897399,
+        "observed_first_spike_ms": 98.10000000000001,
+        "observed_spike_count": 3,
+        "predicted_first_spike_ms": 94.8,
+        "predicted_spike_count": 4,
+        "rmse_mV": 8.256515523815423,
+        "spike_count_error": 1
+      },
+      "8": {
+        "correlation": 0.8658145171858664,
+        "first_spike_error_ms": 4.900000000000006,
+        "mae_mV": 4.3915412660027595,
+        "observed_first_spike_ms": 90.7,
+        "observed_spike_count": 4,
+        "predicted_first_spike_ms": 85.8,
+        "predicted_spike_count": 4,
+        "rmse_mV": 6.206015758945808,
+        "spike_count_error": 0
+      },
+      "9": {
+        "correlation": 0.6897194045749254,
+        "first_spike_error_ms": 7.3999999999999915,
+        "mae_mV": 5.45237010921209,
+        "observed_first_spike_ms": 88.3,
+        "observed_spike_count": 4,
+        "predicted_first_spike_ms": 80.9,
+        "predicted_spike_count": 5,
+        "rmse_mV": 9.367557959271407,
+        "spike_count_error": 1
+      }
+    },
+    "2026": {
+      "6": {
+        "correlation": 0.4924130686960897,
+        "first_spike_error_ms": 5.599999999999994,
+        "mae_mV": 5.5616298460557765,
+        "observed_first_spike_ms": 106.1,
+        "observed_spike_count": 3,
+        "predicted_first_spike_ms": 111.69999999999999,
+        "predicted_spike_count": 3,
+        "rmse_mV": 9.673132020535846,
+        "spike_count_error": 0
+      },
+      "7": {
+        "correlation": 0.8153459669453559,
+        "first_spike_error_ms": 1.2000000000000028,
+        "mae_mV": 4.439796518488967,
+        "observed_first_spike_ms": 98.10000000000001,
+        "observed_spike_count": 3,
+        "predicted_first_spike_ms": 96.9,
+        "predicted_spike_count": 4,
+        "rmse_mV": 6.343041507244014,
+        "spike_count_error": 1
+      },
+      "8": {
+        "correlation": 0.8318542218383338,
+        "first_spike_error_ms": 2.9000000000000057,
+        "mae_mV": 4.3937461300171545,
+        "observed_first_spike_ms": 90.7,
+        "observed_spike_count": 4,
+        "predicted_first_spike_ms": 87.8,
+        "predicted_spike_count": 4,
+        "rmse_mV": 6.699267824565977,
+        "spike_count_error": 0
+      },
+      "9": {
+        "correlation": 0.7481182302547692,
+        "first_spike_error_ms": 5.0,
+        "mae_mV": 4.272401635176369,
+        "observed_first_spike_ms": 88.3,
+        "observed_spike_count": 4,
+        "predicted_first_spike_ms": 83.3,
+        "predicted_spike_count": 5,
+        "rmse_mV": 8.182256083274853,
+        "spike_count_error": 1
+      }
+    },
+    "2027": {
+      "6": {
+        "correlation": 0.47980572467705823,
+        "first_spike_error_ms": 5.900000000000006,
+        "mae_mV": 5.572180791182626,
+        "observed_first_spike_ms": 106.1,
+        "observed_spike_count": 3,
+        "predicted_first_spike_ms": 112.0,
+        "predicted_spike_count": 3,
+        "rmse_mV": 9.78963067312468,
+        "spike_count_error": 0
+      },
+      "7": {
+        "correlation": 0.8106831359087311,
+        "first_spike_error_ms": 1.1000000000000085,
+        "mae_mV": 4.52878902433829,
+        "observed_first_spike_ms": 98.10000000000001,
+        "observed_spike_count": 3,
+        "predicted_first_spike_ms": 97.0,
+        "predicted_spike_count": 4,
+        "rmse_mV": 6.438817104155554,
+        "spike_count_error": 1
+      },
+      "8": {
+        "correlation": 0.8327842714001282,
+        "first_spike_error_ms": 2.799999999999997,
+        "mae_mV": 4.416413974284166,
+        "observed_first_spike_ms": 90.7,
+        "observed_spike_count": 4,
+        "predicted_first_spike_ms": 87.9,
+        "predicted_spike_count": 4,
+        "rmse_mV": 6.695362397014395,
+        "spike_count_error": 0
+      },
+      "9": {
+        "correlation": 0.7421687257586685,
+        "first_spike_error_ms": 4.8999999999999915,
+        "mae_mV": 4.296101079841929,
+        "observed_first_spike_ms": 88.3,
+        "observed_spike_count": 4,
+        "predicted_first_spike_ms": 83.4,
+        "predicted_spike_count": 5,
+        "rmse_mV": 8.274745604919199,
+        "spike_count_error": 1
+      }
+    }
+  },
+  "pre_stimulus_spike_count_by_trace": {
+    "6": 0,
+    "7": 0,
+    "8": 0,
+    "9": 0
+  },
+  "prediction_assessment": {
+    "first_spike_latency_monotone": true,
+    "held_out_count_passes": 3,
+    "held_out_latency_passes": 3,
+    "predicted_first_spikes_ms_15_20_25_30_pA": [
+      110.9,
+      94.8,
+      85.8,
+      80.9
+    ],
+    "predicted_spike_counts_15_20_25_30_pA": [
+      3,
+      4,
+      4,
+      5
+    ],
+    "predictive_consistency_pass": true,
+    "spike_count_monotone": true
+  },
+  "recovery_tradeoffs": {
+    "boundary_rate": {
+      "capacitance": 0.0,
+      "g_egl19": 0.0,
+      "g_kr": 0.0,
+      "g_leak": 0.0,
+      "g_na": 0.0,
+      "g_shk1": 0.0,
+      "g_slo2": 0.0625
+    },
+    "fit_failure_rate": 0.5625,
+    "parameter_order": [
+      "g_shk1",
+      "g_egl19",
+      "g_slo2",
+      "g_kr",
+      "g_na",
+      "g_leak",
+      "capacitance"
+    ],
+    "signed_error_correlation": [
+      [
+        1.0,
+        0.9613748203242083,
+        -0.26206179300188903,
+        0.6599970865581133,
+        0.9670527460324567,
+        0.09119337761048642,
+        0.9462020933321085
+      ],
+      [
+        0.9613748203242083,
+        1.0,
+        -0.2339621009481211,
+        0.6512841069143356,
+        0.9857493229592849,
+        0.21012358454015334,
+        0.9860843848422067
+      ],
+      [
+        -0.26206179300188903,
+        -0.2339621009481211,
+        1.0,
+        -0.25632343785302947,
+        -0.19006932096549667,
+        -0.2260415678230314,
+        -0.17735406842038218
+      ],
+      [
+        0.6599970865581133,
+        0.6512841069143356,
+        -0.25632343785302947,
+        1.0,
+        0.622925811955657,
+        0.02879869999369456,
+        0.6722274921160261
+      ],
+      [
+        0.9670527460324568,
+        0.9857493229592847,
+        -0.19006932096549667,
+        0.622925811955657,
+        1.0,
+        0.10715032467048284,
+        0.9918584854961655
+      ],
+      [
+        0.0911933776104864,
+        0.21012358454015334,
+        -0.2260415678230314,
+        0.02879869999369456,
+        0.10715032467048284,
+        1.0,
+        0.1061750183221173
+      ],
+      [
+        0.9462020933321085,
+        0.9860843848422068,
+        -0.17735406842038218,
+        0.6722274921160261,
+        0.9918584854961655,
+        0.10617501832211729,
+        1.0
+      ]
+    ]
+  },
+  "selected_loss_improvement_from_iteration_1": 0.30227463689785505,
+  "selected_start_seed": 2025,
+  "selected_training_objective": 6.6649920946609,
+  "trace_metrics": {
+    "6": {
+      "correlation": 0.4389737174232964,
+      "first_spike_error_ms": 4.800000000000011,
+      "mae_mV": 6.450653146164622,
+      "observed_first_spike_ms": 106.1,
+      "observed_spike_count": 3,
+      "predicted_first_spike_ms": 110.9,
+      "predicted_spike_count": 3,
+      "rmse_mV": 10.579250368028053,
+      "spike_count_error": 0
+    },
+    "7": {
+      "correlation": 0.7109714167841942,
+      "first_spike_error_ms": 3.3000000000000114,
+      "mae_mV": 5.89682012897399,
+      "observed_first_spike_ms": 98.10000000000001,
+      "observed_spike_count": 3,
+      "predicted_first_spike_ms": 94.8,
+      "predicted_spike_count": 4,
+      "rmse_mV": 8.256515523815423,
+      "spike_count_error": 1
+    },
+    "8": {
+      "correlation": 0.8658145171858664,
+      "first_spike_error_ms": 4.900000000000006,
+      "mae_mV": 4.3915412660027595,
+      "observed_first_spike_ms": 90.7,
+      "observed_spike_count": 4,
+      "predicted_first_spike_ms": 85.8,
+      "predicted_spike_count": 4,
+      "rmse_mV": 6.206015758945808,
+      "spike_count_error": 0
+    },
+    "9": {
+      "correlation": 0.6897194045749254,
+      "first_spike_error_ms": 7.3999999999999915,
+      "mae_mV": 5.45237010921209,
+      "observed_first_spike_ms": 88.3,
+      "observed_spike_count": 4,
+      "predicted_first_spike_ms": 80.9,
+      "predicted_spike_count": 5,
+      "rmse_mV": 9.367557959271407,
+      "spike_count_error": 1
+    }
+  },
+  "zero_current_spike_count": 0
+}

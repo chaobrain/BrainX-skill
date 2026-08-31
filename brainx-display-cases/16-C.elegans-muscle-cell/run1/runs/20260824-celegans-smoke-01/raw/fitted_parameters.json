@@ -1,0 +1,67 @@
+{
+  "candidate_batches": [
+    {
+      "call": 0,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 45.33458489725648,
+      "median": 27.453157188439107,
+      "minimum": 14.645283623476672
+    },
+    {
+      "call": 1,
+      "candidates": 28,
+      "finite": 28,
+      "invalid": 0,
+      "maximum": 38.884395530273636,
+      "median": 26.431506636534515,
+      "minimum": 14.782818574836346
+    }
+  ],
+  "loss": 14.645283623476672,
+  "message": "Maximum number of iterations has been exceeded.",
+  "nfev": 2,
+  "nit": 1,
+  "parameter_vector": [
+    1.2525052131068921,
+    0.08729459989100738,
+    0.08731741213962978,
+    1.542787105578674,
+    4.374097451506096,
+    0.014169844128193958,
+    2.012690559266174
+  ],
+  "parameters": {
+    "capacitance": {
+      "unit": "uF / cm^2",
+      "value": 2.012690559266174
+    },
+    "g_egl19": {
+      "unit": "mS / cm^2",
+      "value": 0.08729459989100738
+    },
+    "g_kr": {
+      "unit": "mS / cm^2",
+      "value": 1.542787105578674
+    },
+    "g_leak": {
+      "unit": "mS / cm^2",
+      "value": 0.014169844128193958
+    },
+    "g_na": {
+      "unit": "mS / cm^2",
+      "value": 4.374097451506096
+    },
+    "g_shk1": {
+      "unit": "mS / cm^2",
+      "value": 1.2525052131068921
+    },
+    "g_slo2": {
+      "unit": "mS / cm^2",
+      "value": 0.08731741213962978
+    }
+  },
+  "seed": 2025,
+  "success": false
+}

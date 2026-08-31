@@ -1,0 +1,62 @@
+{
+  "candidate_batches": [],
+  "candidate_evaluations": 10,
+  "closure_reason": "control-only",
+  "initial_components": {},
+  "initial_loss": null,
+  "initial_parameters": [
+    1.0,
+    0.02500000037252903,
+    0.029999999329447746,
+    1.0,
+    1.0,
+    0.003000000026077032,
+    1.0
+  ],
+  "loss": 33.62383228304702,
+  "loss_closed": true,
+  "message": "Optimization terminated successfully.",
+  "nfev": 10,
+  "nit": 9,
+  "parameter_vector": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.029979564749673056,
+    2.0034507994243707
+  ],
+  "parameters": {
+    "capacitance": {
+      "unit": "uF / cm^2",
+      "value": 2.0034507994243707
+    },
+    "g_egl19": {
+      "unit": "mS / cm^2",
+      "value": 0.0
+    },
+    "g_kr": {
+      "unit": "mS / cm^2",
+      "value": 0.0
+    },
+    "g_leak": {
+      "unit": "mS / cm^2",
+      "value": 0.029979564749673056
+    },
+    "g_na": {
+      "unit": "mS / cm^2",
+      "value": 0.0
+    },
+    "g_shk1": {
+      "unit": "mS / cm^2",
+      "value": 0.0
+    },
+    "g_slo2": {
+      "unit": "mS / cm^2",
+      "value": 0.0
+    }
+  },
+  "seed": 3101,
+  "success": true
+}

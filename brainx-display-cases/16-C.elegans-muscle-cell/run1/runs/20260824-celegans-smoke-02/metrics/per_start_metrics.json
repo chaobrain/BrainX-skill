@@ -1,0 +1,48 @@
+{
+  "2025": {
+    "6": {
+      "correlation": 0.334883446480936,
+      "first_spike_error_ms": 11.999999999999986,
+      "mae_mV": 7.608850882215651,
+      "observed_first_spike_ms": 106.1,
+      "observed_spike_count": 3,
+      "predicted_first_spike_ms": 94.10000000000001,
+      "predicted_spike_count": 1,
+      "rmse_mV": 11.834893047625817,
+      "spike_count_error": 2
+    },
+    "7": {
+      "correlation": 0.3904790963332611,
+      "first_spike_error_ms": 13.200000000000003,
+      "mae_mV": 8.483900426849793,
+      "observed_first_spike_ms": 98.10000000000001,
+      "observed_spike_count": 3,
+      "predicted_first_spike_ms": 84.9,
+      "predicted_spike_count": 3,
+      "rmse_mV": 11.82488359806811,
+      "spike_count_error": 0
+    },
+    "8": {
+      "correlation": 0.370543039054546,
+      "first_spike_error_ms": 12.0,
+      "mae_mV": 8.783816094871506,
+      "observed_first_spike_ms": 90.7,
+      "observed_spike_count": 4,
+      "predicted_first_spike_ms": 78.7,
+      "predicted_spike_count": 4,
+      "rmse_mV": 13.055986259001982,
+      "spike_count_error": 0
+    },
+    "9": {
+      "correlation": 0.4163150935789565,
+      "first_spike_error_ms": 12.099999999999994,
+      "mae_mV": 7.350197352652796,
+      "observed_first_spike_ms": 88.3,
+      "observed_spike_count": 4,
+      "predicted_first_spike_ms": 76.2,
+      "predicted_spike_count": 4,
+      "rmse_mV": 11.887528920975166,
+      "spike_count_error": 0
+    }
+  }
+}

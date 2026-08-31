@@ -18,7 +18,7 @@ const repositoryRoot = fileURLToPath(new URL('../..', import.meta.url));
 test('validates the repository with grouped package skills', async () => {
   const result = await validateBundle(repositoryRoot);
 
-  assert.equal(result.skills.length, 11);
+  assert.equal(result.skills.length, 12);
   assert.match(
     result.skills.find((skill) => skill.name === 'brainstate').sourcePath,
     /skills[/\\]package-skills[/\\]brainstate$/,

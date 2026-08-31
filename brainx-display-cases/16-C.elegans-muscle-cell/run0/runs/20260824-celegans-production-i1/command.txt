@@ -1,0 +1,1 @@
+JAX_PLATFORMS=cpu MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp/cache python -u fit_and_validate.py --data Fig4A-D.txt --output runs/20260824-celegans-production-i1 --max-iterations 40

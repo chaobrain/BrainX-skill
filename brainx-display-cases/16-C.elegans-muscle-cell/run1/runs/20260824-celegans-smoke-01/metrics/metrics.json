@@ -1,0 +1,95 @@
+{
+  "active_model_beats_passive_training_rmse": true,
+  "boundary_checks": {
+    "lower": {
+      "finite": true,
+      "maximum_mV": 12.362576484680176,
+      "minimum_mV": -28.41356658935547
+    },
+    "upper": {
+      "finite": true,
+      "maximum_mV": 10.819267272949219,
+      "minimum_mV": -43.271034240722656
+    }
+  },
+  "parameter_recovery": {},
+  "passive_trace_8_metrics": {
+    "correlation": 0.4769174028191608,
+    "first_spike_error_ms": null,
+    "mae_mV": 12.713345149529037,
+    "observed_first_spike_ms": 90.7,
+    "observed_spike_count": 4,
+    "predicted_first_spike_ms": null,
+    "predicted_spike_count": 0,
+    "rmse_mV": 17.17906088796382,
+    "spike_count_error": 4
+  },
+  "prediction_assessment": {
+    "first_spike_latency_monotone": true,
+    "held_out_count_passes": 3,
+    "held_out_latency_passes": 0,
+    "predicted_first_spikes_ms_15_20_25_30_pA": [
+      81.5,
+      75.6,
+      71.3,
+      70.0
+    ],
+    "predicted_spike_counts_15_20_25_30_pA": [
+      3,
+      4,
+      4,
+      5
+    ],
+    "predictive_consistency_pass": false,
+    "spike_count_monotone": true
+  },
+  "selected_start_seed": 2025,
+  "selected_training_objective": 14.645283623476672,
+  "trace_metrics": {
+    "6": {
+      "correlation": 0.29690930227078044,
+      "first_spike_error_ms": 24.599999999999994,
+      "mae_mV": 8.746220106602966,
+      "observed_first_spike_ms": 106.1,
+      "observed_spike_count": 3,
+      "predicted_first_spike_ms": 81.5,
+      "predicted_spike_count": 3,
+      "rmse_mV": 13.772520975005904,
+      "spike_count_error": 0
+    },
+    "7": {
+      "correlation": 0.37991322512174286,
+      "first_spike_error_ms": 22.500000000000014,
+      "mae_mV": 12.604564022649475,
+      "observed_first_spike_ms": 98.10000000000001,
+      "observed_spike_count": 3,
+      "predicted_first_spike_ms": 75.6,
+      "predicted_spike_count": 4,
+      "rmse_mV": 16.124148363770406,
+      "spike_count_error": 1
+    },
+    "8": {
+      "correlation": 0.3522281934958972,
+      "first_spike_error_ms": 19.400000000000006,
+      "mae_mV": 8.573413505253676,
+      "observed_first_spike_ms": 90.7,
+      "observed_spike_count": 4,
+      "predicted_first_spike_ms": 71.3,
+      "predicted_spike_count": 4,
+      "rmse_mV": 14.243378682941215,
+      "spike_count_error": 0
+    },
+    "9": {
+      "correlation": 0.5065158863521408,
+      "first_spike_error_ms": 18.299999999999997,
+      "mae_mV": 12.621961703058268,
+      "observed_first_spike_ms": 88.3,
+      "observed_spike_count": 4,
+      "predicted_first_spike_ms": 70.0,
+      "predicted_spike_count": 5,
+      "rmse_mV": 16.1302132322307,
+      "spike_count_error": 1
+    }
+  },
+  "zero_current_spike_count": 1
+}

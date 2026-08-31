@@ -1,0 +1,57 @@
+{
+  "candidate_count": 28,
+  "candidate_shape": [
+    28,
+    7
+  ],
+  "canonical_braintools_error": "ImportError: Nevergrad is not installed. Please install it using 'pip install nevergrad'.",
+  "canonical_braintools_status": "unavailable-missing-optional-nevergrad",
+  "finite_losses": true,
+  "limitation": "The canonical BrainTools Nevergrad optimizer cannot execute without the optional nevergrad dependency. No dependency was installed; the valid SciPy boundary remains unchanged.",
+  "loss_shape": [
+    28
+  ],
+  "nevergrad_dependency_available": false,
+  "parameter_order": [
+    "g_shk1",
+    "g_egl19",
+    "g_slo2",
+    "g_kr",
+    "g_na",
+    "g_leak",
+    "capacitance"
+  ],
+  "production_backend": "scipy.optimize.differential_evolution",
+  "production_backend_valid": true,
+  "scipy_to_direct_max_abs_loss_error": 0.0,
+  "unit_bounds_round_trip": {
+    "capacitance": [
+      0.5,
+      2.5
+    ],
+    "g_egl19": [
+      0.0010000000474974513,
+      0.15000000596046448
+    ],
+    "g_kr": [
+      0.05000000074505806,
+      5.0
+    ],
+    "g_leak": [
+      9.999999747378752e-05,
+      0.029999999329447746
+    ],
+    "g_na": [
+      0.05000000074505806,
+      5.0
+    ],
+    "g_shk1": [
+      0.05000000074505806,
+      5.0
+    ],
+    "g_slo2": [
+      0.0010000000474974513,
+      0.20000000298023224
+    ]
+  }
+}

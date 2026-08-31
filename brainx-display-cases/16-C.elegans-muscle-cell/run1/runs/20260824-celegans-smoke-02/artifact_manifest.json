@@ -1,0 +1,97 @@
+[
+  {
+    "bytes": 1368,
+    "path": "RUN_SPEC.md",
+    "sha256": "6d327f374d0ad1da84a0a39a18d9887773db7093c122384df556c91070257bfd"
+  },
+  {
+    "bytes": 584,
+    "path": "code.diff",
+    "sha256": "90d570e5a6a37a4eaab43fcbe0aa90c5bf8b517e4a1e06208727a1044b73e2c1"
+  },
+  {
+    "bytes": 256,
+    "path": "command.txt",
+    "sha256": "befaf423e8b6583b7ee5ece422c3002562f4b16a1e094cd996ae872148635415"
+  },
+  {
+    "bytes": 835,
+    "path": "config.json",
+    "sha256": "3c892e33a6f1ddee12ca7b0126b462686936fe28ad75c7b144c4984f96c4e3f3"
+  },
+  {
+    "bytes": 448,
+    "path": "environment.json",
+    "sha256": "d9b6b8340e583c7cfad247f97ec7dc29f7d9cfc2d5bb028ddc36e52f44d49e51"
+  },
+  {
+    "bytes": 1480,
+    "path": "metrics/assessment.json",
+    "sha256": "b3b7a8fd2700aa13e3d8ff7f0c0eded4eb1ce8e67e67afcd3bfe4c698a05cdd7"
+  },
+  {
+    "bytes": 13524,
+    "path": "metrics/metrics.json",
+    "sha256": "0162b352a9c82e2c245d82fe3fcf8006be2441195661df2f76b823c6476bd5c7"
+  },
+  {
+    "bytes": 1516,
+    "path": "metrics/numerical_refinement.json",
+    "sha256": "f4e8efec0d062cef87c2fd1812953fac061122d5c9f6ded47327e77de5c33dfb"
+  },
+  {
+    "bytes": 1453,
+    "path": "metrics/per_start_metrics.json",
+    "sha256": "61876b223cdd5b973a38b1a44c5b1ff9656f5a4b3e893ae584a357307f9dec47"
+  },
+  {
+    "bytes": 3,
+    "path": "metrics/recovery_tradeoffs.json",
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+  },
+  {
+    "bytes": 3062,
+    "path": "raw/fit_starts.json",
+    "sha256": "1dc2aea52d65154eba8a4918d6564e40d1c5a62cc9abb355ce7b62a45bd57241"
+  },
+  {
+    "bytes": 2836,
+    "path": "raw/fitted_parameters.json",
+    "sha256": "c0fec16a5a1fc9fa326e2d2e8db204baf1dfb517c85e4c01192afbcd1e1e36ff"
+  },
+  {
+    "bytes": 6863,
+    "path": "raw/objective_profiles.json",
+    "sha256": "727a45413cf65846f4622f93a1c50fa1debcf0f3b73179fa0788adddc2c2b21c"
+  },
+  {
+    "bytes": 1121,
+    "path": "raw/passive_fit.json",
+    "sha256": "6dcad8e582242b9189e81a7689cb5f6346ab4738af5e198e893410222bc4c115"
+  },
+  {
+    "bytes": 77969,
+    "path": "raw/per_start_predictions.npz",
+    "sha256": "1874235c691c10d7d5d24f8207c0df6aecc6e745158aaa29c426cab769344109"
+  },
+  {
+    "bytes": 221120,
+    "path": "raw/predictions.npz",
+    "sha256": "71d4ba06b06922ac92c3822305edb305877b282c5585ce3dddf80d123dbd75e9"
+  },
+  {
+    "bytes": 4252,
+    "path": "raw/recovery.json",
+    "sha256": "c34c15f41bb7ef9c56892fe0ae6d37b2a8808bb212c4646e8a4805c6fb37d733"
+  },
+  {
+    "bytes": 43039,
+    "path": "raw/recovery_observations.npz",
+    "sha256": "0e45ef909d0d5ca8a0b807068a3029f0880a90b3b09e352e87a3db6b8b962893"
+  },
+  {
+    "bytes": 532,
+    "path": "raw/run_provenance.json",
+    "sha256": "d5e3cc37ba460bad24c982facd7f92afa11bcda1c83cd04839040d98f46b27c9"
+  }
+]

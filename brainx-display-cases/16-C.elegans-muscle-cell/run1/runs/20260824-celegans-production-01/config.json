@@ -1,0 +1,23 @@
+{
+  "backend": "cpu",
+  "data_path": "/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.ny74AR/workspace/Fig4A-D.txt",
+  "data_stride": 2,
+  "optimizer": {
+    "maxiter": 24,
+    "popsize": 4,
+    "seeds": [2025, 2026, 2027]
+  },
+  "passive_seed": 3101,
+  "recovery": {
+    "domain_margin_fraction": 0.2,
+    "max_normalized_error_limit": 0.3,
+    "median_normalized_error_limit": 0.15,
+    "noise_seed": 9100,
+    "truth_count": 3,
+    "truth_seed": 8101
+  },
+  "run_dir": "/private/var/folders/r9/y5dsw3w97zgg3xts8fnl6g2c0000gn/T/brainx-skill-eval.ny74AR/workspace/runs/20260824-celegans-production-01",
+  "run_id": "20260824-celegans-production-01",
+  "run_level": "production",
+  "simulation_seed": 1701
+}

@@ -665,7 +665,9 @@ The visualization workflow must state its question, source runs, transformations
 smoothing, aggregation, exclusions, units, uncertainty, sample size, and control
 references. Render and inspect for blank output, clipping, misleading scale,
 overplotting, and inconsistency with raw values. Record all source hashes in
-`FIGURE_MANIFEST.md`.
+`FIGURE_MANIFEST.md`. Keep the general BrainTools-first selection and figure
+integrity workflow in `skills/brainx-visualization/SKILL.md`; route cellular
+topology and BrainMass analysis directly to their owning package references.
 
 ## 13. Proposed skill-bundle structure
 
@@ -685,12 +687,11 @@ skills/
 |       |-- loop_state.py
 |       `-- artifact_lint.py
 |-- brainx-visualization/
-|   |-- SKILL.md
+|   |-- SKILL.md                    # compact workflow plus direct package routes
 |   `-- references/
-|       |-- cellular-and-spiking-figures.md
-|       |-- mass-and-network-figures.md
-|       |-- training-and-fitting-diagnostics.md
-|       `-- figure-integrity.md
+|       |-- neural-data-visualization.md
+|       |-- statistical-and-model-visualization.md
+|       `-- interactive-and-visualization-styling.md
 |-- brainx-general-guard/            # existing
 |-- brainx-install/                  # existing
 |-- brainunit/                       # existing

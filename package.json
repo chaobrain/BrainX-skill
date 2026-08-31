@@ -17,6 +17,7 @@
     "mcp-servers/codex/",
     "skills/package-skills/",
     "skills/brainx-modeling-loop/",
+    "skills/brainx-visualization/",
     "skills/brainx-acceleration/",
     "skills/brainx-install/",
     "skills/brainx-general-guard/",

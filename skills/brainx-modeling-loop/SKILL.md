@@ -1,6 +1,6 @@
 ---
 name: brainx-modeling-loop
-description: Use first for an end-to-end BrainX modeling project. Start fresh or resume from brainmodeling-memory.md, write a compact NeuroSpecification.md, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, repeat from implementation when review refuses, and visualize only after review passes.
+description: Use first for an end-to-end BrainX modeling project. Start fresh or resume from brainmodeling-memory.md, write a compact NeuroSpecification.md, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, restudy the affected BrainX skills when review refuses, and visualize only after review passes.
 ---
 
 # BrainX modeling loop
@@ -47,7 +47,7 @@ and continue from the first unfinished action after the latest valid checkpoint.
 ```text
 fresh-new -> step 0 -> step 1 -> step 2 -> step 3 -> step 4 -> step 5
                               ^                          |
-                              |-------- REFUSE ----------|
+                              |--------- REFUSE ---------|
 
 step 5 PASS -> step 6 -> complete
 ```
@@ -114,6 +114,10 @@ Study before implementing. Understand the selected BrainX abstractions, exact AP
 
 Do not write the implementation during step 1. Finish the study record first.
 
+When step 5 returns `REFUSE`, increment the iteration and return here before changing code. Map every reviewer finding to the owning BrainX package or workflow skill, reopen `brainx-general-guard`, and restudy every affected package skill, routed reference, and canonical script that can change the correction. Recheck high-level BrainX and BrainTools APIs before retaining custom or external infrastructure. Open the active training or fitting reference during this restudy when a finding concerns its objective, architecture, optimizer, input, metric, recovery, or evidence contract.
+
+Preserve the original study artifact. For iteration 1, use `brainx-study-record.md`; after a refusal, write `brainx-study-record-iteration-<N>.md` with the reviewer-finding map, newly studied sources, changed or reaffirmed API decisions, and the resulting implementation design. Append a step-1 memory checkpoint pointing to the new artifact. Do not begin step 2 until this iteration-specific restudy is complete.
+
 **Step result:** a complete BrainX study record and an implementation design grounded in the selected skills, then a memory checkpoint pointing to step 2.
 
 ## Optional training and fitting coverage for steps 2-5
@@ -139,8 +143,6 @@ Implement from the step-1 study record and the locked specification. Open the se
 4. Add focused checks for equations or components, shapes, units, State initialization/reset, update order, inputs, controls, observables, and metrics.
 5. Run only small implementation checks needed to prove the code is ready for acceleration and the experiment runner. Leave production execution to step 4.
 6. Record the code and test artifacts plus any important implementation milestone.
-
-When step 5 returns `REFUSE`, begin a new iteration here. Read every reviewer finding, preserve the locked specification, make the smallest sufficient implementation or experiment-design correction, update memory, and then repeat steps 3, 4, and 5.
 
 **Step result:** BrainX-native model and experiment code with focused checks, then a memory checkpoint pointing to step 3.
 
@@ -176,12 +178,13 @@ Start one fresh `mcp__codex__codex` call for each completed iteration. Send the
 locked specification, step-1 study record, implementation and tests, acceleration
 evidence, experiment configuration, raw run artifacts, metrics, deterministic
 result assessment, claim-evidence matrix, proposed next action, and all evidence
-required by active training/fitting coverage. Preserve the returned raw response
-and `threadId` as review artifacts. Treat the returned `content` as the reviewer
-response in the calling agent's current turn: classify it immediately, update
-the loop checkpoint, and report or act on the verdict without asking the
-researcher to open another context. Preserve `threadId` for reviewer follow-up;
-it is not needed for the calling agent to read the initial response.
+required by active training/fitting coverage. The returned `content` is the
+reviewer's Markdown report in the calling agent's current turn. Before
+classifying it, save it verbatim as `reviews/iteration-<N>.md`; do not reformat,
+summarize, or mix the main agent's analysis into that file. Then read its verdict,
+update the loop checkpoint with the report path, and report or act on it without
+asking the researcher to open another context. Preserve the returned `threadId`
+in the checkpoint for reviewer follow-up; it is not needed to read the report.
 
 Before calling, verify that every listed path exists. Set the MCP call's working
 directory to the project root when the tool exposes a working-directory argument,
@@ -200,7 +203,7 @@ LOOP_MEMORY:
 - <path>/brainmodeling-memory.md
 
 BRAINX_STUDY_RECORD:
-- <path to the step-1 study artifact>
+- <path to every step-1 study artifact through this iteration>
 
 IMPLEMENTATION:
 - <path to each model, data-processing, and experiment source file>
@@ -229,7 +232,7 @@ PRIOR_REVIEW_EVIDENCE:
 - <path to prior raw reviews and addressed findings, or none>
 
 Read every listed artifact and review this iteration using the injected reviewer
-contract. Do not edit files. Return the required structured outcome.
+contract. Do not edit files. Return only the required Markdown report.
 ```
 
 List concrete files, not only directories. Keep large data in place and provide
@@ -242,21 +245,23 @@ Do not start an iteration review with `mcp__codex__codex-reply`; only a fresh
 unavailable, record step 5 as blocked in `brainmodeling-memory.md` and preserve
 all completed experiment artifacts.
 
-Configure the Codex MCP registration with `tool_timeout_sec = 1800`, or another
-explicit budget longer than the largest expected review. A host timeout may be
-reported as `user cancelled MCP tool call`; when no `threadId` or response is
-returned, diagnose the MCP budget before treating it as researcher cancellation.
+For a non-interactive Codex host, configure the MCP registration with
+`default_tools_approval_mode = "approve"`; otherwise the host cannot present an
+MCP approval prompt and may report the denied call as `user cancelled MCP tool
+call`. Also set `tool_timeout_sec = 1800`, or another explicit budget longer than
+the largest expected review. When no `threadId` or response is returned, verify
+approval first and timeout second before treating it as researcher cancellation.
 
-Record the full Codex response and one of two outcomes:
+Record the verbatim Markdown report path, `threadId`, and one of two outcomes:
 
 | Outcome | Transition |
 |---|---|
-| `REFUSE` | Record every finding and required correction, increment the iteration, set the current step to 2, and repeat steps 2-5 with the same optional coverage. |
+| `REFUSE` | Record every finding and required correction, increment the iteration, set the current step to 1, restudy the affected BrainX package and workflow skills, and repeat steps 1-5 with the same optional coverage. |
 | `PASS` | Record the accepted code/result scope and set the current step to 6. |
 
-Do not argue with a refusal inside step 5 and do not substitute self-review for the MCP Codex call. The next Codex call occurs only after the revised implementation has passed again through acceleration and experiment execution.
+Do not argue with a refusal inside step 5 and do not substitute self-review for the MCP Codex call. The next Codex call occurs only after the refusal has passed through package restudy, revised implementation, acceleration, and experiment execution.
 
-**Step result:** a preserved Codex response and either a return to step 2 or a memory checkpoint pointing to step 6.
+**Step result:** a preserved `reviews/iteration-<N>.md` report and either a return to step 1 or a memory checkpoint pointing to step 6.
 
 ## Step 6: Visualize the accepted result
 

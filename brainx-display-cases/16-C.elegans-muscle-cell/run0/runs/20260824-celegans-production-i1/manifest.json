@@ -1,0 +1,58 @@
+{
+  "RUN_SPEC.md": {
+    "bytes": 1693,
+    "sha256": "ab288bbee5f8db86498e35a3d04d2c5cdaee284a8a3ac3d691169f80a7a1c5e5"
+  },
+  "assessment.json": {
+    "bytes": 641,
+    "sha256": "ede8467df2bc72d3018ac8b7fa3a915ed82289bbb6eaee3dc25deb395cc7c169"
+  },
+  "code.diff": {
+    "bytes": 183,
+    "sha256": "793f20e16981ea83d502847c1e3e998841afd453d6d9de857f3c484866f31a56"
+  },
+  "command.txt": {
+    "bytes": 188,
+    "sha256": "18f75f7c99c1eef4a0d393c0c3c59bc2e171ee127d56df1eb98b29649028314c"
+  },
+  "config.json": {
+    "bytes": 467,
+    "sha256": "9567895f7f5ca232728f3db75c885bf01931bf39d59ac325a6f6cf85c6e2df6f"
+  },
+  "environment.json": {
+    "bytes": 417,
+    "sha256": "d0d8b838948ee1034db2ac5da0d28b367838cff04bedcade532f0ba7048cf327"
+  },
+  "fit_starts.csv": {
+    "bytes": 703,
+    "sha256": "c95ec106b45acd232d2ca0393db3ada6d5adc524c88afd018802aa6acf0891b8"
+  },
+  "fitted_parameters.json": {
+    "bytes": 345,
+    "sha256": "ed5080bb498c0234222aa5b9e96f125f5ecc936f7756ebd40caec1c4b04b2639"
+  },
+  "metrics.csv": {
+    "bytes": 959,
+    "sha256": "a3fb54d2f9e72bc969351a3ec53ee4f6c2aa1b911fa1f2144e758854b4a4be22"
+  },
+  "predictions.npz": {
+    "bytes": 257122,
+    "sha256": "f45d3b25b8d3b0d17bce7e32ec89b6d3142049b1f4af794e44e37e7422d4e704"
+  },
+  "recovery.json": {
+    "bytes": 579,
+    "sha256": "9847a6ddfe33abfe787208ed7e76bf6dc2a8f93f18d36fbd296eb79b2f5010b1"
+  },
+  "run.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "run_config.json": {
+    "bytes": 730,
+    "sha256": "756b5970fef2093c211d4a8951c2f18a4f3893130a57cf51e19e2b4a57fcc9e2"
+  },
+  "status.json": {
+    "bytes": 134,
+    "sha256": "091c2f1b34d383b1ad6ac0cb0e96f45c270f0e278160c153863ca8114f1e40fe"
+  }
+}

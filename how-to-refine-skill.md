@@ -97,9 +97,20 @@ Do not copy the normal Codex home wholesale. Prepare the minimal provider and
 authentication setup once, keep secrets outside the case folder and archived
 artifacts, and reuse the same configuration bytes for every compared run.
 When the evaluated workflow can call the BrainX Codex reviewer, include its
-local MCP registration in that minimal config and set `tool_timeout_sec = 1800`.
-The complete review can exceed the default MCP call budget; a timeout may be
-surfaced misleadingly as `user cancelled MCP tool call`.
+local MCP registration in that minimal config:
+
+```toml
+[mcp_servers.codex]
+command = "node"
+args = ["<absolute-repository-path>/mcp-servers/codex/server.mjs"]
+default_tools_approval_mode = "approve"
+tool_timeout_sec = 1800
+```
+
+The approval setting is required for non-interactive `codex exec`; without it,
+the host cannot present the MCP approval prompt and may surface the denial as
+`user cancelled MCP tool call`. The timeout must exceed the longest complete
+artifact review.
 
 Use this harness, replacing the fixed case, model, minimal-config, prompt-byte,
 and prompt-hash values once before Run 0. Reuse the same harness for every

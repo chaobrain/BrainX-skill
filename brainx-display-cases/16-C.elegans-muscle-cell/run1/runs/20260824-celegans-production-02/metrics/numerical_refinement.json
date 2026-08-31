@@ -1,0 +1,50 @@
+{
+  "6": {
+    "coarse_dt_ms": 0.1,
+    "coarse_first_spike_ms": 110.9,
+    "coarse_spike_count": 3,
+    "fine_downsampling": "indices 1::2, matching integration endpoints",
+    "fine_dt_ms": 0.05,
+    "fine_first_spike_ms": 110.9,
+    "fine_spike_count": 3,
+    "first_spike_shift_ms": 0.0,
+    "spike_count_difference": 0,
+    "waveform_rmse_mV": 0.0013336598640307784
+  },
+  "7": {
+    "coarse_dt_ms": 0.1,
+    "coarse_first_spike_ms": 94.8,
+    "coarse_spike_count": 4,
+    "fine_downsampling": "indices 1::2, matching integration endpoints",
+    "fine_dt_ms": 0.05,
+    "fine_first_spike_ms": 94.8,
+    "fine_spike_count": 4,
+    "first_spike_shift_ms": 0.0,
+    "spike_count_difference": 0,
+    "waveform_rmse_mV": 0.0008655088604427874
+  },
+  "8": {
+    "coarse_dt_ms": 0.1,
+    "coarse_first_spike_ms": 85.8,
+    "coarse_spike_count": 4,
+    "fine_downsampling": "indices 1::2, matching integration endpoints",
+    "fine_dt_ms": 0.05,
+    "fine_first_spike_ms": 85.8,
+    "fine_spike_count": 4,
+    "first_spike_shift_ms": 0.0,
+    "spike_count_difference": 0,
+    "waveform_rmse_mV": 5.999604763928801e-05
+  },
+  "9": {
+    "coarse_dt_ms": 0.1,
+    "coarse_first_spike_ms": 80.9,
+    "coarse_spike_count": 5,
+    "fine_downsampling": "indices 1::2, matching integration endpoints",
+    "fine_dt_ms": 0.05,
+    "fine_first_spike_ms": 80.9,
+    "fine_spike_count": 5,
+    "first_spike_shift_ms": 0.0,
+    "spike_count_difference": 0,
+    "waveform_rmse_mV": 5.889551903237589e-05
+  }
+}
