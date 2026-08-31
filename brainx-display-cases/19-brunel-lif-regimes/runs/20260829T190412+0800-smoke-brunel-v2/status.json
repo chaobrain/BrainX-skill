@@ -1,0 +1,8 @@
+{
+  "run_id": "20260829T190412+0800-smoke-brunel-v2",
+  "status": "done",
+  "level": "smoke",
+  "backend": "cpu",
+  "process_exit_code": 0,
+  "mechanical_validation": "PASS: four finite metric rows, four parseable raw NPZ files, and a 12-file manifest"
+}

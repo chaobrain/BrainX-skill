@@ -1,0 +1,57 @@
+Review completed BrainX iteration 1.
+
+PROJECT_ROOT: /home/yixinliu/gitcode/BrainX-skill
+ACTIVE_COVERAGE: none
+
+SPECIFICATION:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/NeuroSpecification.md
+
+LOOP_MEMORY:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/brainmodeling-memory.md
+
+BRAINX_STUDY_RECORD:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/brainx-study-record.md
+
+IMPLEMENTATION:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/sparse_ei_network.py
+
+TESTS:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/test_sparse_ei_network.py
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/test-results.md
+
+ACCELERATION_AND_PARITY:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/benchmark_parity.py
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/acceleration-and-parity.md
+
+EXPERIMENT_RUN:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T162520+0800-smoke-brunel-fresh/RUN_SPEC.md
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T162520+0800-smoke-brunel-fresh/status.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/RUN_SPEC.md
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/config.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/environment.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/command.txt
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/code.diff
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/status.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/run.log
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/exit_code
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/config.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/graph-hashes.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/provenance.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/metrics.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/metrics.csv
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/artifact-manifest.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/raw/panel-A_synchronous_regular.npz
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/raw/panel-B_fast_synchronous_irregular.npz
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/raw/panel-C_asynchronous_irregular.npz
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/raw/panel-D_slow_synchronous_irregular.npz
+
+RESULT_ASSESSMENT:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/17-sparse-EI-network-states/runs/20260830T163045+0800-production-brunel-fresh/results/result-assessment.md
+
+TRAINING_OR_FITTING_EVIDENCE:
+- none
+
+PRIOR_REVIEW_EVIDENCE:
+- none
+
+Read every listed artifact and review this iteration using the injected reviewer contract. Do not edit files. Return the required structured outcome.

@@ -1,0 +1,1 @@
+MPLCONFIGDIR=/tmp/matplotlib-case17-fresh JAX_PLATFORMS=cpu python brunel_fig8.py --smoke --seed 17729 --output-dir runs/20260830T100015Z-smoke-fresh-isolated/results

@@ -1,0 +1,14 @@
+{
+  "mode": "smoke",
+  "seed": 17729,
+  "output_dir": "runs/20260830T100015Z-smoke-fresh-isolated/results",
+  "network": {
+    "n_exc": 800,
+    "n_inh": 200,
+    "exc_indegree": 80,
+    "inh_indegree": 20,
+    "external_indegree": 80,
+    "burn_ms": 100.0,
+    "analysis_ms": 1000.0
+  }
+}

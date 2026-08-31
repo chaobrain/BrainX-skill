@@ -1,0 +1,24 @@
+# NeuroSpecification
+
+- Status: locked
+- Researcher approval: The 2026-08-30 request selects Brunel (2000) Fig. 8, explicitly requires a new project without reading prior memory, and requires placement inside `brainx-display-cases/17-sparse-EI-network-states/`. This isolated addition-only subproject satisfies that boundary.
+
+## Researcher request
+- Brain-modeling question or behavior: Reproduce the four network states shown in Fig. 8 of Brunel, "Dynamics of Sparsely Connected Networks of Excitatory and Inhibitory Spiking Neurons."
+- Requested model, experiment, or comparison: Simulate Brunel Model A at panels A `(g, eta)=(3, 2)`, B `(6, 4)`, C `(5, 2)`, and D `(4.5, 0.9)`, where `eta = nu_ext / nu_thr`, then compare rasters, instantaneous global activity, and Table 1 quantities.
+- Execution mode: forward-simulation
+- Required outputs: A four-panel reproduction with instantaneous global firing rate in 0.1 ms bins, its temporal mean, and one fixed 50-neuron raster per condition; exact code, immutable run configuration, raw data, metrics, provenance, tests, review, and result assessment.
+- Constraints: Do not read or copy prior project memory, implementation, results, or figures. Use BrainPy-State as the point-neuron owner, BrainEvent for sparse event communication, BrainState for execution, and BrainUnit for quantities.
+
+## Inspected data contract
+- Data sources and inspected contents: Brunel (2000), DOI `10.1023/A:1008925309027`, Eqs. 1-2, Model A parameters, Section 6, Fig. 8, and Table 1. No author code or empirical data were supplied.
+- Shapes, axes, sampling/time base, and physical units: Use `NE=10000`, `NI=2500`, `CE=1000`, `CI=250`, `Cext=1000`, `tau_m=20 ms`, `tau_ref=2 ms`, threshold `20 mV`, reset `10 mV`, excitatory jump `J=0.1 mV`, inhibitory jump `-gJ`, delay `1.5 ms`, and `dt=0.1 ms`. Use a fixed 500 ms burn-in and 2,000 ms analysis window. Store time-major Boolean probe rasters and full-population E/I counts after burn-in.
+- Required preprocessing and the subset used to fit each transform: Discard burn-in. Convert counts to Hz using population size and 0.1 ms bin width. Compute firing rates, per-neuron ISI CV for neurons with at least four spikes, 1 ms population-rate CV as a descriptive observable, and a mean-centered Welch spectrum. No transform is fit and no training occurs.
+- Mapping from data to model inputs, targets, and observables: Give each neuron exactly `CE` recurrent E and `CI` recurrent I sources. By Poisson superposition, replace `Cext` independent external trains with one per-neuron count of mean `Cext*nu_ext*dt = eta` per step because `nu_thr=10 Hz`. Delayed recurrent events and current external arrivals produce voltage jumps. Observe probe spikes, E/I/global counts, rates, ISI CV, and global spectra.
+- Known data limitations or unresolved mismatches: The paper does not publish its RNG, initial voltages, sampled-neuron identities, or complete run duration, so pixel identity is impossible. Its finite AI network can show weak oscillatory structure. Summed external Poisson counts are distributionally equivalent to explicit independent afferents but do not instantiate them.
+
+## Acceptance boundary
+- Evidence required for success, failure, or an inconclusive result: Keep the paper's parameters fixed. Require A to have mean ISI CV `<0.5`. Require B to have mean ISI CV `>=0.7`, firing rate within 20% of `60.7 Hz`, global frequency within 20% of `180 Hz`, and firing rate below global frequency. Require C to have mean ISI CV `>=0.7` and firing rate within 20% of `37.7 Hz`; report population-rate variability and spectral structure descriptively without an additional categorical cutoff. Require D to have mean ISI CV `>=0.7`, firing rate within 30% of `5.5 Hz`, global frequency within 30% of `22 Hz`, and firing rate below global frequency. Report a failed predicate honestly without tuning it.
+- Required baselines and controls: Verify `nu_thr=10 Hz`, exact unique fixed fan-in, no autapses, correct signs, the physical 1.5 ms delay, refractory/reset behavior, independent external streams, complete State/RNG reset and replay, no-recurrence external activity, eager/JIT parity, fixed graph/probe reuse, finite metrics, raw parseability, and cryptographic binding of source/run/result artifacts.
+- Invalid-result conditions: Reading or copying prior project memory/code/results; bypassing BrainPy-State as neuron owner; wrong fan-in, delay, units, external conversion, update order, or State/RNG lifecycle; post-hoc parameter or criterion tuning; non-finite required metrics; missing provenance or hashes; or rendering before review passes.
+- Allowed claims and explicit non-claims: Claim only this finite seeded realization at the four points and report every measured agreement or failure. Do not claim pixel identity, author-RNG parity, a phase region, or biological realism.

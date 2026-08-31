@@ -1,0 +1,54 @@
+{
+  "network": {
+    "n_exc": 800,
+    "n_inh": 200,
+    "exc_indegree": 80,
+    "inh_indegree": 20,
+    "external_indegree": 80,
+    "burn_ms": 100.0,
+    "analysis_ms": 1000.0
+  },
+  "dt_ms": 0.1,
+  "tau_m_ms": 20.0,
+  "tau_ref_ms": 2.0,
+  "threshold_mv": 20.0,
+  "reset_mv": 10.0,
+  "jump_mv": 0.1,
+  "delay_ms": 1.5,
+  "nu_threshold_hz": 10.0,
+  "conditions": [
+    {
+      "panel": "A",
+      "name": "synchronous_regular",
+      "g": 3.0,
+      "eta": 2.0,
+      "display_ms": 100.0
+    },
+    {
+      "panel": "B",
+      "name": "fast_synchronous_irregular",
+      "g": 6.0,
+      "eta": 4.0,
+      "display_ms": 200.0
+    },
+    {
+      "panel": "C",
+      "name": "asynchronous_irregular",
+      "g": 5.0,
+      "eta": 2.0,
+      "display_ms": 200.0
+    },
+    {
+      "panel": "D",
+      "name": "slow_synchronous_irregular",
+      "g": 4.5,
+      "eta": 0.9,
+      "display_ms": 200.0
+    }
+  ],
+  "seed": 17729,
+  "graph_seed": 17729,
+  "probe_seed": 18032,
+  "initial_seed_base": 18729,
+  "external_seed_base": 19729
+}

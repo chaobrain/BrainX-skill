@@ -1,0 +1,22 @@
+{
+  "run_id": "20260830T163045+0800-production-brunel-fresh",
+  "level": "production",
+  "seed": 17729,
+  "backend": "cpu",
+  "precision": 32,
+  "network": {
+    "n_exc": 10000,
+    "n_inh": 2500,
+    "exc_indegree": 1000,
+    "inh_indegree": 250,
+    "external_indegree": 1000,
+    "burn_ms": 500.0,
+    "analysis_ms": 2000.0
+  },
+  "conditions": [
+    {"panel": "A", "g": 3.0, "eta": 2.0},
+    {"panel": "B", "g": 6.0, "eta": 4.0},
+    {"panel": "C", "g": 5.0, "eta": 2.0},
+    {"panel": "D", "g": 4.5, "eta": 0.9}
+  ]
+}

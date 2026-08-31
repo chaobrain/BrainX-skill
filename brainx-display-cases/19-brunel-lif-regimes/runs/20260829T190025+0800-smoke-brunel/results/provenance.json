@@ -1,0 +1,13 @@
+{
+  "git": {
+    "commit": "01631e950fa654285483a79e278ae2e0a23324fb",
+    "status": "?? ./"
+  },
+  "jax_backend": "cpu",
+  "jax_devices": [
+    "cpu:0"
+  ],
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "python": "3.11.15",
+  "wall_seconds": 10.326236621000135
+}

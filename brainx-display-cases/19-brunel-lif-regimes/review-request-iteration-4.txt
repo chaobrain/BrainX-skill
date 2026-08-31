@@ -1,0 +1,52 @@
+Review completed BrainX iteration 4.
+
+PROJECT_ROOT: /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes
+ACTIVE_COVERAGE: none
+
+SPECIFICATION:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/NeuroSpecification.md
+
+LOOP_MEMORY:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/brainmodeling-memory.md
+
+BRAINX_STUDY_RECORD:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/brainx-study-record.md
+
+IMPLEMENTATION:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/brunel_lif_regimes.py
+
+TESTS:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/test_brunel_lif_regimes.py
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/test-results.md
+
+ACCELERATION_AND_PARITY:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/acceleration-and-parity.md
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/benchmark_parity.py
+
+EXPERIMENT_RUN:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/RUN_SPEC.md
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/config.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/environment.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/code.diff
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/run.log
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/exit_code
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/results/config.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/results/provenance.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/results/graph-hashes.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/results/metrics.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/results/metrics.csv
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/results/robustness.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/results/artifact-manifest.json
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260829T231314+0800-continuation-brunel-missing7/results/artifact-manifest.json
+
+RESULT_ASSESSMENT:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260830T142816+0800-validation-continuation-brunel/results/result-assessment.md
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/provenance-reconciliation.md
+
+TRAINING_OR_FITTING_EVIDENCE:
+- none
+
+PRIOR_REVIEW_EVIDENCE:
+- /home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/reviews/iteration-3-review.md
+
+Read every listed artifact and review this iteration using the injected reviewer contract. Do not edit files. Return the required structured outcome.

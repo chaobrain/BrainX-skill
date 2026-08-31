@@ -1,0 +1,11 @@
+{
+  "run_id": "20260829T231314+0800-continuation-brunel-missing7",
+  "parent_run_id": "20260829T190714+0800-production-brunel-seeds5",
+  "status": "done",
+  "level": "production-continuation",
+  "backend": "cpu",
+  "completed_parent_conditions": 13,
+  "remaining_conditions": 0,
+  "process_exit_code": 0,
+  "mechanical_validation": "PASS: 20 finite unique rows, 20 raw NPZ files, five graph hashes, fixed probes, 13 byte-identical inherited files, and 28 manifest entries"
+}

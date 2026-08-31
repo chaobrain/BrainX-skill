@@ -1,0 +1,14 @@
+{
+  "git": {
+    "commit": "01631e950fa654285483a79e278ae2e0a23324fb",
+    "status": "?? ./"
+  },
+  "jax_backend": "cpu",
+  "jax_devices": [
+    "cpu:0"
+  ],
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "python": "3.11.15",
+  "resume_from": "/home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/19-brunel-lif-regimes/runs/20260829T190714+0800-production-brunel-seeds5",
+  "wall_seconds": 7756.116234775
+}

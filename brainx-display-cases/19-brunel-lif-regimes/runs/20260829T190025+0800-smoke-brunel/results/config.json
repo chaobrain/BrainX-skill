@@ -1,0 +1,75 @@
+{
+  "classification": {
+    "fast_band_hz": [
+      100.0,
+      300.0
+    ],
+    "irregular_cv_gte": 0.7,
+    "regular_cv_lt": 0.5,
+    "robust_repeats_required": 4,
+    "slow_band_hz": [
+      10.0,
+      60.0
+    ],
+    "synchronous_peak_background_gte": 5.0,
+    "synchronous_rate_cv_gte": 0.2
+  },
+  "conditions": [
+    {
+      "eta": 2.0,
+      "expected_state": "synchronous_regular",
+      "g": 3.0
+    },
+    {
+      "eta": 4.0,
+      "expected_state": "fast_synchronous_irregular",
+      "g": 6.0
+    },
+    {
+      "eta": 2.0,
+      "expected_state": "asynchronous_irregular",
+      "g": 5.0
+    },
+    {
+      "eta": 0.9,
+      "expected_state": "slow_synchronous_irregular",
+      "g": 4.5
+    }
+  ],
+  "delay_ms": 1.5,
+  "delay_steps": 15,
+  "dt_ms": 0.1,
+  "jump_mv": 0.1,
+  "network": {
+    "analysis_ms": 80.0,
+    "burn_ms": 20.0,
+    "exc_indegree": 8,
+    "external_indegree": 8,
+    "inh_indegree": 2,
+    "n_exc": 80,
+    "n_inh": 20
+  },
+  "nu_threshold_hz": 10.0,
+  "probe": {
+    "n_exc": 40,
+    "n_inh": 10,
+    "seed": 8675309
+  },
+  "refractory_ms": 2.0,
+  "repeat_seeds": [
+    1729
+  ],
+  "reset_mv": 10.0,
+  "spectrum": {
+    "noverlap": 4096,
+    "nperseg": 8192,
+    "sampling_hz": 10000.0,
+    "search_band_hz": [
+      1.0,
+      1000.0
+    ],
+    "window": "hann"
+  },
+  "tau_m_ms": 20.0,
+  "threshold_mv": 20.0
+}

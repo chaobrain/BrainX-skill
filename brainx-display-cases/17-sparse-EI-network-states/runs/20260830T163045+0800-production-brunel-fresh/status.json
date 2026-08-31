@@ -1,0 +1,9 @@
+{
+  "state": "done",
+  "run_id": "20260830T163045+0800-production-brunel-fresh",
+  "level": "production",
+  "started_at": "2026-08-30T16:31:30+08:00",
+  "finished_at": "2026-08-30T17:39:06+08:00",
+  "exit_code": 0,
+  "mechanical_validation": "passed"
+}

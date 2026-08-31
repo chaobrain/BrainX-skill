@@ -1,0 +1,54 @@
+{
+  "files": [
+    {
+      "path": "config.json",
+      "bytes": 1031,
+      "sha256": "b687a12cfb1f74a892108296ff04e841697e808e27689a47ecdc775f1e6a3714"
+    },
+    {
+      "path": "graph-hashes.json",
+      "bytes": 280,
+      "sha256": "4fcf15e6c5efa9dfa27be153ac50c1c227743fd02036161d28b42136c9a433e7"
+    },
+    {
+      "path": "metrics.csv",
+      "bytes": 1634,
+      "sha256": "abca196b732a255756adc91828df015e65b6b689d8da835a386195667bd3854c"
+    },
+    {
+      "path": "metrics.json",
+      "bytes": 3404,
+      "sha256": "7a286604922d61b704bd7d9c90491eb68be6d827ff150e1f5a8506cff6872cf5"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 538,
+      "sha256": "9768768ec58143e62403125a0e4f1eab1efe1d6bcd1c495873c3ee4da62dbb21"
+    },
+    {
+      "path": "raw/panel-A_synchronous_regular.npz",
+      "bytes": 61939,
+      "sha256": "ff20c922212a5bbb515062beae70fddf8f3f30399d576a6dc8c81496072da53d"
+    },
+    {
+      "path": "raw/panel-B_fast_synchronous_irregular.npz",
+      "bytes": 69387,
+      "sha256": "4dd1b864456cda13044e9aecf684ac42f647e23e4f01d832b2ec3a69d47d8da9"
+    },
+    {
+      "path": "raw/panel-C_asynchronous_irregular.npz",
+      "bytes": 63913,
+      "sha256": "198bd91ba394b947fd82c050cc4663bbb48a3ea3d0a78b2c3f1e7c8b62e9787c"
+    },
+    {
+      "path": "raw/panel-D_slow_synchronous_irregular.npz",
+      "bytes": 45722,
+      "sha256": "2ece01f805f9706ac6a16c65e3b7d61cab9afd9ee1b18415fcc70f06b11d6e36"
+    },
+    {
+      "path": "result-assessment.md",
+      "bytes": 1527,
+      "sha256": "1c536a6032adc72901413abd56e86d6504801dadef9e03c299450a299378467f"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "run_id": "20260829T190025+0800-smoke-brunel",
+  "status": "failed-deterministic",
+  "level": "smoke",
+  "backend": "cpu",
+  "process_exit_code": 0,
+  "reason": "ISI CV was non-finite because the reduced 80 ms analysis window yielded no eligible neurons in the slow condition"
+}

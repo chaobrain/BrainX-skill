@@ -1,0 +1,1575 @@
+diff --git a/brainx-display-cases/17-sparse-EI-network-states/NeuroSpecification.md b/brainx-display-cases/17-sparse-EI-network-states/NeuroSpecification.md
+index e0acbd2..8a384a4 100644
+--- a/brainx-display-cases/17-sparse-EI-network-states/NeuroSpecification.md
++++ b/brainx-display-cases/17-sparse-EI-network-states/NeuroSpecification.md
+@@ -1,24 +1,24 @@
+ # NeuroSpecification
+ 
+ - Status: locked
+-- Researcher approval: Approved on 2026-08-24 with the proposed 0.1 ms timestep, 500 ms burn-in, 2,000 ms analysis, five fixed-seed repeats, and prospective classification criteria unchanged.
++- Researcher approval: The 2026-08-30 request explicitly selects Brunel (2000) Fig. 8, requires a fresh project without reading prior memory, and fixes `brainx-display-cases/17-sparse-EI-network-states/` as the project directory.
+ 
+ ## Researcher request
+-- Brain-modeling question or behavior: Do the four Brunel model-A parameter points reproduce synchronous regular, fast synchronous irregular, asynchronous irregular, and slow synchronous irregular population states?
+-- Requested model, experiment, or comparison: Simulate 10,000 excitatory and 2,500 inhibitory LIF neurons at `(g, eta) = (3, 2), (6, 4), (5, 2), (4.5, 0.9)` with fixed indegree, delayed voltage jumps, and independent external Poisson drive; compare the measured state at each point with the corresponding published regime.
++- Brain-modeling question or behavior: Reproduce the four network states shown in Fig. 8 of Brunel, "Dynamics of Sparsely Connected Networks of Excitatory and Inhibitory Spiking Neurons."
++- Requested model, experiment, or comparison: Simulate Brunel Model A at panels A `(g, eta)=(3, 2)`, B `(6, 4)`, C `(5, 2)`, and D `(4.5, 0.9)`, where `eta = nu_ext / nu_thr`, then compare the single-neuron rasters and instantaneous global activity with Fig. 8 and Table 1.
+ - Execution mode: forward-simulation
+-- Required outputs: Per-condition raster, population rate, E/I firing rates, E/I per-neuron ISI CV, population-rate power spectrum, dominant population frequency, per-repeat metrics, aggregate robustness summary, exact configuration, and fixed seeds.
+-- Constraints: Use BrainPy-State for point neurons, BrainEvent for sparse event-driven projections, BrainUnit for voltage and time, and BrainState for State-aware compiled execution. Use model A with `N_E = 10000`, `N_I = 2500`, `epsilon = 0.1`, exact indegrees `C_E = 1000` and `C_I = 250`, `C_ext = C_E = 1000`, `tau_m = 20 ms`, `theta = 20 mV`, `V_reset = 10 mV`, `tau_ref = 2 ms`, `J = 0.1 mV`, inhibitory jump `-g J`, external jump `J`, and delay `D = 1.5 ms`. Use `nu_thr = theta / (J C_E tau_m) = 10 Hz` per external synapse and `nu_ext = eta nu_thr`. Proposed numerical protocol: `dt = 0.1 ms`, 500 ms burn-in, 2,000 ms analyzed duration, five independent fixed seeds, one fixed-indegree graph and independent initial/external randomness per seed shared across the four parameter conditions.
++- Required outputs: A four-panel Fig. 8 reproduction with the instantaneous global firing rate in 0.1 ms bins, its temporal mean, and rasters from one fixed 50-neuron sample; exact code, configuration, raw data, metrics, provenance, tests, and result assessment.
++- Constraints: Start fresh in this directory without reading or reusing prior case-17 or case-19 memory, implementation, results, or figures. Use BrainPy-State point-neuron modeling, BrainEvent sparse event communication, BrainState execution, and BrainUnit quantities.
+ 
+ ## Inspected data contract
+-- Data sources and inspected contents: No empirical data were supplied. The model and four parameter points match Brunel (2000), Figure 8 and Table 1; the paper supplies the equations, canonical parameters, expected qualitative regimes, and reference rates/frequencies for the three inhibition-dominated conditions.
+-- Shapes, axes, sampling/time base, and physical units: Each run has 12,500 neurons split into E then I populations. Simulation time uses milliseconds and voltage uses millivolts. Proposed `dt = 0.1 ms` makes the 1.5 ms delay exactly 15 steps. Population activity is retained in 0.1 ms bins; presentation and synchronization metrics may additionally use explicitly labeled 1 ms bins. Raster output uses the same fixed 50 E and 50 I neuron indices in every condition and repeat.
+-- Required preprocessing and the subset used to fit each transform: Discard the first 500 ms before every metric. Remove the population-rate mean before spectral estimation. Compute Welch spectra from the full analyzed interval without inspecting outcomes to change bands or thresholds. No fitting or training is performed.
+-- Mapping from data to model inputs, targets, and observables: Each neuron receives independent aggregate Poisson counts with mean `C_ext nu_ext dt`; recurrent E and I spikes arrive after 1.5 ms through exact fixed-indegree projections. Observables are E/I spike trains, E/I mean firing rates, the mean per-neuron ISI CV among neurons with at least three intervals, population spike counts/rates, Welch power, dominant non-DC frequency, peak-to-background power, and 1 ms population-rate CV.
+-- Known data limitations or unresolved mismatches: Finite networks can show weak damped spectral peaks in the asynchronous state. A 2 s analysis gives limited frequency resolution and relatively few intervals for very-low-rate individual neurons, mitigated by 12,500 neurons and five repeats. Aggregate per-neuron external Poisson counts preserve the summed external input law but do not instantiate 1,000 explicit external source neurons per target. Fixed-indegree graphs are independently sampled by repeat and held fixed across conditions within a repeat.
++- Data sources and inspected contents: Brunel (2000), DOI `10.1023/A:1008925309027`, especially Eqs. 1-2, the Model A parameter description, Section 6, Fig. 8 and Table 1. No empirical data or author simulation code were supplied.
++- Shapes, axes, sampling/time base, and physical units: Use `NE=10000`, `NI=2500`, `CE=1000`, `CI=250`, `Cext=1000`, `tau_m=20 ms`, `tau_ref=2 ms`, threshold `20 mV`, reset `10 mV`, excitatory jump `J=0.1 mV`, inhibitory jump `-gJ`, and delay `1.5 ms`. Resolve time at `dt=0.1 ms`, matching the Fig. 8 global-rate bins. Store time-major Boolean probe rasters and full-population E/I spike counts after burn-in.
++- Required preprocessing and the subset used to fit each transform: Discard a fixed burn-in before selecting a fixed displayed window. Convert spike counts to population rates in Hz using the 0.1 ms bin width. Compute firing rates, per-neuron ISI CV where at least four spikes are present, and a mean-centered Welch spectrum for frequency assessment. No transform is fit and no training occurs.
++- Mapping from data to model inputs, targets, and observables: Each neuron receives exactly `CE` recurrent E and `CI` recurrent I sources plus the summed count of `Cext` independent Poisson inputs. Since `nu_thr = theta/(J*CE*tau_m) = 10 Hz`, the aggregate external count per 0.1 ms step has mean `Cext*eta*nu_thr*dt = eta`. Delayed presynaptic events produce voltage jumps. Observables are probe spikes, E/I/global counts and rates, firing rates, ISI CV, and global-rate spectral peaks.
++- Known data limitations or unresolved mismatches: The paper does not publish its RNG, initial voltages, exact sampled neurons, or complete simulation duration, so pixel-identical reproduction is impossible. A finite stochastic realization can show weak oscillations in panel C, as the paper itself notes. The external afferents are represented by their mathematically equivalent summed Poisson count rather than 12.5 million explicit input synapses.
+ 
+ ## Acceptance boundary
+-- Evidence required for success, failure, or an inconclusive result: Classify a repeat as regular when pooled E/I mean ISI CV is below 0.5 and irregular when it is at least 0.7. Classify population activity as synchronous only when both its 1 ms rate CV is at least 0.2 and its dominant spectral peak is at least five times the median power outside a +/-5 Hz exclusion around the peak. A synchronous irregular repeat is fast at 100-300 Hz and slow at 10-60 Hz, with mean neuron rate below dominant population frequency. Classify AI only when firing is irregular and the full synchrony predicate is false. Values between regularity thresholds or outside frequency bands are inconclusive. A requested regime is robust only when at least four of five repeats satisfy its complete predicate and the aggregate median does too.
+-- Required baselines and controls: Verify exact indegree and weight signs, the 15-step delay, external-rate conversion, fixed graph reuse across conditions within each seed, independent reset between runs, deterministic replay for one seed, finite State and outputs, a no-recurrence external-drive check, and small-network eager/compiled parity. Compare fast-SI, AI, and slow-SI rates/frequencies with the published simulation values 60.7/180 Hz, 37.7/no sustained oscillation, and 5.5/22 Hz without using those values to force labels.
+-- Invalid-result conditions: Variable indegree, duplicate edges where sampling is specified without replacement, autapses, wrong E/I source counts, delayed or refractory State carried across independent runs, external drive scaled as one rather than 1,000 synapses, unit mismatch, omitted burn-in, post-outcome threshold changes, missing repeats, non-finite metrics, or a regime label based only on the largest FFT bin.
+-- Allowed claims and explicit non-claims: Report whether each sampled parameter point robustly satisfies the prospective finite-network predicates and whether its observables qualitatively reproduce Brunel's published state. Do not claim a continuous phase boundary, biological realism, exact replication of the original random graph or random-number generator, or absence of finite-size oscillatory structure in AI.
++- Evidence required for success, failure, or an inconclusive result: The generated figure must use the paper's four parameter points and show A as synchronized/regular, B as a fast global oscillation with irregular neuron firing below the global frequency, C as approximately stationary global activity with irregular neuron firing, and D as a slow global oscillation with irregular low-rate firing. For B, C, and D, respectively compare against Table 1 simulation values `(60.7 Hz, 180 Hz)`, `(37.7 Hz, no global frequency)`, and `(5.5 Hz, 22 Hz)`; accept quantitative agreement within 20% for B/C firing rates and B frequency, and within 30% for D firing rate/frequency. Require mean ISI CV `<0.5` for A and `>=0.7` for B-D. When a qualitative predicate or tolerance fails, report the panel as not reproduced or inconclusive rather than changing criteria.
++- Required baselines and controls: Verify `nu_thr=10 Hz`, exact fixed fan-in, unique in-range sources, no autapses, correct E/I signs, the 15-step delay, refractory/reset behavior, independent external streams, complete State reset and RNG replay, no-recurrence external-drive activity, eager/compiled parity, fixed graph/sample reuse, finite metrics, and artifact hashes.
++- Invalid-result conditions: Reading or reusing prior project memory or outputs; variable or duplicate fan-in; autapses; wrong delay, units, external-rate conversion, or update order; State/RNG carryover across panels; omitted burn-in; post-hoc parameter or threshold tuning; non-finite required metrics; missing raw data or provenance; or a figure generated before code/results pass the required Codex review.
++- Allowed claims and explicit non-claims: Claim only a finite-network reproduction at the four sampled parameter points and report each panel's measured agreement. Do not claim pixel identity, exact RNG parity, a reproduced phase diagram, biological realism, or robust parameter regions beyond the sampled points.
+diff --git a/brainx-display-cases/17-sparse-EI-network-states/acceleration-and-parity.md b/brainx-display-cases/17-sparse-EI-network-states/acceleration-and-parity.md
+index 507636a..51a7c67 100644
+--- a/brainx-display-cases/17-sparse-EI-network-states/acceleration-and-parity.md
++++ b/brainx-display-cases/17-sparse-EI-network-states/acceleration-and-parity.md
+@@ -2,31 +2,32 @@
+ 
+ | File/area | Pattern | Evidence | Axis | Impact | Risk | Rewrite | Confidence |
+ |---|---|---|---|---|---|---|---|
+-| `SparseEINetwork.update` | Population/event path already fused | One vectorized LIF update and two `BinaryArray @ FixedNumPerPost` products; no scalar neuron or synapse loop | N | High | Low | Keep unchanged | High |
+-| `build_runner` | Correct largest stable JIT boundary | The complete fixed-length `for_loop` is inside one `brainstate.transform.jit`; no Python timestep loop or transform construction occurs inside execution | T | High | Low | Keep unchanged | High |
+-| Per-condition execution | Small host loop around independent compiled rollouts | Four conditions reuse one graph-specific compiled runner, but each needs independent writable voltage, refractory, delay, and RNG State | E | Medium | High | Keep sequential to avoid four full State/spike histories and uncertain fixed-degree batch kernels | High |
+-| Per-repeat execution | Graph-specific compilation | `FixedNumPerPost` indices are static topology metadata, so each independently sampled exact-indegree graph requires a fresh Module trace | E | Medium | Medium | Accept five cold compilations; JITC would change exact indegree and dynamic topology arguments fail the BrainEvent PyTree contract | High |
+-| Full spike output | `memory-T-full-history` required by analysis | Production output is 25,000 x 12,500 booleans (312.5 MB) before host analysis; exact per-neuron ISI CV requires spike timing | T,N | Medium | Medium | Retain for correctness, immediately reduce to raster probes/counts/CV and discard after each condition | High |
+-| Host topology and metrics | Host-only Python/NumPy | Fixed-indegree sampling, ISI grouping, Welch spectra, serialization, and condition/repeat loops occur outside the transformed rollout | N,E | Low | Low | Keep as explicit host boundary | High |
++| `BrunelLIF.update` | `already-fused` | One population-shaped leak, refractory mask, threshold, and reset; no scalar neuron loop | N | High | Low | Keep unchanged | High |
++| `SparseEINetwork.update` | `already-fused` | Two `BinaryArray @ FixedNumPerPost` event products plus one population Poisson draw | N | High | Low | Keep unchanged | High |
++| `build_runner` | Correct stable JIT boundary | One fixed-length State-aware `for_loop` is wrapped by one `brainstate.transform.jit` | T | High | Low | Keep unchanged | High |
++| Panel loop | `loop-E-sweep` | Four independent parameter points, each with independent dynamical/RNG State and a 312.5 MB production spike history | E | Medium | High | Keep sequential; reset State and reduce each history immediately | High |
++| Connectivity sampling | Host static setup | Exact unique fan-in and autapse exclusion are sampled once before transforms | N | Low | Low | Keep on host for inspectability | High |
++| ISI analysis | Host offline analysis | Full spike history is required for per-neuron ISI CV and is consumed after the compiled run | N,T | Medium | Medium | Keep outside transforms; delete each history after reduction | High |
+ 
+ ## Patch / rewrite plan
+ 
+-No acceleration rewrite is justified after the audit. The implementation already uses the BrainX-native optimum for this workload: population State, exact fixed-degree event communication, and one state-aware compiled time loop. Preserve one graph-specific compiled runner per repeat and pass only scalar `g` and `eta` dynamically across its four independent condition calls.
++No acceleration rewrite is justified. Preserve exact fixed-fan-in BrainEvent storage, population State, and the complete compiled time loop. Do not map the four panels because independent delay, voltage, refractory, spike, and RNG State plus four full histories would multiply peak memory without changing the scientific workload.
+ 
+-The fixed-degree topology cannot be passed dynamically through the installed BrainEvent/BrainState JIT cache because its indices are static PyTree metadata. Attaching topology to the Module before tracing is therefore an execution contract, not cosmetic specialization.
++The transform design follows the BrainState control-flow reference: `for_loop` owns time because iteration effects live in Module State, and one enclosing State-aware JIT owns the stable rollout. NumPy remains confined to static topology construction and post-run analysis.
+ 
+-## Validation plan and result
++## Validation plan
+ 
+-- Focused parity suite: `8 passed in 23.12s` on CPU, including exact eager/compiled output parity, deterministic compiled replay, delay timing, and State reset behavior.
+-- Representative benchmark: 800 E + 200 I neurons, indegrees 80/20, 100 ms total, fixed seed 1729, `(g, eta) = (5, 2)`.
+-- Cold execution: 12.3306 s, including trace/compile.
+-- Warm execution after complete reset/reseed: 0.9256 s.
+-- Output parity: spike histories bit-identical; final membrane voltage maximum absolute difference `0.0 mV`; output shape `(1000, 1000)` with 8,625 spikes.
+-- Memory: no dense recurrent matrix is created. Production fixed-degree indices require about 62.5 MB as int32; one full boolean spike history requires 312.5 MB and is released condition by condition.
++- Focused suite: `9 passed in 31.16s` on CPU.
++- Representative workload: 800 E plus 200 I neurons, exact indegrees 80/20, 100 ms total, seed 1729, `(g, eta)=(5,2)`.
++- Cold execution: 25.5102 s, including trace and compile.
++- Warm execution after complete State/RNG reset: 2.5236 s.
++- Output: shape `(1000, 1000)`, 8,793 spikes.
++- Parity: spike histories are bit-identical and final membrane-voltage maximum absolute difference is `0.0 mV`.
++- Production history size: `25,000 * 12,500` Boolean values, approximately 312.5 MB per panel, reduced and released sequentially.
+ 
+ ## Remaining risks
+ 
+-- Production is CPU-only and five graph-specific compilations are required; total runtime may be substantial.
+-- Full spike history is the dominant result buffer. Online ISI moments could reduce memory, but that rewrite would add State and analysis complexity without evidence that memory is currently limiting.
+-- Mapping conditions or repeats would multiply dynamical State, RNG, delay, and output memory. It is intentionally rejected on the single CPU device.
+-- BrainEvent kernel performance depends on active-spike density; the synchronous-regular state may be the most expensive condition.
++- CPU-only production is long-running and sparse event cost depends on activity.
++- Exact graph sampling uses a host loop once per source population; it is not on the simulation hot path.
++- The full spike history is the main result buffer, but it is required by the locked per-neuron ISI-CV observable.
++- Mapping panels or retaining several histories would unnecessarily increase peak memory.
+diff --git a/brainx-display-cases/17-sparse-EI-network-states/brainmodeling-memory.md b/brainx-display-cases/17-sparse-EI-network-states/brainmodeling-memory.md
+index 3399682..dc9c45c 100644
+--- a/brainx-display-cases/17-sparse-EI-network-states/brainmodeling-memory.md
++++ b/brainx-display-cases/17-sparse-EI-network-states/brainmodeling-memory.md
+@@ -5,75 +5,53 @@
+ - Step: 0
+ 
+ ### Artifacts
+-- `prompt.md`: researcher request, verified present.
+-- `NeuroSpecification.md`: prospective draft awaiting researcher approval.
++- `NeuroSpecification.md`: Locked fresh-project scientific model, Fig. 8 protocol, observables, controls, and prospective acceptance boundary.
+ 
+ ### Important milestones
+-- Fresh-new entry selected because the case contained only the prompt and no prior loop artifacts.
+-- Canonical Brunel model-A parameters and the four Figure 8 parameter points were verified against the source paper.
+-- Step 0 is blocked pending approval of the proposed 500 ms burn-in, 2,000 ms analysis, five fixed-seed repeats, and prospective regime predicates.
+-
+-## Checkpoint
+-- Iteration: 1
+-- Step: 0
+-
+-### Artifacts
+-- `NeuroSpecification.md`: locked prospective specification.
+-
+-### Important milestones
+-- Researcher approved the proposed numerical protocol and regime predicates on 2026-08-24 without changes; this checkpoint supersedes the earlier blocked step-0 milestone.
+-- Step 0 is complete; continue to step 1.
++- Selected entry case `fresh-new` under the researcher's explicit instruction not to read prior memory.
++- Did not read or reuse any prior case-17 or case-19 memory, code, results, or figures.
++- Fixed the paper-derived parameters and acceptance tests before observing any new simulation result.
++- The loop advances to step 1.
+ 
+ ## Checkpoint
+ - Iteration: 1
+ - Step: 1
+ 
+ ### Artifacts
+-- `brainx-study-record.md`: selected BrainX abstractions, source-model contract, update order, randomness, fixed metrics, checks, and implementation design.
++- `brainx-study-record.md`: Complete paper-to-BrainX translation, package/API selection, update order, lifecycle, output reduction, tests, and implementation boundary.
+ 
+ ### Important milestones
+-- Selected scale: point-neuron spiking network, owned by BrainPy-State; BrainEvent, BrainUnit, and BrainState provide fixed-fan-in communication, units, delay/random State, and compiled execution.
+-- Active optional coverage: none (forward simulation).
+-- All task-relevant routed references and canonical scripts were traced before implementation.
+-- Step 1 is complete; continue to step 2.
++- Selected BrainPy-State as the sole biological-scale owner with BrainEvent, BrainState, and BrainUnit support.
++- Chose explicit exact fixed fan-in, one 15-step recurrent delay, independent per-neuron aggregate external Poisson input, and one compiled State-aware time loop.
++- Optional training/fitting coverage is none.
++- Finished study before implementation; the loop advances to step 2.
+ 
+ ## Checkpoint
+ - Iteration: 1
+ - Step: 2
+ 
+ ### Artifacts
+-- `sparse_ei_network.py`: BrainPy-State LIF model, BrainEvent fixed-fan-in communication, BrainState delays/randomness/compiled rollout, analysis, classification, and artifact writer.
+-- `test_sparse_ei_network.py`: eight focused implementation and lifecycle checks.
+-- `test-results.md`: passing focused suite and reduced end-to-end smoke record.
+-- `/tmp/brainx-sparse-ei-smoke-v1`: mechanically complete reduced smoke artifacts; excluded from scientific claims.
++- `sparse_ei_network.py`: Fresh BrainX-native Brunel Model A network, exact fixed-fan-in graph, compiled experiment runner, host analyses, compact raw artifacts, deterministic assessment, provenance, manifest, and review-gated Fig. 8 renderer.
++- `test_sparse_ei_network.py`: Focused scientific and execution contract tests.
++- `test-results.md`: Nine passing CPU implementation checks.
+ 
+ ### Important milestones
+-- Focused suite passed: 8 tests in 23.12 s on CPU.
+-- Reduced four-condition smoke completed with exit code 0 and emitted configuration, topology hashes, per-repeat metrics, robustness summary, provenance, raster probes, rates, and spectra.
+-- BrainEvent fixed-degree topology must be attached to the Module before tracing; each repeat compiles one graph-specific runner reused across all four dynamic `(g, eta)` conditions.
+-- Step 2 is complete; continue to step 3.
++- Implemented the four paper parameter points without reading or reusing prior project code or results.
++- Kept the complete timestep sequence in one State-aware compiled loop and reduced results only at the explicit host boundary.
++- Verified exact replay and eager/JIT parity after complete State and RNG reset.
++- Step 2 passes and the loop advances to acceleration step 3.
+ 
+ ## Checkpoint
+ - Iteration: 1
+ - Step: 3
+ 
+ ### Artifacts
+-- `acceleration-and-parity.md`: hot-path inventory, unchanged acceleration decision, deterministic parity, cold/warm timing, memory accounting, and remaining risks.
+-
+-### Important milestones
+-- The accepted acceleration path is one graph-specific `brainstate.transform.jit(for_loop)` per repeat with population-wide LIF State and BrainEvent fixed-degree communication.
+-- A 1,000-neuron, 100 ms benchmark took 12.3306 s cold and 0.9256 s warm on CPU; replay produced bit-identical spikes and `0.0 mV` final-voltage difference.
+-- Batching conditions/repeats and generated-probability connectivity were rejected because they increase full-history memory or violate exact-indegree semantics.
+-- Step 3 is complete; continue to step 4.
+-
+-## Checkpoint
+-- Iteration: 1
+-- Step: 2
+-
+-### Artifacts
+-- `sparse_ei_network.py`: adds an exact immutable production-config loader without changing model or analysis semantics.
+-- `test_sparse_ei_network.py`: adds a locked-config round-trip check.
+-- `test-results.md`: superseding focused result, 9 tests passed in 26.87 s.
++- `acceleration-and-parity.md`: Hot-path inventory, unchanged acceleration decision, benchmark, exact parity, memory rationale, and remaining risks.
++- `benchmark_parity.py`: Reproducible cold/warm reset-parity benchmark.
+ 
+ ### Important milestones
+-- This execution-plumbing correction supersedes the earlier eight-test count; model, approved parameters, metrics, thresholds, and acceleration design are unchanged.
++- Preserved the already-fused population/event path and one complete compiled time loop.
++- Measured 25.5102 s cold and 2.5236 s warm on CPU for the representative workload.
++- Proved bit-identical spike histories and `0.0 mV` final-voltage difference after complete reset/reseed.
++- Rejected panel mapping because it multiplies independent writable State and 312.5 MB histories.
++- Step 3 passes and the loop advances to experiment execution step 4.
+diff --git a/brainx-display-cases/17-sparse-EI-network-states/brainx-study-record.md b/brainx-display-cases/17-sparse-EI-network-states/brainx-study-record.md
+index b2c8bc8..8fa9e10 100644
+--- a/brainx-display-cases/17-sparse-EI-network-states/brainx-study-record.md
++++ b/brainx-display-cases/17-sparse-EI-network-states/brainx-study-record.md
+@@ -1,71 +1,52 @@
+ # BrainX study record
+ 
+-## Selected scale and ownership
++## Selected scale and packages
++
++- Biological scale: point-neuron spiking network only.
++- Modeling owner: BrainPy-State.
++- Supporting infrastructure: BrainEvent for fixed-fan-in binary event communication, BrainState for Module State, delays, randomness, environments, JIT, and time control flow, and BrainUnit for voltage, time, and frequency quantities.
++- Excluded scales: no ion/channel/compartment mechanism and no aggregate neural-mass State is represented.
++- Execution dependency check: `brainpy`, `brainevent`, `brainstate`, and `brainunit` import successfully in the intended project Python environment.
++- Optional training/fitting coverage: none; this is a forward simulation.
++
++## Sources studied
++
++- Brunel (2000), Eqs. 1-2, Model A parameters, Section 6, Fig. 8, and Table 1.
++- `brainx-general-guard` and `brainx-modeling-loop`.
++- BrainPy-State root skill, `references/projection-patterns.md`, `references/braintools/connectivity.md`, and `references/scripts/109_fast_global_oscillation.py`.
++- BrainEvent root skill, `references/connectivity-variants.md`, and `references/scripts/coba_ei_teaching.py`.
++- BrainState root skill, `references/brainstate/randomness-and-reproducibility.md`, `references/brainstate/brainstate-control-flow-patterns.md`, and `references/simulation-environment.md`.
++- BrainUnit root skill.
+ 
+-- Model only the point-neuron scale. BrainPy-State owns the LIF population and point-neuron lifecycle.
+-- BrainEvent owns binary recurrent communication and exact fixed fan-in storage.
+-- BrainUnit owns voltage, time, and frequency quantities through simulation boundaries.
+-- BrainState owns Module registration, mutable dynamical State, delay buffers, reproducible random State, and the compiled time loop.
+-- Active optional training or fitting coverage: none; this is forward simulation.
++## Scientific translation
+ 
+-## Source model
++The membrane follows `tau_m dV/dt = -V` between events. A delayed excitatory or external event increments `V` by `J`; a delayed inhibitory event increments it by `-gJ`. A threshold crossing emits a spike, sets `V` to `Vr`, and makes voltage insensitive to all stimulation for `tau_ref`. Both populations share the same Model A dynamics.
+ 
+-Use Brunel model A exactly at the supplied Figure 8 points. The neuron equation is `tau_m dV/dt = -V` between events. An excitatory or external arrival adds `J`; an inhibitory arrival adds `-g J`. Threshold crossing emits a spike, reset follows the refractory interval convention, and inputs arriving during refractoriness are ignored. Use the locked parameter and analysis contract in `NeuroSpecification.md`.
++The paper specifies `NE=10000`, `NI=2500`, and probability 0.1, equivalently exact mean fan-ins `CE=1000` and `CI=250`. Encode these as exact fixed fan-in because it preserves the paper's analytical `CE` and `CI` at every target and makes the realized graph inspectable. Sample unique sources without replacement and exclude autapses. Represent external input by the superposition theorem: the sum of `Cext=1000` independent Poisson trains is one per-neuron Poisson count with mean `Cext*nu_ext*dt = eta` at `dt=0.1 ms`.
+ 
+-## API and lifecycle decisions
++## API and lifecycle design
+ 
+-| Need | BrainX API and invariant |
++| Need | API and invariant |
+ |---|---|
+-| Point-neuron component | Subclass `brainpy.state.Neuron` because the requested delta-voltage equation has no current conversion or synaptic filter. Register `V`, last-spike time, and current spike as BrainState runtime State. |
+-| Exact fixed indegree | Construct `brainevent.FixedNumPerPost(data, indices, shape=(N_pre, N_post))`; `indices` has shape `(N_post, indegree)`. Sample each row without replacement and exclude the corresponding source for within-population targets. |
+-| Event communication | Apply `brainevent.BinaryArray(delayed_spikes) @ connectivity`; the output has one recurrent spike count per postsynaptic neuron. Store each repeat's explicit topology on its Module before tracing because BrainEvent treats fixed-degree indices as static metadata. Multiply E counts by `J` and I counts by `-g J` after communication so one graph-specific compiled runner is reusable across all four `g` values. |
+-| Recurrent delay | Use `brainstate.nn.Delay` with a boolean target descriptor and `D = 1.5 ms`. Retrieve the 15-step tap before the neuronal update and insert emitted spikes afterward, following the canonical delayed `DeltaProj` example. |
+-| External Poisson drive | Use `brainpy.state.poisson_generator(in_size=N, rate=C_ext * eta * nu_thr, rng_seed=...)`. It emits independent per-neuron Poisson multiplicities each step. Apply the same 15-step delay before converting counts to voltage jumps. |
+-| State initialization | Enter `brainstate.environ.context(dt=DT)` before construction and initialization. Call `brainstate.nn.init_all_states(net)` once before tracing, then use `brainstate.nn.reset_all_states(net)`, restore the intentional seeded voltage, and reseed the external RNG before every independent run. Never replace a compiled callable's State objects or carry voltage, refractory, spike, delay, or RNG values across runs. |
+-| Stateful rollout | Put the complete step in `brainstate.transform.for_loop` and compile the complete rollout with `brainstate.transform.jit`. Do not use a Python timestep loop. |
+-| Unit boundary | Keep `V`, `J`, thresholds, reset, `dt`, delay, refractory time, and rates as BrainUnit quantities. Convert to milliseconds, seconds, millivolts, or hertz only for host analysis and serialization. |
++| Neuron graph | Subclass `brainstate.nn.Module`; store voltage in `HiddenState`, and refractory/spike runtime values in `ShortTermState`. Preserve shape, dtype, and units across writes. |
++| Exact leak | Apply `V * exp(-dt/tau_m)` outside refractory, then add event jumps in the same step. |
++| Sparse communication | Wrap delayed E and I spikes in `brainevent.BinaryArray` and multiply by two `FixedNumPerPost` structures shaped `(NE, N)` and `(NI, N)`. |
++| Delay | Use `brainstate.nn.Delay` with a fixed Boolean population shape and retrieve exactly 15 steps after emission. External Poisson drive is not delayed: it represents spikes arriving from outside at the current soma time, consistent with the paper's stationary external processes. |
++| Randomness | Use independent seeded streams for connectivity, initial voltage, external Poisson input, and probe selection. Reseed and reset before independent replay. |
++| Environment | Scope `dt` around construction and rollout; scope `t` and integer `i` inside every network update. |
++| Time execution | Put all timesteps in one `brainstate.transform.for_loop`, wrapped once by `brainstate.transform.jit`; do not use a Python timestep loop. |
++| Host boundary | Convert completed arrays to NumPy only for metrics, serialization, hashing, and plotting. Keep units until explicit `to_decimal(...)` boundaries. |
+ 
+ ## Update order
+ 
+-For time step `n`:
+-
+-1. Draw the current external Poisson multiplicity and insert it into its delay buffer.
+-2. Insert the spike from the previous completed neuronal update into the recurrent delay buffer.
+-3. Retrieve both 15-step taps; insert-before-retrieve makes step 0 current and step 15 exactly 15 completed updates earlier.
+-4. Apply E and I event communication and form the signed voltage jump.
+-5. Advance leak, apply the complete instantaneous jump only outside refractoriness, threshold, reset, and record the new spike for insertion at the next step.
+-6. Return only the new E/I spikes; derive population counts inside the compiled loop when a reduced-output check does not require full rasters.
+-
+-An impulse test must demonstrate that an event inserted at step 0 is retrieved at step 15 and nowhere earlier.
+-
+-## Randomness and graph reuse
++At timestep `i`: retrieve delayed recurrent spikes; communicate delayed E/I events; draw the independent aggregate external count; leak non-refractory voltages and add recurrent/external jumps; suppress all voltage changes during refractory; threshold, reset, and store the current spike; then push that spike into the delay buffer. Under this canonical end-of-step emission convention, an impulse returned by source step 0 is observed at receiving array index 16: the interval from the end of source step 0 to the start of receiving step 16 is exactly 15 bins, or 1.5 ms.
+ 
+-Use repeat seeds `[1729, 2718, 3141, 5772, 8119]`. Derive graph, initial-voltage, and external seeds deterministically from each repeat seed. Hold the graph and initial-voltage realization fixed across all four conditions within one repeat. Reset the external generator to the same seed sequence for each condition; changing `eta` changes only its Poisson intensity. Replaying one complete seed and condition must reproduce spikes and metrics exactly.
++## Outputs and validation
+ 
+-## Metrics fixed before production
++Return only the current full-population spike vector from the transformed step. After the run, discard burn-in on the host, reduce full spikes to E/I/global counts, preserve one fixed 50-neuron raster, compute per-neuron ISI CV and Welch spectra, and save compact raw arrays. Plot the paper's layout only from review-accepted raw evidence.
+ 
+-- Retain full spikes only long enough to calculate per-neuron statistics; save fixed 50-E/50-I raster probes and E/I population counts for every repeat.
+-- Compute E and I firing rates from analyzed spike counts divided by population size and 2 s.
+-- Compute each neuron's ISI CV when it has at least four spikes (three intervals), then report the mean and median separately for E and I. Apply the locked regularity predicate to the mean across all eligible E and I neurons.
+-- Form the 1 ms rate from ten 0.1 ms bins and compute its temporal CV.
+-- Run `scipy.signal.welch` on the mean-centered 0.1 ms population rate with a Hann window, `nperseg=8192`, 50% overlap, constant detrending, and density scaling. Search non-DC frequencies from 1 to 1,000 Hz. Define background power as the median in that band outside `dominant_frequency +/- 5 Hz`.
+-- Apply every classification predicate from the locked specification without changing thresholds or bands. Use the median of each continuous metric for the aggregate five-repeat predicate and require at least four matching repeat labels.
++Focused tests cover units/rates, connectivity, delay, refractory/reset, deterministic replay, no-recurrence external drive, output shapes, metric behavior, and eager/compiled parity. A representative benchmark must establish the performance baseline before any acceleration change.
+ 
+-## Focused implementation checks
++## Implementation boundary
+ 
+-- Unit and external-rate conversion: `nu_thr = 10 Hz`; aggregate rates are 20, 40, 20, and 9 kHz per neuron.
+-- Exact E/I matrix shapes, indegrees, unique row indices, in-range indices, no autapses, and signed jump construction.
+-- Delay impulse timing at 15 steps.
+-- LIF leak, threshold, reset, and refractory insensitivity to jumps.
+-- Independent reset and deterministic replay.
+-- Small-network full-spike eager/compiled parity.
+-- No-recurrence external-drive sanity against a single-neuron mean-input expectation without using that control as a regime claim.
+-
+-## References studied
+-
+-- BrainX general guard and modeling-loop contracts.
+-- BrainPy-State root skill, component selection, projection patterns, delay protocol, and `109_fast_global_oscillation.py`.
+-- BrainEvent root skill, connectivity variants, `coba_ei_teaching.py`, and the delayed-communication portion of `204_joglekar_2018_propagation.py`.
+-- BrainUnit root skill.
+-- BrainState root skill, simulation environment, and randomness/reproducibility references.
+-- Brunel (2000), model definition, Figure 7, Figure 8, Table 1, and finite-size discussion.
++Do not use BrainMass population-rate State, dense recurrent matrices, generated probabilistic connectivity, explicit external afferent populations, raw JAX transforms over State, Python timestep loops, or post-hoc tuning of the locked paper parameters or acceptance thresholds.
+diff --git a/brainx-display-cases/17-sparse-EI-network-states/sparse_ei_network.py b/brainx-display-cases/17-sparse-EI-network-states/sparse_ei_network.py
+index 1b26471..928619f 100644
+--- a/brainx-display-cases/17-sparse-EI-network-states/sparse_ei_network.py
++++ b/brainx-display-cases/17-sparse-EI-network-states/sparse_ei_network.py
+@@ -1,41 +1,61 @@
++"""Fresh BrainX reproduction of Brunel (2000), Figure 8."""
++
+ from __future__ import annotations
+ 
+ import argparse
+ import csv
+ import hashlib
++import importlib.metadata
+ import json
+ import platform
+-import subprocess
++import sys
+ import time
+ from dataclasses import asdict, dataclass
+ from pathlib import Path
+ 
+ import brainevent
+-import brainpy
+ import brainstate
+ import brainunit as u
+ import jax
+ import jax.numpy as jnp
++import matplotlib.pyplot as plt
+ import numpy as np
+-from scipy import signal
++import scipy.signal
+ 
+ 
+ DT = 0.1 * u.ms
+ TAU_M = 20.0 * u.ms
++TAU_REF = 2.0 * u.ms
+ V_THRESHOLD = 20.0 * u.mV
+ V_RESET = 10.0 * u.mV
+-TAU_REF = 2.0 * u.ms
+ JUMP = 0.1 * u.mV
+ DELAY = 1.5 * u.ms
+-NU_THRESHOLD = 10.0 * u.Hz
++NU_THRESHOLD = V_THRESHOLD / (JUMP * 1000 * TAU_M)
+ 
+ CONDITIONS = (
+-    ("synchronous_regular", 3.0, 2.0),
+-    ("fast_synchronous_irregular", 6.0, 4.0),
+-    ("asynchronous_irregular", 5.0, 2.0),
+-    ("slow_synchronous_irregular", 4.5, 0.9),
++    ("A", "synchronous_regular", 3.0, 2.0, 100.0),
++    ("B", "fast_synchronous_irregular", 6.0, 4.0, 200.0),
++    ("C", "asynchronous_irregular", 5.0, 2.0, 200.0),
++    ("D", "slow_synchronous_irregular", 4.5, 0.9, 200.0),
++)
++
++PAPER_TARGETS = {
++    "fast_synchronous_irregular": {"rate_hz": 60.7, "frequency_hz": 180.0},
++    "asynchronous_irregular": {"rate_hz": 37.7, "frequency_hz": None},
++    "slow_synchronous_irregular": {"rate_hz": 5.5, "frequency_hz": 22.0},
++}
++
++DEPENDENCIES = (
++    "brainpy",
++    "brainevent",
++    "brainstate",
++    "brainunit",
++    "jax",
++    "jaxlib",
++    "matplotlib",
++    "numpy",
++    "scipy",
+ )
+-REPEAT_SEEDS = (1729, 2718, 3141, 5772, 8119)
+ 
+ 
+ @dataclass(frozen=True)
+@@ -54,35 +74,55 @@ class NetworkConfig:
+ 
+     @property
+     def num_steps(self) -> int:
+-        return int(round((self.burn_ms + self.analysis_ms) / DT.to_decimal(u.ms)))
++        duration_ms = self.burn_ms + self.analysis_ms
++        return int(round(duration_ms / DT.to_decimal(u.ms)))
+ 
+     @property
+     def burn_steps(self) -> int:
+         return int(round(self.burn_ms / DT.to_decimal(u.ms)))
+ 
++    @property
++    def analysis_steps(self) -> int:
++        return int(round(self.analysis_ms / DT.to_decimal(u.ms)))
+ 
+-class BrunelLIF(brainpy.state.Neuron):
+-    """LIF population with exact instantaneous voltage jumps."""
+ 
+-    def __init__(self, in_size: int):
+-        super().__init__(in_size)
++class BrunelLIF(brainstate.nn.Module):
++    """Model-A LIF neurons with delta-voltage input and absolute refractory time."""
++
++    def __init__(self, num_neurons: int):
++        super().__init__()
++        self.num_neurons = num_neurons
+ 
+     def init_state(self, *args, **kwargs):
+         del args, kwargs
+-        self.V = brainstate.HiddenState(jnp.full(self.varshape, 10.0) * u.mV)
++        self.V = brainstate.HiddenState(
++            jnp.full((self.num_neurons,), V_RESET.to_decimal(u.mV)) * u.mV
++        )
+         self.last_spike = brainstate.ShortTermState(
+-            jnp.full(self.varshape, -1.0e7) * u.ms
++            jnp.full((self.num_neurons,), -1.0e7) * u.ms
+         )
+         self.spike = brainstate.ShortTermState(
+-            jnp.zeros(self.varshape, dtype=bool)
++            jnp.zeros((self.num_neurons,), dtype=bool)
++        )
++
++    def reset_state(self, *args, **kwargs):
++        del args, kwargs
++        self.V.value = (
++            jnp.full((self.num_neurons,), V_RESET.to_decimal(u.mV)) * u.mV
+         )
++        self.last_spike.value = jnp.full((self.num_neurons,), -1.0e7) * u.ms
++        self.spike.value = jnp.zeros((self.num_neurons,), dtype=bool)
+ 
+     def update(self, delta_v):
+         t = brainstate.environ.get("t")
+         dt = brainstate.environ.get_dt()
+         leaked = self.V.value * u.math.exp(-dt / TAU_M)
+-        refractory = (t - self.last_spike.value) <= TAU_REF
+-        voltage = u.math.where(refractory, self.V.value, leaked + delta_v)
++        in_refractory = (t - self.last_spike.value) <= TAU_REF
++        voltage = u.math.where(
++            in_refractory,
++            self.V.value,
++            leaked + delta_v,
++        )
+         spike = voltage >= V_THRESHOLD
+         self.V.value = u.math.where(spike, V_RESET, voltage)
+         self.last_spike.value = u.math.where(spike, t, self.last_spike.value)
+@@ -92,25 +132,16 @@ class BrunelLIF(brainpy.state.Neuron):
+     def get_spike(self):
+         return self.spike.value
+ 
+-    def reset_state(self, *args, **kwargs):
+-        del args, kwargs
+-        self.V.value = jnp.full(self.varshape, 10.0) * u.mV
+-        self.last_spike.value = jnp.full(self.varshape, -1.0e7) * u.ms
+-        self.spike.value = jnp.zeros(self.varshape, dtype=bool)
+-
+ 
+ class SparseEINetwork(brainstate.nn.Module):
+-    def __init__(self, config: NetworkConfig, external_seed: int, exc_conn, inh_conn):
++    def __init__(self, config: NetworkConfig, exc_conn, inh_conn, external_seed: int):
+         super().__init__()
+         self.config = config
+         self.exc_conn = exc_conn
+         self.inh_conn = inh_conn
+         self.neurons = BrunelLIF(config.num_neurons)
+-        self.spike_delay = brainstate.nn.Delay(
+-            jax.ShapeDtypeStruct((config.num_neurons,), jnp.bool_), DELAY
+-        )
+-        self.external_delay = brainstate.nn.Delay(
+-            jax.ShapeDtypeStruct((config.num_neurons,), brainstate.environ.ditype()),
++        self.delay = brainstate.nn.Delay(
++            jax.ShapeDtypeStruct((config.num_neurons,), jnp.bool_),
+             DELAY,
+         )
+         self.external_rng = brainstate.random.clone_rng(external_seed)
+@@ -118,15 +149,7 @@ class SparseEINetwork(brainstate.nn.Module):
+ 
+     def update(self, t, step_index, g, eta):
+         with brainstate.environ.context(t=t, i=step_index):
+-            external = self.external_rng.poisson(
+-                lam=eta, size=(self.config.num_neurons,)
+-            ).astype(brainstate.environ.ditype())
+-            self.spike_delay.update(self.neurons.get_spike())
+-            self.external_delay.update(external)
+-            delayed_spikes = self.spike_delay.retrieve_at_step(
+-                jnp.asarray(self.delay_steps, dtype=jnp.int32)
+-            )
+-            delayed_external = self.external_delay.retrieve_at_step(
++            delayed_spikes = self.delay.retrieve_at_step(
+                 jnp.asarray(self.delay_steps, dtype=jnp.int32)
+             )
+             exc_count = (
+@@ -137,9 +160,14 @@ class SparseEINetwork(brainstate.nn.Module):
+                 brainevent.BinaryArray(delayed_spikes[self.config.n_exc :])
+                 @ self.inh_conn
+             )
+-            delta_v = (exc_count - g * inh_count + delayed_external) * JUMP
+-            spikes = self.neurons(delta_v)
+-            return spikes
++            external_count = self.external_rng.poisson(
++                lam=eta,
++                size=(self.config.num_neurons,),
++            ).astype(brainstate.environ.ditype())
++            delta_v = (exc_count - g * inh_count + external_count) * JUMP
++            spike = self.neurons(delta_v)
++            self.delay.update(spike)
++            return spike
+ 
+ 
+ def sample_fixed_indegree(
+@@ -149,11 +177,11 @@ def sample_fixed_indegree(
+     seed: int,
+     target_offset: int,
+ ) -> np.ndarray:
+-    """Sample unique sources per target, excluding within-population autapses."""
++    """Sample unique sources for every target and exclude population autapses."""
+     if indegree >= n_pre:
+-        raise ValueError("indegree must be smaller than n_pre when autapses are excluded")
++        raise ValueError("indegree must be smaller than n_pre")
+     rng = np.random.default_rng(seed)
+-    indices = np.empty((n_post, indegree), dtype=np.int32)
++    sources = np.empty((n_post, indegree), dtype=np.int32)
+     for target in range(n_post):
+         local_self = target - target_offset
+         if 0 <= local_self < n_pre:
+@@ -161,385 +189,483 @@ def sample_fixed_indegree(
+             row += row >= local_self
+         else:
+             row = rng.choice(n_pre, size=indegree, replace=False)
+-        indices[target] = row
+-    return indices
++        sources[target] = row
++    return sources
+ 
+ 
+-def make_connectivity(config: NetworkConfig, repeat_seed: int):
++def make_connectivity(config: NetworkConfig, graph_seed: int):
+     exc_indices = sample_fixed_indegree(
+         config.n_exc,
+         config.num_neurons,
+         config.exc_indegree,
+-        repeat_seed + 101,
++        graph_seed + 101,
+         0,
+     )
+     inh_indices = sample_fixed_indegree(
+         config.n_inh,
+         config.num_neurons,
+         config.inh_indegree,
+-        repeat_seed + 202,
++        graph_seed + 202,
+         config.n_exc,
+     )
++    weight = jnp.asarray(1.0, dtype=brainstate.environ.dftype())
+     exc_conn = brainevent.FixedNumPerPost(
+-        jnp.asarray(1.0, dtype=brainstate.environ.dftype()),
++        weight,
+         jnp.asarray(exc_indices),
+         shape=(config.n_exc, config.num_neurons),
+     )
+     inh_conn = brainevent.FixedNumPerPost(
+-        jnp.asarray(1.0, dtype=brainstate.environ.dftype()),
++        weight,
+         jnp.asarray(inh_indices),
+         shape=(config.n_inh, config.num_neurons),
+     )
+     return exc_conn, inh_conn, exc_indices, inh_indices
+ 
+ 
++def choose_probe_indices(config: NetworkConfig, probe_seed: int) -> np.ndarray:
++    rng = np.random.default_rng(probe_seed)
++    n_exc = min(40, config.n_exc)
++    n_inh = min(10, config.n_inh)
++    exc = np.sort(rng.choice(config.n_exc, n_exc, replace=False))
++    inh = np.sort(rng.choice(config.n_inh, n_inh, replace=False)) + config.n_exc
++    return np.concatenate((exc, inh)).astype(np.int32)
++
++
+ def reset_run(net: SparseEINetwork, initial_seed: int, external_seed: int):
+     brainstate.nn.reset_all_states(net)
+     rng = np.random.default_rng(initial_seed)
+-    initial_v = rng.uniform(
++    initial_mv = rng.uniform(
+         V_RESET.to_decimal(u.mV),
+         V_THRESHOLD.to_decimal(u.mV),
+         size=net.config.num_neurons,
+     ).astype(np.float32)
+-    net.neurons.V.value = jnp.asarray(initial_v) * u.mV
++    net.neurons.V.value = jnp.asarray(initial_mv) * u.mV
+     net.external_rng.seed(external_seed)
+ 
+ 
+ def build_runner(net: SparseEINetwork):
+     times = u.math.arange(0.0 * u.ms, net.config.num_steps * DT, DT)
+-    step_indices = jnp.arange(net.config.num_steps, dtype=jnp.int32)
++    indices = jnp.arange(net.config.num_steps, dtype=jnp.int32)
+ 
+     @brainstate.transform.jit
+     def run(g, eta):
+         return brainstate.transform.for_loop(
+             lambda t, i: net.update(t, i, g, eta),
+             times,
+-            step_indices,
++            indices,
+         )
+ 
+     return run
+ 
+ 
+-def isi_cv_by_population(spikes: np.ndarray, start: int, stop: int) -> dict:
++def isi_cv_values(spikes: np.ndarray, start: int, stop: int) -> np.ndarray:
+     values = []
+     for neuron in range(start, stop):
+-        spike_steps = np.flatnonzero(spikes[:, neuron])
+-        if spike_steps.size >= 4:
+-            intervals = np.diff(spike_steps).astype(np.float64)
++        steps = np.flatnonzero(spikes[:, neuron])
++        if steps.size >= 4:
++            intervals = np.diff(steps).astype(np.float64)
+             mean_interval = intervals.mean()
+             if mean_interval > 0:
+-                values.append(float(intervals.std(ddof=0) / mean_interval))
+-    array = np.asarray(values, dtype=np.float64)
+-    return {
+-        "mean": float(array.mean()) if array.size else float("nan"),
+-        "median": float(np.median(array)) if array.size else float("nan"),
+-        "eligible_neurons": int(array.size),
+-        "values": array,
+-    }
++                values.append(intervals.std(ddof=0) / mean_interval)
++    return np.asarray(values, dtype=np.float32)
+ 
+ 
+-def classify_metrics(metrics: dict) -> str:
+-    cv = metrics["isi_cv_all_mean"]
+-    synchronous = (
+-        metrics["population_rate_cv_1ms"] >= 0.2
+-        and metrics["spectral_peak_to_background"] >= 5.0
+-    )
+-    frequency = metrics["dominant_frequency_hz"]
+-    neuron_rate = metrics["overall_firing_rate_hz"]
+-    if cv < 0.5 and synchronous:
+-        return "synchronous_regular"
+-    if cv >= 0.7 and synchronous and 100.0 <= frequency <= 300.0:
+-        if neuron_rate < frequency:
+-            return "fast_synchronous_irregular"
+-    if cv >= 0.7 and not synchronous:
+-        return "asynchronous_irregular"
+-    if cv >= 0.7 and synchronous and 10.0 <= frequency <= 60.0:
+-        if neuron_rate < frequency:
+-            return "slow_synchronous_irregular"
+-    return "inconclusive"
++def summarize_cv(values: np.ndarray) -> dict:
++    return {
++        "mean": float(values.mean()) if values.size else float("nan"),
++        "median": float(np.median(values)) if values.size else float("nan"),
++        "eligible_neurons": int(values.size),
++    }
+ 
+ 
+ def analyze_spikes(spikes: np.ndarray, config: NetworkConfig) -> tuple[dict, dict]:
+-    analyzed = np.asarray(spikes[config.burn_steps :], dtype=bool)
+-    duration_s = config.analysis_ms / 1_000.0
+-    dt_s = DT.to_decimal(u.second)
+-    exc_spikes = analyzed[:, : config.n_exc]
+-    inh_spikes = analyzed[:, config.n_exc :]
+-    exc_rate = exc_spikes.sum() / config.n_exc / duration_s
+-    inh_rate = inh_spikes.sum() / config.n_inh / duration_s
+-    overall_rate = analyzed.sum() / config.num_neurons / duration_s
+-
+-    exc_cv = isi_cv_by_population(analyzed, 0, config.n_exc)
+-    inh_cv = isi_cv_by_population(analyzed, config.n_exc, config.num_neurons)
+-    eligible = np.concatenate((exc_cv.pop("values"), inh_cv.pop("values")))
+-    all_cv_mean = float(eligible.mean()) if eligible.size else float("nan")
+-
+-    exc_counts = exc_spikes.sum(axis=1).astype(np.int32)
+-    inh_counts = inh_spikes.sum(axis=1).astype(np.int32)
+-    population_counts = exc_counts + inh_counts
+-    population_rate = population_counts / config.num_neurons / dt_s
+-
++    analysis = spikes[config.burn_steps :]
++    duration_s = config.analysis_ms / 1000.0
++    exc_counts = analysis[:, : config.n_exc].sum(axis=1, dtype=np.int32)
++    inh_counts = analysis[:, config.n_exc :].sum(axis=1, dtype=np.int32)
++    global_counts = exc_counts + inh_counts
++    exc_cv = isi_cv_values(analysis, 0, config.n_exc)
++    inh_cv = isi_cv_values(analysis, config.n_exc, config.num_neurons)
++    all_cv = np.concatenate((exc_cv, inh_cv))
++
++    global_rate_hz = global_counts / (
++        config.num_neurons * DT.to_decimal(u.second)
++    )
+     bin_steps = int(round(1.0 / DT.to_decimal(u.ms)))
+-    n_bins = population_counts.size // bin_steps
+-    counts_1ms = population_counts[: n_bins * bin_steps].reshape(n_bins, bin_steps).sum(1)
+-    rate_1ms = counts_1ms / config.num_neurons / (bin_steps * dt_s)
+-    rate_cv = float(rate_1ms.std(ddof=0) / rate_1ms.mean())
+-
+-    frequencies, power = signal.welch(
+-        population_rate - population_rate.mean(),
+-        fs=1.0 / dt_s,
++    n_bins = global_counts.size // bin_steps
++    rate_1ms = global_counts[: n_bins * bin_steps].reshape(n_bins, bin_steps).sum(1)
++    rate_1ms = rate_1ms / (config.num_neurons * 0.001)
++    rate_cv_1ms = float(rate_1ms.std(ddof=0) / rate_1ms.mean())
++
++    centered = global_rate_hz - global_rate_hz.mean()
++    frequencies_hz, power_hz = scipy.signal.welch(
++        centered,
++        fs=1.0 / DT.to_decimal(u.second),
+         window="hann",
+-        nperseg=min(8192, population_rate.size),
+-        noverlap=min(4096, population_rate.size // 2),
++        nperseg=min(8192, centered.size),
++        noverlap=min(4096, centered.size // 2),
+         detrend="constant",
+         scaling="density",
+     )
+-    search = (frequencies >= 1.0) & (frequencies <= 1_000.0)
+-    search_indices = np.flatnonzero(search)
+-    peak_index = int(search_indices[np.argmax(power[search])])
+-    dominant_frequency = float(frequencies[peak_index])
+-    background_mask = search & (np.abs(frequencies - dominant_frequency) > 5.0)
+-    background = float(np.median(power[background_mask]))
+-    prominence = float(power[peak_index] / background) if background > 0 else float("inf")
++    search = (frequencies_hz >= 1.0) & (frequencies_hz <= 1000.0)
++    search_power = power_hz[search]
++    search_freq = frequencies_hz[search]
++    dominant_index = int(np.argmax(search_power))
++    dominant_frequency = float(search_freq[dominant_index])
++    peak_to_background = float(
++        search_power[dominant_index] / max(float(np.median(search_power)), 1e-30)
++    )
+ 
++    exc_summary = summarize_cv(exc_cv)
++    inh_summary = summarize_cv(inh_cv)
++    all_summary = summarize_cv(all_cv)
+     metrics = {
+-        "exc_firing_rate_hz": float(exc_rate),
+-        "inh_firing_rate_hz": float(inh_rate),
+-        "overall_firing_rate_hz": float(overall_rate),
+-        "exc_isi_cv_mean": exc_cv["mean"],
+-        "exc_isi_cv_median": exc_cv["median"],
+-        "exc_isi_cv_eligible_neurons": exc_cv["eligible_neurons"],
+-        "inh_isi_cv_mean": inh_cv["mean"],
+-        "inh_isi_cv_median": inh_cv["median"],
+-        "inh_isi_cv_eligible_neurons": inh_cv["eligible_neurons"],
+-        "isi_cv_all_mean": all_cv_mean,
+-        "population_rate_cv_1ms": rate_cv,
++        "exc_firing_rate_hz": float(exc_counts.sum() / config.n_exc / duration_s),
++        "inh_firing_rate_hz": float(inh_counts.sum() / config.n_inh / duration_s),
++        "overall_firing_rate_hz": float(global_counts.sum() / config.num_neurons / duration_s),
++        "exc_isi_cv_mean": exc_summary["mean"],
++        "exc_isi_cv_median": exc_summary["median"],
++        "exc_isi_cv_eligible_neurons": exc_summary["eligible_neurons"],
++        "inh_isi_cv_mean": inh_summary["mean"],
++        "inh_isi_cv_median": inh_summary["median"],
++        "inh_isi_cv_eligible_neurons": inh_summary["eligible_neurons"],
++        "isi_cv_all_mean": all_summary["mean"],
++        "population_rate_cv_1ms": rate_cv_1ms,
+         "dominant_frequency_hz": dominant_frequency,
+-        "spectral_peak_to_background": prominence,
++        "spectral_peak_to_background": peak_to_background,
+     }
+-    metrics["classified_state"] = classify_metrics(metrics)
+-    traces = {
++    raw = {
+         "exc_counts": exc_counts,
+         "inh_counts": inh_counts,
+-        "frequencies_hz": frequencies.astype(np.float32),
+-        "power_hz": power.astype(np.float32),
++        "global_rate_hz": global_rate_hz.astype(np.float32),
++        "exc_isi_cv_values": exc_cv,
++        "inh_isi_cv_values": inh_cv,
++        "frequencies_hz": frequencies_hz.astype(np.float32),
++        "power_hz": power_hz.astype(np.float32),
+     }
+-    return metrics, traces
+-
+-
+-def aggregate_condition(rows: list[dict], expected_state: str) -> dict:
+-    numeric_keys = (
+-        "exc_firing_rate_hz",
+-        "inh_firing_rate_hz",
+-        "overall_firing_rate_hz",
+-        "exc_isi_cv_mean",
+-        "inh_isi_cv_mean",
+-        "isi_cv_all_mean",
+-        "population_rate_cv_1ms",
+-        "dominant_frequency_hz",
+-        "spectral_peak_to_background",
+-    )
+-    aggregate = {key: float(np.median([row[key] for row in rows])) for key in numeric_keys}
+-    aggregate["classified_state"] = classify_metrics(aggregate)
+-    matches = sum(row["classified_state"] == expected_state for row in rows)
+-    aggregate.update(
+-        expected_state=expected_state,
+-        matching_repeats=matches,
+-        total_repeats=len(rows),
+-        robust=(matches >= 4 and aggregate["classified_state"] == expected_state),
+-    )
+-    return aggregate
++    return metrics, raw
++
++
++def _within(value: float, target: float, relative_tolerance: float) -> bool:
++    return abs(value - target) <= relative_tolerance * target
++
++
++def assess_condition(name: str, metrics: dict) -> tuple[str, list[str]]:
++    cv = metrics["isi_cv_all_mean"]
++    rate = metrics["overall_firing_rate_hz"]
++    frequency = metrics["dominant_frequency_hz"]
++    failures = []
++    if name == "synchronous_regular":
++        if not cv < 0.5:
++            failures.append("mean ISI CV is not below 0.5")
++        if not metrics["population_rate_cv_1ms"] >= 0.2:
++            failures.append("1 ms population-rate CV does not show synchrony")
++    elif name == "fast_synchronous_irregular":
++        if not cv >= 0.7:
++            failures.append("mean ISI CV is below 0.7")
++        if not _within(rate, 60.7, 0.2):
++            failures.append("firing rate differs from 60.7 Hz by more than 20%")
++        if not _within(frequency, 180.0, 0.2):
++            failures.append("global frequency differs from 180 Hz by more than 20%")
++        if not rate < frequency:
++            failures.append("neuron rate is not below global frequency")
++    elif name == "asynchronous_irregular":
++        if not cv >= 0.7:
++            failures.append("mean ISI CV is below 0.7")
++        if not _within(rate, 37.7, 0.2):
++            failures.append("firing rate differs from 37.7 Hz by more than 20%")
++        if not metrics["population_rate_cv_1ms"] < 0.2:
++            failures.append("1 ms population-rate CV is not below 0.2")
++    elif name == "slow_synchronous_irregular":
++        if not cv >= 0.7:
++            failures.append("mean ISI CV is below 0.7")
++        if not _within(rate, 5.5, 0.3):
++            failures.append("firing rate differs from 5.5 Hz by more than 30%")
++        if not _within(frequency, 22.0, 0.3):
++            failures.append("global frequency differs from 22 Hz by more than 30%")
++        if not rate < frequency:
++            failures.append("neuron rate is not below global frequency")
++    else:
++        raise ValueError(f"unknown condition {name!r}")
++    return ("reproduced" if not failures else "not_reproduced"), failures
+ 
+ 
+ def _hash_array(array: np.ndarray) -> str:
+     return hashlib.sha256(np.ascontiguousarray(array).view(np.uint8)).hexdigest()
+ 
+ 
+-def _git_identity(root: Path) -> dict:
+-    commands = {
+-        "commit": ["git", "rev-parse", "HEAD"],
+-        "status": ["git", "status", "--short", "--", str(root)],
+-    }
+-    result = {}
+-    for key, command in commands.items():
+-        completed = subprocess.run(command, capture_output=True, text=True, check=False)
+-        result[key] = completed.stdout.strip() if completed.returncode == 0 else "unavailable"
+-    return result
++def _hash_file(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
+ 
+ 
+-def config_payload(config: NetworkConfig, seeds) -> dict:
++def scientific_config(config: NetworkConfig, seed: int) -> dict:
+     return {
+         "network": asdict(config),
+         "dt_ms": DT.to_decimal(u.ms),
+         "tau_m_ms": TAU_M.to_decimal(u.ms),
++        "tau_ref_ms": TAU_REF.to_decimal(u.ms),
+         "threshold_mv": V_THRESHOLD.to_decimal(u.mV),
+         "reset_mv": V_RESET.to_decimal(u.mV),
+-        "refractory_ms": TAU_REF.to_decimal(u.ms),
+         "jump_mv": JUMP.to_decimal(u.mV),
+         "delay_ms": DELAY.to_decimal(u.ms),
+-        "delay_steps": int(round(DELAY / DT)),
+         "nu_threshold_hz": NU_THRESHOLD.to_decimal(u.Hz),
+-        "repeat_seeds": list(seeds),
+         "conditions": [
+-            {"expected_state": name, "g": g, "eta": eta}
+-            for name, g, eta in CONDITIONS
++            {"panel": panel, "name": name, "g": g, "eta": eta, "display_ms": display_ms}
++            for panel, name, g, eta, display_ms in CONDITIONS
+         ],
+-        "classification": {
+-            "regular_cv_lt": 0.5,
+-            "irregular_cv_gte": 0.7,
+-            "synchronous_rate_cv_gte": 0.2,
+-            "synchronous_peak_background_gte": 5.0,
+-            "fast_band_hz": [100.0, 300.0],
+-            "slow_band_hz": [10.0, 60.0],
+-            "robust_repeats_required": 4,
+-        },
++        "seed": seed,
++        "graph_seed": seed,
++        "probe_seed": seed + 303,
++        "initial_seed_base": seed + 1_000,
++        "external_seed_base": seed + 2_000,
+     }
+ 
+ 
+-def load_run_contract(path: Path) -> tuple[NetworkConfig, tuple[int, ...]]:
+-    payload = json.loads(path.read_text(encoding="ascii"))
+-    config = NetworkConfig(**payload["network"])
+-    seeds = tuple(int(seed) for seed in payload["repeat_seeds"])
+-    expected = config_payload(config, seeds)
+-    if payload != expected:
+-        raise ValueError("run config does not exactly match the locked BrainX contract")
+-    if config != NetworkConfig() or seeds != REPEAT_SEEDS:
+-        raise ValueError("production config must use the approved network and five seeds")
+-    return config, seeds
++def runtime_provenance() -> dict:
++    versions = {}
++    for package in DEPENDENCIES:
++        try:
++            versions[package] = importlib.metadata.version(package)
++        except importlib.metadata.PackageNotFoundError:
++            versions[package] = "not-installed"
++    return {
++        "sys_executable": sys.executable,
++        "python_version": platform.python_version(),
++        "python_implementation": platform.python_implementation(),
++        "platform": platform.platform(),
++        "jax_backend": jax.default_backend(),
++        "jax_devices": [str(device) for device in jax.devices()],
++        "dependencies": versions,
++    }
++
++
++def write_manifest(output_dir: Path) -> Path:
++    files = []
++    for path in sorted(output_dir.rglob("*")):
++        if path.is_file() and path.name != "artifact-manifest.json":
++            files.append(
++                {
++                    "path": str(path.relative_to(output_dir)),
++                    "bytes": path.stat().st_size,
++                    "sha256": _hash_file(path),
++                }
++            )
++    manifest_path = output_dir / "artifact-manifest.json"
++    manifest_path.write_text(json.dumps({"files": files}, indent=2), encoding="ascii")
++    return manifest_path
++
++
++def write_assessment(output_dir: Path, rows: list[dict]) -> Path:
++    lines = [
++        "# Result assessment",
++        "",
++        "The verdicts apply the locked prospective criteria without tuning.",
++        "",
++        "| Panel | Requested state | Verdict | Rate (Hz) | ISI CV | Dominant frequency (Hz) |",
++        "|---|---|---|---:|---:|---:|",
++    ]
++    for row in rows:
++        lines.append(
++            f"| {row['panel']} | `{row['condition']}` | `{row['verdict']}` | "
++            f"{row['overall_firing_rate_hz']:.3f} | {row['isi_cv_all_mean']:.3f} | "
++            f"{row['dominant_frequency_hz']:.3f} |"
++        )
++    lines.extend(["", "## Deterministic findings", ""])
++    for row in rows:
++        if row["failures"]:
++            lines.append(
++                f"- Panel {row['panel']}: " + "; ".join(row["failures"]) + "."
++            )
++        else:
++            lines.append(f"- Panel {row['panel']}: all locked predicates passed.")
++    lines.extend(
++        [
++            "",
++            "## Claim-evidence matrix",
++            "",
++            "| Claim | Evidence | Boundary |",
++            "|---|---|---|",
++            "| Each panel is or is not reproduced | `metrics.json` and `raw/*.npz` | Applies only to this finite seeded realization and the locked predicates. |",
++            "| Frequencies come from global activity | `frequencies_hz` and `power_hz` in each raw file | Welch settings and search band are fixed in source code. |",
++            "| The final image derives from accepted evidence | Figure hashes and raw-file hashes | The renderer does not alter simulation data. |",
++            "",
++            "No phase region, pixel identity, or exact author-RNG parity is claimed.",
++        ]
++    )
++    path = output_dir / "result-assessment.md"
++    path.write_text("\n".join(lines) + "\n", encoding="ascii")
++    return path
+ 
+ 
+-def run_experiment(output_dir: Path, config: NetworkConfig, seeds=REPEAT_SEEDS):
++def run_experiment(config: NetworkConfig, seed: int, output_dir: Path) -> list[dict]:
+     output_dir.mkdir(parents=True, exist_ok=False)
+     raw_dir = output_dir / "raw"
+     raw_dir.mkdir()
+-    probe_rng = np.random.default_rng(8675309)
+-    n_probe_exc = min(50, config.n_exc)
+-    n_probe_inh = min(50, config.n_inh)
+-    probe_exc = np.sort(probe_rng.choice(config.n_exc, n_probe_exc, replace=False))
+-    probe_inh = np.sort(
+-        probe_rng.choice(config.n_inh, n_probe_inh, replace=False) + config.n_exc
++    config_payload = scientific_config(config, seed)
++    (output_dir / "config.json").write_text(
++        json.dumps(config_payload, indent=2), encoding="ascii"
+     )
+-    probe_indices = np.concatenate((probe_exc, probe_inh)).astype(np.int32)
+-
+-    metric_rows = []
+-    graph_rows = []
+-    wall_start = time.perf_counter()
+-
+-    for repeat_index, repeat_seed in enumerate(seeds):
+-        exc_conn, inh_conn, exc_indices, inh_indices = make_connectivity(config, repeat_seed)
+-        graph_rows.append(
+-            {
+-                "repeat": repeat_index,
+-                "seed": repeat_seed,
+-                "exc_indices_sha256": _hash_array(exc_indices),
+-                "inh_indices_sha256": _hash_array(inh_indices),
+-            }
++
++    rows = []
++    probe_indices = choose_probe_indices(config, seed + 303)
++    with brainstate.environ.context(dt=DT, precision=32):
++        exc_conn, inh_conn, exc_indices, inh_indices = make_connectivity(config, seed)
++        graph_hashes = {
++            "exc_indices_sha256": _hash_array(exc_indices),
++            "inh_indices_sha256": _hash_array(inh_indices),
++            "probe_indices_sha256": _hash_array(probe_indices),
++        }
++        (output_dir / "graph-hashes.json").write_text(
++            json.dumps(graph_hashes, indent=2), encoding="ascii"
+         )
+         net = SparseEINetwork(
+             config,
+-            external_seed=repeat_seed + 404,
+             exc_conn=exc_conn,
+             inh_conn=inh_conn,
++            external_seed=seed + 2_000,
+         )
+         brainstate.nn.init_all_states(net)
+         runner = build_runner(net)
+-        for expected_state, g, eta in CONDITIONS:
+-            initial_seed = repeat_seed + 303
+-            external_seed = repeat_seed + 404
+-            reset_run(net, initial_seed, external_seed)
+-            start = time.perf_counter()
++
++        for condition_index, (panel, name, g, eta, display_ms) in enumerate(CONDITIONS):
++            reset_run(
++                net,
++                initial_seed=seed + 1_000 + condition_index,
++                external_seed=seed + 2_000 + condition_index,
++            )
++            started = time.perf_counter()
+             spikes = np.asarray(
+                 jax.block_until_ready(
+-                    runner(jnp.asarray(g), jnp.asarray(eta))
++                    runner(
++                        jnp.asarray(g, dtype=brainstate.environ.dftype()),
++                        jnp.asarray(eta, dtype=brainstate.environ.dftype()),
++                    )
+                 ),
+                 dtype=bool,
+             )
+-            run_seconds = time.perf_counter() - start
+-            metrics, traces = analyze_spikes(spikes, config)
++            runtime_seconds = time.perf_counter() - started
++            metrics, raw = analyze_spikes(spikes, config)
++            verdict, failures = assess_condition(name, metrics)
++            analysis = spikes[config.burn_steps :]
++            display_steps = int(round(display_ms / DT.to_decimal(u.ms)))
++            display_raster = analysis[-display_steps:, probe_indices]
++            display_rate = raw["global_rate_hz"][-display_steps:]
++            raw_path = raw_dir / f"panel-{panel}_{name}.npz"
++            np.savez_compressed(
++                raw_path,
++                panel=np.asarray(panel),
++                condition=np.asarray(name),
++                g=np.asarray(g, dtype=np.float32),
++                eta=np.asarray(eta, dtype=np.float32),
++                dt_ms=np.asarray(DT.to_decimal(u.ms), dtype=np.float32),
++                display_time_ms=(
++                    np.arange(display_steps, dtype=np.float32) * DT.to_decimal(u.ms)
++                ),
++                probe_indices=probe_indices,
++                display_raster=display_raster,
++                display_global_rate_hz=display_rate,
++                **raw,
++            )
+             row = {
+-                "repeat": repeat_index,
+-                "repeat_seed": repeat_seed,
+-                "expected_state": expected_state,
++                "panel": panel,
++                "condition": name,
+                 "g": g,
+                 "eta": eta,
+-                "runtime_seconds": run_seconds,
++                "runtime_seconds": runtime_seconds,
++                "verdict": verdict,
++                "failures": failures,
+                 **metrics,
+             }
+-            metric_rows.append(row)
+-            artifact_name = f"repeat-{repeat_index:02d}_{expected_state}.npz"
+-            np.savez_compressed(
+-                raw_dir / artifact_name,
+-                probe_indices=probe_indices,
+-                raster=spikes[config.burn_steps :, probe_indices],
+-                **traces,
+-            )
++            rows.append(row)
+             print(json.dumps(row, sort_keys=True), flush=True)
++            del spikes, analysis
+ 
+-    aggregate = {}
+-    for expected_state, _, _ in CONDITIONS:
+-        rows = [row for row in metric_rows if row["expected_state"] == expected_state]
+-        aggregate[expected_state] = aggregate_condition(rows, expected_state)
+-
+-    run_config = config_payload(config, seeds)
+-    (output_dir / "config.json").write_text(
+-        json.dumps(run_config, indent=2, sort_keys=True) + "\n", encoding="ascii"
+-    )
+     (output_dir / "metrics.json").write_text(
+-        json.dumps(metric_rows, indent=2, sort_keys=True) + "\n", encoding="ascii"
+-    )
+-    (output_dir / "robustness.json").write_text(
+-        json.dumps(aggregate, indent=2, sort_keys=True) + "\n", encoding="ascii"
+-    )
+-    (output_dir / "graph-hashes.json").write_text(
+-        json.dumps(graph_rows, indent=2, sort_keys=True) + "\n", encoding="ascii"
++        json.dumps(rows, indent=2, allow_nan=False), encoding="ascii"
+     )
+     with (output_dir / "metrics.csv").open("w", newline="", encoding="ascii") as stream:
+-        writer = csv.DictWriter(stream, fieldnames=list(metric_rows[0]))
++        csv_rows = [{**row, "failures": "; ".join(row["failures"])} for row in rows]
++        writer = csv.DictWriter(stream, fieldnames=csv_rows[0].keys())
+         writer.writeheader()
+-        writer.writerows(metric_rows)
+-    provenance = {
+-        "python": platform.python_version(),
+-        "platform": platform.platform(),
+-        "jax_backend": jax.default_backend(),
+-        "jax_devices": [str(device) for device in jax.devices()],
+-        "git": _git_identity(Path(__file__).resolve().parent),
+-        "wall_seconds": time.perf_counter() - wall_start,
+-    }
++        writer.writerows(csv_rows)
+     (output_dir / "provenance.json").write_text(
+-        json.dumps(provenance, indent=2, sort_keys=True) + "\n", encoding="ascii"
++        json.dumps(runtime_provenance(), indent=2), encoding="ascii"
++    )
++    write_assessment(output_dir, rows)
++    write_manifest(output_dir)
++    return rows
++
++
++def render_figure8(results_dir: Path, output_path: Path) -> Path:
++    """Render the paper layout from review-accepted raw arrays."""
++    fig, axes = plt.subplots(4, 2, figsize=(11, 8), constrained_layout=True)
++    positions = {
++        "A": (0, 0),
++        "B": (0, 1),
++        "C": (2, 0),
++        "D": (2, 1),
++    }
++    for panel, name, g, eta, _ in CONDITIONS:
++        data = np.load(results_dir / "raw" / f"panel-{panel}_{name}.npz")
++        raster_row, column = positions[panel]
++        raster_ax = axes[raster_row, column]
++        rate_ax = axes[raster_row + 1, column]
++        time_ms = data["display_time_ms"]
++        step, neuron = np.nonzero(data["display_raster"])
++        raster_ax.scatter(time_ms[step], neuron, s=2.0, color="black", marker=".")
++        raster_ax.set_title(f"{panel}  g={g:g},  nu_ext/nu_thr={eta:g}")
++        raster_ax.set_ylabel("Neuron")
++        raster_ax.set_xlim(float(time_ms[0]), float(time_ms[-1]))
++        raster_ax.set_ylim(-1, 50)
++        raster_ax.set_xticklabels([])
++
++        rate_hz = data["display_global_rate_hz"]
++        rate_ax.plot(time_ms, rate_hz, color="black", linewidth=0.7)
++        rate_ax.axhline(float(rate_hz.mean()), color="black", linestyle="--", linewidth=0.8)
++        rate_ax.set_xlim(float(time_ms[0]), float(time_ms[-1]))
++        rate_ax.set_ylim(bottom=0)
++        rate_ax.set_ylabel("Rate (Hz)")
++        rate_ax.set_xlabel("Time (ms)")
++    fig.suptitle("Brunel (2000), Figure 8 reproduction")
++    output_path.parent.mkdir(parents=True, exist_ok=True)
++    fig.savefig(output_path, dpi=300)
++    plt.close(fig)
++    return output_path
++
++
++def smoke_config() -> NetworkConfig:
++    return NetworkConfig(
++        n_exc=800,
++        n_inh=200,
++        exc_indegree=80,
++        inh_indegree=20,
++        external_indegree=80,
++        burn_ms=100.0,
++        analysis_ms=1_000.0,
+     )
+-    return metric_rows, aggregate
+ 
+ 
+-def parse_args():
++def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+-    parser.add_argument("--output-dir", type=Path, required=True)
+-    parser.add_argument("--config", type=Path)
++    parser.add_argument("--output-dir", type=Path)
++    parser.add_argument("--seed", type=int, default=17_729)
+     parser.add_argument("--smoke", action="store_true")
+-    return parser.parse_args()
+-
+-
+-def main():
+-    args = parse_args()
+-    if args.config and args.smoke:
+-        raise ValueError("choose either --config production or --smoke")
+-    if args.config:
+-        config, seeds = load_run_contract(args.config)
+-    elif args.smoke:
+-        config = NetworkConfig(
+-            n_exc=80,
+-            n_inh=20,
+-            exc_indegree=8,
+-            inh_indegree=2,
+-            external_indegree=8,
+-            burn_ms=20.0,
+-            analysis_ms=80.0,
+-        )
+-        seeds = REPEAT_SEEDS[:1]
+-    else:
+-        raise ValueError("production requires --config; use --smoke for a reduced run")
+-    with brainstate.environ.context(dt=DT, precision=32):
+-        run_experiment(args.output_dir, config, seeds)
++    parser.add_argument("--figure-from", type=Path)
++    parser.add_argument("--figure-path", type=Path)
++    args = parser.parse_args()
++
++    if args.figure_from is not None:
++        if args.figure_path is None:
++            parser.error("--figure-path is required with --figure-from")
++        print(render_figure8(args.figure_from, args.figure_path))
++        return
++    if args.output_dir is None:
++        parser.error("--output-dir is required for simulation")
++    run_experiment(smoke_config() if args.smoke else NetworkConfig(), args.seed, args.output_dir)
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/brainx-display-cases/17-sparse-EI-network-states/test-results.md b/brainx-display-cases/17-sparse-EI-network-states/test-results.md
+index 92ce53f..1924f70 100644
+--- a/brainx-display-cases/17-sparse-EI-network-states/test-results.md
++++ b/brainx-display-cases/17-sparse-EI-network-states/test-results.md
+@@ -1,15 +1,8 @@
+ # Test results
+ 
+-## Focused suite
++## Iteration 1 implementation checks
+ 
+-- Command: `MPLCONFIGDIR=/tmp/brainx-mpl-cache pytest -q test_sparse_ei_network.py`
+-- Result: `9 passed in 26.87s`
++- Command: `MPLCONFIGDIR=/tmp/matplotlib-case17 JAX_PLATFORMS=cpu pytest -q test_sparse_ei_network.py`
++- Result: `9 passed in 31.16s`
+ - Backend: CPU
+-- Covered invariants: canonical units and external-rate conversion; exact unique fixed indegree and autapse exclusion; 15-step delay impulse; LIF threshold/reset/refractory behavior; independent deterministic replay; eager/compiled parity with separate transform-owned topology objects; finite active external-drive control with recurrence disabled; prospective classifier predicates; exact locked production-config round trip.
+-
+-## End-to-end smoke
+-
+-- Command: `MPLCONFIGDIR=/tmp/brainx-mpl-cache python sparse_ei_network.py --smoke --output-dir /tmp/brainx-sparse-ei-smoke-v1`
+-- Result: exit code 0 in 25.90 s.
+-- Artifacts: `/tmp/brainx-sparse-ei-smoke-v1/config.json`, `metrics.json`, `metrics.csv`, `robustness.json`, `graph-hashes.json`, `provenance.json`, and four compressed raw condition files.
+-- Scope: one 80-E/20-I repeat, 20 ms burn-in, 80 ms analysis. This run validates mechanics and artifact production only; its regime labels are not scientific evidence.
++- Coverage: unit/rate conversion, exact fixed fan-in, autapse exclusion, physical delay timing, threshold/reset/refractory behavior, full reset and stochastic replay, eager/JIT parity, no-recurrence external drive, acceptance predicates, and fixed stratified probes.
+diff --git a/brainx-display-cases/17-sparse-EI-network-states/test_sparse_ei_network.py b/brainx-display-cases/17-sparse-EI-network-states/test_sparse_ei_network.py
+index 9d25d91..6d07a9e 100644
+--- a/brainx-display-cases/17-sparse-EI-network-states/test_sparse_ei_network.py
++++ b/brainx-display-cases/17-sparse-EI-network-states/test_sparse_ei_network.py
+@@ -1,17 +1,15 @@
+ from __future__ import annotations
+ 
+-import json
+-import numpy as np
+-
+ import brainstate
+ import brainunit as u
+ import jax
+ import jax.numpy as jnp
++import numpy as np
+ 
+ import sparse_ei_network as model
+ 
+ 
+-def small_config():
++def small_config() -> model.NetworkConfig:
+     return model.NetworkConfig(
+         n_exc=16,
+         n_inh=4,
+@@ -23,106 +21,101 @@ def small_config():
+     )
+ 
+ 
+-def test_canonical_units_and_external_rate_conversion():
++def test_units_and_external_rate_conversion():
+     assert np.isclose(model.NU_THRESHOLD.to_decimal(u.Hz), 10.0)
+     assert int(round(model.DELAY / model.DT)) == 15
+     for eta in (0.9, 2.0, 4.0):
+-        aggregate_lambda = (
+-            1_000 * model.NU_THRESHOLD * eta * model.DT
+-        )
++        aggregate_lambda = 1000 * eta * model.NU_THRESHOLD * model.DT
+         assert np.isclose(aggregate_lambda, eta)
+ 
+ 
+-def test_fixed_indegree_unique_in_range_and_no_autapses():
+-    cfg = small_config()
+-    _, _, exc, inh = model.make_connectivity(cfg, repeat_seed=17)
+-    assert exc.shape == (cfg.num_neurons, cfg.exc_indegree)
+-    assert inh.shape == (cfg.num_neurons, cfg.inh_indegree)
+-    assert np.all((0 <= exc) & (exc < cfg.n_exc))
+-    assert np.all((0 <= inh) & (inh < cfg.n_inh))
+-    assert all(np.unique(row).size == cfg.exc_indegree for row in exc)
+-    assert all(np.unique(row).size == cfg.inh_indegree for row in inh)
+-    assert all(target not in exc[target] for target in range(cfg.n_exc))
++def test_fixed_indegree_is_unique_in_range_and_has_no_autapses():
++    config = small_config()
++    _, _, exc, inh = model.make_connectivity(config, graph_seed=11)
++    assert exc.shape == (config.num_neurons, config.exc_indegree)
++    assert inh.shape == (config.num_neurons, config.inh_indegree)
++    assert np.all((0 <= exc) & (exc < config.n_exc))
++    assert np.all((0 <= inh) & (inh < config.n_inh))
++    assert all(np.unique(row).size == config.exc_indegree for row in exc)
++    assert all(np.unique(row).size == config.inh_indegree for row in inh)
++    assert all(target not in exc[target] for target in range(config.n_exc))
+     assert all(
+-        target - cfg.n_exc not in inh[target]
+-        for target in range(cfg.n_exc, cfg.num_neurons)
++        target - config.n_exc not in inh[target]
++        for target in range(config.n_exc, config.num_neurons)
+     )
+ 
+ 
+-def test_delay_impulse_arrives_at_step_15_only():
++def test_delay_impulse_arrives_after_exactly_15_elapsed_steps():
+     with brainstate.environ.context(dt=model.DT):
+         delay = brainstate.nn.Delay(
+             jax.ShapeDtypeStruct((1,), jnp.bool_), model.DELAY
+         )
+         brainstate.nn.init_all_states(delay)
+-        values = jnp.arange(20) == 0
++        inputs = jnp.arange(20) == 0
+ 
+         def step(value):
++            delayed = delay.retrieve_at_step(jnp.asarray(15, dtype=jnp.int32))[0]
+             delay.update(jnp.asarray([value]))
+-            delayed = delay.retrieve_at_step(jnp.asarray(15, dtype=jnp.int32))
+-            return delayed[0]
++            return delayed
+ 
+-        observed = np.asarray(brainstate.transform.for_loop(step, values))
++        observed = np.asarray(brainstate.transform.for_loop(step, inputs))
+     expected = np.zeros(20, dtype=bool)
+-    expected[15] = True
++    # The impulse is emitted at the end of source step 0. Index 16 is the
++    # receiving update 15 complete dt intervals later.
++    expected[16] = True
+     assert np.array_equal(observed, expected)
++    elapsed_ms = (
++        (np.flatnonzero(observed)[0] - 1) * model.DT
++    ).to_decimal(u.ms)
++    assert np.isclose(elapsed_ms, model.DELAY.to_decimal(u.ms))
+ 
+ 
+ def test_lif_threshold_reset_and_refractory_jump_insensitivity():
+     with brainstate.environ.context(dt=model.DT):
+         neuron = model.BrunelLIF(1)
+         brainstate.nn.init_all_states(neuron)
++        times = u.math.arange(0.0 * u.ms, 2.3 * u.ms, model.DT)
++        jumps = jnp.zeros(times.size).at[0].set(10.1).at[1:22].set(100.0) * u.mV
+ 
+         def step(t, jump):
+             with brainstate.environ.context(t=t):
+                 return neuron(jump), neuron.V.value
+ 
+-        times = u.math.arange(0.0 * u.ms, 2.3 * u.ms, model.DT)
+-        jumps = jnp.zeros(times.size).at[0].set(10.1).at[1:22].set(100.0) * u.mV
+-        spikes, voltages = brainstate.transform.for_loop(step, times, jumps)
++        spikes, voltage = brainstate.transform.for_loop(step, times, jumps)
+     spikes = np.asarray(spikes[:, 0])
+-    voltages_mv = np.asarray(voltages[:, 0].to_decimal(u.mV))
++    voltage_mv = np.asarray(voltage[:, 0].to_decimal(u.mV))
+     assert spikes[0]
+     assert not spikes[1:21].any()
+-    assert np.allclose(voltages_mv[0:21], 10.0)
++    assert np.allclose(voltage_mv[:21], 10.0)
+ 
+ 
+-def test_compiled_small_rollout_replays_exactly():
+-    cfg = small_config()
++def test_compiled_rollout_replays_after_complete_reset():
++    config = small_config()
+     with brainstate.environ.context(dt=model.DT):
+-        exc_conn, inh_conn, _, _ = model.make_connectivity(cfg, repeat_seed=7)
+-        net = model.SparseEINetwork(
+-            cfg, external_seed=9, exc_conn=exc_conn, inh_conn=inh_conn
+-        )
++        exc_conn, inh_conn, _, _ = model.make_connectivity(config, graph_seed=7)
++        net = model.SparseEINetwork(config, exc_conn, inh_conn, external_seed=9)
+         brainstate.nn.init_all_states(net)
+         runner = model.build_runner(net)
+         model.reset_run(net, initial_seed=8, external_seed=9)
+         first = np.asarray(runner(jnp.asarray(5.0), jnp.asarray(2.0)))
++        first_v = np.asarray(net.neurons.V.value.to_decimal(u.mV))
+         model.reset_run(net, initial_seed=8, external_seed=9)
+         replay = np.asarray(runner(jnp.asarray(5.0), jnp.asarray(2.0)))
+-    assert first.shape == (cfg.num_steps, cfg.num_neurons)
++        replay_v = np.asarray(net.neurons.V.value.to_decimal(u.mV))
++    assert first.shape == (config.num_steps, config.num_neurons)
+     assert np.array_equal(first, replay)
++    assert np.array_equal(first_v, replay_v)
+ 
+ 
+-def test_small_rollout_eager_and_compiled_parity():
+-    cfg = small_config()
++def test_eager_and_compiled_rollouts_match():
++    config = small_config()
+     with brainstate.environ.context(dt=model.DT):
+-        eager_exc, eager_inh, eager_exc_indices, eager_inh_indices = (
+-            model.make_connectivity(cfg, repeat_seed=7)
+-        )
+-        compiled_exc, compiled_inh, compiled_exc_indices, compiled_inh_indices = (
+-            model.make_connectivity(cfg, repeat_seed=7)
+-        )
+-        assert np.array_equal(eager_exc_indices, compiled_exc_indices)
+-        assert np.array_equal(eager_inh_indices, compiled_inh_indices)
+-        times = u.math.arange(0.0 * u.ms, cfg.num_steps * model.DT, model.DT)
+-        indices = jnp.arange(cfg.num_steps, dtype=jnp.int32)
+-
+-        eager_net = model.SparseEINetwork(
+-            cfg, external_seed=9, exc_conn=eager_exc, inh_conn=eager_inh
+-        )
++        exc_a, inh_a, _, _ = model.make_connectivity(config, graph_seed=7)
++        eager_net = model.SparseEINetwork(config, exc_a, inh_a, external_seed=9)
+         brainstate.nn.init_all_states(eager_net)
+         model.reset_run(eager_net, initial_seed=8, external_seed=9)
++        times = u.math.arange(0.0 * u.ms, config.num_steps * model.DT, model.DT)
++        indices = jnp.arange(config.num_steps, dtype=jnp.int32)
+         eager = np.asarray(
+             brainstate.transform.for_loop(
+                 lambda t, i: eager_net.update(t, i, 5.0, 2.0),
+@@ -130,64 +123,65 @@ def test_small_rollout_eager_and_compiled_parity():
+                 indices,
+             )
+         )
++        eager_v = np.asarray(eager_net.neurons.V.value.to_decimal(u.mV))
+ 
+-        compiled_net = model.SparseEINetwork(
+-            cfg, external_seed=9, exc_conn=compiled_exc, inh_conn=compiled_inh
+-        )
++        exc_b, inh_b, _, _ = model.make_connectivity(config, graph_seed=7)
++        compiled_net = model.SparseEINetwork(config, exc_b, inh_b, external_seed=9)
+         brainstate.nn.init_all_states(compiled_net)
+-        runner = model.build_runner(compiled_net)
+         model.reset_run(compiled_net, initial_seed=8, external_seed=9)
+         compiled = np.asarray(
+-            runner(jnp.asarray(5.0), jnp.asarray(2.0))
++            model.build_runner(compiled_net)(jnp.asarray(5.0), jnp.asarray(2.0))
+         )
++        compiled_v = np.asarray(compiled_net.neurons.V.value.to_decimal(u.mV))
+     assert np.array_equal(eager, compiled)
++    assert np.array_equal(eager_v, compiled_v)
+ 
+ 
+ def test_no_recurrence_external_drive_is_finite_and_active():
+-    cfg = small_config()
++    config = small_config()
+     with brainstate.environ.context(dt=model.DT):
+-        exc_conn, inh_conn, _, _ = model.make_connectivity(cfg, repeat_seed=11)
++        exc_conn, inh_conn, _, _ = model.make_connectivity(config, graph_seed=13)
+         exc_conn.data = jnp.asarray(0.0)
+         inh_conn.data = jnp.asarray(0.0)
+-        net = model.SparseEINetwork(
+-            cfg, external_seed=12, exc_conn=exc_conn, inh_conn=inh_conn
+-        )
++        net = model.SparseEINetwork(config, exc_conn, inh_conn, external_seed=15)
+         brainstate.nn.init_all_states(net)
+-        runner = model.build_runner(net)
+-        model.reset_run(net, initial_seed=10, external_seed=12)
++        model.reset_run(net, initial_seed=14, external_seed=15)
+         spikes = np.asarray(
+-            runner(jnp.asarray(5.0), jnp.asarray(2.0))
++            model.build_runner(net)(jnp.asarray(5.0), jnp.asarray(4.0))
+         )
+-    assert np.isfinite(np.asarray(net.neurons.V.value.to_decimal(u.mV))).all()
++        voltage = np.asarray(net.neurons.V.value.to_decimal(u.mV))
++    assert np.isfinite(voltage).all()
+     assert spikes.any()
+ 
+ 
+-def test_metric_classifier_contract():
+-    base = {
+-        "overall_firing_rate_hz": 5.0,
+-        "population_rate_cv_1ms": 0.3,
+-        "spectral_peak_to_background": 10.0,
+-        "dominant_frequency_hz": 22.0,
++def test_assessment_contract():
++    common = {
++        "overall_firing_rate_hz": 60.7,
+         "isi_cv_all_mean": 0.9,
++        "population_rate_cv_1ms": 0.4,
++        "dominant_frequency_hz": 180.0,
+     }
+-    assert model.classify_metrics(base) == "slow_synchronous_irregular"
+-    assert model.classify_metrics({**base, "dominant_frequency_hz": 180.0}) == (
+-        "fast_synchronous_irregular"
+-    )
+-    assert model.classify_metrics({**base, "spectral_peak_to_background": 2.0}) == (
+-        "asynchronous_irregular"
++    assert model.assess_condition("fast_synchronous_irregular", common) == (
++        "reproduced",
++        [],
+     )
+-    assert model.classify_metrics({**base, "isi_cv_all_mean": 0.2}) == (
+-        "synchronous_regular"
++    verdict, failures = model.assess_condition(
++        "asynchronous_irregular",
++        {
++            **common,
++            "overall_firing_rate_hz": 37.7,
++            "population_rate_cv_1ms": 0.1,
++        },
+     )
++    assert verdict == "reproduced"
++    assert failures == []
+ 
+ 
+-def test_locked_run_contract_round_trip(tmp_path):
+-    path = tmp_path / "config.json"
+-    path.write_text(
+-        json.dumps(model.config_payload(model.NetworkConfig(), model.REPEAT_SEEDS)),
+-        encoding="ascii",
+-    )
+-    config, seeds = model.load_run_contract(path)
+-    assert config == model.NetworkConfig()
+-    assert seeds == model.REPEAT_SEEDS
++def test_probe_selection_is_fixed_and_stratified():
++    config = model.NetworkConfig()
++    first = model.choose_probe_indices(config, probe_seed=303)
++    replay = model.choose_probe_indices(config, probe_seed=303)
++    assert np.array_equal(first, replay)
++    assert first.shape == (50,)
++    assert (first[:40] < config.n_exc).all()
++    assert (first[40:] >= config.n_exc).all()
