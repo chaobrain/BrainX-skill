@@ -1,0 +1,12 @@
+{
+  "seed": 20260902,
+  "holding_potential_mV": -60.0,
+  "step_duration_ms": 100.0,
+  "fit_interval_ms": 0.5,
+  "huber_delta": 0.08,
+  "maximum_iterations": 1200,
+  "final_centers": 3,
+  "internal_restarts_per_final_center": 2,
+  "validation_centers": 2,
+  "recovery_truths_per_channel": 5
+}

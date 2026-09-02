@@ -1,0 +1,7 @@
+{
+  "runtime_seconds": 18.15295409700002,
+  "shk_aggregate_rmse_pA": 80.30660165316529,
+  "egl_aggregate_rmse_pA": 21.554815884235094,
+  "all_arrays_finite": true,
+  "tests_passed": 5
+}

@@ -1,0 +1,17 @@
+{
+  "python": "3.11",
+  "BrainX": "2026.7.9",
+  "braincell": "0.1.0",
+  "brainstate": "0.5.2",
+  "brainunit": "0.5.1",
+  "braintools": "0.3.0",
+  "jax": "0.10.2",
+  "jaxlib": "0.10.2",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "matplotlib": "3.10.8",
+  "igor2": "0.5.13",
+  "jax_backend": "cpu",
+  "jax_devices": ["CpuDevice(id=0)"],
+  "MPLCONFIGDIR": "/tmp/brainx-channel-fit-mpl"
+}

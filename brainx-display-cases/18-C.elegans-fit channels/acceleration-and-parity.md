@@ -1,26 +1,20 @@
-# BrainX acceleration audit
+# BrainX acceleration and parity audit
 
-| File/area | Pattern | Evidence | Axis | Impact | Risk | Decision | Confidence |
-|---|---|---|---|---|---|---|---|
-| `fit_channels.py` trace simulation | `already-fused` | All voltages and time samples are broadcast in one NumPy operation per objective call. | B/T | High | Low | Keep vectorized pure functions. | High |
-| SciPy optimizer | host black-box boundary | `least_squares` owns iterations and repeatedly calls a host NumPy residual. | P | High | Medium | Do not wrap in BrainState/JAX transforms. | High |
-| SHK per-voltage extraction | small host loop | Six independent two-parameter robust fits run once. | B | Low | Low | Keep explicit loop for inspectable per-voltage evidence. | High |
-| EGL multi-start selection | small host loop | Three deterministic starts run once and the finite minimum-cost result is selected. | E | Medium | Low | Keep explicit loop; candidate semantics remain independent. | High |
-| EGL gate-point extraction | small host loop | Seven post-fit local summaries run once. | B | Low | Low | Keep explicit loop because it is analysis, not the objective hot path. | High |
-
-## Patch / rewrite decision
-
-No acceleration rewrite is warranted. The scientific model is small, deterministic, and vectorized over voltage and time. The remaining loops are optimizer control, independent starts, or post-fit evidence extraction. Moving them into BrainState transforms would not remove SciPy's host boundary and would complicate parameter and failure bookkeeping.
+| File/area | Pattern | Evidence | Decision |
+|---|---|---|---|
+| Global objectives | State-aware JIT | BrainTools calls a `brainstate.transform.jit` objective that constructs the BrainCell channel, resets its gate at -60 mV, writes the exact step solution, and reads `channel.current()`. | Keep; this is the production scientific path. |
+| Voltage/time rollout | Vectorized batch/time axes | Every candidate evaluates all retained voltages and sampled times in one array expression with fixed shapes. | Keep; no Python time loop. |
+| Fitting grid | Deterministic temporal reduction | Optimization uses 0.5 ms spacing, while full 0.1 ms SHK and 0.02 ms EGL histories remain available for metrics and plots. Kinetics are multi-millisecond, and final evaluation is full resolution. | Keep and record in the specification. |
+| Experiment and recovery sweeps | Small host loops | Three final centers, two validation centers, voltage holdouts, and domain truths have different target arrays or shapes and must retain separate diagnostics. | Keep explicit for auditability. |
+| Analytic helpers | Post-fit reporting path | Closed-form NumPy helpers are faster for simple analysis, but production objectives and saved predictions use BrainCell. | Require parity tests at nominal and near-boundary parameters. |
 
 ## Validation
 
-- Four deterministic tests passed in 32.922 seconds on CPU.
-- Vectorized prediction shapes exactly match observations: SHK-1 `(6, T)` and EGL-19 `(7, T)`.
-- Gate State initialization, derivative direction, current units, and reversal behavior pass through the BrainCell channel classes.
-- No RNG enters the objective; `brainstate.random.seed(20260825)` fixes any future BrainState initialization.
-- Full histories are required for the requested overlays and residual metrics, so summary-only execution would discard required evidence.
+- Compare analytic and BrainCell rollouts at fitted and near-boundary parameter sets with `rtol=2e-5`, `atol=3e-3 pA`.
+- Test `init_state()` and `reset_state()` explicitly at the -60 mV holding potential.
+- Preserve units through BrainCell current evaluation and convert to pA only at the observed-data boundary.
+- Preserve full-resolution overlays, gate summaries, and errors after fitting on the reduced grid.
 
-## Remaining risks
+## Remaining performance boundary
 
-- Robust least squares is CPU-bound and compile acceleration is not applicable at the host optimizer boundary.
-- EGL-19 parameter tradeoffs remain possible even with a good waveform fit; synthetic recovery and claim classification must gate interpretation.
+BrainTools dispatches a host SciPy optimizer around compiled BrainState objectives. Compilation dominates short validation fits, while fitting every calcium sample would add substantial repeated work without increasing the temporal information relevant to the fitted time constants. Further acceleration would require changing the public optimizer interface or batching distinct optimization problems, neither of which is justified for this evidence-sized case.

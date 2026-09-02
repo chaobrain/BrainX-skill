@@ -1,0 +1,1 @@
+MPLCONFIGDIR=/tmp/mpl BRAINX_CHANNEL_RESULTS=results /home/yixinliu/anaconda3/envs/braincell-released/bin/python fit_channels.py

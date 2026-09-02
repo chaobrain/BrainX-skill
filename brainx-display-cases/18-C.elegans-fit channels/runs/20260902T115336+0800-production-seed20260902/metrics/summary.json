@@ -1,0 +1,12 @@
+{
+  "SHK-1": {
+    "aggregate_rmse_pA": 80.56278228759766,
+    "correlation_range": [0.97898225533449, 0.9942718574420355],
+    "leave_one_voltage_out_rmse_pA_range": [93.17371368408203, 406.89312744140625]
+  },
+  "EGL-19": {
+    "aggregate_rmse_pA": 20.864778518676758,
+    "correlation_range": [0.9392282918438861, 0.9885308846827777],
+    "leave_one_voltage_out_rmse_pA_range": [9.837655067443848, 74.85393524169922]
+  }
+}

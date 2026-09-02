@@ -1,0 +1,5 @@
+{
+  "status": "failed-deterministic",
+  "exit_code": 0,
+  "reason": "The SHK tau logistic midpoint reached an off-range bound; the time-constant function was simplified before review."
+}

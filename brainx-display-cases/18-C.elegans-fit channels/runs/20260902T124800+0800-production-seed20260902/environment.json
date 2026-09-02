@@ -1,0 +1,13 @@
+{
+  "python": "3.11.15",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "device": "CpuDevice(id=0)",
+  "braincell": "0.1.0",
+  "brainstate": "0.5.2",
+  "brainunit": "0.5.1",
+  "braintools": "0.3.0",
+  "jax": "0.10.2",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "igor2": "0.5.13"
+}

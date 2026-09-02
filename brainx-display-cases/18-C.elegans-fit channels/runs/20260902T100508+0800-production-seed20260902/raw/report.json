@@ -1,0 +1,328 @@
+{
+  "protocol": {
+    "holding_potential_mV": -60.0,
+    "step_duration_ms": 100.0,
+    "shk_voltages_mV": [
+      0.0,
+      20.0,
+      40.0,
+      60.0,
+      80.0,
+      100.0
+    ],
+    "egl_voltages_mV": [
+      -20.0,
+      -10.0,
+      0.0,
+      10.0,
+      20.0,
+      30.0,
+      40.0
+    ]
+  },
+  "observation_model": {
+    "SHK-1": "direct Igor WT-minus-shk-1(lf), baseline corrected, first 0.5 ms excluded",
+    "EGL-19": "Igor WT calcium family, baseline corrected, first 1.0 ms excluded"
+  },
+  "parameters": {
+    "SHK-1": {
+      "g_max_nS": 25.25341027180924,
+      "e_rev_mV": -68.80693950713146,
+      "v_half_n_mV": -1.9628731931882812,
+      "k_n_mV": 12.96322529919986,
+      "tau_n_min_ms": 1.4225635652753281,
+      "tau_n_amp_ms": 427.4308651165592,
+      "v_tau_n_mV": -99.99999554622802,
+      "k_tau_n_mV": 26.75670250670641
+    },
+    "EGL-19": {
+      "g_max_nS": 19.822205725047382,
+      "e_rev_mV": 50.4501609268327,
+      "v_half_m_mV": -8.492002070866931,
+      "k_m_mV": 13.33988908198047,
+      "tau_m_min_ms": 5.064734160869734,
+      "tau_m_amp_ms": 17.12048594727153,
+      "v_tau_m_mV": -16.068936502459973,
+      "k_tau_m_mV": 5.11602609718726
+    }
+  },
+  "metrics": {
+    "SHK-1": {
+      "rmse_pA": [
+        14.348814380971648,
+        42.51787380635367,
+        82.1259932131381,
+        83.51279725893401,
+        112.58989663464317,
+        101.58248409508815
+      ],
+      "nrmse_by_range": [
+        0.027706650533636818,
+        0.02564373319916965,
+        0.03346317085435977,
+        0.02691864152891667,
+        0.031300157480787086,
+        0.02640741794126433
+      ],
+      "correlation": [
+        0.9942477371674394,
+        0.9925008105443007,
+        0.9850078623868664,
+        0.9829621153018635,
+        0.9790170131492564,
+        0.9809222981274645
+      ],
+      "aggregate_rmse_pA": 80.34115802162809
+    },
+    "EGL-19": {
+      "rmse_pA": [
+        7.330947728209009,
+        8.96882741334885,
+        10.701033120467741,
+        32.10635689505,
+        19.3612567899518,
+        28.291197353487014,
+        28.240176694926436
+      ],
+      "nrmse_by_range": [
+        0.12929976785859307,
+        0.08036072448212389,
+        0.040275052504820275,
+        0.06793749569137261,
+        0.03655750501774283,
+        0.05971025679914019,
+        0.07169085971355932
+      ],
+      "correlation": [
+        0.9459883198479138,
+        0.9291337523832155,
+        0.9870845023893187,
+        0.9886025627917021,
+        0.9851369522460289,
+        0.9770627422008935,
+        0.9684221974730194
+      ],
+      "aggregate_rmse_pA": 21.554815884235094
+    }
+  },
+  "nominal_recovery": {
+    "design": "one deterministic nominal truth per channel, exact observed protocol and objective",
+    "SHK-1": {
+      "truth": {
+        "g_max_nS": 30.0,
+        "e_rev_mV": -60.0,
+        "v_half_n_mV": -10.0,
+        "k_n_mV": 20.0,
+        "tau_n_min_ms": 1.0,
+        "tau_n_amp_ms": 10.0,
+        "v_tau_n_mV": 0.0,
+        "k_tau_n_mV": 20.0
+      },
+      "recovered": {
+        "g_max_nS": 30.000000000000043,
+        "e_rev_mV": -59.99999999999978,
+        "v_half_n_mV": -9.999999999999996,
+        "k_n_mV": 20.00000000000003,
+        "tau_n_min_ms": 1.0000000000000169,
+        "tau_n_amp_ms": 9.999999999996959,
+        "v_tau_n_mV": 1.3004536176252377e-11,
+        "k_tau_n_mV": 19.99999999999657
+      },
+      "trace_rmse_pA": 8.657318501761637e-12
+    },
+    "EGL-19": {
+      "truth": {
+        "g_max_nS": 19.8,
+        "e_rev_mV": 80.0,
+        "v_half_m_mV": -8.0,
+        "k_m_mV": 8.6,
+        "tau_m_min_ms": 0.4,
+        "tau_m_amp_ms": 0.7,
+        "v_tau_m_mV": -5.0,
+        "k_tau_m_mV": 15.0
+      },
+      "recovered": {
+        "g_max_nS": 19.79999999995349,
+        "e_rev_mV": 80.00000000010253,
+        "v_half_m_mV": -8.000000000004603,
+        "k_m_mV": 8.599999999994617,
+        "tau_m_min_ms": 0.40000000018902226,
+        "tau_m_amp_ms": 0.6999999996023927,
+        "v_tau_m_mV": -4.999999993431557,
+        "k_tau_m_mV": 14.999999987761763
+      },
+      "trace_rmse_pA": 3.746664156303237e-09
+    },
+    "classification": "mechanics-only recovery; insufficient for unique biological parameter interpretation"
+  },
+  "fit_diagnostics": {
+    "SHK-1": {
+      "activation_power_scores": {
+        "1": 5.495251175595545,
+        "2": 3.6777159452038832,
+        "3": 5.004211983228854,
+        "4": 6.505633056127991,
+        "5": 7.854809180356461
+      },
+      "selected_activation_power": 2,
+      "starts": [
+        {
+          "cost": 1.9792805289052184,
+          "success": true,
+          "parameters": {
+            "g_max_nS": 25.253414161269134,
+            "e_rev_mV": -68.80691613221023,
+            "v_half_n_mV": -1.96287540896011,
+            "k_n_mV": 12.96322257481803,
+            "tau_n_min_ms": 1.4225612160518653,
+            "tau_n_amp_ms": 427.4282676678921,
+            "v_tau_n_mV": -99.99997223228108,
+            "k_tau_n_mV": 26.756742051237307
+          }
+        },
+        {
+          "cost": 1.9792805302018748,
+          "success": true,
+          "parameters": {
+            "g_max_nS": 25.253411778214524,
+            "e_rev_mV": -68.80692983324904,
+            "v_half_n_mV": -1.9628736629177326,
+            "k_n_mV": 12.963222214949079,
+            "tau_n_min_ms": 1.4225592150053636,
+            "tau_n_amp_ms": 427.4259245430042,
+            "v_tau_n_mV": -99.99993336894202,
+            "k_tau_n_mV": 26.75677269021849
+          }
+        },
+        {
+          "cost": 1.979280528119694,
+          "success": true,
+          "parameters": {
+            "g_max_nS": 25.25341027180924,
+            "e_rev_mV": -68.80693950713146,
+            "v_half_n_mV": -1.9628731931882812,
+            "k_n_mV": 12.96322529919986,
+            "tau_n_min_ms": 1.4225635652753281,
+            "tau_n_amp_ms": 427.4308651165592,
+            "v_tau_n_mV": -99.99999554622802,
+            "k_tau_n_mV": 26.75670250670641
+          }
+        }
+      ]
+    },
+    "EGL-19": {
+      "activation_power_scores": {
+        "1": 798.2569882104613,
+        "2": 598.9885661473174,
+        "3": 545.97690761033,
+        "4": 528.6246769411589
+      },
+      "activation_plus_inactivation_scores": {
+        "1": 734.7987406394377,
+        "2": 569.4239260666966,
+        "3": 531.22838116767,
+        "4": 521.2518577645237
+      },
+      "selected_activation_power": 4,
+      "selected_gate_structure": "activation-only; the 1.4% m4h residual reduction does not justify two extra local parameters per trace",
+      "starts": [
+        {
+          "cost": 129.69791325095557,
+          "success": true,
+          "parameters": {
+            "g_max_nS": 19.82167451342033,
+            "e_rev_mV": 50.45034704575502,
+            "v_half_m_mV": -8.492073091229495,
+            "k_m_mV": 13.339602213841218,
+            "tau_m_min_ms": 5.064682091058268,
+            "tau_m_amp_ms": 17.11520979523726,
+            "v_tau_m_mV": -16.06890317728031,
+            "k_tau_m_mV": 5.117106118702291
+          }
+        },
+        {
+          "cost": 129.6979127019886,
+          "success": true,
+          "parameters": {
+            "g_max_nS": 19.822205725047382,
+            "e_rev_mV": 50.4501609268327,
+            "v_half_m_mV": -8.492002070866931,
+            "k_m_mV": 13.33988908198047,
+            "tau_m_min_ms": 5.064734160869734,
+            "tau_m_amp_ms": 17.12048594727153,
+            "v_tau_m_mV": -16.068936502459973,
+            "k_tau_m_mV": 5.11602609718726
+          }
+        },
+        {
+          "cost": 129.69791312522676,
+          "success": true,
+          "parameters": {
+            "g_max_nS": 19.82275729402833,
+            "e_rev_mV": 50.449963857484946,
+            "v_half_m_mV": -8.491977767674816,
+            "k_m_mV": 13.340220158296384,
+            "tau_m_min_ms": 5.064726300317322,
+            "tau_m_amp_ms": 17.12431447329739,
+            "v_tau_m_mV": -16.06886579222974,
+            "k_tau_m_mV": 5.115746355032532
+          }
+        }
+      ]
+    }
+  },
+  "egl_mutant_difference_control": {
+    "n582": {
+      "late_mean_pA": [
+        14.072769492500008,
+        44.57105338250001,
+        16.81463514750001,
+        -116.82771681499979,
+        -174.0640398749998,
+        -159.767826665,
+        -104.28446666750013
+      ],
+      "contains_positive_and_negative_conditions": true
+    },
+    "ad1006": {
+      "late_mean_pA": [
+        42.4613383625,
+        92.1015721075,
+        21.250828427500014,
+        -147.9690175849999,
+        -211.9278012374998,
+        -192.931197265,
+        -184.90256877149994
+      ],
+      "contains_positive_and_negative_conditions": true
+    }
+  },
+  "data_provenance": {
+    "Fig1C D I-V K currents.pxp": "f107d3dd2feadcbb48df1dea85592c783a6557d2c44b802e0510bcc61a21ba2d",
+    "Fig. 3A I-V Ca currents.pxp": "6c7ba942579bc976707738b6f41c28b12beae5a05d27fe8ee98be19ba7390bd4",
+    "SHK-1_waves": [
+      "wave93-wave119",
+      "wave94-wave120",
+      "wave95-wave121",
+      "wave96-wave122",
+      "wave97-wave123",
+      "wave98-wave124"
+    ],
+    "EGL-19_waves": [
+      "wave5",
+      "wave6",
+      "wave7",
+      "wave8",
+      "wave9",
+      "wave10",
+      "wave11"
+    ]
+  },
+  "environment": {
+    "python": "3.11.15",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "seed": 20260902
+  },
+  "claim_boundary": "Population-average phenomenological fits over the measured voltage ranges; no unique single-cell parameter claim.",
+  "runtime_seconds": 19.30170391999991
+}

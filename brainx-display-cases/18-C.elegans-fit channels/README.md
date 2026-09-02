@@ -1,45 +1,38 @@
 # C. elegans SHK-1 and EGL-19 channel fits
 
-This case extracts voltage-clamp data from the supplied Igor packed experiments and fits BrainCell Hodgkin-Huxley channels. It uses the processed WT-minus-`shk-1(lf)` potassium waves for SHK-1 and the pharmacologically isolated WT calcium waves for EGL-19. Both models initialize at the -60 mV holding potential and reproduce 100 ms voltage steps.
+This case derives two phenomenological BrainCell HH channels only from the supplied Igor packed experiments. SHK-1 uses direct baseline-corrected WT minus `shk-1(lf)` traces. EGL-19 uses the packed graph's directly labeled WT calcium family; WT-minus-each-EGL-mutant controls change sign across the requested voltages and therefore cannot represent one consistent inward conductance.
 
-## Fitted SHK-1 model
-
-With voltage in mV, time in ms, conductance in nS, and outward current in pA:
+With voltage in mV, time in ms, conductance in nS, and outward current in pA, the fitted SHK-1 model is
 
 ```text
-I_SHK-1 = 28.8853 * n^4 * (V - (-30))
+I_SHK-1 = 25.38361 * n^2 * (V - (-67.96964))
 dn/dt = (n_inf(V) - n) / tau_n(V)
-n_inf(V) = 0.5 * (tanh((V + 14.2546) / 30.6764) + 1)
-tau_n(V) = 0.98574 + 8.81633 / (1 + exp(V / 18.6053))
+n_inf(V) = 1 / (1 + exp(-(V - (-2.05093)) / 12.91469))
+tau_n(V) = 1.41012 + 9.97732 * exp(-V / 27.01734)
 ```
 
-The fit covers 0, 20, 40, 60, 80, and 100 mV. Aggregate waveform RMSE is 88.08 pA; per-voltage normalized RMSE is 2.66-6.80% of trace range, and correlations are 0.929-0.984.
-
-## Fitted EGL-19 model
+The fitted EGL-19 model is
 
 ```text
-I_EGL-19 = 44.0794 * m^2 * h * (V - 60)
+I_EGL-19 = 19.06212 * m^4 * (V - 50.71993)
 dm/dt = (m_inf(V) - m) / tau_m(V)
-dh/dt = (h_inf(V) - h) / 3.55688
-
-m_inf(V) = 1 / (1 + exp(-(V + 5.29805) / 9.13166))
-tau_m(V) = 2.47297 + 24.1597 /
-           (exp(-(V - 40) / 5.05626) + exp((V - 40) / 5.05626))
-h_inf(V) = 0.0413925 + (0.959751 - 0.0413925) /
-           (1 + exp((V + 50) / 31.0647))
+m_inf(V) = 1 / (1 + exp(-(V - (-8.55928)) / 12.89281))
+tau_m(V) = 5.05831 + 13.91224 /
+           (exp(-(V - (-16.14914)) / 5.56407)
+            + exp((V - (-16.14914)) / 5.56407))
 ```
 
-The fit covers -20 through +40 mV in 10 mV increments. Aggregate waveform RMSE is 9.75 pA; per-voltage normalized RMSE is 4.98-8.13% of trace range. The activation function is supported within the measured voltage range. The fitted `tau_m` center and `h_inf` midpoint reached bounds, so do not extrapolate the EGL-19 kinetics or interpret the inactivation parameters as uniquely identified biology.
+Each independent step initializes its gate at the fitted -60 mV steady state. The observation model subtracts the corresponding holding current because the experimental traces are baseline corrected. BrainCell's channel classes use its inward-positive `g * gate * (E - V)` convention internally.
 
-## Run
+Gate powers were selected from equal-parameter local trace comparisons: SHK-1 power 2 was best among 1-5, and EGL-19 power 4 was best among 1-4. Three of six full-budget `m^4h` candidates terminated successfully. The best successful extension reduced the robust objective by 3.18%, but adding two parameters per trace increased BIC by 33.60, so the final model remains activation-only.
+
+The final production candidate is in `runs/20260902T132147+0800-production-seed20260902/`. SHK-1 aggregate waveform RMSE is 80.56 pA with 2.56-3.29% per-trace normalized RMSE. EGL-19 aggregate RMSE is 20.87 pA with 3.64-13.78% normalized RMSE; the smallest traces have the largest relative errors. Controlled recovery is accurate for most interior-domain cases, but some EGL time-constant decompositions remain boundary-equivalent. Leave-one-voltage-out errors are substantially larger, especially at edge voltages, so the fitted voltage functions should not be treated as validated predictors of unmeasured commands.
+
+Run with:
 
 ```bash
 MPLCONFIGDIR=/tmp/brainx-channel-fit-mpl \
 conda run -n braincell-released python fit_channels.py
 ```
 
-The accepted numerical evidence and figures are in `runs/20260825T120001+0800-production-seed20260825/raw/`. `fit_channels.py` also exports reusable `SHK1Channel` and `EGL19Channel` BrainCell HH classes.
-
-The source recordings are population averages from different cells. The fitted values are protocol-calibrated phenomenological parameters, not unique molecular or single-cell estimates.
-
-Source context: Du et al., *PLOS Computational Biology* 21(1), e1012318 (2025), doi:10.1371/journal.pcbi.1012318.
+These are protocol-calibrated population-average fits over the measured voltage ranges, not unique molecular, stoichiometric, or single-cell parameter estimates.

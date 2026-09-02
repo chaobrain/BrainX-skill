@@ -2,36 +2,34 @@
 
 ## Represented scale and package ownership
 
-- The model explicitly represents ion-channel gates and currents at one isopotential cellular membrane. BrainCell owns the biological model.
-- BrainUnit owns voltage, time, conductance, and current quantities and the conversion boundaries used by SciPy and plotting.
-- BrainState owns mutable channel gate state and transformed execution. No point-neuron network, event projection, neural mass, morphology, or training graph is represented.
+- BrainCell owns the two ion-channel mechanisms at one isopotential membrane. BrainUnit owns voltage, time, conductance, and current quantities. BrainState owns HH gate State and transformed lifecycle execution.
+- No point-neuron network, event projection, neural mass, morphology, stochastic process, or training graph is represented.
 
 ## Relevant abstractions and invariants
 
-- Implement SHK-1 and EGL-19 as `braincell.channel._base.HH` subclasses. Declare independent `Gate` objects, implement one `inf/tau` kinetic form per gate, and compute current through the ion-provided reversal potential.
-- Attach SHK-1 to `braincell.ion.PotassiumFixed` and EGL-19 to `braincell.ion.CalciumFixed`; do not embed reversal-potential ownership in mutable channel state.
-- Keep the BrainCell current convention `g * gates * (E - V)`. Convert to the experimental outward-positive convention only at the observation boundary.
-- Initialize every voltage-step rollout at gate steady state for -60 mV. Independent voltage steps never share runtime gate state.
-- Preserve quantities through model evaluation. Convert explicitly to mV, ms, nS, and pA only at SciPy, JSON, NPZ, and Matplotlib boundaries.
-- Use bounded robust least squares because Igor parsing and host-side curve fitting are nondifferentiable boundaries. Preserve every start and select the finite minimum-loss result by the locked rule.
+- Implement each fitted mechanism as a `braincell.channel._base.HH` subclass with `Gate` declarations, `f_<gate>_inf`, `f_<gate>_tau`, and an ion-owned reversal potential supplied through `IonInfo`.
+- Use `Gate("n", power=2)` for SHK-1 and `Gate("m", power=4)` for EGL-19. These powers are locked from equal-parameter local trace comparisons in the supplied data, not imported channel assumptions.
+- Keep BrainCell's inward-positive current convention `g * gates * (E - V)` inside channel classes. Convert to the recordings' outward-positive convention only in the observation model.
+- Initialize every independent voltage step at the fitted gate steady state for -60 mV. Do not carry gate State between voltage conditions.
+- Preserve quantities in BrainCell. Convert explicitly to mV, ms, nS, and pA only at the BrainTools observation, NumPy archive, JSON, and Matplotlib boundaries.
 
 ## Fitting design
 
-- SHK-1: fit each baseline-corrected trace to a fourth-power activation response, derive conductance-normalized `n_inf` points and activation `tau_n` points, then fit a monotone tanh steady-state function and a decreasing logistic time-constant function. Fix `E_K=-30 mV` from the source model.
-- EGL-19: fit the isolated WT traces jointly with `m^2 h` kinetics, a sigmoid activation gate, a residual sigmoid inactivation gate, a bell-shaped activation time constant, and a constant inactivation time constant. Fix `E_Ca=60 mV` from the source model.
-- Run synthetic recovery through the same trace times, voltage commands, exclusions, bounds, starts, and objective before accepting observed-data parameter interpretation.
-- Report conductance and kinetic values as protocol-calibrated parameters. Withhold unique biological parameter claims because only population averages are available.
+- SHK-1 target: baseline-corrected WT (`wave93:98`) minus baseline-corrected `shk-1(lf)` (`wave119:124`). Fit an `n^2` current, sigmoid activation, monotone exponential activation time constant, conductance, and reversal potential jointly. Omit a logistic time-constant midpoint because the supplied voltages do not identify it.
+- EGL-19 target: baseline-corrected WT (`wave5:11`). Fit an `m^4` current, sigmoid activation, bell-shaped activation time constant, conductance, and reversal potential jointly. Compare optional `m^4h` local fits at the full 1,200-iteration budget and require a successful termination. Use BIC on the same 1,386 fitting samples to penalize the two added parameters per trace.
+- Use `braintools.optim.ScipyOptimizer` directly on declared physical bounds with six locked random seeds and `braintools.metric.huber_loss`. Normalize residuals per trace so high-amplitude voltages do not erase low-amplitude kinetics. Preserve every sampled start, history, termination diagnostic, active bound, and per-voltage loss; select the successful finite minimum-objective candidate.
+- Extract per-voltage activation and time-constant points by local fits with global nuisance quantities fixed. Treat these as model-conditioned experimental summaries, not independently observed gates.
+- Run five deterministic interior-domain recovery cases per channel with measured baseline noise, plus leave-one-voltage-out fits. Use the same BrainCell objective, six seeds, physical bounds, budget, and selection rule as the observed fit. Archive raw observations, predictions, residuals, all starts, parameter errors, and boundary hits. Restrict interpretation to waveform prediction when recovery is weak after optimization adequacy is established.
 
 ## Execution and validation design
 
-- Parse packed files with `igor2`, preserving the raw files unchanged.
-- Fit on host with deterministic SciPy starts; evaluate all protocols in one shape-stable array operation.
-- Validate formula direction, gate bounds, unit-bearing current, reversal behavior, channel initialization/reset, derivative direction, protocol timing, wave mapping, encode/decode order, and synthetic recovery.
-- Record raw extracted targets, fitted traces, per-voltage gate observations, parameters, metrics, provenance, and an artifact manifest before review.
+- Parse the two read-only packed files with `igor2`; require exact family and command groups in the Igor recreation text before loading targets.
+- Evaluate every global objective through the actual BrainCell channel lifecycle: initialize and reset at -60 mV, write the exact constant-step HH gate solution into its `State`, and obtain current through `channel.current()`. Use the deterministic 0.5 ms fitting grid and preserve full resolution for evaluation and figures.
+- Require analytic helper parity with the BrainCell path at nominal and near-boundary parameter sets.
+- Save extracted targets, control differences, structural scores, full fitted traces, gate points, parameters, all optimizer starts, metrics, provenance, and a manifest before review.
 
 ## Sources studied
 
-- `brainx-general-guard`, `braincell`, `brainunit`, `brainstate`, and `brainx-acceleration` root skills.
-- BrainCell custom HH authoring, area-scaling, and complete HH fitting examples.
-- BrainX modeling-loop parameter-fitting workflow.
-- Du et al. (2025), PLOS Computational Biology 21(1):e1012318, especially the voltage-clamp protocol, Fig. 2 SHK-1 workflow, Fig. 3 EGL-19 workflow, and fixed reversal potentials.
+- Supplied Igor packed experiments and their embedded graph/history metadata.
+- BrainX skills only for software mechanics: `brainx-general-guard`, `brainx-modeling-loop`, `braincell`, `brainunit`, `brainstate`, and the routed parameter-fitting/custom-channel references.
+- No paper, external channel equation, or open-source scientific model was used.

@@ -1,0 +1,10 @@
+{
+  "python": "3.11.15",
+  "device": "CpuDevice(id=0)",
+  "braincell": "0.1.0",
+  "brainstate": "0.5.2",
+  "brainunit": "0.5.1",
+  "braintools": "0.3.0",
+  "jax": "0.10.2",
+  "igor2": "0.5.13"
+}

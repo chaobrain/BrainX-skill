@@ -1,0 +1,12 @@
+test_analytic_and_braincell_rollouts_match (test_fit_channels.ChannelFitTests.test_analytic_and_braincell_rollouts_match) ... ok
+test_braincell_channel_lifecycle_and_units (test_fit_channels.ChannelFitTests.test_braincell_channel_lifecycle_and_units) ... ok
+test_egl_mutant_differences_are_not_valid_single_channel_targets (test_fit_channels.ChannelFitTests.test_egl_mutant_differences_are_not_valid_single_channel_targets) ... ok
+test_fitted_functions_are_physical (test_fit_channels.ChannelFitTests.test_fitted_functions_are_physical) ... ok
+test_optimizer_domain_and_gate_point_termination (test_fit_channels.ChannelFitTests.test_optimizer_domain_and_gate_point_termination) ... ok
+test_predictions_are_finite_and_shape_aligned (test_fit_channels.ChannelFitTests.test_predictions_are_finite_and_shape_aligned) ... ok
+test_protocols_and_wave_mapping (test_fit_channels.ChannelFitTests.test_protocols_and_wave_mapping) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 65.497s
+
+OK

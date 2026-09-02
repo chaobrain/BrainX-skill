@@ -1,0 +1,5 @@
+{
+  "status": "failed-deterministic",
+  "exit_code": 0,
+  "reason": "The optional EGL inactivation gate inverted its intended asymptotes and hit several bounds; model simplification was required before review."
+}

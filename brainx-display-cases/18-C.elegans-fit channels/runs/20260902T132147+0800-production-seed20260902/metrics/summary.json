@@ -1,0 +1,5 @@
+{
+  "SHK-1": {"aggregate_rmse_pA": 80.56047058105469, "holdout_rmse_pA_range": [93.19, 245.75]},
+  "EGL-19": {"aggregate_rmse_pA": 20.866687774658203, "holdout_rmse_pA_range": [9.58, 166.06]},
+  "EGL-19 architecture": {"m4h_objective_improvement_fraction": 0.031782589555132496, "delta_bic_m4h_minus_m4": 33.59847635603546}
+}

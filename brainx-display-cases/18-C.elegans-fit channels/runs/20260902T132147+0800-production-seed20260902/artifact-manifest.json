@@ -1,0 +1,11 @@
+{
+  "raw/egl19_current_fits.png": "a681e476a096921320c3df9f4c943aad25780bc1d4fc656900197f33747743d2",
+  "raw/egl19_gating.png": "8fe4d92bce40cad859ea139c0e8d5114a4997a036c2451d86d05e54213a835b9",
+  "raw/fit_data.npz": "0f80680bf741de927bb6ff8b202eecd00ce31cc2fbdfb094f23cec9f6de49591",
+  "raw/report.json": "495b41e4036bd3a1eedd82f700f1b3703b5785e2f750e6bafa6c735fff26d2d8",
+  "raw/shk1_current_fits.png": "9d0b0efbe7130ca33961eb3431994d857aea2ea5ea571da77ff33671379ead90",
+  "raw/shk1_gating.png": "0c7ece7d6ef6f091a449abc59c26cbd4e09bdc08389752c8cea42ce949d32bdd",
+  "code.diff": "c966f4ef334833202f1d32c9c1a56272bce912c69dc1ae2e09bd2619479c18a1",
+  "run.log": "495b41e4036bd3a1eedd82f700f1b3703b5785e2f750e6bafa6c735fff26d2d8",
+  "test-results.txt": "da72e7929e9e89fcd180ff5f8f65cc03643ee60c44d68b8751156c58fef811a0"
+}

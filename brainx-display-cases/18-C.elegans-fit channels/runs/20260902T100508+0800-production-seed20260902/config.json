@@ -1,0 +1,18 @@
+{
+  "run_id": "20260902T100508+0800-production-seed20260902",
+  "parent_evidence_run": "20260902T095151+0800-production-seed20260902",
+  "level": "production",
+  "seed": 20260902,
+  "backend": "cpu",
+  "holding_potential_mV": -60.0,
+  "step_duration_ms": 100.0,
+  "shk_voltages_mV": [0, 20, 40, 60, 80, 100],
+  "egl_voltages_mV": [-20, -10, 0, 10, 20, 30, 40],
+  "shk_source": "baseline-corrected WT minus shk-1(lf)",
+  "egl_source": "baseline-corrected WT",
+  "shk_activation_power": 2,
+  "egl_activation_power": 4,
+  "egl_gate_structure": "activation-only",
+  "fit_reversal_potentials": true,
+  "nominal_recovery": true
+}

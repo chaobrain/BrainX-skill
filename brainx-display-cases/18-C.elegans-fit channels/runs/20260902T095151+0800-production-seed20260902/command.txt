@@ -1,0 +1,1 @@
+JAX_PLATFORMS=cpu MPLCONFIGDIR=/tmp/brainx-channel-fit-mpl BRAINX_CHANNEL_RESULTS=/home/yixinliu/gitcode/BrainX-skill/brainx-display-cases/18-C.elegans-fit\ channels/runs/20260902T095151+0800-production-seed20260902/raw /home/yixinliu/anaconda3/envs/braincell-released/bin/python fit_channels.py
