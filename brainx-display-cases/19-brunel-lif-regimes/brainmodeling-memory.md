@@ -239,3 +239,23 @@
 ### Important milestones
 - Step 6 is blocked by the modeling-loop instruction: do not embed or invent the missing visualization workflow.
 - No PNG was written. The accepted run remains unchanged until the required visualization instruction exists.
+
+## Checkpoint
+- Iteration: 4
+- Step: 6
+
+### Artifacts
+- `FIGURE_CONTRACT.md`: Frozen final-evidence display contract for the accepted iteration-4 run.
+- `visualize_brunel_results.py`: Source-manifest-verifying renderer with source-value and PNG integrity checks.
+- `figures/iteration-4-final/four-condition-rate-raster.png`: Four-condition 0.1 ms global-rate and fixed 50-neuron raster figure.
+- `figures/iteration-4-final/ei-rates.png`: Five-seed paired E/I firing-rate summary.
+- `figures/iteration-4-final/isi-cv.png`: Five-seed paired E/I ISI-CV summary with frozen decision boundaries.
+- `figures/iteration-4-final/global-rate-spectrum.png`: Five-seed global-rate Welch spectra and aggregate dominant frequencies.
+- `figures/iteration-4-final/FIGURE_MANIFEST.md`: Per-figure provenance, transformations, hashes, dimensions, and render checks.
+- `figures/iteration-4-final/render-checks.json`: Machine-readable nonblank-image checks and output hashes.
+
+### Important milestones
+- This checkpoint supersedes the earlier iteration-4 step-6 blocked record because `skills/brainx-visualization/SKILL.md` and its required references are now present.
+- Verified every accepted result artifact against its run manifest before rendering and cross-checked plotted rates and spectral peaks against the accepted metrics.
+- Rendered and visually inspected all four requested PNGs without changing the accepted simulation, scientific metrics, or regime predicates.
+- Completed the modeling loop. Final evidence supports synchronous regular and fast synchronous irregular, refutes the requested asynchronous-irregular assignment, and leaves the requested slow synchronous irregular assignment inconclusive.

@@ -1,0 +1,8 @@
+[
+  {
+    "seed": 29,
+    "path": "connectivity/seed-29.npz",
+    "exc_sha256": "725e0d4e91ffaa29b076fdfd500bad117e35cf51fbf7ccd677c47ee372930b74",
+    "inh_sha256": "4ce07052b38684701da19d6ce911d47375601d3e0247ed950907123ecd8b04cb"
+  }
+]

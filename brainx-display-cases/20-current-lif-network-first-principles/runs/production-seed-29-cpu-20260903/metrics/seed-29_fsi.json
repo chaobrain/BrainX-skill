@@ -1,0 +1,20 @@
+{
+  "run_id": "seed-29_fsi",
+  "seed": 29,
+  "condition_id": "fsi",
+  "g": 6.0,
+  "eta": 4.0,
+  "requested_regime": "fast synchronous irregular",
+  "elapsed_seconds": 2425.418766790999,
+  "mean_exc_rate_hz": 59.233225,
+  "mean_inh_rate_hz": 59.3158,
+  "mean_global_rate_hz": 59.24973999999999,
+  "global_rate_cv": 1.027158155786458,
+  "valid_isi_cv_fraction": 1.0,
+  "median_isi_cv": 0.7917386293411255,
+  "dominant_frequency_hz": 183.0,
+  "peak_prominence_ratio": 223.03096502944297,
+  "narrowband_power_fraction": 0.1952097638789435,
+  "significant_narrowband_peak": true,
+  "raw_path": "raw/seed-29_fsi.npz"
+}

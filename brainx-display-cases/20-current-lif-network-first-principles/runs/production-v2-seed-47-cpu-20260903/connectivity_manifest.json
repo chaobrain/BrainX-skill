@@ -1,0 +1,8 @@
+[
+  {
+    "seed": 47,
+    "path": "connectivity/seed-47.npz",
+    "exc_sha256": "f6413f20dce56b1197209e9f02e50bc045bd808fc875efaaaa2ac212be6ec194",
+    "inh_sha256": "a611eb73245f420963a3c1645363cbe9c46c2d29e9ca5e91badcb99312d3cb78"
+  }
+]

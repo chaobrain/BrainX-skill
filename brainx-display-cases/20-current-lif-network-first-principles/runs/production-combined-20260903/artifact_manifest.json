@@ -1,0 +1,302 @@
+[
+  {
+    "path": "runs/production-seed-11-cpu-20260903/RUN_SPEC.md",
+    "bytes": 3461,
+    "sha256": "9f552e939a979f127cce1f20343c1bdc35b6fbf7e161fa451329ce8e18064e71"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/code.diff",
+    "bytes": 60697,
+    "sha256": "0e6b4baca0c3b0f549fdf3667142c4abde13f2c64aa9ac8e37b7595589e16cd0"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/command.txt",
+    "bytes": 443,
+    "sha256": "8ece5ccbde371424e480ca262ab8fc41d81d568516ca2cde65674f4d394c5887"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/condition_assessment.json",
+    "bytes": 4970,
+    "sha256": "67932150b05d7d22d04657b6ec08baaee3c022012d64c44061f3904ad5486c31"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/config.json",
+    "bytes": 1738,
+    "sha256": "767bbd39511401cb13dfc301c5513bc7aa973016e63892defedfb4554331ce76"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/connectivity/seed-11.npz",
+    "bytes": 34678606,
+    "sha256": "93822f80cefac2361eff1a86aad99d36d9153f7348caf1b5e24001dd99d9e00f"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/connectivity_manifest.json",
+    "bytes": 239,
+    "sha256": "ee0a808fa08ef74ab2fe73c167b508ef306177eb639433f47fda90694a8a35c7"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/environment.json",
+    "bytes": 560,
+    "sha256": "3905862e94ea37d4ec06cbbe31dfb6783f1bfe2f9d4a05be3f6428c82840dabf"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/exit_code",
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/metrics/seed-11_ai.json",
+    "bytes": 597,
+    "sha256": "5c2eaed47e0565b5ea0291dee2ca339cebfcf9b08eb1a387c586b60a488b193f"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/metrics/seed-11_fsi.json",
+    "bytes": 614,
+    "sha256": "71999c19fffaa6f7841433472c809c812fca68c1d445ca26d4b0787f49f503a7"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/metrics/seed-11_sr.json",
+    "bytes": 590,
+    "sha256": "75689474c81118c8eb5d21022bb68b0330b543ac8188200a602b45364e0bf4d3"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/metrics/seed-11_ssi.json",
+    "bytes": 602,
+    "sha256": "d53da1464b06d5f54f441d44f41bb97f35617c19f55e202f561497b9c54e5e41"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/raw/seed-11_ai.npz",
+    "bytes": 306720,
+    "sha256": "05fa09cb380cbf333072c6670a569988c2000717201c5e9ba6e7a1c74ba87812"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/raw/seed-11_fsi.npz",
+    "bytes": 330395,
+    "sha256": "f55fda2eefe7f9d10ccd6d34644a5f82ff7bf636e942ffb25be165b84a4f7842"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/raw/seed-11_sr.npz",
+    "bytes": 102068,
+    "sha256": "f1f8eb2d287f18f183ceccc4232c451e266c28aab60d1b21cc0ea32399abcff4"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/raw/seed-11_ssi.npz",
+    "bytes": 206172,
+    "sha256": "636561c7b6326a32b767c18d11d9ad5b8bb64b86de637b46497cd49a1cd89bfc"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/run.log",
+    "bytes": 2358,
+    "sha256": "3410b25384f675aa8809c2ca480dfddeeaa1e87f59dd70f3cc732f0b38289f2b"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/run_metrics.csv",
+    "bytes": 1017,
+    "sha256": "18cfe68002d236c1af4451943a2b7ce8e63949937775d26d708c0060f05c360c"
+  },
+  {
+    "path": "runs/production-seed-11-cpu-20260903/status.json",
+    "bytes": 158,
+    "sha256": "1f2df296bc138f79725f4df9aa6775fb74a0df62ccffcbb52a0db27d741b2db9"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/RUN_SPEC.md",
+    "bytes": 3462,
+    "sha256": "c57810ffaac2a0fe11d68e1177640b305d29fba4b965ab878c662e9b0ddaa39e"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/code.diff",
+    "bytes": 60697,
+    "sha256": "0e6b4baca0c3b0f549fdf3667142c4abde13f2c64aa9ac8e37b7595589e16cd0"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/command.txt",
+    "bytes": 444,
+    "sha256": "c12a6d1bc9b5dd2eb979eb395328ed500e1040156f1e2c821b7745d07cad0a5f"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/condition_assessment.json",
+    "bytes": 4998,
+    "sha256": "a80535f2604f5ace2268de849d9e5de0c3573840ceb3bd57b853607ab7cd1eed"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/config.json",
+    "bytes": 1738,
+    "sha256": "aac69ee3b9b6c45f1b1c8a43923d7c0418cbbb46746ab8448fd5ca61025f8350"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/connectivity/seed-29.npz",
+    "bytes": 34678955,
+    "sha256": "a166bbfa039dc7eed3794519ce9525a6d111e63447d0542a24022504c6edcc80"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/connectivity_manifest.json",
+    "bytes": 239,
+    "sha256": "dfde79f1f1085cf96d8ec27bd505c23b4313a2a59554ac9ea1a7529eaa96a570"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/environment.json",
+    "bytes": 560,
+    "sha256": "3905862e94ea37d4ec06cbbe31dfb6783f1bfe2f9d4a05be3f6428c82840dabf"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/exit_code",
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/metrics/seed-29_ai.json",
+    "bytes": 594,
+    "sha256": "40eddc40b8d3f8c25de5b91dc6c14887a2adcf8508ad023d5a17830365d38610"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/metrics/seed-29_fsi.json",
+    "bytes": 613,
+    "sha256": "0ebb379a8850141dddefda149448ce890c8ce13e9417bc8aa85783095878c9e9"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/metrics/seed-29_sr.json",
+    "bytes": 583,
+    "sha256": "6c1d695c8d5f5169cc31f0b5576d0427fade20b58b12eeb401cc539e656b3cae"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/metrics/seed-29_ssi.json",
+    "bytes": 611,
+    "sha256": "fffe6daefef8b3e7d67c1fd0a5fc76550ee9c1a14fcf9d07b40c7dc18548fd6a"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/raw/seed-29_ai.npz",
+    "bytes": 306869,
+    "sha256": "e684570d1e75fd8cddb96407a86941c6d845fc453c97988f1266ce0b06eab375"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/raw/seed-29_fsi.npz",
+    "bytes": 330123,
+    "sha256": "1b715a412f844be74c4553a9385abc1794212aa568977fb7bfc4a19bd9c8d622"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/raw/seed-29_sr.npz",
+    "bytes": 105082,
+    "sha256": "91bbea8d1adbe12f608cb82645a80187d10953fe540fe3b6a4d71b0bb0330ab7"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/raw/seed-29_ssi.npz",
+    "bytes": 206654,
+    "sha256": "d146deb77f2c0e25b56d006d9b6f51ec8c652ac865832ddb3bef193d452535af"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/run.log",
+    "bytes": 2356,
+    "sha256": "554845f42c7530de71d5578781c028e61549664a4fffffab22e75f86abba96bc"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/run_metrics.csv",
+    "bytes": 1015,
+    "sha256": "5cbcb7a275497f9226a005d911d90d62135441c0503d50ad2deb0a010ae06818"
+  },
+  {
+    "path": "runs/production-seed-29-cpu-20260903/status.json",
+    "bytes": 158,
+    "sha256": "6c7fea8aef4e35114cfd8403af2611dde970462c9324e0ab25a33c6f591da1f8"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/RUN_SPEC.md",
+    "bytes": 3463,
+    "sha256": "fe22945baf6d7c77bfd6d856c8a9c67417e5a1e1e079a00581e645716117deb2"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/code.diff",
+    "bytes": 60697,
+    "sha256": "0e6b4baca0c3b0f549fdf3667142c4abde13f2c64aa9ac8e37b7595589e16cd0"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/command.txt",
+    "bytes": 445,
+    "sha256": "7743ceb33e050730e206f3e7d6b52486b4b30cb187d4518a2e74eeff8123a1fb"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/condition_assessment.json",
+    "bytes": 4982,
+    "sha256": "b0ff5b95bcd58291933d757d6ffe850dcdaae64ea5f40291b5bbd2839183425a"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/config.json",
+    "bytes": 1738,
+    "sha256": "b9c0eb2aea92fb8b1b45c5343688cdaa8c4e3a83fb3a78ee82fb0b280b3058f2"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/connectivity/seed-47.npz",
+    "bytes": 34677077,
+    "sha256": "405a19cc37d406f2360c229e6fb90805e4f2726c927b010116872533f62673a2"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/connectivity_manifest.json",
+    "bytes": 239,
+    "sha256": "c1c881bcf55c513a6cee4f55de2f19222f1eb2a13fb512b1b8c5e08c787ce94a"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/environment.json",
+    "bytes": 560,
+    "sha256": "3905862e94ea37d4ec06cbbe31dfb6783f1bfe2f9d4a05be3f6428c82840dabf"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/exit_code",
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/metrics/seed-47_ai.json",
+    "bytes": 598,
+    "sha256": "0752c6971511e28bbbf868ff5d1be034f77c40c6fd1501058ea5932903f77dcc"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/metrics/seed-47_fsi.json",
+    "bytes": 604,
+    "sha256": "1b21a23824f0528d12e7bfb9c29b154a70de8acff02af6f282024804d376c216"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/metrics/seed-47_sr.json",
+    "bytes": 585,
+    "sha256": "3362a2d50b21ec5f1804ecc8e73ffd33a4dcdffe05c5e1302d887165e51f862c"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/metrics/seed-47_ssi.json",
+    "bytes": 602,
+    "sha256": "ada39b5d87941041064c255bd302a4d268b74f15267e37cee3d04e9c29530d3c"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/raw/seed-47_ai.npz",
+    "bytes": 307216,
+    "sha256": "482523e0be1c1a7f623d22eaa412dc2979a68310832d2d0dc4538fa26b5640e8"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/raw/seed-47_fsi.npz",
+    "bytes": 330336,
+    "sha256": "e89cdd252689ce16e8718d9d023a067590d5cf5baad68900019625a1bb7e3150"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/raw/seed-47_sr.npz",
+    "bytes": 104784,
+    "sha256": "312ad8c62a4db09386f39ba530890e7044fe2f7114d44b1b345a571c09335da8"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/raw/seed-47_ssi.npz",
+    "bytes": 209418,
+    "sha256": "25898ba25a7eb50215ab1dcdbbdfc2a8f62438a070d4e6419e613e6caa24dee9"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/run.log",
+    "bytes": 2344,
+    "sha256": "e3908fa89511a19df5e7bbff83f3e6665006b5413013b30f9edd8c9e619209be"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/run_metrics.csv",
+    "bytes": 1003,
+    "sha256": "051eb5714be341b2da56fd60f9b3ae171d271d999253128575ba526cdc9e40a5"
+  },
+  {
+    "path": "runs/production-seed-47-cpu-20260903/status.json",
+    "bytes": 158,
+    "sha256": "246dfcf328ebda5e283bad8b2e1cebe43254130722045fc128aa2efab8901f9e"
+  }
+]

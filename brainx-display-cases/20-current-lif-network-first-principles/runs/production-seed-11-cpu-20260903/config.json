@@ -1,0 +1,82 @@
+{
+  "model": {
+    "NE": 10000,
+    "NI": 2500,
+    "CE": 1000,
+    "CI": 250,
+    "Cext": 1000,
+    "tau_m_ms": 20.0,
+    "t_ref_ms": 2.0,
+    "threshold_mV": 20.0,
+    "reset_mV": 10.0,
+    "rest_mV": 0.0,
+    "JE_mV": 0.1,
+    "delay_ms": 1.5,
+    "dt_ms": 0.1
+  },
+  "protocol": {
+    "duration_ms": 5000.0,
+    "transient_ms": 1000.0,
+    "seeds": [
+      11
+    ],
+    "display_seed": 11,
+    "sample_size": 50,
+    "conditions": [
+      {
+        "id": "sr",
+        "g": 3.0,
+        "eta": 2.0,
+        "requested_regime": "synchronous regular"
+      },
+      {
+        "id": "fsi",
+        "g": 6.0,
+        "eta": 4.0,
+        "requested_regime": "fast synchronous irregular"
+      },
+      {
+        "id": "ai",
+        "g": 5.0,
+        "eta": 2.0,
+        "requested_regime": "asynchronous irregular"
+      },
+      {
+        "id": "ssi",
+        "g": 4.5,
+        "eta": 0.9,
+        "requested_regime": "slow synchronous irregular"
+      }
+    ]
+  },
+  "spectrum": {
+    "method": "welch",
+    "window": "hann",
+    "nperseg": 10000,
+    "noverlap": 5000,
+    "detrend": "constant",
+    "scaling": "density",
+    "search_hz": [
+      1.0,
+      500.0
+    ],
+    "background_exclusion_hz": 5.0,
+    "narrowband_half_width_hz": 2.0,
+    "min_prominence_ratio": 5.0,
+    "min_narrowband_fraction": 0.05,
+    "peak_consistency_abs_hz": 5.0,
+    "peak_consistency_relative": 0.2,
+    "slow_fast_boundary_hz": 30.0
+  },
+  "regularity": {
+    "minimum_intervals_per_neuron": 2,
+    "minimum_valid_fraction": 0.1,
+    "regular_max_median_cv": 0.5,
+    "irregular_min_median_cv": 0.8
+  },
+  "execution": {
+    "backend": "cpu",
+    "python": "/home/yixinliu/anaconda3/envs/braincell-released/bin/python",
+    "precision": 32
+  }
+}

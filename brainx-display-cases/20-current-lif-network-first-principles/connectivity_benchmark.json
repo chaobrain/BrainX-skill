@@ -1,0 +1,41 @@
+{
+  "shape": [
+    800,
+    1000
+  ],
+  "degree": 80,
+  "measurements": [
+    {
+      "spike_probability": 0.01,
+      "active_spikes": 10,
+      "exact_count_parity": true,
+      "fixed_num_per_post_seconds": 4.233453334260654e-05,
+      "csr_seconds": 4.530153334295998e-05,
+      "csr_speedup": 0.9345055281486511
+    },
+    {
+      "spike_probability": 0.05,
+      "active_spikes": 37,
+      "exact_count_parity": true,
+      "fixed_num_per_post_seconds": 8.670939999622836e-05,
+      "csr_seconds": 6.225706662614054e-05,
+      "csr_speedup": 1.3927639815882484
+    },
+    {
+      "spike_probability": 0.2,
+      "active_spikes": 164,
+      "exact_count_parity": true,
+      "fixed_num_per_post_seconds": 6.001746666394562e-05,
+      "csr_seconds": 6.083863330180369e-05,
+      "csr_speedup": 0.9865025462721281
+    },
+    {
+      "spike_probability": 0.8,
+      "active_spikes": 650,
+      "exact_count_parity": true,
+      "fixed_num_per_post_seconds": 0.00014571546665441323,
+      "csr_seconds": 0.00012862486661712562,
+      "csr_speedup": 1.1328716638296759
+    }
+  ]
+}

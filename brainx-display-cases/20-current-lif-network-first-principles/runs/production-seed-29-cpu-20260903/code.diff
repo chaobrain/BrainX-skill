@@ -1,0 +1,2649 @@
+--- /dev/null
++++ NeuroSpecification.md
+@@ -0,0 +1,24 @@
++# NeuroSpecification
+
++
+
++- Status: locked
+
++- Researcher approval: Approved in conversation on 2026-09-03.
+
++
+
++## Researcher request
+
++- Brain-modeling question or behavior: Determine whether a sparse current-based excitatory/inhibitory LIF network exhibits the requested synchronous regular, fast synchronous irregular, asynchronous irregular, and slow synchronous irregular regimes under four specified `(g, eta)` conditions.
+
++- Requested model, experiment, or comparison: Simulate `NE = 10,000` excitatory and `NI = 2,500` inhibitory neurons. Give every target exactly `CE = 1,000` excitatory and `CI = 250` inhibitory recurrent afferents, sampled without replacement within each source population. Use `Cext = 1,000` statistically independent external Poisson afferents per neuron. Use `tau_m = 20 ms`, absolute refractory period `t_ref = 2 ms`, threshold `20 mV`, reset `10 mV`, excitatory delta jump `JE = 0.1 mV`, inhibitory delta jump `JI = -g JE`, and recurrent delay `1.5 ms`. Use external per-afferent rate `nu_ext = eta * theta / (JE * CE * tau_m)`. Run `(g, eta) = (3, 2), (6, 4), (5, 2), (4.5, 0.9)` over one fixed seed set.
+
++- Execution mode: forward-simulation
+
++- Required outputs: Save a four-condition PNG with, for each condition, instantaneous whole-network rate in `0.1 ms` bins and its temporal mean above a raster from one fixed random 50-neuron sample. Save PNG diagnostics for excitatory/inhibitory rates, ISI coefficient of variation, and the whole-network-rate spectrum. Save machine-readable metrics and report each condition's dominant non-DC frequency. List every PNG path.
+
++- Constraints: Build from first principles using only this specification. Do not search for or inspect papers, existing implementations, or prior workspace cases. Use BrainX-native point-neuron, event-connectivity, unit, state, and execution APIs where the applicable skills require them. Do not force the requested regime names when the observables do not support them.
+
++
+
++## Inspected data contract
+
++- Data sources and inspected contents: No external data were supplied. The researcher provided all model parameters and requested observables in text.
+
++- Shapes, axes, sampling/time base, and physical units: `12,500` point neurons split into `10,000 E + 2,500 I`; membrane voltage in mV; time in ms; rates in Hz; recurrent delay `1.5 ms`; output-rate bins `0.1 ms`. The numerical integration step is provisionally `dt = 0.1 ms` so the output bin and delay are exact integer step counts.
+
++- Required preprocessing and the subset used to fit each transform: None. Discard interval is unresolved. Spectral detrending/windowing and valid frequency band will be frozen before outcomes are viewed.
+
++- Mapping from data to model inputs, targets, and observables: Aggregate `Cext` independent Poisson afferents into an independent per-neuron Poisson event count with mean `Cext * nu_ext * dt`; each external event jumps voltage by `JE`. Recurrent spikes are delivered after exactly 15 steps. Population spike counts map to `rate = spikes / (population_size * bin_width)`. ISI CV is computed per neuron with enough post-transient intervals, then summarized without pooling intervals across neurons. Spectrum is computed from the demeaned post-transient global-rate series.
+
++- Known data limitations or unresolved mismatches: Run each condition for `5 s` and discard the first `1 s`. Use fixed seeds `11`, `29`, and `47`. For each seed, share the connectivity realization, initial voltages, and fixed random 50-neuron sample across all four conditions. Initialize voltages uniformly on `[10, 20) mV`. Use `dt = 0.1 ms`. Requested qualitative regimes are operationalized by the frozen criteria below rather than by any external source.
+
++
+
++## Acceptance boundary
+
++- Evidence required for success, failure, or an inconclusive result: For every seed and condition, preserve global/E/I rate series, sampled raster events, per-neuron ISI CV values, power spectrum, mean rates, CV summary, and dominant non-DC frequency. Label neuronal firing `regular` when the across-seed median neuronal ISI CV is `<= 0.5`, `irregular` when it is `>= 0.8`, and `indeterminate` otherwise. Label the population `synchronous` only when the same non-DC peak is significant in the global-rate spectrum across seeds under a frozen narrowband prominence test; otherwise label it `asynchronous` or `indeterminate` as defined before production results are viewed. Divide slow from fast synchronous activity at `30 Hz`. Verify the requested label only when all predicates pass across the declared seed aggregation; otherwise report the measured label or an inconclusive result.
+
++- Required baselines and controls: Verify exact recurrent indegrees; zero self-connections when source and target are the same neuron; inhibitory jump sign and magnitude; 15-step delay; refractory duration; external Poisson count mean/variance; deterministic replay for a repeated seed; and a small-network reference transition test before production execution.
+
++- Invalid-result conditions: Wrong population or connectivity shapes; non-finite state or metrics; missed/double-counted delayed events; rates normalized by the wrong population size or bin width; spectrum including DC as the dominant oscillation; ISI CV pooled across neurons; seed-dependent figure neuron samples; or any qualitative label assigned after tuning its thresholds against these four outcomes.
+
++- Allowed claims and explicit non-claims: Claim only that this implementation, parameter set, initialization, duration, numerical step, and frozen seeds produce the measured finite-simulation regimes. Treat the regime mapping as phenomenological and unsourced. Do not claim reproduction of prior literature, biological realism beyond the stated LIF model, uniqueness, or asymptotic stationarity.
+
+--- /dev/null
++++ BrainXStudy.md
+@@ -0,0 +1,99 @@
++# BrainX study record
+
++
+
++## Scope and selected skills
+
++
+
++- Represented scale: point neurons, fixed recurrent synapses, and a spiking network.
+
++- Owning modeling skill: BrainPy-State.
+
++- Supporting skills: BrainEvent for exact fixed fan-in event communication, BrainUnit for time/voltage/rate quantities, and BrainState for Module State, deterministic randomness, environment settings, and transformed time loops.
+
++- Optional training/fitting coverage: none; this is forward simulation.
+
++- Installation route: reuse `/home/yixinliu/anaconda3/envs/braincell-released`, whose `BrainX 2026.7.9` components match the compatibility matrix and whose JAX backend reports one CPU device.
+
++- Excluded routes: BrainCell, BrainMass, BrainTrace, NEST compatibility, and legacy BrainPy do not own any represented mechanism. Bundled application scripts were not opened because the researcher explicitly prohibited deriving the model from existing code.
+
++
+
++## Mental model and lifecycle
+
++
+
++1. Construct one unit-aware `brainpy.state.LIFRef` population of 12,500 neurons with `V_rest = 0 mV`, the specified time constant, reset, threshold, and refractory interval.
+
++2. Construct separate excitatory and inhibitory `brainevent.FixedNumPerPost` matrices. Their index arrays have shapes `(12,500, 1,000)` and `(12,500, 250)` and contain unique source indices per target. Exclude autapses within each source population.
+
++3. Wrap each fixed-fan-in product in a BrainState Module and pass it to `brainpy.state.DeltaProj`. This preserves event-driven communication and makes each recurrent event an instantaneous voltage jump.
+
++4. Maintain a 15-slot boolean ring buffer in `HiddenState`. At step `i`, read slot `pointer`, which contains spikes from step `i - 15`; deliver those events before the neuron update, then overwrite that slot with spikes emitted at step `i` and advance the pointer. An impulse test must prove the 15-step arrival.
+
++5. Draw one aggregate external count for every target and step from `Poisson(Cext * nu_ext * dt)`. Superposition of the independent afferents makes this exactly the requested aggregate drive. A separate BrainState `RandomState` owns this stream and is reset to the matched external seed before each condition.
+
++6. Call recurrent projections and the external delta projection before `LIFRef(...)`; the neuron then applies leak, accumulated delta jumps, threshold/reset, and refractory State in its native update. Set `dt`, `t`, and integer step `i` through `brainstate.environ.context`.
+
++7. Run all 50,000 steps through one `brainstate.transform.for_loop` enclosed by `brainstate.transform.jit`. Use a small host loop only across the 12 independent seed-condition rollouts.
+
++8. Reset all dynamical State, the delay buffer, online ISI accumulators, initial voltage, and the external RNG at every condition boundary. Change only `g` and `eta` within a seed; reuse its connectivity, initial voltage, and displayed neuron sample.
+
++
+
++## Exact equations and grid convention
+
++
+
++For non-refractory neuron `j`, BrainPy-State advances the current-based LIF state over one `dt = 0.1 ms` and applies accumulated delta input:
+
++
+
++```text
+
++tau_m dV_j/dt = -(V_j - 0 mV)
+
++V_j <- V_j + JE * Kext_j + JE * nE_j - g * JE * nI_j
+
++spike_j = V_j >= theta
+
++V_j <- reset after a spike
+
++```
+
++
+
++Here `Kext_j ~ Poisson(Cext * nu_ext * dt)`, and `nE_j` and `nI_j` count delayed spikes among the target's exact recurrent afferents. Events generated in step `i` arrive in step `i + 15`. The native `LIFRef` owns the exact discrete refractory convention; a single-neuron check must verify that it prevents firing throughout the specified 2 ms interval.
+
++
+
++The external rate remains unit-derived:
+
++
+
++```text
+
++nu_ext = eta * theta / (JE * CE * tau_m)
+
++lambda_ext = Cext * nu_ext * dt
+
++```
+
++
+
++For the approved values `Cext = CE` and `dt / tau_m = JE / theta`, `lambda_ext = eta`, but the implementation computes the full expression and tests that simplification rather than hard-coding it.
+
++
+
++## Randomness contract
+
++
+
++- Root seeds: `11`, `29`, `47`.
+
++- Derive independent connectivity, initialization/sample, and external-stream seeds from each root with a documented NumPy `SeedSequence` on the host boundary.
+
++- Build connectivity and initial voltages once per root seed; reuse them unchanged across all conditions.
+
++- Initialize voltage uniformly on `[10, 20) mV` and choose 50 global neuron indices without replacement.
+
++- Reset the external BrainState stream to the same per-root external seed for every condition. Different `eta` values change the Poisson law but not the starting key.
+
++- Repeat one smoke rollout after restoring its RNG seed and State; require exact output equality.
+
++
+
++## Online observables
+
++
+
++- Return E and I spike counts for every 0.1 ms step.
+
++- Return spike indicators only for the fixed 50-neuron display sample.
+
++- After the 1 s transient, maintain per-neuron previous spike step, ISI count, ISI sum, and squared-ISI sum in State. A CV is valid only with at least two complete intervals.
+
++- Convert the final online accumulators to per-neuron ISI CV on the host. Do not pool intervals across neurons.
+
++- Preserve raw post-transient rate/count series, sample raster events, valid CV values, and spectral arrays for every seed-condition run.
+
++
+
++## Frozen spectrum and regime test
+
++
+
++Compute Welch spectra from the demeaned 4 s post-transient whole-network rate at `fs = 10,000 Hz`, with a Hann window, `nperseg = 10,000`, `noverlap = 5,000`, constant detrending, and density scaling. Search `1-500 Hz`; never admit DC as a peak.
+
++
+
++For each seed, define:
+
++
+
++- dominant frequency: maximum PSD within `1-500 Hz`;
+
++- background: median PSD in `1-500 Hz` excluding `+/-5 Hz` around that peak;
+
++- peak prominence ratio: peak PSD divided by that background;
+
++- narrowband fraction: PSD within `+/-2 Hz` of the peak divided by total PSD in `1-500 Hz`.
+
++
+
++A seed has a significant narrowband peak only when prominence is at least `5` and narrowband fraction is at least `0.05`. A condition is:
+
++
+
++- `synchronous` when all three seeds have significant peaks and their peak range is no more than `max(5 Hz, 0.2 * median peak frequency)`;
+
++- `asynchronous` when none of the three seeds has a significant peak;
+
++- `synchrony-indeterminate` otherwise.
+
++
+
++Pool valid per-neuron CV values across seeds only after computing every neuron's CV separately. Require at least 10% of all neurons per seed to have valid CV. Label firing `regular` for pooled median CV `<= 0.5`, `irregular` for `>= 0.8`, and `regularity-indeterminate` otherwise. For synchronous activity, label the median dominant frequency `slow` below `30 Hz` and `fast` at or above `30 Hz`.
+
++
+
++Map predicates to names exactly:
+
++
+
++| Regime | Required predicates |
+
++|---|---|
+
++| synchronous regular | synchronous + regular |
+
++| fast synchronous irregular | synchronous + irregular + fast |
+
++| asynchronous irregular | asynchronous + irregular |
+
++| slow synchronous irregular | synchronous + irregular + slow |
+
++
+
++Any other combination is reported literally or as inconclusive; requested names are never forced.
+
++
+
++## Implementation design and checks
+
++
+
++- Keep physical parameters as BrainUnit quantities until explicit NumPy/SciPy/Matplotlib boundaries.
+
++- Store scalar fixed-fan-in weights rather than materializing one weight per edge.
+
++- Keep connectivity indices in `int32`, delay history and sample spikes in boolean arrays, refractory State in the native neuron, and count/ISI accumulators in compact numeric State.
+
++- Test exact indegrees, uniqueness, source bounds, no autapses, inhibitory sign, unit propagation through BrainEvent, delta summation, 15-step delay, external count statistics, State reset, deterministic replay, output shapes, and finite metrics.
+
++- Save an immutable JSON configuration, environment/package record, log, per-run NPZ artifacts, metrics JSON/CSV, connectivity hashes, and an artifact manifest.
+
++
+
+--- /dev/null
++++ config.json
+@@ -0,0 +1,57 @@
++{
+
++  "model": {
+
++    "NE": 10000,
+
++    "NI": 2500,
+
++    "CE": 1000,
+
++    "CI": 250,
+
++    "Cext": 1000,
+
++    "tau_m_ms": 20.0,
+
++    "t_ref_ms": 2.0,
+
++    "threshold_mV": 20.0,
+
++    "reset_mV": 10.0,
+
++    "rest_mV": 0.0,
+
++    "JE_mV": 0.1,
+
++    "delay_ms": 1.5,
+
++    "dt_ms": 0.1
+
++  },
+
++  "protocol": {
+
++    "duration_ms": 5000.0,
+
++    "transient_ms": 1000.0,
+
++    "seeds": [11, 29, 47],
+
++    "display_seed": 11,
+
++    "sample_size": 50,
+
++    "conditions": [
+
++      {"id": "sr", "g": 3.0, "eta": 2.0, "requested_regime": "synchronous regular"},
+
++      {"id": "fsi", "g": 6.0, "eta": 4.0, "requested_regime": "fast synchronous irregular"},
+
++      {"id": "ai", "g": 5.0, "eta": 2.0, "requested_regime": "asynchronous irregular"},
+
++      {"id": "ssi", "g": 4.5, "eta": 0.9, "requested_regime": "slow synchronous irregular"}
+
++    ]
+
++  },
+
++  "spectrum": {
+
++    "method": "welch",
+
++    "window": "hann",
+
++    "nperseg": 10000,
+
++    "noverlap": 5000,
+
++    "detrend": "constant",
+
++    "scaling": "density",
+
++    "search_hz": [1.0, 500.0],
+
++    "background_exclusion_hz": 5.0,
+
++    "narrowband_half_width_hz": 2.0,
+
++    "min_prominence_ratio": 5.0,
+
++    "min_narrowband_fraction": 0.05,
+
++    "peak_consistency_abs_hz": 5.0,
+
++    "peak_consistency_relative": 0.2,
+
++    "slow_fast_boundary_hz": 30.0
+
++  },
+
++  "regularity": {
+
++    "minimum_intervals_per_neuron": 2,
+
++    "minimum_valid_fraction": 0.1,
+
++    "regular_max_median_cv": 0.5,
+
++    "irregular_min_median_cv": 0.8
+
++  },
+
++  "execution": {
+
++    "backend": "cpu",
+
++    "python": "/home/yixinliu/anaconda3/envs/braincell-released/bin/python",
+
++    "precision": 32
+
++  }
+
++}
+
+--- /dev/null
++++ lif_network.py
+@@ -0,0 +1,848 @@
++from __future__ import annotations
+
++
+
++import argparse
+
++import csv
+
++import hashlib
+
++import json
+
++import os
+
++import platform
+
++import sys
+
++import time
+
++import traceback
+
++from datetime import datetime, timezone
+
++from pathlib import Path
+
++from typing import Any
+
++
+
++os.environ.setdefault("JAX_PLATFORMS", "cpu")
+
++os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib-brainx-lif")
+
++
+
++import brainevent
+
++import brainpy
+
++import brainstate
+
++import braintools
+
++import brainunit as u
+
++import jax
+
++import jax.numpy as jnp
+
++import numpy as np
+
++import scipy
+
++from scipy import signal
+
++
+
++
+
++ROOT = Path(__file__).resolve().parent
+
++CONFIG_PATH = ROOT / "config.json"
+
++
+
++
+
++def load_config(path: Path = CONFIG_PATH) -> dict[str, Any]:
+
++    with path.open(encoding="utf-8") as file:
+
++        return json.load(file)
+
++
+
++
+
++def utc_now() -> str:
+
++    return datetime.now(timezone.utc).isoformat()
+
++
+
++
+
++def write_or_verify_json(path: Path, value: Any) -> None:
+
++    serialized = json.dumps(value, indent=2) + "\n"
+
++    if path.exists():
+
++        if path.read_text(encoding="utf-8") != serialized:
+
++            raise ValueError(f"frozen artifact differs from active run: {path}")
+
++        return
+
++    path.write_text(serialized, encoding="utf-8")
+
++
+
++
+
++def derive_seed_streams(root_seed: int) -> dict[str, Any]:
+
++    connectivity_seed, initialization_seed, external_seed = np.random.SeedSequence(
+
++        root_seed
+
++    ).spawn(3)
+
++    return {
+
++        "connectivity": connectivity_seed,
+
++        "initialization": initialization_seed,
+
++        "external": int(external_seed.generate_state(1, dtype=np.uint32)[0]),
+
++    }
+
++
+
++
+
++def _fixed_sources(
+
++    rng: np.random.Generator,
+
++    n_pre: int,
+
++    n_post: int,
+
++    degree: int,
+
++    source_offset: int,
+
++) -> np.ndarray:
+
++    if degree >= n_pre:
+
++        raise ValueError("degree must leave room to exclude an autapse")
+
++    indices = np.empty((n_post, degree), dtype=np.int32)
+
++    for target in range(n_post):
+
++        local_target = target - source_offset
+
++        if 0 <= local_target < n_pre:
+
++            row = rng.choice(n_pre - 1, size=degree, replace=False, shuffle=False)
+
++            row += row >= local_target
+
++        else:
+
++            row = rng.choice(n_pre, size=degree, replace=False, shuffle=False)
+
++        indices[target] = row
+
++    return indices
+
++
+
++
+
++def build_random_structures(
+
++    root_seed: int,
+
++    *,
+
++    ne: int,
+
++    ni: int,
+
++    ce: int,
+
++    ci: int,
+
++    sample_size: int,
+
++    reset_mV: float,
+
++    threshold_mV: float,
+
++) -> dict[str, Any]:
+
++    streams = derive_seed_streams(root_seed)
+
++    conn_rng = np.random.default_rng(streams["connectivity"])
+
++    init_rng = np.random.default_rng(streams["initialization"])
+
++    n_total = ne + ni
+
++    exc_indices = _fixed_sources(conn_rng, ne, n_total, ce, 0)
+
++    inh_indices = _fixed_sources(conn_rng, ni, n_total, ci, ne)
+
++    initial_voltage_mV = init_rng.uniform(
+
++        reset_mV, threshold_mV, size=n_total
+
++    ).astype(np.float32)
+
++    sample_ids = np.sort(
+
++        init_rng.choice(n_total, size=sample_size, replace=False).astype(np.int32)
+
++    )
+
++    return {
+
++        "exc_indices": exc_indices,
+
++        "inh_indices": inh_indices,
+
++        "initial_voltage_mV": initial_voltage_mV,
+
++        "sample_ids": sample_ids,
+
++        "external_seed": streams["external"],
+
++    }
+
++
+
++
+
++def validate_connectivity(
+
++    exc_indices: np.ndarray,
+
++    inh_indices: np.ndarray,
+
++    *,
+
++    ne: int,
+
++    ni: int,
+
++    ce: int,
+
++    ci: int,
+
++) -> None:
+
++    n_total = ne + ni
+
++    if exc_indices.shape != (n_total, ce):
+
++        raise ValueError(f"wrong E index shape: {exc_indices.shape}")
+
++    if inh_indices.shape != (n_total, ci):
+
++        raise ValueError(f"wrong I index shape: {inh_indices.shape}")
+
++    if exc_indices.min() < 0 or exc_indices.max() >= ne:
+
++        raise ValueError("E source index out of bounds")
+
++    if inh_indices.min() < 0 or inh_indices.max() >= ni:
+
++        raise ValueError("I source index out of bounds")
+
++    if np.any(np.diff(np.sort(exc_indices, axis=1), axis=1) == 0):
+
++        raise ValueError("duplicate E source within a target")
+
++    if np.any(np.diff(np.sort(inh_indices, axis=1), axis=1) == 0):
+
++        raise ValueError("duplicate I source within a target")
+
++    if np.any(exc_indices[np.arange(ne)] == np.arange(ne)[:, None]):
+
++        raise ValueError("E autapse detected")
+
++    inhibitory_targets = np.arange(ni)
+
++    if np.any(inh_indices[ne + inhibitory_targets] == inhibitory_targets[:, None]):
+
++        raise ValueError("I autapse detected")
+
++
+
++
+
++def array_sha256(value: np.ndarray) -> str:
+
++    contiguous = np.ascontiguousarray(value)
+
++    digest = hashlib.sha256()
+
++    digest.update(str(contiguous.dtype).encode("ascii"))
+
++    digest.update(str(contiguous.shape).encode("ascii"))
+
++    digest.update(contiguous.view(np.uint8))
+
++    return digest.hexdigest()
+
++
+
++
+
++class FixedFanInComm(brainstate.nn.Module):
+
++    def __init__(
+
++        self,
+
++        indices: np.ndarray,
+
++        *,
+
++        n_pre: int,
+
++        n_post: int,
+
++        weight: u.Quantity,
+
++    ):
+
++        super().__init__()
+
++        self.connectivity = brainevent.FixedNumPerPost(
+
++            (jnp.asarray(1.0, dtype=jnp.float32), jnp.asarray(indices)),
+
++            shape=(n_pre, n_post),
+
++        )
+
++        self.weight = brainstate.State(weight)
+
++
+
++    def update(self, spikes: jax.Array) -> u.Quantity:
+
++        counts = brainevent.BinaryArray(spikes) @ self.connectivity
+
++        return counts * self.weight.value
+
++
+
++
+
++class ExternalJumpComm(brainstate.nn.Module):
+
++    def __init__(self, weight: u.Quantity):
+
++        super().__init__()
+
++        self.weight = weight
+
++
+
++    def update(self, counts: jax.Array) -> u.Quantity:
+
++        return counts * self.weight
+
++
+
++
+
++class RingDelay(brainstate.nn.Module):
+
++    def __init__(self, delay_steps: int, n_neurons: int):
+
++        super().__init__()
+
++        self.delay_steps = int(delay_steps)
+
++        self.n_neurons = int(n_neurons)
+
++        self.history = brainstate.HiddenState(
+
++            jnp.zeros((delay_steps, n_neurons), dtype=bool)
+
++        )
+
++        self.pointer = brainstate.HiddenState(jnp.asarray(0, dtype=jnp.int32))
+
++
+
++    def reset(self) -> None:
+
++        self.history.value = jnp.zeros(
+
++            (self.delay_steps, self.n_neurons), dtype=bool
+
++        )
+
++        self.pointer.value = jnp.asarray(0, dtype=jnp.int32)
+
++
+
++    def read(self) -> jax.Array:
+
++        return self.history.value[self.pointer.value]
+
++
+
++    def push(self, spikes: jax.Array) -> None:
+
++        self.history.value = self.history.value.at[self.pointer.value].set(spikes)
+
++        self.pointer.value = (self.pointer.value + 1) % self.delay_steps
+
++
+
++
+
++class CurrentLIFNetwork(brainstate.nn.Module):
+
++    def __init__(
+
++        self,
+
++        config: dict[str, Any],
+
++        random_structures: dict[str, Any],
+
++    ):
+
++        super().__init__()
+
++        model = config["model"]
+
++        protocol = config["protocol"]
+
++        self.ne = int(model["NE"])
+
++        self.ni = int(model["NI"])
+
++        self.n_total = self.ne + self.ni
+
++        self.je = float(model["JE_mV"]) * u.mV
+
++        self.dt = float(model["dt_ms"]) * u.ms
+
++        self.delay_steps = int(round(model["delay_ms"] / model["dt_ms"]))
+
++        self.transient_step = int(round(protocol["transient_ms"] / model["dt_ms"]))
+
++        self.initial_voltage = (
+
++            jnp.asarray(random_structures["initial_voltage_mV"]) * u.mV
+
++        )
+
++        self.sample_ids = jnp.asarray(random_structures["sample_ids"])
+
++        self.external_seed = int(random_structures["external_seed"])
+
++
+
++        self.neurons = brainpy.state.LIFRef(
+
++            self.n_total,
+
++            R=1.0 * u.ohm,
+
++            tau=float(model["tau_m_ms"]) * u.ms,
+
++            tau_ref=float(model["t_ref_ms"]) * u.ms,
+
++            V_rest=float(model["rest_mV"]) * u.mV,
+
++            V_th=float(model["threshold_mV"]) * u.mV,
+
++            V_reset=float(model["reset_mV"]) * u.mV,
+
++            spk_reset="hard",
+
++            V_initializer=braintools.init.Constant(
+
++                float(model["reset_mV"]) * u.mV
+
++            ),
+
++        )
+
++        self.exc_comm = FixedFanInComm(
+
++            random_structures["exc_indices"],
+
++            n_pre=self.ne,
+
++            n_post=self.n_total,
+
++            weight=self.je,
+
++        )
+
++        self.inh_comm = FixedFanInComm(
+
++            random_structures["inh_indices"],
+
++            n_pre=self.ni,
+
++            n_post=self.n_total,
+
++            weight=-self.je,
+
++        )
+
++        self.exc_projection = brainpy.state.DeltaProj(
+
++            comm=self.exc_comm, post=self.neurons, label="recurrent_exc"
+
++        )
+
++        self.inh_projection = brainpy.state.DeltaProj(
+
++            comm=self.inh_comm, post=self.neurons, label="recurrent_inh"
+
++        )
+
++        self.external_projection = brainpy.state.DeltaProj(
+
++            comm=ExternalJumpComm(self.je), post=self.neurons, label="external"
+
++        )
+
++        self.delay = RingDelay(self.delay_steps, self.n_total)
+
++        self.external_lambda = brainstate.State(jnp.asarray(0.0, dtype=jnp.float32))
+
++        self.external_rng = brainstate.random.RandomState(self.external_seed)
+
++        self.last_spike_step = brainstate.HiddenState(
+
++            jnp.full(self.n_total, -1, dtype=jnp.int32)
+
++        )
+
++        self.isi_count = brainstate.HiddenState(
+
++            jnp.zeros(self.n_total, dtype=jnp.int32)
+
++        )
+
++        self.isi_sum = brainstate.HiddenState(
+
++            jnp.zeros(self.n_total, dtype=jnp.float32)
+
++        )
+
++        self.isi_sq_sum = brainstate.HiddenState(
+
++            jnp.zeros(self.n_total, dtype=jnp.float32)
+
++        )
+
++        self.zero_current = jnp.zeros(self.n_total, dtype=jnp.float32) * u.mA
+
++
+
++    def set_condition(self, g: float, eta: float, config: dict[str, Any]) -> None:
+
++        model = config["model"]
+
++        nu_ext = (
+
++            eta
+
++            * float(model["threshold_mV"])
+
++            * u.mV
+
++            / (
+
++                self.je
+
++                * int(model["CE"])
+
++                * (float(model["tau_m_ms"]) * u.ms)
+
++            )
+
++        )
+
++        external_lambda = float(int(model["Cext"]) * nu_ext * self.dt)
+
++        self.inh_comm.weight.value = -float(g) * self.je
+
++        self.external_lambda.value = jnp.asarray(external_lambda, dtype=jnp.float32)
+
++
+
++    def reset(self) -> None:
+
++        brainstate.nn.reset_all_states(self)
+
++        self.neurons.V.value = self.initial_voltage
+
++        self.delay.reset()
+
++        self.external_rng.seed(self.external_seed)
+
++        self.last_spike_step.value = jnp.full(
+
++            self.n_total, -1, dtype=jnp.int32
+
++        )
+
++        self.isi_count.value = jnp.zeros(self.n_total, dtype=jnp.int32)
+
++        self.isi_sum.value = jnp.zeros(self.n_total, dtype=jnp.float32)
+
++        self.isi_sq_sum.value = jnp.zeros(self.n_total, dtype=jnp.float32)
+
++
+
++    def update(self, t: u.Quantity, step: jax.Array):
+
++        with brainstate.environ.context(t=t, i=step):
+
++            delayed = self.delay.read()
+
++            self.exc_projection(delayed[: self.ne])
+
++            self.inh_projection(delayed[self.ne :])
+
++            external_counts = self.external_rng.poisson(
+
++                lam=self.external_lambda.value,
+
++                size=(self.n_total,),
+
++            )
+
++            self.external_projection(external_counts)
+
++            spikes = self.neurons(self.zero_current) != 0.0
+
++
+
++            in_analysis = step >= self.transient_step
+
++            previous = self.last_spike_step.value
+
++            interval = (step - previous).astype(jnp.float32)
+
++            valid_interval = spikes & in_analysis & (previous >= self.transient_step)
+
++            self.isi_count.value = self.isi_count.value + valid_interval.astype(jnp.int32)
+
++            self.isi_sum.value = self.isi_sum.value + jnp.where(
+
++                valid_interval, interval, 0.0
+
++            )
+
++            self.isi_sq_sum.value = self.isi_sq_sum.value + jnp.where(
+
++                valid_interval, interval * interval, 0.0
+
++            )
+
++            self.last_spike_step.value = jnp.where(
+
++                spikes & in_analysis, step, previous
+
++            )
+
++
+
++            self.delay.push(spikes)
+
++            return (
+
++                jnp.sum(spikes[: self.ne], dtype=jnp.int32),
+
++                jnp.sum(spikes[self.ne :], dtype=jnp.int32),
+
++                spikes[self.sample_ids],
+
++            )
+
++
+
++    def isi_cv(self, minimum_intervals: int) -> tuple[np.ndarray, np.ndarray]:
+
++        count = np.asarray(self.isi_count.value)
+
++        total = np.asarray(self.isi_sum.value)
+
++        total_sq = np.asarray(self.isi_sq_sum.value)
+
++        valid = count >= minimum_intervals
+
++        mean = np.divide(total, count, out=np.zeros_like(total), where=count > 0)
+
++        second = np.divide(
+
++            total_sq, count, out=np.zeros_like(total_sq), where=count > 0
+
++        )
+
++        variance = np.maximum(second - mean * mean, 0.0)
+
++        cv = np.full(self.n_total, np.nan, dtype=np.float32)
+
++        cv[valid] = np.sqrt(variance[valid]) / mean[valid]
+
++        return cv, valid
+
++
+
++
+
++def create_rollout(
+
++    network: CurrentLIFNetwork,
+
++    config: dict[str, Any],
+
++):
+
++    model = config["model"]
+
++    protocol = config["protocol"]
+
++    n_steps = int(round(protocol["duration_ms"] / model["dt_ms"]))
+
++    steps = jnp.arange(n_steps, dtype=jnp.int32)
+
++    times = steps * (float(model["dt_ms"]) * u.ms)
+
++
+
++    def rollout():
+
++        return brainstate.transform.for_loop(network.update, times, steps)
+
++
+
++    return brainstate.transform.jit(rollout)
+
++
+
++
+
++def spectral_metrics(
+
++    global_rate_hz: np.ndarray,
+
++    config: dict[str, Any],
+
++) -> dict[str, Any]:
+
++    model = config["model"]
+
++    spectrum = config["spectrum"]
+
++    fs_hz = 1000.0 / float(model["dt_ms"])
+
++    frequencies, power = signal.welch(
+
++        global_rate_hz - np.mean(global_rate_hz),
+
++        fs=fs_hz,
+
++        window=spectrum["window"],
+
++        nperseg=int(spectrum["nperseg"]),
+
++        noverlap=int(spectrum["noverlap"]),
+
++        detrend=spectrum["detrend"],
+
++        scaling=spectrum["scaling"],
+
++    )
+
++    low_hz, high_hz = spectrum["search_hz"]
+
++    search = (frequencies >= low_hz) & (frequencies <= high_hz)
+
++    search_indices = np.flatnonzero(search)
+
++    peak_index = search_indices[np.argmax(power[search])]
+
++    dominant_hz = float(frequencies[peak_index])
+
++    exclusion = float(spectrum["background_exclusion_hz"])
+
++    background_mask = search & (np.abs(frequencies - dominant_hz) > exclusion)
+
++    background = float(np.median(power[background_mask]))
+
++    prominence = float(power[peak_index] / max(background, np.finfo(float).tiny))
+
++    half_width = float(spectrum["narrowband_half_width_hz"])
+
++    narrowband = search & (np.abs(frequencies - dominant_hz) <= half_width)
+
++    fraction = float(np.sum(power[narrowband]) / np.sum(power[search]))
+
++    significant = bool(
+
++        prominence >= float(spectrum["min_prominence_ratio"])
+
++        and fraction >= float(spectrum["min_narrowband_fraction"])
+
++    )
+
++    return {
+
++        "frequencies_hz": frequencies,
+
++        "power_hz": power,
+
++        "dominant_frequency_hz": dominant_hz,
+
++        "peak_prominence_ratio": prominence,
+
++        "narrowband_power_fraction": fraction,
+
++        "significant_narrowband_peak": significant,
+
++    }
+
++
+
++
+
++def analyze_rollout(
+
++    exc_counts: np.ndarray,
+
++    inh_counts: np.ndarray,
+
++    sample_spikes: np.ndarray,
+
++    network: CurrentLIFNetwork,
+
++    config: dict[str, Any],
+
++) -> dict[str, Any]:
+
++    model = config["model"]
+
++    protocol = config["protocol"]
+
++    regularity = config["regularity"]
+
++    dt_seconds = float(model["dt_ms"]) * 1e-3
+
++    transient_step = int(round(protocol["transient_ms"] / model["dt_ms"]))
+
++    exc_rate = exc_counts.astype(np.float64) / (int(model["NE"]) * dt_seconds)
+
++    inh_rate = inh_counts.astype(np.float64) / (int(model["NI"]) * dt_seconds)
+
++    global_rate = (exc_counts + inh_counts).astype(np.float64) / (
+
++        (int(model["NE"]) + int(model["NI"])) * dt_seconds
+
++    )
+
++    cv, cv_valid = network.isi_cv(
+
++        int(regularity["minimum_intervals_per_neuron"])
+
++    )
+
++    spectral = spectral_metrics(global_rate[transient_step:], config)
+
++    post_exc = exc_rate[transient_step:]
+
++    post_inh = inh_rate[transient_step:]
+
++    post_global = global_rate[transient_step:]
+
++    return {
+
++        "exc_rate_hz": exc_rate,
+
++        "inh_rate_hz": inh_rate,
+
++        "global_rate_hz": global_rate,
+
++        "sample_spikes": sample_spikes.astype(bool),
+
++        "isi_cv": cv,
+
++        "isi_cv_valid": cv_valid,
+
++        "mean_exc_rate_hz": float(np.mean(post_exc)),
+
++        "mean_inh_rate_hz": float(np.mean(post_inh)),
+
++        "mean_global_rate_hz": float(np.mean(post_global)),
+
++        "global_rate_cv": float(np.std(post_global) / np.mean(post_global)),
+
++        "valid_isi_cv_fraction": float(np.mean(cv_valid)),
+
++        "median_isi_cv": float(np.nanmedian(cv)),
+
++        **spectral,
+
++    }
+
++
+
++
+
++def save_run_result(
+
++    output_dir: Path,
+
++    *,
+
++    seed: int,
+
++    condition: dict[str, Any],
+
++    sample_ids: np.ndarray,
+
++    analysis: dict[str, Any],
+
++    elapsed_seconds: float,
+
++) -> dict[str, Any]:
+
++    run_id = f"seed-{seed}_{condition['id']}"
+
++    npz_path = output_dir / "raw" / f"{run_id}.npz"
+
++    json_path = output_dir / "metrics" / f"{run_id}.json"
+
++    npz_path.parent.mkdir(parents=True, exist_ok=True)
+
++    json_path.parent.mkdir(parents=True, exist_ok=True)
+
++    np.savez_compressed(
+
++        npz_path,
+
++        exc_rate_hz=analysis["exc_rate_hz"],
+
++        inh_rate_hz=analysis["inh_rate_hz"],
+
++        global_rate_hz=analysis["global_rate_hz"],
+
++        sample_spikes=analysis["sample_spikes"],
+
++        sample_ids=sample_ids,
+
++        isi_cv=analysis["isi_cv"],
+
++        isi_cv_valid=analysis["isi_cv_valid"],
+
++        frequencies_hz=analysis["frequencies_hz"],
+
++        power_hz=analysis["power_hz"],
+
++    )
+
++    metric = {
+
++        "run_id": run_id,
+
++        "seed": seed,
+
++        "condition_id": condition["id"],
+
++        "g": condition["g"],
+
++        "eta": condition["eta"],
+
++        "requested_regime": condition["requested_regime"],
+
++        "elapsed_seconds": elapsed_seconds,
+
++        "mean_exc_rate_hz": analysis["mean_exc_rate_hz"],
+
++        "mean_inh_rate_hz": analysis["mean_inh_rate_hz"],
+
++        "mean_global_rate_hz": analysis["mean_global_rate_hz"],
+
++        "global_rate_cv": analysis["global_rate_cv"],
+
++        "valid_isi_cv_fraction": analysis["valid_isi_cv_fraction"],
+
++        "median_isi_cv": analysis["median_isi_cv"],
+
++        "dominant_frequency_hz": analysis["dominant_frequency_hz"],
+
++        "peak_prominence_ratio": analysis["peak_prominence_ratio"],
+
++        "narrowband_power_fraction": analysis["narrowband_power_fraction"],
+
++        "significant_narrowband_peak": analysis["significant_narrowband_peak"],
+
++        "raw_path": str(npz_path.relative_to(output_dir)),
+
++    }
+
++    json_path.write_text(json.dumps(metric, indent=2) + "\n", encoding="utf-8")
+
++    return metric
+
++
+
++
+
++def classify_conditions(
+
++    run_metrics: list[dict[str, Any]],
+
++    output_dir: Path,
+
++    config: dict[str, Any],
+
++) -> list[dict[str, Any]]:
+
++    spectrum = config["spectrum"]
+
++    regularity = config["regularity"]
+
++    classifications = []
+
++    for condition in config["protocol"]["conditions"]:
+
++        rows = [row for row in run_metrics if row["condition_id"] == condition["id"]]
+
++        peaks = np.asarray([row["dominant_frequency_hz"] for row in rows])
+
++        significant = np.asarray(
+
++            [row["significant_narrowband_peak"] for row in rows], dtype=bool
+
++        )
+
++        consistency_limit = max(
+
++            float(spectrum["peak_consistency_abs_hz"]),
+
++            float(spectrum["peak_consistency_relative"]) * float(np.median(peaks)),
+
++        )
+
++        if np.all(significant) and float(np.ptp(peaks)) <= consistency_limit:
+
++            synchrony = "synchronous"
+
++        elif not np.any(significant):
+
++            synchrony = "asynchronous"
+
++        else:
+
++            synchrony = "synchrony-indeterminate"
+
++
+
++        valid_fractions = np.asarray([row["valid_isi_cv_fraction"] for row in rows])
+
++        cv_available = bool(
+
++            np.all(valid_fractions >= float(regularity["minimum_valid_fraction"]))
+
++        )
+
++        cv_values = []
+
++        for row in rows:
+
++            with np.load(output_dir / row["raw_path"]) as data:
+
++                cv_values.append(data["isi_cv"][data["isi_cv_valid"]])
+
++        pooled_cv = np.concatenate(cv_values) if cv_values else np.asarray([])
+
++        pooled_median_cv = float(np.median(pooled_cv)) if pooled_cv.size else float("nan")
+
++        if not cv_available:
+
++            regularity_label = "regularity-indeterminate"
+
++        elif pooled_median_cv <= float(regularity["regular_max_median_cv"]):
+
++            regularity_label = "regular"
+
++        elif pooled_median_cv >= float(regularity["irregular_min_median_cv"]):
+
++            regularity_label = "irregular"
+
++        else:
+
++            regularity_label = "regularity-indeterminate"
+
++
+
++        median_peak = float(np.median(peaks))
+
++        speed = (
+
++            "slow"
+
++            if median_peak < float(spectrum["slow_fast_boundary_hz"])
+
++            else "fast"
+
++        )
+
++        if synchrony == "synchronous" and regularity_label == "regular":
+
++            measured = "synchronous regular"
+
++        elif synchrony == "synchronous" and regularity_label == "irregular":
+
++            measured = f"{speed} synchronous irregular"
+
++        elif synchrony == "asynchronous" and regularity_label == "irregular":
+
++            measured = "asynchronous irregular"
+
++        else:
+
++            measured = f"{synchrony}, {regularity_label}"
+
++        classifications.append(
+
++            {
+
++                "condition_id": condition["id"],
+
++                "g": condition["g"],
+
++                "eta": condition["eta"],
+
++                "requested_regime": condition["requested_regime"],
+
++                "measured_regime": measured,
+
++                "verified": measured == condition["requested_regime"],
+
++                "synchrony": synchrony,
+
++                "regularity": regularity_label,
+
++                "median_dominant_frequency_hz": median_peak,
+
++                "peak_frequency_range_hz": float(np.ptp(peaks)),
+
++                "peak_consistency_limit_hz": consistency_limit,
+
++                "pooled_median_isi_cv": pooled_median_cv,
+
++                "mean_exc_rate_hz": float(
+
++                    np.mean([row["mean_exc_rate_hz"] for row in rows])
+
++                ),
+
++                "mean_inh_rate_hz": float(
+
++                    np.mean([row["mean_inh_rate_hz"] for row in rows])
+
++                ),
+
++                "seed_metrics": rows,
+
++            }
+
++        )
+
++    path = output_dir / "condition_assessment.json"
+
++    path.write_text(json.dumps(classifications, indent=2) + "\n", encoding="utf-8")
+
++    return classifications
+
++
+
++
+
++def environment_record() -> dict[str, Any]:
+
++    packages = {}
+
++    for package_name in (
+
++        "BrainX",
+
++        "brainpy",
+
++        "brainstate",
+
++        "brainevent",
+
++        "braintools",
+
++        "brainunit",
+
++        "jax",
+
++        "jaxlib",
+
++        "numpy",
+
++        "scipy",
+
++    ):
+
++        try:
+
++            from importlib.metadata import version
+
++
+
++            packages[package_name] = version(package_name)
+
++        except Exception:
+
++            packages[package_name] = "unknown"
+
++    return {
+
++        "python": sys.version,
+
++        "python_executable": sys.executable,
+
++        "platform": platform.platform(),
+
++        "jax_backend": jax.default_backend(),
+
++        "jax_devices": [str(device) for device in jax.devices()],
+
++        "packages": packages,
+
++    }
+
++
+
++
+
++def write_metrics_csv(metrics: list[dict[str, Any]], path: Path) -> None:
+
++    fields = [key for key in metrics[0] if key != "raw_path"]
+
++    with path.open("w", newline="", encoding="utf-8") as file:
+
++        writer = csv.DictWriter(file, fieldnames=fields)
+
++        writer.writeheader()
+
++        writer.writerows({key: row[key] for key in fields} for row in metrics)
+
++
+
++
+
++def resolve_run_config(
+
++    config: dict[str, Any],
+
++    *,
+
++    smoke: bool = False,
+
++    selected_seed: int | None = None,
+
++) -> dict[str, Any]:
+
++    model = dict(config["model"])
+
++    protocol = dict(config["protocol"])
+
++    spectrum = dict(config["spectrum"])
+
++    if smoke:
+
++        model.update({"NE": 80, "NI": 20, "CE": 8, "CI": 2})
+
++        protocol.update(
+
++            {
+
++                "duration_ms": 40.0,
+
++                "transient_ms": 10.0,
+
++                "seeds": [11],
+
++                "sample_size": 10,
+
++                "conditions": [protocol["conditions"][0]],
+
++            }
+
++        )
+
++        spectrum.update({"nperseg": 256, "noverlap": 128})
+
++    elif selected_seed is not None:
+
++        if selected_seed not in protocol["seeds"]:
+
++            raise ValueError(f"seed {selected_seed} is not in the locked seed set")
+
++        protocol["seeds"] = [selected_seed]
+
++    return {
+
++        **config,
+
++        "model": model,
+
++        "protocol": protocol,
+
++        "spectrum": spectrum,
+
++    }
+
++
+
++
+
++def run_experiment(
+
++    config: dict[str, Any],
+
++    output_dir: Path,
+
++    *,
+
++    smoke: bool = False,
+
++    selected_seed: int | None = None,
+
++    log_path: Path | None = None,
+
++) -> list[dict[str, Any]]:
+
++    active_config = resolve_run_config(
+
++        config, smoke=smoke, selected_seed=selected_seed
+
++    )
+
++    model = active_config["model"]
+
++    protocol = active_config["protocol"]
+
++    output_dir.mkdir(parents=True, exist_ok=True)
+
++    write_or_verify_json(output_dir / "config.json", active_config)
+
++    write_or_verify_json(output_dir / "environment.json", environment_record())
+
++
+
++    run_metrics: list[dict[str, Any]] = []
+
++    connectivity_records = []
+
++    with brainstate.environ.context(dt=float(model["dt_ms"]) * u.ms, fit=False):
+
++        for seed in protocol["seeds"]:
+
++            random_structures = build_random_structures(
+
++                seed,
+
++                ne=int(model["NE"]),
+
++                ni=int(model["NI"]),
+
++                ce=int(model["CE"]),
+
++                ci=int(model["CI"]),
+
++                sample_size=int(protocol["sample_size"]),
+
++                reset_mV=float(model["reset_mV"]),
+
++                threshold_mV=float(model["threshold_mV"]),
+
++            )
+
++            validate_connectivity(
+
++                random_structures["exc_indices"],
+
++                random_structures["inh_indices"],
+
++                ne=int(model["NE"]),
+
++                ni=int(model["NI"]),
+
++                ce=int(model["CE"]),
+
++                ci=int(model["CI"]),
+
++            )
+
++            conn_path = output_dir / "connectivity" / f"seed-{seed}.npz"
+
++            conn_path.parent.mkdir(parents=True, exist_ok=True)
+
++            np.savez_compressed(
+
++                conn_path,
+
++                exc_indices=random_structures["exc_indices"],
+
++                inh_indices=random_structures["inh_indices"],
+
++                initial_voltage_mV=random_structures["initial_voltage_mV"],
+
++                sample_ids=random_structures["sample_ids"],
+
++                external_seed=np.asarray(random_structures["external_seed"]),
+
++            )
+
++            connectivity_records.append(
+
++                {
+
++                    "seed": seed,
+
++                    "path": str(conn_path.relative_to(output_dir)),
+
++                    "exc_sha256": array_sha256(random_structures["exc_indices"]),
+
++                    "inh_sha256": array_sha256(random_structures["inh_indices"]),
+
++                }
+
++            )
+
++            network = CurrentLIFNetwork(active_config, random_structures)
+
++            brainstate.nn.init_all_states(network)
+
++            rollout = create_rollout(network, active_config)
+
++            for condition in protocol["conditions"]:
+
++                network.set_condition(condition["g"], condition["eta"], active_config)
+
++                network.reset()
+
++                started = time.perf_counter()
+
++                exc_counts, inh_counts, sample_spikes = rollout()
+
++                jax.block_until_ready(sample_spikes)
+
++                elapsed = time.perf_counter() - started
+
++                analysis = analyze_rollout(
+
++                    np.asarray(exc_counts),
+
++                    np.asarray(inh_counts),
+
++                    np.asarray(sample_spikes),
+
++                    network,
+
++                    active_config,
+
++                )
+
++                metric = save_run_result(
+
++                    output_dir,
+
++                    seed=seed,
+
++                    condition=condition,
+
++                    sample_ids=random_structures["sample_ids"],
+
++                    analysis=analysis,
+
++                    elapsed_seconds=elapsed,
+
++                )
+
++                run_metrics.append(metric)
+
++                message = json.dumps(metric, sort_keys=True)
+
++                print(message, flush=True)
+
++                if log_path is not None:
+
++                    with log_path.open("a", encoding="utf-8") as log_file:
+
++                        log_file.write(message + "\n")
+
++
+
++    (output_dir / "connectivity_manifest.json").write_text(
+
++        json.dumps(connectivity_records, indent=2) + "\n", encoding="utf-8"
+
++    )
+
++    write_metrics_csv(run_metrics, output_dir / "run_metrics.csv")
+
++    classify_conditions(run_metrics, output_dir, active_config)
+
++    return run_metrics
+
++
+
++
+
++def main() -> None:
+
++    parser = argparse.ArgumentParser()
+
++    parser.add_argument("--mode", choices=("smoke", "production"), required=True)
+
++    parser.add_argument("--output-dir", type=Path, required=True)
+
++    parser.add_argument("--seed", type=int)
+
++    args = parser.parse_args()
+
++    config = load_config()
+
++    args.output_dir.mkdir(parents=True, exist_ok=True)
+
++    log_path = args.output_dir / "run.log"
+
++    status_path = args.output_dir / "status.json"
+
++    started_at = utc_now()
+
++    status_path.write_text(
+
++        json.dumps(
+
++            {
+
++                "status": "running",
+
++                "pid": os.getpid(),
+
++                "started_at": started_at,
+
++                "finished_at": None,
+
++                "exit_code": None,
+
++            },
+
++            indent=2,
+
++        )
+
++        + "\n",
+
++        encoding="utf-8",
+
++    )
+
++    with log_path.open("a", encoding="utf-8") as log_file:
+
++        log_file.write(
+
++            json.dumps(
+
++                {
+
++                    "event": "start",
+
++                    "time": started_at,
+
++                    "pid": os.getpid(),
+
++                    "mode": args.mode,
+
++                    "seed": args.seed,
+
++                },
+
++                sort_keys=True,
+
++            )
+
++            + "\n"
+
++        )
+
++    try:
+
++        run_experiment(
+
++            config,
+
++            args.output_dir,
+
++            smoke=args.mode == "smoke",
+
++            selected_seed=args.seed,
+
++            log_path=log_path,
+
++        )
+
++    except Exception:
+
++        finished_at = utc_now()
+
++        with log_path.open("a", encoding="utf-8") as log_file:
+
++            traceback.print_exc(file=log_file)
+
++        status_path.write_text(
+
++            json.dumps(
+
++                {
+
++                    "status": "failed",
+
++                    "pid": os.getpid(),
+
++                    "started_at": started_at,
+
++                    "finished_at": finished_at,
+
++                    "exit_code": 1,
+
++                },
+
++                indent=2,
+
++            )
+
++            + "\n",
+
++            encoding="utf-8",
+
++        )
+
++        (args.output_dir / "exit_code").write_text("1\n", encoding="utf-8")
+
++        raise
+
++    finished_at = utc_now()
+
++    status_path.write_text(
+
++        json.dumps(
+
++            {
+
++                "status": "done",
+
++                "pid": os.getpid(),
+
++                "started_at": started_at,
+
++                "finished_at": finished_at,
+
++                "exit_code": 0,
+
++            },
+
++            indent=2,
+
++        )
+
++        + "\n",
+
++        encoding="utf-8",
+
++    )
+
++    (args.output_dir / "exit_code").write_text("0\n", encoding="utf-8")
+
++
+
++
+
++if __name__ == "__main__":
+
++    main()
+
+--- /dev/null
++++ test_lif_network.py
+@@ -0,0 +1,160 @@
++from __future__ import annotations
+
++
+
++import json
+
++from pathlib import Path
+
++
+
++import brainevent
+
++import brainpy
+
++import brainstate
+
++import braintools
+
++import brainunit as u
+
++import jax.numpy as jnp
+
++import numpy as np
+
++
+
++import lif_network
+
++
+
++
+
++def test_external_rate_reduces_to_eta_events_per_step():
+
++    config = lif_network.load_config()
+
++    model = config["model"]
+
++    for eta in (0.9, 2.0, 4.0):
+
++        nu_ext = (
+
++            eta
+
++            * model["threshold_mV"]
+
++            * u.mV
+
++            / (
+
++                model["JE_mV"]
+
++                * u.mV
+
++                * model["CE"]
+
++                * model["tau_m_ms"]
+
++                * u.ms
+
++            )
+
++        )
+
++        mean_count = float(model["Cext"] * nu_ext * model["dt_ms"] * u.ms)
+
++        assert np.isclose(mean_count, eta)
+
++
+
++
+
++def test_fixed_fan_in_has_unique_sources_and_no_autapses():
+
++    structures = lif_network.build_random_structures(
+
++        11,
+
++        ne=80,
+
++        ni=20,
+
++        ce=8,
+
++        ci=2,
+
++        sample_size=10,
+
++        reset_mV=10.0,
+
++        threshold_mV=20.0,
+
++    )
+
++    lif_network.validate_connectivity(
+
++        structures["exc_indices"],
+
++        structures["inh_indices"],
+
++        ne=80,
+
++        ni=20,
+
++        ce=8,
+
++        ci=2,
+
++    )
+
++
+
++
+
++def test_brainevent_fixed_fan_in_counts_and_preserves_voltage_unit():
+
++    indices = np.asarray([[0, 1], [1, 2], [2, 3]], dtype=np.int32)
+
++    connectivity = brainevent.FixedNumPerPost(
+
++        (0.1 * u.mV, jnp.asarray(indices)), shape=(4, 3)
+
++    )
+
++    result = brainevent.BinaryArray(
+
++        jnp.asarray([True, False, True, False])
+
++    ) @ connectivity
+
++    assert result.unit == u.mV
+
++    np.testing.assert_allclose(result.to_decimal(u.mV), [0.1, 0.1, 0.1])
+
++
+
++
+
++def test_ring_delay_delivers_an_impulse_after_exactly_15_steps():
+
++    delay = lif_network.RingDelay(15, 1)
+
++    inputs = jnp.zeros((20, 1), dtype=bool).at[0, 0].set(True)
+
++
+
++    def step(value):
+
++        delayed = delay.read()
+
++        delay.push(value)
+
++        return delayed
+
++
+
++    output = brainstate.transform.for_loop(step, inputs)
+
++    expected = np.zeros((20, 1), dtype=bool)
+
++    expected[15, 0] = True
+
++    np.testing.assert_array_equal(np.asarray(output), expected)
+
++
+
++
+
++def test_lif_refractory_interval_is_at_least_two_ms():
+
++    with brainstate.environ.context(dt=0.1 * u.ms, fit=False):
+
++        neuron = brainpy.state.LIFRef(
+
++            1,
+
++            R=1.0 * u.ohm,
+
++            tau=20.0 * u.ms,
+
++            tau_ref=2.0 * u.ms,
+
++            V_rest=0.0 * u.mV,
+
++            V_th=20.0 * u.mV,
+
++            V_reset=10.0 * u.mV,
+
++            spk_reset="hard",
+
++            V_initializer=braintools.init.Constant(10.0 * u.mV),
+
++        )
+
++        projection = brainpy.state.DeltaProj(
+
++            comm=lif_network.ExternalJumpComm(20.0 * u.mV),
+
++            post=neuron,
+
++            label="forced",
+
++        )
+
++        brainstate.nn.init_all_states(neuron)
+
++        steps = jnp.arange(80, dtype=jnp.int32)
+
++        times = steps * (0.1 * u.ms)
+
++
+
++        def step(t, index):
+
++            with brainstate.environ.context(t=t, i=index):
+
++                projection(jnp.ones(1, dtype=jnp.int32))
+
++                return neuron(jnp.zeros(1) * u.mA)
+
++
+
++        spikes = np.asarray(brainstate.transform.for_loop(step, times, steps))[:, 0]
+
++    spike_steps = np.flatnonzero(spikes)
+
++    assert spike_steps.size >= 3
+
++    assert np.all(np.diff(spike_steps) >= 20)
+
++
+
++
+
++def test_small_rollout_replays_exactly(tmp_path: Path):
+
++    config = lif_network.load_config()
+
++    model = {**config["model"], "NE": 80, "NI": 20, "CE": 8, "CI": 2}
+
++    protocol = {
+
++        **config["protocol"],
+
++        "duration_ms": 40.0,
+
++        "transient_ms": 10.0,
+
++        "sample_size": 10,
+
++    }
+
++    small = {**config, "model": model, "protocol": protocol}
+
++    structures = lif_network.build_random_structures(
+
++        11,
+
++        ne=80,
+
++        ni=20,
+
++        ce=8,
+
++        ci=2,
+
++        sample_size=10,
+
++        reset_mV=10.0,
+
++        threshold_mV=20.0,
+
++    )
+
++    with brainstate.environ.context(dt=0.1 * u.ms, fit=False):
+
++        network = lif_network.CurrentLIFNetwork(small, structures)
+
++        brainstate.nn.init_all_states(network)
+
++        rollout = lif_network.create_rollout(network, small)
+
++        network.set_condition(3.0, 2.0, small)
+
++        network.reset()
+
++        first = tuple(np.asarray(value) for value in rollout())
+
++        network.reset()
+
++        replay = tuple(np.asarray(value) for value in rollout())
+
++    for observed, repeated in zip(first, replay, strict=True):
+
++        np.testing.assert_array_equal(observed, repeated)
+
++    assert first[0].shape == (400,)
+
++    assert first[1].shape == (400,)
+
++    assert first[2].shape == (400, 10)
+
++    assert np.all(np.isfinite(np.asarray(network.neurons.V.value.to_decimal(u.mV))))
+
++
+
++
+
++def test_config_is_locked_to_approved_contract():
+
++    config = json.loads((Path(__file__).parent / "config.json").read_text())
+
++    assert config["protocol"]["seeds"] == [11, 29, 47]
+
++    assert config["protocol"]["duration_ms"] == 5000.0
+
++    assert config["protocol"]["transient_ms"] == 1000.0
+
++    assert config["model"]["dt_ms"] == 0.1
+
+--- /dev/null
++++ acceleration_audit.md
+@@ -0,0 +1,37 @@
++# BrainX acceleration audit
+
++
+
++| File/area | Pattern | Evidence | Axis | Impact | Risk | Rewrite | Confidence |
+
++|---|---|---|---|---|---|---|---|
+
++| `CurrentLIFNetwork.update` | already fused | Population-shaped LIF State, BrainEvent products, Poisson draw, ISI reductions, and delay update execute inside one transformed step. | N | High | Low | Keep unchanged. | High |
+
++| `create_rollout` | correct JIT boundary | All 50,000 recurrent steps run through `brainstate.transform.for_loop` enclosed by one `brainstate.transform.jit`. | T | High | Low | Keep unchanged. | High |
+
++| `run_experiment` condition/seed loop | `loop-E-sweep` | Twelve independent rollouts use a small host loop; each seed reuses one connectivity realization across four conditions. | E | Medium | High | Do not `vmap`: mapped dynamical State and three seed-specific fixed-fan-in matrices would substantially increase peak memory, while CPU exposes no parallel device. | High |
+
++| `_fixed_sources` | `loop-N-scalar` outside hot path | One host loop constructs each target's exact unique sources once per seed before compilation. | N | Low runtime frequency | Medium | Keep NumPy host construction; a transformed replacement would require large random ranking arrays and would not accelerate simulation. | High |
+
++| returned history | bounded output history | Rollout returns two count vectors and 50 sampled spike indicators, not all 12,500 spikes or voltages. | T x N | High memory benefit | Low | Keep online ISI moments and sampled raster output. | High |
+
++| connectivity | structured event representation | `FixedNumPerPost` stores exact fan-in indices and one scalar weight per pathway; it never forms a dense `12,500 x 12,500` matrix. | N | High | Low | Keep structured representation. | High |
+
++| stochastic drive | State-aware RNG | One `RandomState` advances inside the compiled loop and is reseeded at independent rollout boundaries. | T | High | Medium | Keep and verify exact replay. | High |
+
++
+
++## Patch / rewrite plan
+
++
+
++No production hot-path rewrite is justified. The implementation already applies the acceleration skill's highest-impact transformations and memory reductions. The BrainState control-flow and randomness references establish the existing `jit(for_loop)` and reset/reseed boundaries. Preserve the current code and add only a benchmark artifact that separates compilation from warm execution and checks exact output/final-voltage parity after reset.
+
++
+
++## Validation plan
+
++
+
++- Construct a representative `800 E + 200 I`, `80 E + 20 I` fixed-fan-in network for 200 ms.
+
++- Time the first compiled rollout separately from a reset-and-replayed warm rollout.
+
++- Synchronize before stopping each timer.
+
++- Require exact equality for E counts, I counts, sampled spikes, and final voltage after State/RNG reset.
+
++- Change `(g, eta)` without changing shapes and time one additional warm call to demonstrate reuse of the compiled graph.
+
++- Retain boolean delay history, `int32` connectivity indices, scalar pathway weights, and online ISI moments; do not materialize dense connectivity or full spike history.
+
++
+
++## Remaining risks
+
++
+
++- Production runtime is dominated by 15.625 million logical fixed-fan-in edges over 50,000 steps on one CPU device; the representative benchmark can estimate but not eliminate that cost.
+
++- BrainEvent CPU performance depends on event sparsity and condition, so warm runtime can differ substantially across regimes.
+
++- The condition loop is intentionally serial to cap memory and preserve simple, separately reset RNG and dynamical State.
+
++
+
++## Measured outcome
+
++
+
++- Representative `800 E + 200 I`, 2,000-step benchmark: `10.450 s` cold, `1.846 s` warm, and exact equality of all outputs and final voltage after reset.
+
++- Full-scale 200-step benchmark: `27.578 s` cold and `4.714 s` warm, projecting `1,178.6 s` per 5-second rollout and `14,142.6 s` for twelve serial runs.
+
++- Equivalent CSR event products preserved counts exactly but ranged from `0.93x` to `1.39x` the `FixedNumPerPost` speed across tested spike densities; no consistent material gain justified the extra conversion and storage.
+
++- Final acceleration decision: keep the scientific implementation unchanged and execute the three independent seeds concurrently on disjoint CPU core sets. Keep the four conditions within each seed serial so they reuse one compiled graph and one shared connectivity realization.
+
+--- /dev/null
++++ acceleration_parity.json
+@@ -0,0 +1,29 @@
++{
+
++  "network": {
+
++    "NE": 800,
+
++    "NI": 200,
+
++    "CE": 80,
+
++    "CI": 20
+
++  },
+
++  "duration_ms": 200.0,
+
++  "steps": 2000,
+
++  "backend": "cpu",
+
++  "cold_compile_and_run_seconds": 10.449970252999265,
+
++  "warm_replay_seconds": 1.8457392790005542,
+
++  "warm_changed_condition_seconds": 1.6103956350016233,
+
++  "warm_speedup_over_cold": 5.661671922947752,
+
++  "exact_output_replay": true,
+
++  "exact_final_voltage_replay": true,
+
++  "output_shapes": [
+
++    [
+
++      2000
+
++    ],
+
++    [
+
++      2000
+
++    ],
+
++    [
+
++      2000,
+
++      20
+
++    ]
+
++  ]
+
++}
+
+--- /dev/null
++++ connectivity_benchmark.json
+@@ -0,0 +1,41 @@
++{
+
++  "shape": [
+
++    800,
+
++    1000
+
++  ],
+
++  "degree": 80,
+
++  "measurements": [
+
++    {
+
++      "spike_probability": 0.01,
+
++      "active_spikes": 10,
+
++      "exact_count_parity": true,
+
++      "fixed_num_per_post_seconds": 4.233453334260654e-05,
+
++      "csr_seconds": 4.530153334295998e-05,
+
++      "csr_speedup": 0.9345055281486511
+
++    },
+
++    {
+
++      "spike_probability": 0.05,
+
++      "active_spikes": 37,
+
++      "exact_count_parity": true,
+
++      "fixed_num_per_post_seconds": 8.670939999622836e-05,
+
++      "csr_seconds": 6.225706662614054e-05,
+
++      "csr_speedup": 1.3927639815882484
+
++    },
+
++    {
+
++      "spike_probability": 0.2,
+
++      "active_spikes": 164,
+
++      "exact_count_parity": true,
+
++      "fixed_num_per_post_seconds": 6.001746666394562e-05,
+
++      "csr_seconds": 6.083863330180369e-05,
+
++      "csr_speedup": 0.9865025462721281
+
++    },
+
++    {
+
++      "spike_probability": 0.8,
+
++      "active_spikes": 650,
+
++      "exact_count_parity": true,
+
++      "fixed_num_per_post_seconds": 0.00014571546665441323,
+
++      "csr_seconds": 0.00012862486661712562,
+
++      "csr_speedup": 1.1328716638296759
+
++    }
+
++  ]
+
++}
+
+--- /dev/null
++++ full_scale_benchmark.json
+@@ -0,0 +1,16 @@
++{
+
++  "network": {
+
++    "NE": 10000,
+
++    "NI": 2500,
+
++    "CE": 1000,
+
++    "CI": 250
+
++  },
+
++  "benchmark_duration_ms": 20.0,
+
++  "benchmark_steps": 200,
+
++  "connectivity_construction_seconds": 0.624814659000549,
+
++  "cold_compile_and_run_seconds": 27.578171653000027,
+
++  "warm_run_seconds": 4.714205621001383,
+
++  "projected_warm_seconds_per_5s_run": 1178.5514052503459,
+
++  "projected_warm_seconds_for_12_runs": 14142.61686300415,
+
++  "backend": "cpu"
+
++}
+

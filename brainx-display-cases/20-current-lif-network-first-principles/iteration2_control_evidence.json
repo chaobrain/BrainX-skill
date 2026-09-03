@@ -1,0 +1,50 @@
+{
+  "delay_migration": {
+    "iteration1_raw": "runs/smoke-step2/raw/seed-11_sr.npz",
+    "iteration2_raw": "runs/smoke-iteration2-delay/raw/seed-11_sr.npz",
+    "exact_array_parity": {
+      "exc_rate_hz": true,
+      "inh_rate_hz": true,
+      "global_rate_hz": true,
+      "sample_spikes": true,
+      "sample_ids": true,
+      "isi_cv_valid": true,
+      "frequencies_hz": true,
+      "power_hz": true,
+      "isi_cv": true
+    }
+  },
+  "iteration2_smoke_final_voltage": {
+    "shape": [
+      100
+    ],
+    "all_finite": true,
+    "sha256": "9669ce6a445882c0056bc95ca9fef74bcb7d65b6115d611f5bee534a02f30d27"
+  },
+  "poisson_fixed_snapshots": [
+    {
+      "seed": 7100,
+      "lambda": 0.9,
+      "sample_size": 250000,
+      "sample_mean": 0.899892,
+      "sample_variance": 0.8975663883360001,
+      "sample_sha256": "4491000676d7fb6e8ad763450433c0f81516b9cbdd456930b2c29aabfc9ce467"
+    },
+    {
+      "seed": 7101,
+      "lambda": 2.0,
+      "sample_size": 250000,
+      "sample_mean": 2.0022,
+      "sample_variance": 2.00237916,
+      "sample_sha256": "7b793986a2bde5bfd849c72d1c05cfd67112da6e6b4518870e1450aea96e5f9f"
+    },
+    {
+      "seed": 7102,
+      "lambda": 4.0,
+      "sample_size": 250000,
+      "sample_mean": 3.998588,
+      "sample_variance": 4.013658006256,
+      "sample_sha256": "2695d69423c9013b8e23110687511b2208384c80455e67e9ca8f7137daabda2e"
+    }
+  ]
+}

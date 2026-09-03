@@ -1,0 +1,20 @@
+{
+  "run_id": "seed-47_sr",
+  "seed": 47,
+  "condition_id": "sr",
+  "g": 3.0,
+  "eta": 2.0,
+  "requested_regime": "synchronous regular",
+  "elapsed_seconds": 2106.383793215,
+  "mean_exc_rate_hz": 333.35835,
+  "mean_inh_rate_hz": 333.3533,
+  "mean_global_rate_hz": 333.35733999999997,
+  "global_rate_cv": 3.768222745104027,
+  "valid_isi_cv_fraction": 1.0,
+  "median_isi_cv": 0.0,
+  "dominant_frequency_hz": 333.0,
+  "peak_prominence_ratio": 579497154.594613,
+  "narrowband_power_fraction": 0.9997072160232272,
+  "significant_narrowband_peak": true,
+  "raw_path": "raw/seed-47_sr.npz"
+}

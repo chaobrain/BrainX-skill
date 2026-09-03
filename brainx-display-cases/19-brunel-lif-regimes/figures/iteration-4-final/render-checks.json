@@ -1,0 +1,34 @@
+[
+  {
+    "path": "figures/iteration-4-final/four-condition-rate-raster.png",
+    "bytes": 544171,
+    "sha256": "293a15725a9e63be48edc8ec7cc3a5e100142f67596b48383aeeb7a6e3f292d7",
+    "width_px": 4774,
+    "height_px": 1894,
+    "rgb_std": 47.2342335330015
+  },
+  {
+    "path": "figures/iteration-4-final/ei-rates.png",
+    "bytes": 94042,
+    "sha256": "bbf6eaa2eacae9a1a132a23599fc6dd35967837f1e70232bd5f6f406052751c5",
+    "width_px": 2494,
+    "height_px": 1414,
+    "rgb_std": 26.097618304640335
+  },
+  {
+    "path": "figures/iteration-4-final/isi-cv.png",
+    "bytes": 118732,
+    "sha256": "73745be92c546a12b4cd2bf3025d305e806cc547242fd19ff797b669e065fe9c",
+    "width_px": 2494,
+    "height_px": 1414,
+    "rgb_std": 29.26603681832989
+  },
+  {
+    "path": "figures/iteration-4-final/global-rate-spectrum.png",
+    "bytes": 761552,
+    "sha256": "21e319df0fe65466c895ddbd2e2b2d7925064b17430449de3ce0e1709dc73ced",
+    "width_px": 2854,
+    "height_px": 2074,
+    "rgb_std": 45.18061620705943
+  }
+]

@@ -1,0 +1,40 @@
+[
+  {
+    "condition_id": "sr",
+    "g": 3.0,
+    "eta": 2.0,
+    "requested_regime": "synchronous regular",
+    "measured_regime": "synchronous regular",
+    "verified": true,
+    "synchrony": "synchronous",
+    "regularity": "regular",
+    "median_dominant_frequency_hz": 468.75,
+    "peak_frequency_range_hz": 0.0,
+    "peak_consistency_limit_hz": 93.75,
+    "pooled_median_isi_cv": 0.0,
+    "mean_exc_rate_hz": 500.0,
+    "mean_inh_rate_hz": 500.0,
+    "seed_metrics": [
+      {
+        "run_id": "seed-11_sr",
+        "seed": 11,
+        "condition_id": "sr",
+        "g": 3.0,
+        "eta": 2.0,
+        "requested_regime": "synchronous regular",
+        "elapsed_seconds": 7.879782302001331,
+        "mean_exc_rate_hz": 500.0,
+        "mean_inh_rate_hz": 500.0,
+        "mean_global_rate_hz": 500.0,
+        "global_rate_cv": 4.358898943540674,
+        "valid_isi_cv_fraction": 1.0,
+        "median_isi_cv": 0.0,
+        "dominant_frequency_hz": 468.75,
+        "peak_prominence_ratio": 396976.30303282174,
+        "narrowband_power_fraction": 0.9944835725633748,
+        "significant_narrowband_peak": true,
+        "raw_path": "raw/seed-11_sr.npz"
+      }
+    ]
+  }
+]

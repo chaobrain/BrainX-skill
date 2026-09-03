@@ -1,0 +1,16 @@
+{
+  "network": {
+    "NE": 10000,
+    "NI": 2500,
+    "CE": 1000,
+    "CI": 250
+  },
+  "benchmark_duration_ms": 20.0,
+  "benchmark_steps": 200,
+  "connectivity_construction_seconds": 0.9052703470006236,
+  "cold_compile_and_run_seconds": 41.173125285000424,
+  "warm_run_seconds": 5.660605110999313,
+  "projected_warm_seconds_per_5s_run": 1415.1512777498283,
+  "projected_warm_seconds_for_12_runs": 16981.81533299794,
+  "backend": "cpu"
+}

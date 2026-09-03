@@ -1,0 +1,161 @@
+{
+  "source_value_checks": [
+    {
+      "condition_id": "sr",
+      "display_seed": 11,
+      "display_rate_mean_hz": 333.37203999999997,
+      "metric_rate_mean_hz": 333.37203999999997,
+      "raster_event_count_first_100_ms": 1673,
+      "sample_ids_sha256": "20ecf4611e2e0441e9842c2315eaa4b7710f312ec3ab827861509acdda288de3",
+      "pooled_valid_cv_count": 37500,
+      "pooled_cv_minimum": 0.0,
+      "pooled_cv_maximum": 0.033231221139431,
+      "pooled_cv_median": 0.0,
+      "accepted_pooled_cv_median": 0.0,
+      "seed_spectral_peaks": [
+        {
+          "seed": 11,
+          "dominant_frequency_hz": 333.0
+        },
+        {
+          "seed": 29,
+          "dominant_frequency_hz": 333.0
+        },
+        {
+          "seed": 47,
+          "dominant_frequency_hz": 333.0
+        }
+      ]
+    },
+    {
+      "condition_id": "fsi",
+      "display_seed": 11,
+      "display_rate_mean_hz": 59.29406000000001,
+      "metric_rate_mean_hz": 59.29406000000001,
+      "raster_event_count_first_100_ms": 283,
+      "sample_ids_sha256": "20ecf4611e2e0441e9842c2315eaa4b7710f312ec3ab827861509acdda288de3",
+      "pooled_valid_cv_count": 37500,
+      "pooled_cv_minimum": 0.6192014813423157,
+      "pooled_cv_maximum": 1.1656662225723267,
+      "pooled_cv_median": 0.7980129718780518,
+      "accepted_pooled_cv_median": 0.7980129718780518,
+      "seed_spectral_peaks": [
+        {
+          "seed": 11,
+          "dominant_frequency_hz": 184.0
+        },
+        {
+          "seed": 29,
+          "dominant_frequency_hz": 183.0
+        },
+        {
+          "seed": 47,
+          "dominant_frequency_hz": 184.0
+        }
+      ]
+    },
+    {
+      "condition_id": "ai",
+      "display_seed": 11,
+      "display_rate_mean_hz": 37.8541,
+      "metric_rate_mean_hz": 37.8541,
+      "raster_event_count_first_100_ms": 190,
+      "sample_ids_sha256": "20ecf4611e2e0441e9842c2315eaa4b7710f312ec3ab827861509acdda288de3",
+      "pooled_valid_cv_count": 37500,
+      "pooled_cv_minimum": 0.3153963088989258,
+      "pooled_cv_maximum": 0.5640750527381897,
+      "pooled_cv_median": 0.4095380902290344,
+      "accepted_pooled_cv_median": 0.4095380902290344,
+      "seed_spectral_peaks": [
+        {
+          "seed": 11,
+          "dominant_frequency_hz": 119.0
+        },
+        {
+          "seed": 29,
+          "dominant_frequency_hz": 121.0
+        },
+        {
+          "seed": 47,
+          "dominant_frequency_hz": 130.0
+        }
+      ]
+    },
+    {
+      "condition_id": "ssi",
+      "display_seed": 11,
+      "display_rate_mean_hz": 5.50964,
+      "metric_rate_mean_hz": 5.50964,
+      "raster_event_count_first_100_ms": 26,
+      "sample_ids_sha256": "20ecf4611e2e0441e9842c2315eaa4b7710f312ec3ab827861509acdda288de3",
+      "pooled_valid_cv_count": 37500,
+      "pooled_cv_minimum": 0.2684365510940552,
+      "pooled_cv_maximum": 1.7163279056549072,
+      "pooled_cv_median": 0.6793997883796692,
+      "accepted_pooled_cv_median": 0.6793997883796692,
+      "seed_spectral_peaks": [
+        {
+          "seed": 11,
+          "dominant_frequency_hz": 22.0
+        },
+        {
+          "seed": 29,
+          "dominant_frequency_hz": 22.0
+        },
+        {
+          "seed": 47,
+          "dominant_frequency_hz": 21.0
+        }
+      ]
+    }
+  ],
+  "image_checks": [
+    {
+      "path": "figures/four_condition_rate_raster.png",
+      "width_pixels": 1801,
+      "height_pixels": 2494,
+      "all_finite": true,
+      "pixel_minimum": 0.0,
+      "pixel_maximum": 1.0,
+      "pixel_standard_deviation": 0.2730749547481537,
+      "sha256": "a934af4dcbf08f43637e365047c8c3b1a4ed89e548ea886376a6583a70992f41"
+    },
+    {
+      "path": "figures/ei_rates.png",
+      "width_pixels": 1744,
+      "height_pixels": 1040,
+      "all_finite": true,
+      "pixel_minimum": 0.0,
+      "pixel_maximum": 1.0,
+      "pixel_standard_deviation": 0.08979739993810654,
+      "sha256": "5a681cf336d410782c7224b8375f21a4ce7a32b644a7674a9634f0282a4fb7fa"
+    },
+    {
+      "path": "figures/isi_cv.png",
+      "width_pixels": 1744,
+      "height_pixels": 1084,
+      "all_finite": true,
+      "pixel_minimum": 0.0,
+      "pixel_maximum": 1.0,
+      "pixel_standard_deviation": 0.10410553216934204,
+      "sha256": "62af5ba7a8f8abddc0f953b53179a266dc34076be26df400d4283bdb9f5a588f"
+    },
+    {
+      "path": "figures/global_rate_spectrum.png",
+      "width_pixels": 2191,
+      "height_pixels": 1526,
+      "all_finite": true,
+      "pixel_minimum": 0.0,
+      "pixel_maximum": 1.0,
+      "pixel_standard_deviation": 0.13726051151752472,
+      "sha256": "021218bdb6a4749a6f2bc7927e242746e3476d114dc9d236099bee12630f3dec"
+    }
+  ],
+  "visual_inspection": {
+    "nonblank": "pass",
+    "unclipped": "pass",
+    "legible_at_rendered_size": "pass",
+    "overlap_free": "pass",
+    "patterns_match_accepted_metrics": "pass"
+  }
+}

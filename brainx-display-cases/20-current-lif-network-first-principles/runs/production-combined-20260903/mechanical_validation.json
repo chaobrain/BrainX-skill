@@ -1,0 +1,98 @@
+[
+  {
+    "run_id": "seed-11_ai",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "05fa09cb380cbf333072c6670a569988c2000717201c5e9ba6e7a1c74ba87812"
+  },
+  {
+    "run_id": "seed-11_fsi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "f55fda2eefe7f9d10ccd6d34644a5f82ff7bf636e942ffb25be165b84a4f7842"
+  },
+  {
+    "run_id": "seed-11_sr",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "f1f8eb2d287f18f183ceccc4232c451e266c28aab60d1b21cc0ea32399abcff4"
+  },
+  {
+    "run_id": "seed-11_ssi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "636561c7b6326a32b767c18d11d9ad5b8bb64b86de637b46497cd49a1cd89bfc"
+  },
+  {
+    "run_id": "seed-29_ai",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "e684570d1e75fd8cddb96407a86941c6d845fc453c97988f1266ce0b06eab375"
+  },
+  {
+    "run_id": "seed-29_fsi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "1b715a412f844be74c4553a9385abc1794212aa568977fb7bfc4a19bd9c8d622"
+  },
+  {
+    "run_id": "seed-29_sr",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "91bbea8d1adbe12f608cb82645a80187d10953fe540fe3b6a4d71b0bb0330ab7"
+  },
+  {
+    "run_id": "seed-29_ssi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "d146deb77f2c0e25b56d006d9b6f51ec8c652ac865832ddb3bef193d452535af"
+  },
+  {
+    "run_id": "seed-47_ai",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "482523e0be1c1a7f623d22eaa412dc2979a68310832d2d0dc4538fa26b5640e8"
+  },
+  {
+    "run_id": "seed-47_fsi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "e89cdd252689ce16e8718d9d023a067590d5cf5baad68900019625a1bb7e3150"
+  },
+  {
+    "run_id": "seed-47_sr",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "312ad8c62a4db09386f39ba530890e7044fe2f7114d44b1b345a571c09335da8"
+  },
+  {
+    "run_id": "seed-47_ssi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "raw_sha256": "25898ba25a7eb50215ab1dcdbbdfc2a8f62438a070d4e6419e613e6caa24dee9"
+  }
+]

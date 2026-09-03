@@ -1,0 +1,187 @@
+{
+  "purpose": "BrainTools parity at the documented SciPy Welch boundary",
+  "all_frequency_grids_exact": true,
+  "all_dominant_frequencies_equal": true,
+  "all_significance_predicates_equal": true,
+  "all_condition_classifications_equal": true,
+  "run_comparisons": [
+    {
+      "run_id": "seed-11_ai",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 119.0,
+      "braintools_dominant_frequency_hz": 119.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 0.022706291470177477,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-29_ai",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 121.0,
+      "braintools_dominant_frequency_hz": 121.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 0.008703781414119066,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-47_ai",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 130.0,
+      "braintools_dominant_frequency_hz": 130.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 0.02301485128558239,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-11_fsi",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 184.0,
+      "braintools_dominant_frequency_hz": 184.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 0.06294262805637485,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-29_fsi",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 183.0,
+      "braintools_dominant_frequency_hz": 183.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 0.11656668377401187,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-47_fsi",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 184.0,
+      "braintools_dominant_frequency_hz": 184.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 0.054949051812219624,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-11_sr",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 333.0,
+      "braintools_dominant_frequency_hz": 333.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 14.792659753060434,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-29_sr",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 333.0,
+      "braintools_dominant_frequency_hz": 333.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 14.787719200976426,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-47_sr",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 333.0,
+      "braintools_dominant_frequency_hz": 333.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 14.78034154381021,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-11_ssi",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 22.0,
+      "braintools_dominant_frequency_hz": 22.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 0.005610203767423522,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-29_ssi",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 22.0,
+      "braintools_dominant_frequency_hz": 22.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 0.04423996629031013,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    },
+    {
+      "run_id": "seed-47_ssi",
+      "frequency_grid_exact": true,
+      "scipy_dominant_frequency_hz": 21.0,
+      "braintools_dominant_frequency_hz": 21.0,
+      "dominant_frequency_equal": true,
+      "scipy_significant_narrowband_peak": true,
+      "braintools_significant_narrowband_peak": true,
+      "significance_equal": true,
+      "maximum_absolute_psd_difference": 0.019418886540746638,
+      "psd_arrays_close_rtol_1e-4_atol_1e-5": false
+    }
+  ],
+  "condition_comparisons": [
+    {
+      "condition_id": "sr",
+      "scipy_measured_regime": "synchronous regular",
+      "braintools_measured_regime": "synchronous regular",
+      "classification_equal": true,
+      "scipy_median_dominant_frequency_hz": 333.0,
+      "braintools_median_dominant_frequency_hz": 333.0
+    },
+    {
+      "condition_id": "fsi",
+      "scipy_measured_regime": "synchronous, regularity-indeterminate",
+      "braintools_measured_regime": "synchronous, regularity-indeterminate",
+      "classification_equal": true,
+      "scipy_median_dominant_frequency_hz": 184.0,
+      "braintools_median_dominant_frequency_hz": 184.0
+    },
+    {
+      "condition_id": "ai",
+      "scipy_measured_regime": "synchronous regular",
+      "braintools_measured_regime": "synchronous regular",
+      "classification_equal": true,
+      "scipy_median_dominant_frequency_hz": 121.0,
+      "braintools_median_dominant_frequency_hz": 121.0
+    },
+    {
+      "condition_id": "ssi",
+      "scipy_measured_regime": "synchronous, regularity-indeterminate",
+      "braintools_measured_regime": "synchronous, regularity-indeterminate",
+      "classification_equal": true,
+      "scipy_median_dominant_frequency_hz": 22.0,
+      "braintools_median_dominant_frequency_hz": 22.0
+    }
+  ]
+}

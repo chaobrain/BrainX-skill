@@ -1,0 +1,20 @@
+{
+  "run_id": "seed-11_ssi",
+  "seed": 11,
+  "condition_id": "ssi",
+  "g": 4.5,
+  "eta": 0.9,
+  "requested_regime": "slow synchronous irregular",
+  "elapsed_seconds": 885.9466256119995,
+  "mean_exc_rate_hz": 5.505675,
+  "mean_inh_rate_hz": 5.5255,
+  "mean_global_rate_hz": 5.50964,
+  "global_rate_cv": 2.2507290635779764,
+  "valid_isi_cv_fraction": 1.0,
+  "median_isi_cv": 0.6727865934371948,
+  "dominant_frequency_hz": 22.0,
+  "peak_prominence_ratio": 240.27412154862165,
+  "narrowband_power_fraction": 0.13945207129293727,
+  "significant_narrowband_peak": true,
+  "raw_path": "raw/seed-11_ssi.npz"
+}

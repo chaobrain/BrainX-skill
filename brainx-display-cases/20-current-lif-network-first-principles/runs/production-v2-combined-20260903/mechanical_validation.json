@@ -1,0 +1,122 @@
+[
+  {
+    "run_id": "seed-11_ai",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "3d7318d2483372b8bfe9208e95c914b01205c347c3f10dfd662a4c75461ce8d7",
+    "raw_sha256": "bdc468b9f8ebcee037428d0252f45d095920b73d747d51aac66dc5c736171e8d"
+  },
+  {
+    "run_id": "seed-11_fsi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "aecc262c1cec71ea4812334e86d84162fbe79b4bd85c389d96705a818825ac74",
+    "raw_sha256": "c68b7f66e3fd6164aa6f6710063d702539369bb7f85429e7a0701bf971a86996"
+  },
+  {
+    "run_id": "seed-11_sr",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "3b20ff7097259834612154cfa9b56e986f22a565c721433cfe8a09ff96d47f12",
+    "raw_sha256": "1f84f5f00c1adfec66d4b015f048a227e20c83a56434c6c5164ed29ac83c1b0c"
+  },
+  {
+    "run_id": "seed-11_ssi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "673bc34e128084b3ebf0d376a4957c25f36036763c4de06b88973fa4f333ddd9",
+    "raw_sha256": "bb25f9c33568393d405a4b46ccf55748d8cf999b44f000cb774ff7fcce4976dc"
+  },
+  {
+    "run_id": "seed-29_ai",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "e71d3250f3a7e617ae50c63fb3ad586d67bfb29b3c81378868f0fc93d3c64d9b",
+    "raw_sha256": "8108003917dabbe27ae6db08dc9772f995b2a45d9abd6fb0a41b003e26e69086"
+  },
+  {
+    "run_id": "seed-29_fsi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "a5d4ab682316f241c6b9aa583007077f1fc813ae63b219239add00df207ba69a",
+    "raw_sha256": "f74e9137a94f2f1c450fb60234acdf2ac8974d95d6ba83fc643b564fbc104ada"
+  },
+  {
+    "run_id": "seed-29_sr",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "052cbb52d550dbf84793ec233d9f9b7cd1f28f79fa4b8dac57bb1f6895ebcb7d",
+    "raw_sha256": "a7f6bd61c94a503f54057325222a3b243dfc47f562278613142c230f11203692"
+  },
+  {
+    "run_id": "seed-29_ssi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "9dc78ec83f2b6c72534658fd62e0f958b758b352e90072173d4b5a0b1bc407ff",
+    "raw_sha256": "ef292f61a1befcc76fb93ffd66f90e9228866de76c19d699998a8bf0ead984ac"
+  },
+  {
+    "run_id": "seed-47_ai",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "131e68b009db4b44796de7ed329de6aff07b842752e36d55b69209265ad7884b",
+    "raw_sha256": "6e9d45a70deb1b7f8d584ef7886991ffee6cb8c0ed27fc27d122ebf230138bea"
+  },
+  {
+    "run_id": "seed-47_fsi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "394d5c7a8bb9dded64f9e41687841e41b471b776eec0015702b0b6d6437b3d76",
+    "raw_sha256": "0885f26b219774359d1f76998aa9d7b93375083306daa73237a8c742ebb072b3"
+  },
+  {
+    "run_id": "seed-47_sr",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "129f547278aaee06d240ae51225a673174f93e5eb6bf7a4a49b8d48d640d43ff",
+    "raw_sha256": "0c9b5d850036a781e9a9ba165282090d54c279561a27a58f3ec4f774edd2784e"
+  },
+  {
+    "run_id": "seed-47_ssi",
+    "status": "done",
+    "exit_code": 0,
+    "required_shapes": "pass",
+    "finite_values": "pass",
+    "final_voltage_shape": "pass",
+    "final_voltage_sha256": "40660c865df715664e9de51a2e3cc4b81efa5b6e6e53bdf4d944b552eb33f1a7",
+    "raw_sha256": "11e6d9a53f5b95f0a0207a4ca88f70e877540c6e7df151660a5807a347d5b799"
+  }
+]

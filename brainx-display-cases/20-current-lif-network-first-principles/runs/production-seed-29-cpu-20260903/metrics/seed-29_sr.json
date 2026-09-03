@@ -1,0 +1,20 @@
+{
+  "run_id": "seed-29_sr",
+  "seed": 29,
+  "condition_id": "sr",
+  "g": 3.0,
+  "eta": 2.0,
+  "requested_regime": "synchronous regular",
+  "elapsed_seconds": 2051.1168671799987,
+  "mean_exc_rate_hz": 333.367125,
+  "mean_inh_rate_hz": 333.3662,
+  "mean_global_rate_hz": 333.36694,
+  "global_rate_cv": 3.7441999565027184,
+  "valid_isi_cv_fraction": 1.0,
+  "median_isi_cv": 0.0,
+  "dominant_frequency_hz": 333.0,
+  "peak_prominence_ratio": 73080372.11249118,
+  "narrowband_power_fraction": 0.9996369498366289,
+  "significant_narrowband_peak": true,
+  "raw_path": "raw/seed-29_sr.npz"
+}

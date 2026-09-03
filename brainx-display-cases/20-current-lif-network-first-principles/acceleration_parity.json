@@ -1,0 +1,29 @@
+{
+  "network": {
+    "NE": 800,
+    "NI": 200,
+    "CE": 80,
+    "CI": 20
+  },
+  "duration_ms": 200.0,
+  "steps": 2000,
+  "backend": "cpu",
+  "cold_compile_and_run_seconds": 10.449970252999265,
+  "warm_replay_seconds": 1.8457392790005542,
+  "warm_changed_condition_seconds": 1.6103956350016233,
+  "warm_speedup_over_cold": 5.661671922947752,
+  "exact_output_replay": true,
+  "exact_final_voltage_replay": true,
+  "output_shapes": [
+    [
+      2000
+    ],
+    [
+      2000
+    ],
+    [
+      2000,
+      20
+    ]
+  ]
+}
