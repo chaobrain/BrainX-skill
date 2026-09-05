@@ -103,6 +103,12 @@ Keep the complete append-only memory contract in this `Get started` section:
 
 ### Important milestones
 - <decision, review outcome, blocker, or completed result with its evidence pointer>
+
+## Literature evidence: <topic> - <YYYY-MM-DD>
+- Research question: <question addressed>
+- Review artifact: <path or stable identifier>
+- Essential papers and modeling consequences: <concise evidence records>
+- Cross-paper synthesis: <supported decisions, uncertainty, and required tests>
 ```
 
 Create only the title at `fresh-new`, then append one checkpoint after every
@@ -116,13 +122,16 @@ pointers, and continue after the latest valid checkpoint.
 
 | Step | Action | Required result |
 |---|---|---|
-| 0 | Inspect the researcher request and data, then write the short `NeuroSpecification.md` | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary` |
+| 0 | Inspect the researcher request and data, write the short `NeuroSpecification.md`, then resolve or explicitly skip the optional literature gate | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary`, reconciled with any required literature evidence |
+| Optional gate | Invoke `bio-neuro-lit` only when an unknown, unverified, controversial, ambiguous, or recency-sensitive scientific premise could change the model, experiment, validation, or claims | Essential evidence appended to memory; specification relocked after researcher approval when evidence changes it |
 | 1 | Invoke `brainx-general-guard`, select the represented scales, and study every relevant modeling skill, routed reference, API, and canonical script deeply; after refusal, map findings and restudy every affected route | Initial or iteration-specific BrainX study record and grounded implementation design |
 | 2 | Implement the BrainX model, preprocessing, protocol, controls, metrics, tests, and active training/fitting coverage | BrainX-native model and experiment code |
 | 3 | Open `brainx-acceleration`, improve the workload, and prove scientific parity | Accelerated code or an explicit unchanged decision |
 | 4 | Open `references/run-experiment.md`, then `references/monitor-experiment.md` | Inspectable experiment artifacts |
 | 5 | Start a fresh Codex MCP review; use its injected `mcp-servers/codex/system-prompt.md` contract | `REFUSE` or `PASS` plus preserved review output and `threadId` |
 | 6 | Hand review-passed evidence to the planned BrainX visualization workflow | Figures linked to accepted runs and completed memory |
+
+The optional literature gate follows the initial NeuroSpecification and remains inside step 0 rather than creating a new checkpoint number. Trigger it for unknown mechanisms, unsupported scientific premises, competing explanations, evidence-dependent design choices, ambiguous reproduction targets, or recency-sensitive claims. Skip it for fixed canonical mechanisms and uncertainty limited to BrainX APIs, implementation, optimization, debugging, or data-driven fitting. Literature evidence may require a researcher-approved specification revision before step 1.
 
 Step 5 `REFUSE` increments the iteration, returns to step 1, writes a new
 iteration-specific study record, and repeats steps 1-5. Step 5 `PASS` advances

@@ -1,6 +1,6 @@
 ---
 name: brainx-modeling-loop
-description: Use first for an end-to-end BrainX modeling project. Start fresh or resume from brainmodeling-memory.md, write a compact NeuroSpecification.md, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, restudy the affected BrainX skills when review refuses, and visualize only after review passes.
+description: Use first for an end-to-end BrainX modeling project. Start fresh or resume from brainmodeling-memory.md, write a compact NeuroSpecification.md, optionally research unknown, unverified, or controversial scientific mechanisms, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, restudy the affected BrainX skills when review refuses, and visualize only after review passes.
 ---
 
 # BrainX modeling loop
@@ -50,9 +50,9 @@ For `resume`, read the checkpoints in order, verify the latest artifact pointers
 and continue from the first unfinished action after the latest valid checkpoint.
 
 ```text
-fresh-new -> step 0 -> step 1 -> step 2 -> step 3 -> step 4 -> step 5
-                              ^                          |
-                              |--------- REFUSE ---------|
+fresh-new -> step 0 -> optional literature gate -> step 1 -> step 2 -> step 3 -> step 4 -> step 5
+                                                           ^                          |
+                                                           |--------- REFUSE ---------|
 
 step 5 PASS -> step 6 -> complete
 ```
@@ -96,9 +96,35 @@ Use only this core structure:
 - Allowed claims and explicit non-claims:
 ```
 
-Inspect supplied data before completing its contract. Keep raw data read-only, preserve units and axis meaning, and prevent preprocessing leakage. Lock the specification with researcher approval before step 1.
+Inspect supplied data before completing its contract. Keep raw data read-only, preserve units and axis meaning, and prevent preprocessing leakage. Obtain researcher approval for the initial specification, then evaluate the literature gate before proceeding to step 1.
 
-**Step result:** a locked `NeuroSpecification.md` and a memory checkpoint pointing to step 1.
+### Optional literature gate after the NeuroSpecification
+
+Use literature research only when unresolved scientific evidence could change the model, experiment, validation, or allowed claims; do not use it for ordinary BrainX implementation uncertainty.
+
+| Trigger case | Use `bio-neuro-lit` when |
+|---|---|
+| Unknown mechanism | The requested phenomenon is clear, but the responsible biological mechanism, represented scale, causal pathway, or defensible model abstraction is not established. |
+| Unverified premise | The specification depends on an unsupported causal direction, cell type or circuit role, parameter regime, species transfer, scale mapping, intervention effect, or biological-realism claim. |
+| Controversial explanation | Multiple credible mechanisms or model families explain the headline observation but imply different state variables, equations, interventions, controls, or observables. |
+| Evidence-dependent design choice | Choosing a model family, component, coupling sign, timescale, input protocol, control, validation metric, or acceptance criterion requires experimental or computational-neuroscience evidence. |
+| Ambiguous reproduction target | A target paper, preprint, or supplied description omits decisive methods, conflicts across versions, or claims a mechanism that its reported experiment may not isolate. |
+| Recency-sensitive claim | The researcher asks for the current state of evidence, or recent findings could reasonably change the mechanism or model choice. |
+
+Skip the literature gate when the researcher supplies an agreed authoritative mechanism and requests faithful implementation, when a standard model is already fixed, or when the uncertainty concerns only BrainX APIs, software architecture, optimization, debugging, or fitting parameters from supplied data. Open the owning BrainX skills for those cases. A topic being unfamiliar to the agent is not by itself a trigger.
+
+When the gate triggers:
+
+1. Name each unresolved scientific claim and the modeling decision it controls. Keep the search scoped to those decisions.
+2. Invoke `bio-neuro-lit` and require it to distinguish full-text from abstract-only evidence, publication versions, consensus, disagreement, and non-claims.
+3. Have `bio-neuro-lit` append its essential modeling consequences to `brainmodeling-memory.md` as `## Literature evidence`, without changing the current checkpoint.
+4. Reconcile the evidence with `NeuroSpecification.md`. Preserve supported choices, encode unresolved alternatives and discriminating controls, and narrow claims that the evidence does not justify.
+5. Do not silently change an approved specification. If the evidence changes a model, experiment, acceptance boundary, or allowed claim, mark the revision `draft`, obtain researcher approval, relock it, and append a corrected step-0 checkpoint that names the earlier checkpoint it supersedes.
+6. If the evidence remains inconclusive and the alternatives would produce materially different studies, ask the researcher to choose or approve a comparison design before step 1. Otherwise preserve the uncertainty as an explicit limitation and required test.
+
+When the gate does not trigger, record the skip and its reason as a step-0 milestone. Do not perform a broad background review merely to make the study record look comprehensive.
+
+**Step result:** a locked or evidence-reconciled `NeuroSpecification.md`, a resolved or explicitly skipped literature gate, and a memory checkpoint pointing to step 1.
 
 ## Step 1: Study the relevant BrainX modeling skills
 
