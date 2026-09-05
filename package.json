@@ -1,6 +1,6 @@
 {
   "name": "brainx-skill",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Portable BrainX Agent Skills for Claude Code, Codex, Cursor, Windsurf, Gemini CLI, Antigravity, and OpenCode",
   "license": "Apache-2.0",
   "type": "commonjs",
