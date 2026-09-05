@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "type": "commonjs",
   "scripts": {
-    "test": "node --test .github/scripts/*.test.mjs mcp-servers/codex/test/*.test.mjs",
+    "test": "node --test .github/scripts/*.test.mjs mcp-servers/codex/test/*.test.mjs mcp-servers/fulltext-resolver/test/*.test.mjs",
     "prepublishOnly": "npm test"
   },
   "bin": {
@@ -15,12 +15,14 @@
     "adapters/",
     "installation/",
     "mcp-servers/codex/",
+    "mcp-servers/fulltext-resolver/",
     "skills/package-skills/",
     "skills/brainx-modeling-loop/",
     "skills/brainx-visualization/",
     "skills/brainx-acceleration/",
     "skills/brainx-install/",
     "skills/brainx-general-guard/",
+    "skills/bio-neuro-lit/",
     "manifest.json",
     "README.md",
     "LICENSE"
@@ -29,7 +31,11 @@
     "node": ">=18"
   },
   "dependencies": {
-    "enquirer": "^2.4.1"
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "enquirer": "^2.4.1",
+    "linkedom": "^0.18.13",
+    "turndown": "^7.2.4",
+    "zod": "^4.5.4"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bio-Neuro Literature Review"
+  short_description: "Synthesize biology and neuroscience literature"
+  default_prompt: "Use $bio-neuro-lit to review the biology, neuroscience, or computational-neuroscience literature for my research question."

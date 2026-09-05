@@ -23,6 +23,7 @@ This ensures two advantage: first, it avoids the agent from opening useless cont
 skills/
 ├── brainx-modeling-loop/
 ├── brainx-general-guard/
+├── bio-neuro-lit/
 ├── package-skills/
 │   ├── brainunit/
 │   ├── brainstate/
@@ -38,6 +39,41 @@ skills/
 
 
 ## 2. Skill Layer Design
+
+### bio-neuro-lit
+
+#### Purpose and boundary
+
+- Boundary: literature discovery, selective reading, evidence comparison, and synthesis for biology, neuroscience, and computational neuroscience.
+- Primary discovery: the existing Europe PMC MCP `search_articles` and `get_article` tools.
+- Default reading: the existing Full-Text Resolver MCP `get_fulltext`, with `list_versions` when publication-version provenance affects interpretation.
+- Optional recall expansion: the adapted Exa helper, limited to research-oriented searches and subordinate to structured Europe PMC metadata.
+- Optional progressive reading: the adapted DeepXiv helper for known arXiv-compatible computational papers through `paper-brief`, `paper-head`, and `paper-section`.
+- Exclude generic arXiv discovery, standalone OpenAlex search, Semantic Scholar, Gemini, Zotero, Obsidian, local-PDF libraries, and broad clinical retrieval that does not answer the user's question.
+
+#### MCP deployment
+
+- Use `npx brainx-skill mcp install` as the canonical one-command Codex setup.
+- Install Europe PMC search as `europepmc`, the Full-Text Resolver as `fulltext_resolver`, and the BrainX reviewer as `codex`.
+- Keep managed runtimes and the ownership receipt under `~/.brainx/mcp`; preserve the reviewer server's relative bundle layout with its required `skills/` tree.
+- Refuse to overwrite or remove user-owned MCP registrations. Keep installation idempotent and roll back registrations added during a failed run.
+- Use `npx brainx-skill mcp remove` to remove only BrainX-owned registrations and runtime files.
+
+#### Canonical workflow
+
+1. Interpret the research question and generate a small set of biology/neuroscience-aware query variants.
+2. Search Europe PMC, then use Exa only when recall expansion is useful and available.
+3. Normalize candidates to title, authors, year, venue, abstract, DOI, PMID, PMCID, arXiv ID, source provenance, URL, and full-text status.
+4. Deduplicate by PMCID, PMID, DOI, arXiv ID, then normalized title; prefer Europe PMC metadata on overlap.
+5. Rank from titles, abstracts, and metadata, then deep-read only the papers that can materially affect the answer.
+6. Use the Full-Text Resolver for normal biology and journal papers; use DeepXiv progressively for selected arXiv-compatible computational papers.
+7. Extract question-relevant biological, experimental, and modeling evidence; mark abstract-only evidence and retrieved publication versions.
+8. When an active `brainmodeling-memory.md` exists, append essential modeling-relevant article evidence without changing its checkpoint, iteration, or step.
+9. Compare consensus, disagreement, methods, assumptions, limitations, and gaps, then answer the user's question without dumping search logs.
+
+#### Progressive disclosure
+
+Keep the source roles, canonical workflow, candidate contract, selection rules, evidence discipline, modeling-memory handoff, output structure, and costly failures in `skills/bio-neuro-lit/SKILL.md`. Keep exact Europe PMC and Full-Text Resolver schemas plus optional-helper commands in `skills/bio-neuro-lit/references/tool-contracts.md`. Keep reusable Exa and DeepXiv integrations in `skills/bio-neuro-lit/scripts/` and preserve their upstream MIT attribution in `skills/bio-neuro-lit/THIRD_PARTY_NOTICES.md`.
 
 ### brainx-modeling-loop
 

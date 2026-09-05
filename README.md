@@ -52,6 +52,32 @@ npx --registry=https://registry.npmmirror.com brainx-skill install
 npx --registry=https://registry.npmmirror.com brainx-skill update
 ```
 
+## MCP servers
+
+Install and activate every BrainX MCP integration in Codex with one command:
+
+```bash
+npx brainx-skill mcp install
+```
+
+This installs durable runtimes under `~/.brainx/mcp` and registers:
+
+| Server | Registration | Purpose |
+|---|---|---|
+| Europe PMC search | `europepmc` | Search biology and neuroscience literature and retrieve structured article metadata. |
+| Full-text resolver | `fulltext_resolver` | Resolve PMC, OpenAlex, and bioRxiv/medRxiv full-text versions with provenance. |
+| BrainX Codex reviewer | `codex` | Run independent BrainX iteration reviews. |
+
+The command requires the Codex CLI, a working Codex login, and `uv`. It refuses to overwrite unrelated registrations. An exact reviewer registration from this repository is retained so its existing approval and timeout settings remain intact. Restart Codex or reload MCP configuration after installation.
+
+Remove only the registrations and runtime owned by this installer:
+
+```bash
+npx brainx-skill mcp remove
+```
+
+See `mcp-servers/fulltext-resolver/README.md` and `mcp-servers/codex/README.md` for tool behavior, configuration, and development setup.
+
 ## Installation locations
 
 Depending on the selected scope, the canonical `brainx-install` skill is installed into:

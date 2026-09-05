@@ -30,6 +30,12 @@ Use this complete append-only memory contract:
 
 ### Important milestones
 - <decision, review outcome, blocker, or completed result with its evidence pointer>
+
+## Literature evidence: <topic> - <YYYY-MM-DD>
+- Research question: <question addressed>
+- Review artifact: <path or stable identifier>
+- Essential papers and modeling consequences: <concise evidence records>
+- Cross-paper synthesis: <supported decisions, uncertainty, and required tests>
 ```
 
 For `fresh-new`, create the file with its title, start iteration 1 at step 0, and
@@ -54,6 +60,8 @@ step 5 PASS -> step 6 -> complete
 Each checkpoint contains the artifacts created or updated by that step and the
 important milestones reached during it. Keep full code, logs, results, and
 reviews in their owning artifacts and point to them from the checkpoint.
+
+The `bio-neuro-lit` skill may append repeatable `## Literature evidence` blocks when selected papers materially affect the model. Treat these blocks as evidence records, not checkpoints: they do not change the current iteration or step. Read them before step 0 specification decisions and during step 1 study, and preserve their source identifiers, evidence depth, publication version, modeling implications, and limitations.
 
 ## Step 0: Write the specification
 

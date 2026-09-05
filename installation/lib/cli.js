@@ -4,6 +4,7 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { DEFAULT_ADAPTERS, runInstaller } = require('./installer');
+const { runLiteratureMcp } = require('./literature-mcp');
 const {
   InstallCancelledError,
   NonInteractiveInstallError,
@@ -12,13 +13,19 @@ const {
 
 const USAGE = `Usage:
   npx brainx-skill install
-  npx brainx-skill update`;
+  npx brainx-skill update
+  npx brainx-skill mcp install
+  npx brainx-skill mcp remove`;
 
 function parseCommand(args) {
-  if (args.length !== 1 || (args[0] !== 'install' && args[0] !== 'update')) {
-    return null;
+  if (args.length === 1 && (args[0] === 'install' || args[0] === 'update')) {
+    return args[0];
   }
-  return args[0];
+  if (args.length === 2 && args[0] === 'mcp'
+      && (args[1] === 'install' || args[1] === 'remove')) {
+    return `mcp:${args[1]}`;
+  }
+  return null;
 }
 
 async function runCli(args, options = {}) {
@@ -28,6 +35,11 @@ async function runCli(args, options = {}) {
     stderr.write(`${USAGE}\n`);
     return 1;
   }
+  if (command.startsWith('mcp:')) {
+    const mcpInstaller = options.mcpInstaller || runLiteratureMcp;
+    return mcpInstaller(command.slice(4), options);
+  }
+
   const installer = options.installer || runInstaller;
   if (command === 'update') {
     return installer(command, options);
