@@ -1,0 +1,19 @@
+{
+  "python": "/home/yixinliu/anaconda3/envs/braincell-released/bin/python",
+  "python_version": "3.11.15",
+  "backend": "cpu",
+  "devices": [
+    "cpu:0"
+  ],
+  "code_sha256": {
+    "experiment.py": "26e0387807705e16437423be088db055ae96e4eb89d9d426974f35ba022d4ba3",
+    "models.py": "fbd7113883b55028cc8763f442a9307d613b3df0d2f85f5868aa9e7b8a099236"
+  },
+  "command": [
+    "experiment.py",
+    "--config",
+    "configs/network_exploration.json",
+    "--out",
+    "runs/network_exploration_v2"
+  ]
+}

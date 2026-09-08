@@ -1,0 +1,74 @@
+{
+  "level": "smoke",
+  "conditions": [
+    {
+      "label": "somatic_circuit/S2/baseline",
+      "wEE": 14.0,
+      "wEI": 15.0,
+      "wIE": 12.0,
+      "wII": 3.0,
+      "drive_E": 1.0,
+      "drive_I": 1.0,
+      "soma_E": 0.0,
+      "soma_I": 0.0,
+      "release_E": 0.0,
+      "release_I": 0.0,
+      "gate_loss": 0.0,
+      "family": "somatic_circuit"
+    },
+    {
+      "label": "somatic_circuit/S2/Syn",
+      "wEE": 14.0,
+      "wEI": 15.0,
+      "wIE": 12.0,
+      "wII": 3.0,
+      "drive_E": 1.0,
+      "drive_I": 1.0,
+      "soma_E": 0.25,
+      "soma_I": 0.6,
+      "release_E": 0.0,
+      "release_I": 0.0,
+      "gate_loss": 0.0,
+      "family": "somatic_circuit"
+    },
+    {
+      "label": "somatic_circuit/S2/CaMKII",
+      "wEE": 14.0,
+      "wEI": 15.0,
+      "wIE": 12.0,
+      "wII": 3.0,
+      "drive_E": 1.0,
+      "drive_I": 1.0,
+      "soma_E": 0.25,
+      "soma_I": 0.0,
+      "release_E": 0.0,
+      "release_I": 0.0,
+      "gate_loss": 0.0,
+      "family": "somatic_circuit"
+    }
+  ],
+  "simulation": {
+    "dt_ms": 0.2,
+    "duration_ms": 6000.0,
+    "onset_ms": 1000.0,
+    "ramp_ms": 200.0,
+    "sample_every": 5
+  },
+  "metric_windows_ms": [
+    [
+      4000,
+      5000
+    ],
+    [
+      5000,
+      6000
+    ]
+  ],
+  "amplitude_threshold": 0.1,
+  "selection": "Illustrative central settings selected after exploratory runs; neighboring grid frozen before validation.",
+  "units": {
+    "ts_ms": "ms",
+    "E": "dimensionless population activation",
+    "I": "dimensionless population activation"
+  }
+}

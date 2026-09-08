@@ -1,0 +1,10 @@
+{
+  "status": "pass",
+  "native_rate_hz": 99.99998474121094,
+  "per_cell_count_rate_hz": [
+    100.0,
+    100.0
+  ],
+  "window": "1 s count; compare time-averaged native output excluding edges",
+  "native_return": "unitless Hz array, verified against known event count"
+}

@@ -1,0 +1,14 @@
+{
+  "equations_and_units": "pass: K reversal/sign, Na loading/removal, finite rates",
+  "reset_and_uncoupled_independence": "pass: bit-identical State and output",
+  "compile_plus_first_run_seconds": 11.174111498999991,
+  "warm_run_seconds": 8.229435390000162,
+  "acceleration_decision": "unchanged: compiled BrainState loop; no approximate optimization",
+  "cell_dt_refinement": {
+    "max_rate_difference_hz": 0.0,
+    "max_late_voltage_difference_mV": 0.00400543212890625,
+    "block_classification": "unchanged"
+  },
+  "silence_is_not_block": "pass",
+  "status": "pass"
+}

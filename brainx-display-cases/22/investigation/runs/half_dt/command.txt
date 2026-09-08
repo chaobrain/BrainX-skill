@@ -1,0 +1,1 @@
+/home/yixinliu/anaconda3/envs/braincell-released/bin/python experiment.py --config configs/half_dt.json --run-id half_dt

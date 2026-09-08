@@ -1,0 +1,41 @@
+# KCNT2: evidence and competing mechanisms
+
+Search date: 2026-09-07. Europe PMC was the primary discovery source; the BrainX Full-Text Resolver supplied readers. Queries covered KCNT2/Slick/Slo2.1, depolarization block, synaptic effects, KCNT1 cell-type specificity, and homeostatic plasticity, with an additional 2023-2026 search. Web recall expansion found the directly matching 2026 paper, whose abstract does not name KCNT2. This is a targeted mechanistic review, not an exhaustive systematic review. No user recordings were supplied.
+
+## Directly matching recent evidence
+
+[Boggess et al., 2026, Nature Communications](https://www.nature.com/articles/s41467-026-75882-0), DOI 10.1038/s41467-026-75882-0, PMID 42669708; published full text inspected. Published August 1, 2026.
+
+- The mosaic/population comparison measures glutamate-evoked **CaMPARI2 photoconversion**, not spike counts. It uses NGN2-induced glutamatergic human neurons and chronic CRISPRi, assayed around day 21. One of two KCNT2 guides shows each significant directional effect; guide agreement must not be overstated.
+- The 50% contrast is targeted versus untargeted cells **within a well**. The 100% contrast is targeted versus control **wells**. These comparisons do not establish that the mean of the 50% well exceeds the mean of the control well.
+- Separate RNP-knockout current-clamp experiments show abnormal firing and premature block with increasing current; the preparation differs from the CRISPRi screen.
+- The authors propose sustained depolarization/calcium entry in deficient cells plus loss of population synaptic signaling when most cells are deficient. That network mechanism remains untested. Synaptic defects demonstrated for CACNG2 in the paper must not be attributed to KCNT2.
+
+This is unusually close to the question, but cannot establish that the user's own culture or assay is identical. The question about measurement modality, culture composition and perturbation duration remains open.
+
+## Evidence map
+
+| Primary source | Inspected evidence | What it supports and what it does not |
+|---|---|---|
+| [Bhattacharjee et al., 2003](https://doi.org/10.1523/JNEUROSCI.23-37-11681.2003), PMC6740956 | Published full text; channel expression/electrophysiology | Slick is a sodium-activated potassium channel, with chloride and ATP modulation and basal activity. Its effective neuronal activation cannot be inferred from sodium alone; recombinant sodium sensitivity is not a fitted neuronal microdomain parameter. |
+| [Tomasello et al., 2017](https://doi.org/10.1177/1179069517726996), PMC5602212 | Published full text; sensory-neuron KO and behavior | Reduced outward current and increased AP height; cultured embryonic deficient neurons have lower rheobase. Adult rheobase and AP falling kinetics do not simply reproduce every culture effect. Supports cell-autonomous disinhibition, not a universal network phenotype. |
+| [Engel et al., 2024](https://doi.org/10.3389/fphar.2024.1459735), PMC11688182 | Published full text; conditional sensory KO | Slick limits TRPM3-associated sensory responses. TRPM3 calcium amplitudes were not changed, and measured Kcnt1 transcript compensation was absent. Effects depend on cell type and stimulus; compensation cannot be assumed. |
+| [Yang et al., 2024; online 2023](https://doi.org/10.1007/s11064-023-04044-1), PMID37875713 | Abstract only; full-text resolver unavailable | Reports increased neuronal excitability/seizure susceptibility with KNa1.2 loss and injury-associated channel upregulation. This is not evidence that global loss invariably suppresses activity. Details beyond the abstract remain unverified. |
+| [Wu et al., 2024](https://doi.org/10.1016/j.celrep.2024.113904), PMC11013952 | Accepted manuscript of published article | KCNT1/Slack GOF has opposite firing effects in excitatory and inhibitory neurons, with sodium-channel/AIS changes. Establishes plausible cell-type and adaptive complexity, **not** the mechanism of KCNT2 loss. |
+| [Shore et al., 2020](https://doi.org/10.1016/j.celrep.2020.108303), PMC7712469 | Accepted manuscript of published article | KCNT1 GOF reduces GABAergic excitability and alters connectivity. An E/I analogy only; different gene and direction of perturbation. |
+| [Mao et al., 2020](https://doi.org/10.3389/fncel.2020.00001), PMC6992647 | Published full text; heterologous channels | KCNT2 truncations can impair KCNT1/KCNT2 heteromeric currents. Allele, residual protein and partner expression matter; knockdown, deletion and dominant-negative mutations are not interchangeable. |
+| [Cioclu et al., 2023](https://doi.org/10.1002/ana.26662), PMID37062836 | Abstract/repository summary only; resolver landing page was not full text | KCNT2-related disease includes tested GOF and LOF variants. Clinical labels do not identify a single electrophysiological mechanism. |
+| [Turrigiano et al., 1998](https://doi.org/10.1038/36103), PMID9495341 | Abstract only | Chronic activity changes recruit synaptic scaling; elevated activity can cause compensatory weakening over days. Ordinary negative feedback tends toward baseline, not necessarily below it. |
+| [Wen, Prada and Turrigiano, 2025](https://doi.org/10.1073/pnas.2504775122), PMC12146772 | Published full text | Synaptic and intrinsic homeostatic mechanisms can be recruited separately by different activity features. Supports testing distinct activity sensors and adaptations, not assuming KCNT2-specific homeostasis. |
+
+## Mechanistic priorities
+
+1. **Nonlinear membrane dynamics plus assay/network interaction.** Removing KNa can lower recruitment threshold while impairing sustained firing under strong drive. Sodium-channel inactivation or deteriorating spike amplitude can reduce effective output even as membrane voltage and calcium remain high. Intact neighbors can continue supplying recurrent activation to deficient cells in a mosaic. If too few effective spike sources remain, population synaptic calcium can fall. This fits the directly matching evidence best, but the network and calcium links require measurement.
+2. **Weaker effective excitatory transmission.** Deficient neurons might release less transmitter, have fewer functional synapses, or develop weaker postsynaptic responses. Spike abnormalities themselves can cause release failure; a primary synaptic defect or chronic remodeling is a distinct alternative. Intrinsic firing propensity and ability to drive neighbors need not have the same sign. No direct KCNT2 synaptic deficit is established by the matching paper.
+3. **Delayed adaptation, sensor mismatch or developmental change.** Chronic hyperactivity/calcium may reduce synaptic efficacy or intrinsic excitability. To explain a below-control endpoint, specify persistent excessive sensed calcium, overshoot, a changed set point, or structural change. A generic statement that homeostasis lowers firing is insufficient: ideal feedback simply restores its controlled variable. The model below tests an assumed effective weakening, not a demonstrated homeostatic law.
+4. **Inhibitory recruitment, conditional on culture composition.** If inhibitory neurons are present, their knockdown could increase inhibition and suppress the network, or could instead induce block and disinhibit it. The sign is cell-type and drive dependent. This is lower priority in the matching glutamatergic NGN2 preparation; it cannot explain that preparation by invoking an unverified inhibitory population.
+5. **Assay and perturbation confounds.** Cell survival, maturation, density, transduction burden, off-target effects, glutamate receptors, calcium buffering/extrusion, reporter saturation and selective sampling can change the population result without reversing intrinsic excitability. Test these alongside biology; the guide-specific finding makes independent perturbations/rescue especially important.
+
+## What is not known
+
+No inspected evidence uniquely identifies recurrent collapse, primary release failure, or adaptation in the user's culture. No measured neuronal KCNT2 conductance, local sodium kinetics, connectivity, glutamate-to-current conversion, or CaMPARI2 transfer function was supplied. The simulations therefore test logical sufficiency and discriminating measurements, not parameter estimation or causal identification.

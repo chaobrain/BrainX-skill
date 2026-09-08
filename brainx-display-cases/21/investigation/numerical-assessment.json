@@ -1,0 +1,23 @@
+{
+  "rk4_vs_exp_euler": {
+    "rate_hz": 0.0,
+    "late_voltage_mV": 0.002208709716796875,
+    "block": 0.0,
+    "calcium_voltage_proxy": 6.74128532409668e-05
+  },
+  "exp_euler_refinement": {
+    "rate_hz": 0.0,
+    "late_voltage_mV": 0.004276275634765625,
+    "block": 0.0,
+    "calcium_voltage_proxy": 3.740191459655762e-05
+  },
+  "network_refinement": {
+    "rate_hz": 1.0,
+    "late_voltage_mV": 0.020984649658203125,
+    "block": 0.0357142857142857,
+    "calcium_voltage_proxy": 0.0002987682819366455
+  },
+  "optical_signs_at_half": "preserved",
+  "network_pairing": "exact topology and targeting match",
+  "status": "pass"
+}

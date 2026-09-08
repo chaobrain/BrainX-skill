@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "derivative_max_abs_error": 0.0,
+  "reset_exact": true,
+  "batch_single_parity": true,
+  "jit_parity": true,
+  "stock_parity": true,
+  "post_update_time_verified": true,
+  "dtype": "float64",
+  "cold_small_run_s": 0.362344726000174,
+  "performance_decision": "Unchanged: Simulator owns compiled time loop and native condition axis. No speedup claimed."
+}

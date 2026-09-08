@@ -1,0 +1,19 @@
+{
+  "python": "/home/yixinliu/anaconda3/envs/braincell-released/bin/python",
+  "python_version": "3.11.15",
+  "backend": "cpu",
+  "devices": [
+    "cpu:0"
+  ],
+  "code_sha256": {
+    "experiment.py": "74f9534b58fdb2fcd863167b6e9a601c2469d7f5f04925a210ee66330161c232",
+    "models.py": "14e16c3fddda734caa0575298c1f51712163e949bc73d51b42f5b5e01ef23205"
+  },
+  "command": [
+    "experiment.py",
+    "--config",
+    "configs/network_block_pilot.json",
+    "--out",
+    "runs/network_block_pilot"
+  ]
+}

@@ -1,0 +1,513 @@
+{
+  "block_dt_half": [
+    {
+      "seed": 1,
+      "current_uA_cm2": 120,
+      "alpha_interval_sampled": [
+        0.28600000000000003,
+        0.774
+      ],
+      "electrical_within_mosaic_hz": -57.5,
+      "electrical_full_minus_baseline_hz": -54.499998569488525,
+      "optical_within_mosaic_at_half": 0.07640804886932995,
+      "optical_full_at_half": 0.6730529491942487
+    }
+  ],
+  "block_residual": [
+    {
+      "seed": 1,
+      "current_uA_cm2": 120,
+      "alpha_interval_sampled": [
+        0.312,
+        0.8320000000000001
+      ],
+      "electrical_within_mosaic_hz": -36.79999923706055,
+      "electrical_full_minus_baseline_hz": -29.450000762939453,
+      "optical_within_mosaic_at_half": 0.02436270900252835,
+      "optical_full_at_half": 0.8080665044248481
+    }
+  ],
+  "block_uncoupled": [
+    {
+      "seed": 1,
+      "current_uA_cm2": 20,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 39.5,
+      "electrical_full_minus_baseline_hz": 39.650001525878906,
+      "optical_within_mosaic_at_half": null,
+      "optical_full_at_half": null
+    },
+    {
+      "seed": 1,
+      "current_uA_cm2": 120,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": -74.20000171661377,
+      "electrical_full_minus_baseline_hz": -81.30000019073486,
+      "optical_within_mosaic_at_half": null,
+      "optical_full_at_half": null
+    }
+  ],
+  "block_validation": [
+    {
+      "seed": 1,
+      "current_uA_cm2": 20,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 40.899993896484375,
+      "electrical_full_minus_baseline_hz": 43.30000305175781,
+      "optical_within_mosaic_at_half": 0.2240937994468526,
+      "optical_full_at_half": 1.545854613124248
+    },
+    {
+      "seed": 1,
+      "current_uA_cm2": 110,
+      "alpha_interval_sampled": [
+        0.225,
+        0.795
+      ],
+      "electrical_within_mosaic_hz": -83.19999885559082,
+      "electrical_full_minus_baseline_hz": -76.5999984741211,
+      "optical_within_mosaic_at_half": 0.08279968052229503,
+      "optical_full_at_half": 0.6504989738981098
+    },
+    {
+      "seed": 1,
+      "current_uA_cm2": 120,
+      "alpha_interval_sampled": [
+        0.28700000000000003,
+        0.774
+      ],
+      "electrical_within_mosaic_hz": -57.400001525878906,
+      "electrical_full_minus_baseline_hz": -54.44999980926514,
+      "optical_within_mosaic_at_half": 0.07612441998122543,
+      "optical_full_at_half": 0.6728819260808192
+    },
+    {
+      "seed": 1,
+      "current_uA_cm2": 130,
+      "alpha_interval_sampled": [
+        0.191,
+        0.715
+      ],
+      "electrical_within_mosaic_hz": -33.40000009536743,
+      "electrical_full_minus_baseline_hz": -32.60000157356262,
+      "optical_within_mosaic_at_half": 0.13966444902695385,
+      "optical_full_at_half": 0.7171507319780436
+    },
+    {
+      "seed": 2,
+      "current_uA_cm2": 20,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 39.79999542236328,
+      "electrical_full_minus_baseline_hz": 44.54999542236328,
+      "optical_within_mosaic_at_half": 0.1700169336015982,
+      "optical_full_at_half": 1.560807675062648
+    },
+    {
+      "seed": 2,
+      "current_uA_cm2": 110,
+      "alpha_interval_sampled": [
+        0.305,
+        0.776
+      ],
+      "electrical_within_mosaic_hz": -87.20000267028809,
+      "electrical_full_minus_baseline_hz": -77.50000190734863,
+      "optical_within_mosaic_at_half": 0.06600087839982205,
+      "optical_full_at_half": 0.6988463154886212
+    },
+    {
+      "seed": 2,
+      "current_uA_cm2": 120,
+      "alpha_interval_sampled": [
+        0.222,
+        0.772
+      ],
+      "electrical_within_mosaic_hz": -60.50000286102295,
+      "electrical_full_minus_baseline_hz": -60.899996757507324,
+      "optical_within_mosaic_at_half": 0.09755245980442184,
+      "optical_full_at_half": 0.6763638845561553
+    },
+    {
+      "seed": 2,
+      "current_uA_cm2": 130,
+      "alpha_interval_sampled": [
+        0.057,
+        0.7030000000000001
+      ],
+      "electrical_within_mosaic_hz": -20.5,
+      "electrical_full_minus_baseline_hz": -28.749999046325684,
+      "optical_within_mosaic_at_half": 0.16368943243106204,
+      "optical_full_at_half": 0.7529045787030806
+    },
+    {
+      "seed": 3,
+      "current_uA_cm2": 20,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 39.599998474121094,
+      "electrical_full_minus_baseline_hz": 42.95000457763672,
+      "optical_within_mosaic_at_half": 0.15128960724334162,
+      "optical_full_at_half": 1.544006904306622
+    },
+    {
+      "seed": 3,
+      "current_uA_cm2": 110,
+      "alpha_interval_sampled": [
+        0.263,
+        0.776
+      ],
+      "electrical_within_mosaic_hz": -85.89999866485596,
+      "electrical_full_minus_baseline_hz": -72.70000076293945,
+      "optical_within_mosaic_at_half": 0.07231844539392474,
+      "optical_full_at_half": 0.7058544006400176
+    },
+    {
+      "seed": 3,
+      "current_uA_cm2": 120,
+      "alpha_interval_sampled": [
+        0.28500000000000003,
+        0.775
+      ],
+      "electrical_within_mosaic_hz": -54.09999918937683,
+      "electrical_full_minus_baseline_hz": -60.90000009536743,
+      "optical_within_mosaic_at_half": 0.07364082733243393,
+      "optical_full_at_half": 0.6717361594470661
+    },
+    {
+      "seed": 3,
+      "current_uA_cm2": 130,
+      "alpha_interval_sampled": [
+        0.35000000000000003,
+        0.704
+      ],
+      "electrical_within_mosaic_hz": -37.29999852180481,
+      "electrical_full_minus_baseline_hz": -30.45000171661377,
+      "optical_within_mosaic_at_half": 0.08257668603388157,
+      "optical_full_at_half": 0.7500789439823901
+    }
+  ],
+  "network_block_pilot": [
+    {
+      "seed": 0,
+      "current_uA_cm2": 20,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 40.399993896484375,
+      "electrical_full_minus_baseline_hz": 43.55000305175781,
+      "optical_within_mosaic_at_half": 0.21178313943760418,
+      "optical_full_at_half": 1.5626236745218383
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 100,
+      "alpha_interval_sampled": [
+        0.277,
+        0.715
+      ],
+      "electrical_within_mosaic_hz": -98.20000076293945,
+      "electrical_full_minus_baseline_hz": -93.65000534057617,
+      "optical_within_mosaic_at_half": 0.07880801247665181,
+      "optical_full_at_half": 0.7952151774842424
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 120,
+      "alpha_interval_sampled": [
+        0.234,
+        0.795
+      ],
+      "electrical_within_mosaic_hz": -80.50000143051147,
+      "electrical_full_minus_baseline_hz": -59.299997329711914,
+      "optical_within_mosaic_at_half": 0.07731866808966359,
+      "optical_full_at_half": 0.6631462833608579
+    }
+  ],
+  "network_exploration_v2": [
+    {
+      "seed": 0,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 0.0,
+      "electrical_full_minus_baseline_hz": 4.0,
+      "optical_within_mosaic_at_half": -0.06472042509106757,
+      "optical_full_at_half": 2.3716222467557317
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 30,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 0.0,
+      "electrical_full_minus_baseline_hz": 6.0,
+      "optical_within_mosaic_at_half": -0.02219276781123658,
+      "optical_full_at_half": 1.1931878450252256
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 70,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": -3.666666030883789,
+      "electrical_full_minus_baseline_hz": 1.2333316802978516,
+      "optical_within_mosaic_at_half": -0.014986717356044954,
+      "optical_full_at_half": 1.1037319833788604
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 100,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 2.3333330154418945,
+      "electrical_full_minus_baseline_hz": 0.0,
+      "optical_within_mosaic_at_half": -0.06430365964215234,
+      "optical_full_at_half": 1.029253975234036
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 140,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 0.0,
+      "electrical_full_minus_baseline_hz": 0.0,
+      "optical_within_mosaic_at_half": -0.00957970030973554,
+      "optical_full_at_half": 1.0244075244297286
+    }
+  ],
+  "network_fast": [
+    {
+      "seed": 0,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 0.0,
+      "electrical_full_minus_baseline_hz": 26.950000762939453,
+      "optical_within_mosaic_at_half": -0.19810223615677103,
+      "optical_full_at_half": 9.780702319318022
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 30,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 0.6999969482421875,
+      "electrical_full_minus_baseline_hz": 18.849998474121094,
+      "optical_within_mosaic_at_half": 0.03811902429723468,
+      "optical_full_at_half": 1.2168129875413523
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 70,
+      "alpha_interval_sampled": [
+        0.122,
+        0.147
+      ],
+      "electrical_within_mosaic_hz": -10.699996948242188,
+      "electrical_full_minus_baseline_hz": 0.5999984741210938,
+      "optical_within_mosaic_at_half": 0.05394685866878768,
+      "optical_full_at_half": 1.0647944175927488
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 100,
+      "alpha_interval_sampled": [
+        0.166,
+        0.62
+      ],
+      "electrical_within_mosaic_hz": -5.700000762939453,
+      "electrical_full_minus_baseline_hz": -7.700000762939453,
+      "optical_within_mosaic_at_half": 0.05030042445371563,
+      "optical_full_at_half": 0.9516095336458588
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 140,
+      "alpha_interval_sampled": [
+        0.0,
+        0.8240000000000001
+      ],
+      "electrical_within_mosaic_hz": -6.3999998569488525,
+      "electrical_full_minus_baseline_hz": -3.25,
+      "optical_within_mosaic_at_half": 0.0993085747061141,
+      "optical_full_at_half": 0.742720106766816
+    }
+  ],
+  "network_release_pilot": [
+    {
+      "seed": 0,
+      "current_uA_cm2": 5,
+      "alpha_interval_sampled": [
+        0.0,
+        0.659
+      ],
+      "electrical_within_mosaic_hz": 29.0,
+      "electrical_full_minus_baseline_hz": 22.150001525878906,
+      "optical_within_mosaic_at_half": 0.28205525359283645,
+      "optical_full_at_half": 0.7941784434223987
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": [
+        0.023,
+        0.74
+      ],
+      "electrical_within_mosaic_hz": 27.300003051757812,
+      "electrical_full_minus_baseline_hz": 19.0,
+      "optical_within_mosaic_at_half": 0.2016530536972614,
+      "optical_full_at_half": 0.7179375161554412
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 20,
+      "alpha_interval_sampled": [
+        0.078,
+        0.791
+      ],
+      "electrical_within_mosaic_hz": 27.0,
+      "electrical_full_minus_baseline_hz": 17.5,
+      "optical_within_mosaic_at_half": 0.1541055395764368,
+      "optical_full_at_half": 0.6764229264552069
+    }
+  ],
+  "network_release_strong_pilot": [
+    {
+      "seed": 0,
+      "current_uA_cm2": 5,
+      "alpha_interval_sampled": [
+        0.0,
+        0.922
+      ],
+      "electrical_within_mosaic_hz": 18.800003051757812,
+      "electrical_full_minus_baseline_hz": 5.5500030517578125,
+      "optical_within_mosaic_at_half": 0.15219474551046774,
+      "optical_full_at_half": 0.5417988858838403
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": [
+        0.0,
+        1.0
+      ],
+      "electrical_within_mosaic_hz": 13.799995422363281,
+      "electrical_full_minus_baseline_hz": -4.150001525878906,
+      "optical_within_mosaic_at_half": 0.08753860189627072,
+      "optical_full_at_half": 0.48381304738839553
+    },
+    {
+      "seed": 0,
+      "current_uA_cm2": 20,
+      "alpha_interval_sampled": [
+        0.0,
+        1.0
+      ],
+      "electrical_within_mosaic_hz": 12.099998474121094,
+      "electrical_full_minus_baseline_hz": -5.950004577636719,
+      "optical_within_mosaic_at_half": 0.06176974590572604,
+      "optical_full_at_half": 0.4694127433500861
+    }
+  ],
+  "release_rescue": [
+    {
+      "seed": 1,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 22.699996948242188,
+      "electrical_full_minus_baseline_hz": 30.849998474121094,
+      "optical_within_mosaic_at_half": 0.10689579563501606,
+      "optical_full_at_half": 1.3894251272964713
+    }
+  ],
+  "release_strong_partial": [
+    {
+      "seed": 1,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": [
+        0.0,
+        0.991
+      ],
+      "electrical_within_mosaic_hz": 13.799995422363281,
+      "electrical_full_minus_baseline_hz": 0.40000152587890625,
+      "optical_within_mosaic_at_half": 0.07510289546409088,
+      "optical_full_at_half": 0.5622323390882606
+    }
+  ],
+  "release_strong_rescue": [
+    {
+      "seed": 1,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": null,
+      "electrical_within_mosaic_hz": 1.4000015258789062,
+      "electrical_full_minus_baseline_hz": 12.050003051757812,
+      "optical_within_mosaic_at_half": 0.044372086775724906,
+      "optical_full_at_half": 1.1316210510298355
+    }
+  ],
+  "release_strong_validation": [
+    {
+      "seed": 1,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": [
+        0.009000000000000001,
+        1.0
+      ],
+      "electrical_within_mosaic_hz": 12.5,
+      "electrical_full_minus_baseline_hz": -5.1999969482421875,
+      "optical_within_mosaic_at_half": 0.06572281327588148,
+      "optical_full_at_half": 0.47721639417573986
+    },
+    {
+      "seed": 2,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": [
+        0.0,
+        1.0
+      ],
+      "electrical_within_mosaic_hz": 11.899993896484375,
+      "electrical_full_minus_baseline_hz": -5.349998474121094,
+      "optical_within_mosaic_at_half": 0.09007237732598272,
+      "optical_full_at_half": 0.4746095143294656
+    },
+    {
+      "seed": 3,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": [
+        0.28200000000000003,
+        1.0
+      ],
+      "electrical_within_mosaic_hz": 11.5,
+      "electrical_full_minus_baseline_hz": -3.5500030517578125,
+      "optical_within_mosaic_at_half": 0.03957442786775367,
+      "optical_full_at_half": 0.4845721940786739
+    }
+  ],
+  "release_validation": [
+    {
+      "seed": 1,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": [
+        0.054,
+        0.733
+      ],
+      "electrical_within_mosaic_hz": 27.099998474121094,
+      "electrical_full_minus_baseline_hz": 19.900001525878906,
+      "optical_within_mosaic_at_half": 0.19064402047908546,
+      "optical_full_at_half": 0.724664480658003
+    },
+    {
+      "seed": 2,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": [
+        0.003,
+        0.759
+      ],
+      "electrical_within_mosaic_hz": 26.199996948242188,
+      "electrical_full_minus_baseline_hz": 17.400001525878906,
+      "optical_within_mosaic_at_half": 0.19155326234661818,
+      "optical_full_at_half": 0.7036053510521847
+    },
+    {
+      "seed": 3,
+      "current_uA_cm2": 10,
+      "alpha_interval_sampled": [
+        0.20500000000000002,
+        0.739
+      ],
+      "electrical_within_mosaic_hz": 25.29999542236328,
+      "electrical_full_minus_baseline_hz": 18.949996948242188,
+      "optical_within_mosaic_at_half": 0.14284014289479385,
+      "optical_full_at_half": 0.7191618166296172
+    }
+  ]
+}

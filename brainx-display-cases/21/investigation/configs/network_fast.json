@@ -1,0 +1,1 @@
+{"mode":"network","dt_ms":0.025,"duration_ms":500,"seeds":[0],"fractions":[0,0.25,0.5,0.75,1],"currents_uA_cm2":[10,30,70,100,140],"network":{"n":40,"g_kna":5,"weight":0.08,"tau_na_ms":10,"depth_um":0.01}}

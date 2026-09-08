@@ -1,0 +1,10 @@
+{
+  "t_ms": "bit-identical",
+  "voltage_mV": "bit-identical",
+  "spikes": "bit-identical",
+  "h": "bit-identical",
+  "sodium_mM": "bit-identical",
+  "current_waveform": "exact 32000-by-3 match to declared original protocol",
+  "summary": "identical",
+  "status": "pass"
+}

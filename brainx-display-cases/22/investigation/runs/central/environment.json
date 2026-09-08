@@ -1,0 +1,27 @@
+{
+  "python": "/home/yixinliu/anaconda3/envs/braincell-released/bin/python",
+  "backend": "cpu",
+  "devices": [
+    "cpu:0"
+  ],
+  "precision": 64,
+  "seed": null,
+  "stochastic": false,
+  "versions": {
+    "brainx": "2026.7.9",
+    "brainmass": "0.1.1",
+    "brainstate": "0.5.2",
+    "brainunit": "0.5.1",
+    "braintools": "0.3.0",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "numpy": "2.4.6"
+  },
+  "git_head": "2cecddd78c5f82129035245c52cccbfe2c9cd3fb",
+  "source_hashes": {
+    "models.py": "4538c864d1c82b39243b2774250a429806918c8068afdf5ae9ab74fafc196921",
+    "experiment.py": "3ab06679c7839440cb24d0abafd58aee25c0e0a321f610a3a53c758fe3e11225",
+    "NeuroSpecification.md": "783fa42d81e95c9d89c67536b5a8f69dc264147761c289a6b2206171efa44778",
+    "configs/central.json": "08bbd6e2120130c414c4a821b54ba6021d12aec477f1ba7a8391c5a5072528be"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "checks": {
+    "somatic_circuit/S2/Syn": true,
+    "somatic_circuit/S2/CaMKII": true,
+    "somatic_circuit/S1/Syn": true,
+    "somatic_circuit/S1/hDlx": true,
+    "somatic_circuit/S2/hDlx": true,
+    "somatic_circuit/S2/I_spared": true,
+    "somatic_targeting/S2/Syn": true,
+    "somatic_targeting/S2/CaMKII": true,
+    "somatic_targeting/S1/Syn": true,
+    "somatic_targeting/S1/hDlx": true,
+    "somatic_targeting/S2/hDlx": true,
+    "somatic_targeting/S2/I_spared": true,
+    "release_circuit/S2/Syn": true,
+    "release_circuit/S2/CaMKII": true,
+    "release_circuit/S1/Syn": true,
+    "release_circuit/S1/hDlx": true,
+    "release_circuit/S2/hDlx": true,
+    "release_circuit/S2/I_spared": true,
+    "remote_fails_CaMKII_control": true,
+    "remote_gate_preserved_stable": true,
+    "equal_circuit_removes_regional_difference": true,
+    "equal_targeting_removes_regional_difference": true,
+    "half_dt_classifications_preserved": true,
+    "solver_classifications_preserved": true,
+    "remote_Syn_CaMKII_exact_same_trace": true,
+    "E_suppression_reduces_mean_but_induces_oscillation": true
+  },
+  "sensitivity": {
+    "release": {
+      "matches": 8,
+      "total": 9,
+      "failed_settings": [
+        "release_grid_0.05_0.55"
+      ]
+    },
+    "somatic": {
+      "matches": 13,
+      "total": 15,
+      "failed_settings": [
+        "somatic_grid_13.5_0.5",
+        "somatic_grid_13.75_0.5"
+      ]
+    },
+    "targeting": {
+      "matches": 3,
+      "total": 3,
+      "failed_settings": []
+    }
+  },
+  "numerical": {
+    "half_dt": {
+      "classification_changes": [],
+      "max_late_E_mean_error": 1.3703489638305921e-05,
+      "max_late_E_amplitude_error": 5.7380304396836834e-06
+    },
+    "solver": {
+      "classification_changes": [],
+      "max_late_E_mean_error": 0.0009240243097124456,
+      "max_late_E_amplitude_error": 0.007321680565683331
+    }
+  },
+  "scope": "Qualitative population-oscillation sufficiency; not measured spikes, electrographic seizure, or convulsion reproduction."
+}
