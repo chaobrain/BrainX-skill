@@ -132,6 +132,10 @@ Create or update `FIGURE_MANIFEST.md` with one entry per figure:
 - Render and source-value checks:
 ```
 
+## Explain the figures
+
+Write each figure's explanation beside the figure in the research report, or in the accompanying response for a standalone visualization request. Name the plotted quantity, axes and units, compared conditions, and meaning of uncertainty; explain the main pattern and the conclusion it supports. State transformations such as normalization or smoothing when they affect interpretation. Distinguish observed data from model predictions, retain the name of any proxy, and state the assumptions or unresolved alternatives that limit interpretation. Adapt technical detail to the researcher's prompt.
+
 ## Reference routing
 
 | Route | Open when | Contains |

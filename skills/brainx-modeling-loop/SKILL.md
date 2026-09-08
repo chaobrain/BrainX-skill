@@ -66,7 +66,19 @@ The `bio-neuro-lit` skill may append repeatable `## Literature evidence` blocks 
 
 ## Step 0: Write the specification
 
-Turn the researcher's request and inspected data into a short `NeuroSpecification.md`. Ask the researcher only for missing decisions that would change the model, data interpretation, or acceptance boundary. Do not infer them.
+Turn the researcher's request and inspected data into a short `NeuroSpecification.md`. Infer the appropriate collaboration style from the prompt and supplied artifacts, and revise it as the conversation develops. Use the evidence below to choose what to ask; do not require a profession label or treat the inferred style as a permanent user identity.
+
+| Prompt evidence | Clarification and design response |
+|---|---|
+| Concrete models, equations, model parameters, code, or computational methods | Engage in technical clarification. Ask about omitted parameter values or units, initial conditions, connectivity, or input protocols when they materially change the requested model, interpretation, or reproducibility. Use the supplied terminology and explain why each missing setting matters. |
+| Experimental phenomena without a computational design | Ask only about observations and experimental conditions that affect model choice or interpretation: measured readouts, compared samples, intervention strength or timing, and relevant controls. Choose and justify the abstraction, parameters, solver, and checks without asking the researcher to supply computational settings. Experimental measurements with numbers alone do not imply a request for technical design discussion. |
+| Experimental observations combined with computational choices | Apply both approaches to the relevant parts of the request: clarify consequential experimental facts and omitted computational settings while preserving the supplied design. |
+
+Explicit collaboration directions override the inferred style: if the user says to choose the remaining parameters, do so; if they ask to discuss the design, collaborate. Inspect supplied files and referenced specifications before asking for missing settings. Ask only for missing decisions that would change the model, data interpretation, or acceptance boundary. Offer justified defaults where appropriate, and distinguish a proposed default from a user-confirmed value or a delegated choice.
+
+Distinguish experimental measurements, user-specified modeling assumptions, literature context, and agent choices. A supplied parameter is not automatically an experimental estimate. Keep unanswered experimental facts as conditional interpretations and unanswered computational questions as pending, with any proposed defaults marked provisional. Continue independent work and clearly labeled exploratory branches; do not present assumed settings as the user's specified design or an exact reproduction. Do not wait on technical choices the user has delegated.
+
+When explaining an experimental phenomenon, comparing mechanisms, or deciding whether modeling can distinguish them, open `references/mechanism-comparison.md` before selecting the implementation. It defines causal chains, measurement mapping, distinguishable predictions, and which unmeasured assumptions to test first.
 
 Use only this core structure:
 
@@ -74,7 +86,7 @@ Use only this core structure:
 # NeuroSpecification
 
 - Status: draft | locked
-- Researcher approval:
+- Researcher approval: <existing authorization or pending decision>
 
 ## Researcher request
 - Brain-modeling question or behavior:
@@ -82,6 +94,7 @@ Use only this core structure:
 - Execution mode: forward-simulation | task-training | parameter-fitting | hybrid
 - Required outputs:
 - Constraints:
+- Open computational choices and handling: <pending clarification, delegated, or proposed default>
 
 ## Inspected data contract
 - Data sources and inspected contents:
@@ -89,12 +102,14 @@ Use only this core structure:
 - Required preprocessing and the subset used to fit each transform:
 - Mapping from data to model inputs, targets, and observables:
 - Known data limitations or unresolved mismatches:
+- Conditional interpretations of unanswered experimental questions:
 
 ## Acceptance boundary
 - Evidence required for success, failure, or an inconclusive result:
 - Required baselines and controls:
 - Invalid-result conditions:
 - Allowed claims and explicit non-claims:
+- Model/comparison rationale and decisive assumption checks: <brief rationale or artifact path>
 ```
 
 Inspect supplied data before completing its contract. Keep raw data read-only, preserve units and axis meaning, and prevent preprocessing leakage. Obtain researcher approval for the initial specification, then evaluate the literature gate before proceeding to step 1.
@@ -297,12 +312,14 @@ Do not argue with a refusal inside step 5 and do not substitute self-review for 
 
 **Step result:** a preserved `reviews/iteration-<N>.md` report and either a return to step 1 or a memory checkpoint pointing to step 6.
 
-## Step 6: Visualize the accepted result
+## Step 6: Visualize and explain the accepted result
 
-Hand the review-passed specification, code, run artifacts, results, and accepted scope to the BrainX visualization workflow.
+Open `skills/brainx-visualization/SKILL.md` with the review-passed specification, code, run artifacts, results, and accepted scope.
 
-The planned route is `references/visualization-workflow.md`. That instruction will be authored later; do not embed or invent it here. Until it exists, preserve the accepted artifacts and record step 6 as blocked in `brainmodeling-memory.md`.
+Write or update the research report at the project's existing report path, or `report.md` for a new report. Answer the original research question using the accepted results, distinguish experimental evidence, assumptions, model-derived conclusions, and predictions, and state the remaining limitations. For mechanism comparisons, explain which mechanisms remain compatible and which measurement could distinguish them.
 
-After visualization completes, record the figure paths as artifacts and loop completion as an important milestone, then report the accepted result and remaining limitations.
+Embed or link each figure beside its corresponding result and write its explanation directly in the report, following the visualization skill's figure-explanation requirements. Link the supporting run artifacts so the reader can trace the plotted evidence.
 
-**Step result:** visualization linked to review-passed evidence and a completed memory checkpoint.
+After visualization and the report are complete, record their paths as artifacts and loop completion as an important milestone, then report the accepted result and remaining limitations.
+
+**Step result:** a research report containing inspected figures and their explanations, linked to review-passed evidence, with a completed memory checkpoint.

@@ -77,6 +77,12 @@ Keep the source roles, canonical workflow, candidate contract, selection rules, 
 
 ### brainx-modeling-loop
 
+#### Scientific design and researcher interaction
+
+Infer clarification needs from the prompt: clarify consequential missing computational settings when a model or method is specified, and experimental facts when only phenomena are described. Apply both approaches to mixed requests. Preserve user-fixed choices, honor explicit delegation, and distinguish proposed defaults from confirmed settings.
+
+For mechanism comparisons, open `references/mechanism-comparison.md` during step 0 before choosing the implementation. Map causal explanations to distinguishing observations, preserve the required differences in the model, and check assumptions that could change the conclusion. Keep the detailed workflow in that reference.
+
 #### Get started
 
 Read `brainmodeling-memory.md` first and choose exactly one entry case:
@@ -122,14 +128,14 @@ pointers, and continue after the latest valid checkpoint.
 
 | Step | Action | Required result |
 |---|---|---|
-| 0 | Inspect the researcher request and data, write the short `NeuroSpecification.md`, then resolve or explicitly skip the optional literature gate | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary`, reconciled with any required literature evidence |
+| 0 | Inspect the researcher request and data, use prompt-appropriate clarification, write the short `NeuroSpecification.md`, then resolve or explicitly skip the optional literature gate | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary`, reconciled with any required literature evidence |
 | Optional gate | Invoke `bio-neuro-lit` only when an unknown, unverified, controversial, ambiguous, or recency-sensitive scientific premise could change the model, experiment, validation, or claims | Essential evidence appended to memory; specification relocked after researcher approval when evidence changes it |
 | 1 | Invoke `brainx-general-guard`, select the represented scales, and study every relevant modeling skill, routed reference, API, and canonical script deeply; after refusal, map findings and restudy every affected route | Initial or iteration-specific BrainX study record and grounded implementation design |
 | 2 | Implement the BrainX model, preprocessing, protocol, controls, metrics, tests, and active training/fitting coverage | BrainX-native model and experiment code |
 | 3 | Open `brainx-acceleration`, improve the workload, and prove scientific parity | Accelerated code or an explicit unchanged decision |
 | 4 | Open `references/run-experiment.md`, then `references/monitor-experiment.md` | Inspectable experiment artifacts |
 | 5 | Start a fresh Codex MCP review; use its injected `mcp-servers/codex/system-prompt.md` contract | `REFUSE` or `PASS` plus preserved review output and `threadId` |
-| 6 | Hand review-passed evidence to the planned BrainX visualization workflow | Figures linked to accepted runs and completed memory |
+| 6 | Hand review-passed evidence to the planned BrainX visualization workflow | Figures and explanations linked to accepted runs and completed memory |
 
 The optional literature gate follows the initial NeuroSpecification and remains inside step 0 rather than creating a new checkpoint number. Trigger it for unknown mechanisms, unsupported scientific premises, competing explanations, evidence-dependent design choices, ambiguous reproduction targets, or recency-sensitive claims. Skip it for fixed canonical mechanisms and uncertainty limited to BrainX APIs, implementation, optimization, debugging, or data-driven fitting. Literature evidence may require a researcher-approved specification revision before step 1.
 
@@ -153,6 +159,7 @@ step-1 refusal restudy, not standalone stages:
 
 ```text
 brainx-modeling-loop/references/
+├── mechanism-comparison.md
 ├── training-workflow.md
 ├── parameter-fitting-workflow.md
 │   └── parameter-fitting-workflow/
@@ -1282,6 +1289,7 @@ The root selects among these families and contains one static neural composition
 - Adapt a reference figure by scientific role and real data geometry rather than cloning its layout; reduce markers and overplotting before enlarging dense figures, and use an inset only for a scientifically important local detail in unused space.
 - Render and inspect every export for blank output, clipping, overlap, misleading scale, overplotting, and disagreement with source values.
 - Record work type, scientific role, question, mode, source run IDs and hashes, acceptance status, variables and units, transformations, uncertainty, controls, plotting source, output settings, and verification in `FIGURE_MANIFEST.md`.
+- Explain each figure beside it in the research report, covering what it shows, the supported conclusion, and relevant limitations; adapt technical detail to the researcher's prompt. Use the accompanying response for standalone visualization.
 
 #### Second-layer routes
 
@@ -1359,6 +1367,8 @@ Keep the implementation at the selected scale. Do not introduce aggregate popula
 7. Keep visualization simple without lowering figure quality. Use the simplest highest-level API that expresses the required scientific figure: prefer the selected BrainX package's visualization API, then BrainTools visualization APIs, then high-level `matplotlib.pyplot`. Write absolutely simple Matplotlib code: compose every figure with exactly one `plt.subplots(...)` call and only basic high-level plotting methods. Use `plt.figure`, `GridSpec`, `add_subplot`, projection-specific axes, custom artists, manual axes placement, style systems, or layout scaffolding only when the user explicitly requests a result that `subplots()` cannot express. Preserve intentional size, units, readable labels, title, comparison styles, legend, unclipped layout, and sufficient output resolution.
 
 Before a generic library replaces a BrainTools-owned operation, require an API-gap artifact naming the checked BrainTools APIs, exact missing capability, smallest external boundary, and unit, State, shape, and numerical parity evidence. Missing one optional backend is not a general BrainTools gap when another routed API covers the operation.
+
+8. Keep the guard's mechanism-comparison invariant brief: preserve distinctions required by the question and check assumptions that could change the conclusion. Route the detailed workflow to `skills/brainx-modeling-loop/references/mechanism-comparison.md`.
 
 #### Reference routing
 

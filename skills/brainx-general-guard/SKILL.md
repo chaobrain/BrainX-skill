@@ -95,6 +95,8 @@ An unavailable optional backend does not establish a general BrainTools gap when
 
 Derive claims from observables that distinguish the claimed mechanism; validate the baseline and mechanism before calibration, and mark unsourced calibrated regimes as phenomenological.
 
+- Before production, verify that the model preserves the differences required by the original question. Prioritize unmeasured assumptions whose plausible alternatives could change the main conclusion; constrain claims to the supported measurement and tested conditions. For phenomenon-driven mechanism comparisons, open `skills/brainx-modeling-loop/references/mechanism-comparison.md` for causal-chain design, structural distinguishability, and decisive assumption checks.
+
 - Freeze parameters, evaluation seeds, metrics or scores, thresholds or windows, and displayed cases before viewing intervention outcomes; otherwise calibrate separately and report held-out or nearby sensitivity.
 - Validate each matched control independently, then compare and save control and intervention evidence at every nuisance setting and aligned physical time or event landmark; a normalized summary is not a substitute for those paired observables.
 - At each causal branch, verify and save every relevant State and protocol input, vary only the declared intervention, and preserve per-condition evidence plus its aggregation. State causality at the intervention level; claim event mediation only when a mediator-specific manipulation and per-condition event dose agree with the outcome.
