@@ -23,6 +23,7 @@ This ensures two advantage: first, it avoids the agent from opening useless cont
 skills/
 ├── brainx-modeling-loop/
 ├── brainx-general-guard/
+├── bio-neuro-lit/
 ├── package-skills/
 │   ├── brainunit/
 │   ├── brainstate/
@@ -38,6 +39,41 @@ skills/
 
 
 ## 2. Skill Layer Design
+
+### bio-neuro-lit
+
+#### Purpose and boundary
+
+- Boundary: literature discovery, selective reading, evidence comparison, and synthesis for biology, neuroscience, and computational neuroscience.
+- Primary discovery: the existing Europe PMC MCP `search_articles` and `get_article` tools.
+- Default reading: the existing Full-Text Resolver MCP `get_fulltext`, with `list_versions` when publication-version provenance affects interpretation.
+- Optional recall expansion: the adapted Exa helper, limited to research-oriented searches and subordinate to structured Europe PMC metadata.
+- Optional progressive reading: the adapted DeepXiv helper for known arXiv-compatible computational papers through `paper-brief`, `paper-head`, and `paper-section`.
+- Exclude generic arXiv discovery, standalone OpenAlex search, Semantic Scholar, Gemini, Zotero, Obsidian, local-PDF libraries, and broad clinical retrieval that does not answer the user's question.
+
+#### MCP deployment
+
+- Use `npx brainx-skill mcp install` as the canonical one-command Codex setup.
+- Install Europe PMC search as `europepmc`, the Full-Text Resolver as `fulltext_resolver`, and the BrainX reviewer as `codex`.
+- Keep managed runtimes and the ownership receipt under `~/.brainx/mcp`; preserve the reviewer server's relative bundle layout with its required `skills/` tree.
+- Refuse to overwrite or remove user-owned MCP registrations. Keep installation idempotent and roll back registrations added during a failed run.
+- Use `npx brainx-skill mcp remove` to remove only BrainX-owned registrations and runtime files.
+
+#### Canonical workflow
+
+1. Interpret the research question and generate a small set of biology/neuroscience-aware query variants.
+2. Search Europe PMC, then use Exa only when recall expansion is useful and available.
+3. Normalize candidates to title, authors, year, venue, abstract, DOI, PMID, PMCID, arXiv ID, source provenance, URL, and full-text status.
+4. Deduplicate by PMCID, PMID, DOI, arXiv ID, then normalized title; prefer Europe PMC metadata on overlap.
+5. Rank from titles, abstracts, and metadata, then deep-read only the papers that can materially affect the answer.
+6. Use the Full-Text Resolver for normal biology and journal papers; use DeepXiv progressively for selected arXiv-compatible computational papers.
+7. Extract question-relevant biological, experimental, and modeling evidence; mark abstract-only evidence and retrieved publication versions.
+8. When an active `brainmodeling-memory.md` exists, append essential modeling-relevant article evidence without changing its checkpoint, iteration, or step.
+9. Compare consensus, disagreement, methods, assumptions, limitations, and gaps, then answer the user's question without dumping search logs.
+
+#### Progressive disclosure
+
+Keep the source roles, canonical workflow, candidate contract, selection rules, evidence discipline, modeling-memory handoff, output structure, and costly failures in `skills/bio-neuro-lit/SKILL.md`. Keep exact Europe PMC and Full-Text Resolver schemas plus optional-helper commands in `skills/bio-neuro-lit/references/tool-contracts.md`. Keep reusable Exa and DeepXiv integrations in `skills/bio-neuro-lit/scripts/` and preserve their upstream MIT attribution in `skills/bio-neuro-lit/THIRD_PARTY_NOTICES.md`.
 
 ### brainx-modeling-loop
 
@@ -67,6 +103,12 @@ Keep the complete append-only memory contract in this `Get started` section:
 
 ### Important milestones
 - <decision, review outcome, blocker, or completed result with its evidence pointer>
+
+## Literature evidence: <topic> - <YYYY-MM-DD>
+- Research question: <question addressed>
+- Review artifact: <path or stable identifier>
+- Essential papers and modeling consequences: <concise evidence records>
+- Cross-paper synthesis: <supported decisions, uncertainty, and required tests>
 ```
 
 Create only the title at `fresh-new`, then append one checkpoint after every
@@ -80,13 +122,16 @@ pointers, and continue after the latest valid checkpoint.
 
 | Step | Action | Required result |
 |---|---|---|
-| 0 | Inspect the researcher request and data, then write the short `NeuroSpecification.md` | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary` |
+| 0 | Inspect the researcher request and data, write the short `NeuroSpecification.md`, then resolve or explicitly skip the optional literature gate | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary`, reconciled with any required literature evidence |
+| Optional gate | Invoke `bio-neuro-lit` only when an unknown, unverified, controversial, ambiguous, or recency-sensitive scientific premise could change the model, experiment, validation, or claims | Essential evidence appended to memory; specification relocked after researcher approval when evidence changes it |
 | 1 | Invoke `brainx-general-guard`, select the represented scales, and study every relevant modeling skill, routed reference, API, and canonical script deeply; after refusal, map findings and restudy every affected route | Initial or iteration-specific BrainX study record and grounded implementation design |
 | 2 | Implement the BrainX model, preprocessing, protocol, controls, metrics, tests, and active training/fitting coverage | BrainX-native model and experiment code |
 | 3 | Open `brainx-acceleration`, improve the workload, and prove scientific parity | Accelerated code or an explicit unchanged decision |
 | 4 | Open `references/run-experiment.md`, then `references/monitor-experiment.md` | Inspectable experiment artifacts |
 | 5 | Start a fresh Codex MCP review; use its injected `mcp-servers/codex/system-prompt.md` contract | `REFUSE` or `PASS` plus preserved review output and `threadId` |
 | 6 | Hand review-passed evidence to the planned BrainX visualization workflow | Figures linked to accepted runs and completed memory |
+
+The optional literature gate follows the initial NeuroSpecification and remains inside step 0 rather than creating a new checkpoint number. Trigger it for unknown mechanisms, unsupported scientific premises, competing explanations, evidence-dependent design choices, ambiguous reproduction targets, or recency-sensitive claims. Skip it for fixed canonical mechanisms and uncertainty limited to BrainX APIs, implementation, optimization, debugging, or data-driven fitting. Literature evidence may require a researcher-approved specification revision before step 1.
 
 Step 5 `REFUSE` increments the iteration, returns to step 1, writes a new
 iteration-specific study record, and repeats steps 1-5. Step 5 `PASS` advances

@@ -18,6 +18,18 @@ test('release workflow remains manual and uses the npm environment', () => {
   assert.match(workflow, /github\.ref == 'refs\/heads\/main'/);
 });
 
+test('release workflow installs dependencies before testing', () => {
+  const install = workflow.indexOf('- name: Install package dependencies');
+  const testStep = workflow.indexOf('- name: Test release tooling');
+
+  assert.ok(install > 0);
+  assert.ok(testStep > install);
+  assert.match(
+    workflow,
+    /npm install --ignore-scripts --no-audit --no-fund/,
+  );
+});
+
 test('release workflow publishes npm before the GitHub Release', () => {
   const npmPublish = workflow.indexOf('- name: Publish npm package');
   const githubRelease = workflow.indexOf(

@@ -32,6 +32,9 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
+      - name: Install package dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+
       - name: Test release tooling
         run: npm test
 

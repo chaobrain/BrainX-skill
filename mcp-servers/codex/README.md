@@ -23,7 +23,15 @@ All `codex-reply` calls and other MCP messages pass through unchanged.
 
 ## Register
 
-From this repository, register the proxy under the `codex` server name:
+Install and register this reviewer together with Europe PMC search and the Full-Text Resolver:
+
+```bash
+npx brainx-skill mcp install
+```
+
+The installer copies a durable reviewer bundle and its required BrainX skills under `~/.brainx/mcp`, registers it as `codex`, and refuses to overwrite an unrelated registration. An exact reviewer registration from this repository is retained so its existing approval and timeout settings remain intact. Restart Codex or reload MCP configuration after installation. Use `npx brainx-skill mcp remove` to remove the managed registrations and runtime.
+
+For repository development or another MCP host, register the proxy manually under the `codex` server name:
 
 ```bash
 claude mcp remove codex -s user
