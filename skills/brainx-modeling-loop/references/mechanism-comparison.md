@@ -8,7 +8,7 @@ Open this reference during step 0 when an observation has competing explanations
 
 Write the reported contrast as a measured quantity, comparison unit, intervention, and observation window. Keep within-sample contrasts distinct from comparisons across independent samples. Distinguish latent neural activity from the instrument's output and the biological outcome the researcher wants explained.
 
-Ask for missing experimental facts that could change that interpretation, using the user's terminology. For example, ask whether “more active” means more recorded spikes or a larger reporter signal, and whether the comparison uses neighbors in one sample or means across samples. Readouts in a related paper do not establish the user's assay. If unanswered, retain the alternatives and state which results apply to each. When the prompt also supplies a computational design, apply step 0's technical-clarification and delegation rules to its consequential missing settings.
+Ask for missing experimental facts that could change that interpretation, using the user's terminology. For example, ask whether “more active” means more recorded spikes or a larger reporter signal, and whether the comparison uses neighbors in one sample or means across samples. Readouts in a related paper do not establish the user's assay. If unanswered, retain the alternatives and state which results apply to each. When the request also supplies a computational design, apply step 0's technical-clarification and delegation rules to its consequential missing settings.
 
 ## Choose the comparison before the model
 

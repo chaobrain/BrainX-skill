@@ -1,6 +1,6 @@
 ---
 name: brainx-modeling-loop
-description: Use first for an end-to-end BrainX modeling project. Start fresh or resume from brainmodeling-memory.md, write a compact NeuroSpecification.md, optionally research unknown, unverified, or controversial scientific mechanisms, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, restudy the affected BrainX skills when review refuses, and visualize only after review passes.
+description: Use first for an end-to-end BrainX modeling project. Start fresh or resume from brainmodeling-memory.md, resolve consequential missing decisions through an interactive clarification gate before implementation, write a compact NeuroSpecification.md, optionally research unknown, unverified, or controversial scientific mechanisms, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, restudy the affected BrainX skills when review refuses, and visualize only after review passes.
 ---
 
 # BrainX modeling loop
@@ -51,11 +51,12 @@ For `resume`, read the checkpoints in order, verify the latest artifact pointers
 and continue from the first unfinished action after the latest valid checkpoint.
 
 ```text
-fresh-new -> step 0 -> optional literature gate -> step 1 -> step 2 -> step 3 -> step 4 -> step 5
-                                                           ^                          |
-                                                           |--------- REFUSE ---------|
+fresh-new -> step 0 [clarify + lock] -> optional literature gate -> step 1 -> step 2 -> step 3 -> step 4 -> step 5
+              ^                        |
+              |----- pending answer --|
 
-step 5 PASS -> step 6 -> complete
+step 5 REFUSE -> step 2 -> ... -> step 5
+step 5 PASS   -> step 6 -> complete
 ```
 
 Each checkpoint contains the artifacts created or updated by that step and the
@@ -64,19 +65,43 @@ reviews in their owning artifacts and point to them from the checkpoint.
 
 The `bio-neuro-lit` skill may append repeatable `## Literature evidence` blocks when selected papers materially affect the model. Treat these blocks as evidence records, not checkpoints: they do not change the current iteration or step. Read them before step 0 specification decisions and during step 1 study, and preserve their source identifiers, evidence depth, publication version, modeling implications, and limitations.
 
-## Step 0: Write the specification
+## Step 0: Clarify and write the specification
 
-Turn the researcher's request and inspected data into a short `NeuroSpecification.md`. Infer the appropriate collaboration style from the prompt and supplied artifacts, and revise it as the conversation develops. Use the evidence below to choose what to ask; do not require a profession label or treat the inferred style as a permanent user identity.
+Turn the researcher's request and inspected data into a short `NeuroSpecification.md`. Step 0 contains a mandatory clarification gate before any implementation study or model construction. Use the request and supplied artifacts to identify consequential decisions that remain open. Scope questions by the type of unresolved decision described below.
 
-| Prompt evidence | Clarification and design response |
+### Clarification gate
+
+Inspect the request, repository, supplied data, and referenced specifications first. Then build the decision frontier: every unanswered choice that can change the model equations or represented scale, parameter values or units, initial or boundary conditions, connectivity, input or intervention protocol, observation mapping, data interpretation, reproducibility, validation, or acceptance boundary.
+
+Apply this gate before opening step-1 package skills. **Hard stop:** if the frontier contains a consequential choice and the researcher has not explicitly fixed it or delegated it, ask the researcher and wait for the answer in the current conversation. Do not invoke step 1, write model or experiment code, run experiments, or silently lock the specification while an answer is pending. The initial request is not approval of choices it leaves open.
+
+Ask one question at a time, ordered by dependency: settle a parent choice before asking decisions that depend on it. Each question must use the researcher's terminology and state why the answer changes the model or the interpretation. Give a recommended answer when a defensible default exists, show the relevant alternatives, and allow the researcher to say `choose for me`, `use the recommended default`, or `I don't know`. Treat the first two replies as explicit delegation or confirmation and record the resulting choice. Treat `I don't know` as unresolved: do not guess or advance; offer a small exploratory branch only when the researcher authorizes it. If a question can be answered by reading the repository or data, inspect them instead of asking.
+
+Write or update `NeuroSpecification.md` as `Status: draft` while the frontier is non-empty. Record each pending decision, the question asked, and any proposed default under `Open decisions and handling`; set `Researcher approval: pending`. After all consequential choices are answered, explicitly delegated, or confirmed, show the resulting specification and ask for approval to lock it unless the researcher already gave an unambiguous lock/continue instruction. Only then set `Status: locked`, record the approval evidence, and proceed to the optional literature gate. If the researcher has not replied, end the turn at this gate and preserve the pending state; do not advance on silence or a guessed default.
+
+Use a compact prompt shape:
+
+```text
+Before I lock the BrainX specification, I need one decision:
+
+<question in the user's terms>
+
+Why it matters: <specific effect on model, data interpretation, or acceptance>
+Recommended: <choice and brief reason>
+Options: <A> | <B> | choose for me | I don't know
+```
+
+When no consequential choice is missing, state that the gate found none and continue to draft and lock the specification. When the gate is blocked, append a step-0 checkpoint listing the pending frontier and keep the current step at 0. On `resume`, answer the recorded frontier before doing any later-step work.
+
+| Open decision type | Clarification and design response |
 |---|---|
-| Concrete models, equations, model parameters, code, or computational methods | Engage in technical clarification. Ask about omitted parameter values or units, initial conditions, connectivity, or input protocols when they materially change the requested model, interpretation, or reproducibility. Use the supplied terminology and explain why each missing setting matters. |
-| Experimental phenomena without a computational design | Ask only about observations and experimental conditions that affect model choice or interpretation: measured readouts, compared samples, intervention strength or timing, and relevant controls. Choose and justify the abstraction, parameters, solver, and checks without asking the researcher to supply computational settings. Experimental measurements with numbers alone do not imply a request for technical design discussion. |
-| Experimental observations combined with computational choices | Apply both approaches to the relevant parts of the request: clarify consequential experimental facts and omitted computational settings while preserving the supplied design. |
+| Consequential computational setting missing from a specified model or method | Engage in technical clarification. Ask about omitted parameter values or units, initial conditions, connectivity, or input protocols when they materially change the requested model, interpretation, or reproducibility. Use the supplied terminology and explain why each missing setting matters. |
+| Experimental fact missing from a phenomena-only request | Ask only about observations and experimental conditions that affect model choice or interpretation: measured readouts, compared samples, intervention strength or timing, and relevant controls. Choose and justify the abstraction, parameters, solver, and checks without asking the researcher to supply computational settings. Experimental measurements with numbers alone do not imply a request for technical design discussion. |
+| Computational and experimental decisions both remain open | Apply both approaches to the relevant parts of the request: clarify consequential experimental facts and omitted computational settings while preserving the supplied design. |
 
-Explicit collaboration directions override the inferred style: if the user says to choose the remaining parameters, do so; if they ask to discuss the design, collaborate. Inspect supplied files and referenced specifications before asking for missing settings. Ask only for missing decisions that would change the model, data interpretation, or acceptance boundary. Offer justified defaults where appropriate, and distinguish a proposed default from a user-confirmed value or a delegated choice.
+Honor explicit collaboration directions: if the user says to choose the remaining parameters, do so; if they ask to discuss the design, collaborate. Inspect supplied files and referenced specifications before asking for missing settings. Ask only for missing decisions that would change the model, data interpretation, or acceptance boundary. A proposed default does not close a consequential question until the researcher confirms it or explicitly delegates the choice. Distinguish a proposed default from a user-confirmed value or a delegated choice.
 
-Distinguish experimental measurements, user-specified modeling assumptions, literature context, and agent choices. A supplied parameter is not automatically an experimental estimate. Keep unanswered experimental facts as conditional interpretations and unanswered computational questions as pending, with any proposed defaults marked provisional. Continue independent work and clearly labeled exploratory branches; do not present assumed settings as the user's specified design or an exact reproduction. Do not wait on technical choices the user has delegated.
+Distinguish experimental measurements, user-specified modeling assumptions, literature context, and agent choices. A supplied parameter is not automatically an experimental estimate. Keep unanswered experimental facts as conditional interpretations and unanswered computational questions as pending, with any proposed defaults marked provisional. While waiting, perform only read-only inspection that helps resolve the pending question; do not present assumed settings as the user's specified design or an exact reproduction. Do not wait on technical choices the user has explicitly delegated.
 
 When explaining an experimental phenomenon, comparing mechanisms, or deciding whether modeling can distinguish them, open `references/mechanism-comparison.md` before selecting the implementation. It defines causal chains, measurement mapping, distinguishable predictions, and which unmeasured assumptions to test first.
 
@@ -86,6 +111,7 @@ Use only this core structure:
 # NeuroSpecification
 
 - Status: draft | locked
+- Clarification gate: pending | complete
 - Researcher approval: <existing authorization or pending decision>
 
 ## Researcher request
@@ -94,7 +120,7 @@ Use only this core structure:
 - Execution mode: forward-simulation | task-training | parameter-fitting | hybrid
 - Required outputs:
 - Constraints:
-- Open computational choices and handling: <pending clarification, delegated, or proposed default>
+- Open decisions and handling: <pending clarification, delegated, or proposed default>
 
 ## Inspected data contract
 - Data sources and inspected contents:
@@ -112,7 +138,7 @@ Use only this core structure:
 - Model/comparison rationale and decisive assumption checks: <brief rationale or artifact path>
 ```
 
-Inspect supplied data before completing its contract. Keep raw data read-only, preserve units and axis meaning, and prevent preprocessing leakage. Obtain researcher approval for the initial specification, then evaluate the literature gate before proceeding to step 1.
+Inspect supplied data before completing its contract. Keep raw data read-only, preserve units and axis meaning, and prevent preprocessing leakage. Obtain explicit researcher approval or delegation for every consequential open choice, lock the initial specification, then evaluate the literature gate before proceeding to step 1.
 
 ### Optional literature gate after the NeuroSpecification
 

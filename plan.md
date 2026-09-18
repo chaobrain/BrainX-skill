@@ -79,7 +79,9 @@ Keep the source roles, canonical workflow, candidate contract, selection rules, 
 
 #### Scientific design and researcher interaction
 
-Infer clarification needs from the prompt: clarify consequential missing computational settings when a model or method is specified, and experimental facts when only phenomena are described. Apply both approaches to mixed requests. Preserve user-fixed choices, honor explicit delegation, and distinguish proposed defaults from confirmed settings.
+Run a mandatory clarification gate in step 0 after inspecting the request, repository, supplied data, and referenced specifications. Build the decision frontier of unanswered choices that could change the model, data interpretation, reproducibility, validation, or acceptance boundary. Ask one dependent question at a time, include why it matters and a recommended answer, and wait in the current conversation when the researcher has not fixed or delegated a consequential choice. Treat `choose for me` or an explicit default confirmation as delegation; treat `I don't know` as unresolved. Do not open step-1 skills, implement, run experiments, or lock the specification while the frontier is non-empty. Record pending questions in a draft `NeuroSpecification.md` and a blocked step-0 checkpoint; advance only after explicit answers, delegation, and specification approval. A proposed default never silently closes a consequential question.
+
+Base clarification on unresolved decisions in the request and supplied artifacts: ask about consequential computational settings when a model or method is specified, and experimental facts when only phenomena are described. Apply both approaches to mixed requests. Preserve user-fixed choices, honor explicit delegation, and distinguish proposed defaults from confirmed settings.
 
 For mechanism comparisons, open `references/mechanism-comparison.md` during step 0 before choosing the implementation. Map causal explanations to distinguishing observations, preserve the required differences in the model, and check assumptions that could change the conclusion. Keep the detailed workflow in that reference.
 
@@ -128,7 +130,7 @@ pointers, and continue after the latest valid checkpoint.
 
 | Step | Action | Required result |
 |---|---|---|
-| 0 | Inspect the researcher request and data, use prompt-appropriate clarification, write the short `NeuroSpecification.md`, then resolve or explicitly skip the optional literature gate | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary`, reconciled with any required literature evidence |
+| 0 | Inspect the researcher request and data, run the mandatory dependent clarification gate, write and obtain approval for the short `NeuroSpecification.md`, then resolve or explicitly skip the optional literature gate | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary`, with no unanswered consequential choice and reconciled with any required literature evidence; a blocked gate remains at step 0 |
 | Optional gate | Invoke `bio-neuro-lit` only when an unknown, unverified, controversial, ambiguous, or recency-sensitive scientific premise could change the model, experiment, validation, or claims | Essential evidence appended to memory; specification relocked after researcher approval when evidence changes it |
 | 1 | Invoke `brainx-general-guard`, select the represented scales, and study every relevant modeling skill, routed reference, API, and canonical script deeply; after refusal, map findings and restudy every affected route | Initial or iteration-specific BrainX study record and grounded implementation design |
 | 2 | Implement the BrainX model, preprocessing, protocol, controls, metrics, tests, and active training/fitting coverage | BrainX-native model and experiment code |
