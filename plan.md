@@ -93,11 +93,12 @@ Read `brainmodeling-memory.md` first and choose exactly one entry case:
 
 | Entry case | Condition | Start position |
 |---|---|---|
-| `fresh-new` | No memory or prior loop work must be preserved | Step 0 |
+| `fresh-new` | No memory or prior loop work must be preserved | Step 0, with a draft `report.md` |
 | `resume` | Memory or any prior loop artifact exists | First unfinished action in the recorded step |
 
 Missing or inconsistent checkpoint data is recovered inside `resume`; it does not
-create a third entry case.
+create a third entry case. If a locked specification exists without `report.md`,
+create the draft report before resuming the recorded step.
 
 Keep the complete append-only memory contract in this `Get started` section:
 
@@ -132,20 +133,30 @@ pointers, and continue after the latest valid checkpoint.
 
 | Step | Action | Required result |
 |---|---|---|
-| 0 | Inspect the researcher request and data, run the mandatory dependent clarification gate, write and obtain approval for the short `NeuroSpecification.md`, then resolve or explicitly skip the optional literature gate | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary`, with no unanswered consequential choice and reconciled with any required literature evidence; a blocked gate remains at step 0 |
+| 0 | Inspect the researcher request and data, run the mandatory dependent clarification gate, write and obtain approval for the short `NeuroSpecification.md`, then resolve or explicitly skip the optional literature gate | Locked `Researcher request`, `Inspected data contract`, and `Acceptance boundary`, with no unanswered consequential choice and reconciled with any required literature evidence; initialize `report.md` as `draft`; a blocked gate remains at step 0 |
 | Optional gate | Invoke `bio-neuro-lit` only when an unknown, unverified, controversial, ambiguous, or recency-sensitive scientific premise could change the model, experiment, validation, or claims | Essential evidence appended to memory; specification relocked after researcher approval when evidence changes it |
 | 1 | Invoke `brainx-general-guard`, select the represented scales, and study every relevant modeling skill, routed reference, API, and canonical script deeply; after refusal, map findings and restudy every affected route | Initial or iteration-specific BrainX study record and grounded implementation design |
 | 2 | Implement the BrainX model, preprocessing, protocol, controls, metrics, tests, and active training/fitting coverage | BrainX-native model and experiment code |
 | 3 | Open `brainx-acceleration`, improve the workload, and prove scientific parity | Accelerated code or an explicit unchanged decision |
 | 4 | Open `references/run-experiment.md`, then `references/monitor-experiment.md` | Inspectable experiment artifacts |
-| 5 | Start a fresh Codex MCP review; use its injected `mcp-servers/codex/system-prompt.md` contract | `REFUSE` or `PASS` plus preserved review output and `threadId` |
-| 6 | Hand review-passed evidence to the planned BrainX visualization workflow | Figures and explanations linked to accepted runs and completed memory |
+| 5 | Start a fresh Codex MCP review; use its injected `mcp-servers/codex/system-prompt.md` contract | `REFUSE`, `PASS`, or `BLOCKED` plus preserved review output and `threadId` when available |
+| 6 | Hand review-passed evidence to `brainx-visualization` and finalize the report | Final `report.md`, inspected figures, `FIGURE_MANIFEST.md`, and completed memory |
 
 The optional literature gate follows the initial NeuroSpecification and remains inside step 0 rather than creating a new checkpoint number. Trigger it for unknown mechanisms, unsupported scientific premises, competing explanations, evidence-dependent design choices, ambiguous reproduction targets, or recency-sensitive claims. Skip it for fixed canonical mechanisms and uncertainty limited to BrainX APIs, implementation, optimization, debugging, or data-driven fitting. Literature evidence may require a researcher-approved specification revision before step 1.
 
-Step 5 `REFUSE` increments the iteration, returns to step 1, writes a new
-iteration-specific study record, and repeats steps 1-5. Step 5 `PASS` advances
-to step 6. No other review outcome or transition belongs to this loop.
+After step 0 locks, every modeling project keeps a project-level `report.md`.
+Keep its document lifecycle (`draft`, `blocked`, `final`), scientific outcome
+(`pending`, `supported`, `partially_supported`, `refuted`, `inconclusive`,
+`invalid`), and review outcome (`pending`, `PASS`, `REFUSE`, `BLOCKED`)
+separate. Before a refused or blocked transition, run diagnostic closure: update
+the report and, when numeric or event data exist, render a diagnostic figure and
+`FIGURE_MANIFEST.md`; when no plot-worthy data exist, record the missing
+prerequisite explicitly in both files. A diagnostic report is provisional and
+does not imply scientific acceptance. Step 5 `REFUSE` then increments the
+iteration, returns to step 1, writes a new iteration-specific study record, and
+repeats steps 1-5. Step 5 `BLOCKED` preserves the current step and pauses with
+the diagnostic report. Step 5 `PASS` advances to step 6, which uses only final
+figures linked to review-passed evidence.
 
 #### Optional training and fitting coverage
 
@@ -170,7 +181,7 @@ brainx-modeling-loop/references/
 │       └── scripts/fitting_hh_neuron.py
 ├── run-experiment.md
 ├── monitor-experiment.md
-└── visualization-workflow.md        # planned step 6 instruction
+└── visualization-workflow.md        # optional future mechanics; root routes to brainx-visualization
 ```
 
 Keep experiment-execution and visualization mechanics out of the root skill. Route
@@ -182,9 +193,9 @@ for full artifact review and automatic MCP tool approval in non-interactive
 Codex hosts, require the reviewer to return only a Markdown document in
 `content`, and have the calling agent save it verbatim as
 `reviews/iteration-<N>.md` before classification. Retain `threadId` only for
-reviewer-context follow-up. Until a required planned instruction or configured
-MCP server exists, its step remains blocked and memory preserves the last
-completed artifacts.
+reviewer-context follow-up. Until a configured MCP server exists, step 5 remains
+blocked, diagnostic closure still produces the status report and figure
+manifest, and memory preserves the last completed artifacts.
 
 Keep model construction and train-step mechanics in the owning package skills.
 Keep the experimental contract, mechanical gates, run discipline, evidence,

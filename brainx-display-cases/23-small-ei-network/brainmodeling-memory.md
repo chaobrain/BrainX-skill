@@ -66,3 +66,21 @@
 - Review outcome: `REFUSE`, scientific outcome `INCONCLUSIVE`.
 - Finding `RUNTIME-001`: install matched BrainX packages and run the full simulation/tests before claiming a completed build-and-simulate result.
 - Reviewer thread: `01a0c33a-cbe1-7a53-85a6-2dc8c2c63626`.
+
+## Checkpoint
+- Iteration: 1
+- Step: 5
+
+### Artifacts
+- `test-results.md`: appended runtime rerun with `2 passed` and full-rollout checks.
+- `result-assessment.md`: appended runtime assessment.
+- `outputs/small_ei_network_run.npz`: full raw time-major spike array.
+- `outputs/small_ei_network_metadata.json`: protocol, shape, event-count, and provenance summary.
+- `outputs/small_ei_network_raster.png`: diagnostic raster rendered from the raw events.
+- `FIGURE_MANIFEST.md`: diagnostic figure contract and source-value checks.
+- `report.md`: provisional status report; it is not final because a fresh Codex review is pending.
+
+### Important milestones
+- This checkpoint supersedes the earlier step-5 refusal record for the runtime gap: the matched environment now runs the 100 ms protocol and the saved output passes the declared shape and event checks.
+- Diagnostic closure completed before the next review: report and figure manifest exist, and the raster is explicitly labeled unaccepted.
+- Next action: send the complete runtime and diagnostic artifact packet to a fresh step-5 Codex review; do not mark the study final before `PASS` and step 6.

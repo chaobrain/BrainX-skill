@@ -94,14 +94,39 @@ def run(
     return times, spikes
 
 
-if __name__ == "__main__":
+def plot_raster(times, spikes, output_path=None):
+    """Render the recorded spikes and optionally persist the figure."""
     import matplotlib.pyplot as plt
+    import braintools.visualize as btvis
 
-    times, spikes = run()
     time_indices, neuron_indices = u.math.where(spikes)
-    plt.subplots(figsize=(7, 3.5))
-    plt.scatter(times[time_indices].to_decimal(u.ms), neuron_indices, s=4)
-    plt.xlabel("Time (ms)")
-    plt.ylabel("Neuron index (E: 0–15, I: 16–19)")
-    plt.tight_layout()
-    plt.show()
+    spike_times = times[time_indices].to_decimal(u.ms)
+    neuron_indices = neuron_indices.astype(int)
+
+    fig, ax = plt.subplots(figsize=(7.0, 3.5))
+    btvis.spike_raster(
+        spike_times,
+        neuron_indices,
+        time_range=(0.0, float(times[-1].to_decimal(u.ms))),
+        neuron_range=(0, N_NEURONS - 1),
+        ax=ax,
+        markersize=3.0,
+        xlabel="Time (ms)",
+        ylabel="Neuron index (E: 0–15, I: 16–19)",
+        title="20-neuron recurrent E/I network",
+    )
+    ax.axhline(N_EXC - 0.5, color="0.7", linewidth=0.8, linestyle="--")
+    fig.tight_layout()
+
+    if output_path is not None:
+        from pathlib import Path
+
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(output_path, dpi=300, bbox_inches="tight")
+    return fig
+
+
+if __name__ == "__main__":
+    times, spikes = run()
+    plot_raster(times, spikes, "outputs/small_ei_network_raster.png")

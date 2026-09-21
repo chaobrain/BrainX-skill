@@ -1,0 +1,50 @@
+{
+  "seed": 1234,
+  "dt_ms": 0.1,
+  "duration_ms": 100.0,
+  "n_exc": 16,
+  "n_inh": 4,
+  "drive_mA": 20.0,
+  "shape": [
+    1000,
+    20
+  ],
+  "spike_events": 100,
+  "spikes_per_neuron": [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5
+  ],
+  "spikes_per_recorded_step_max": 20,
+  "figure": "outputs/small_ei_network_raster.png",
+  "environment": {
+    "python": "/home/yixinliu/anaconda3/envs/braincell-released/bin/python",
+    "python_version": "3.11.15",
+    "brainpy": "2.8.1",
+    "brainstate": "0.5.2",
+    "braintools": "0.3.0",
+    "brainunit": "0.5.1",
+    "jax": "0.10.2",
+    "backend": "cpu",
+    "devices": [
+      "cpu:0"
+    ]
+  }
+}

@@ -8,4 +8,4 @@ Run it from this directory after installing a compatible BrainX environment:
 python small_ei_network.py
 ```
 
-The `run()` function returns a unit-bearing time axis and a time-major spike array with shape `(1000, 20)` for the default 100 ms protocol. See `NeuroSpecification.md` for the locked teaching-model assumptions.
+The command saves `outputs/small_ei_network_raster.png`; the `run()` function returns a unit-bearing time axis and a time-major spike array with shape `(1000, 20)` for the default 100 ms protocol. The raw array and run metadata are saved beside the figure. See `report.md` for the diagnostic result and `NeuroSpecification.md` for the locked teaching-model assumptions.
