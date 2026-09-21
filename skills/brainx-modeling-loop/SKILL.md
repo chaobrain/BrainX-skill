@@ -1,9 +1,13 @@
 ---
 name: brainx-modeling-loop
-description: Use first for an end-to-end BrainX modeling project. Start fresh or resume from brainmodeling-memory.md, resolve consequential missing decisions through an interactive clarification gate before implementation, write a compact NeuroSpecification.md, optionally research unknown, unverified, or controversial scientific mechanisms, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, restudy the affected BrainX skills when review refuses, and visualize only after review passes.
+description: "Use for any end-to-end BrainX modeling project: a new or changed model, mechanism comparison, simulation or fitting study, experiment-derived prediction, or scientific result report. After brainx-general-guard routes the request here, start fresh or resume from brainmodeling-memory.md, resolve consequential missing decisions through an interactive clarification gate before implementation, write a compact NeuroSpecification.md, optionally research unknown, unverified, or controversial scientific mechanisms, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, restudy the affected BrainX skills when review refuses, and visualize only after review passes."
 ---
 
 # BrainX modeling loop
+
+## Activation boundary
+
+Open this workflow when the request combines a scientific question with a new or changed model, a mechanism comparison, simulation or fitting, experiment-derived predictions, or a scientific result report. `brainx-general-guard` remains the first cross-cutting guard, then this workflow must run step 0 before any package-specific modeling skill is opened. A request that asks whether modeling can distinguish competing mechanisms is an end-to-end modeling project even when it does not name a BrainX package.
 
 ## Get started
 

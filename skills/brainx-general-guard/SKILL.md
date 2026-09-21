@@ -1,13 +1,24 @@
 ---
 name: brainx-general-guard
-description: Use first for every BrainX modeling, simulation, training, review, debugging, or optimization task. Identify every modeling scale explicitly represented, open only the BrainX package skills that own those scales, and keep the implementation BrainX-native.
+description: Use first for every BrainX modeling, simulation, training, review, debugging, or optimization task. For an end-to-end project involving a new model, mechanism comparison, simulation, fitting, or experimental predictions, immediately route to brainx-modeling-loop before selecting package skills; use this skill alone for focused package or API work with the model design fixed.
 ---
 
 # BrainX general guard
 
 ## Purpose and boundary
 
-Use this guard first to identify the represented modeling scales, open their owning package skills, and keep package orchestration ahead of lower-level infrastructure. Keep it active for cross-cutting API selection, execution, interoperability, and validation decisions.
+Use this guard first to identify the represented modeling scales, route end-to-end scientific work to `brainx-modeling-loop`, open the owning package skills, and keep package orchestration ahead of lower-level infrastructure. Keep it active for cross-cutting API selection, execution, interoperability, and validation decisions.
+
+### Workflow routing
+
+Treat workflow ownership separately from biological-scale ownership. This guard is the mandatory first pass; it does not replace the modeling workflow.
+
+| Request shape | Next route |
+|---|---|
+| A new or changed model, mechanism comparison, simulation or fitting study, experiment-derived prediction, or scientific result report | Open `brainx-modeling-loop` immediately after this guard. Complete its step-0 clarification gate before opening package-specific modeling skills. |
+| A focused implementation, API, debugging, or optimization task with the model design and acceptance criteria already fixed | Continue with this guard and the package skill that owns the represented scale. |
+
+Do not route an end-to-end project directly from this guard to `brainmass`, `brainpy-state`, `braincell`, or other package skills. The modeling loop owns clarification, specification, literature gating, implementation order, review, and handoff; package skills own the selected biological scale after step 0.
 
 ## Check package presence without inspecting installed BrainX
 

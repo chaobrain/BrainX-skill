@@ -77,6 +77,8 @@ Keep the source roles, canonical workflow, candidate contract, selection rules, 
 
 ### brainx-modeling-loop
 
+Use this workflow after `brainx-general-guard` for any end-to-end modeling project: a new or changed model, mechanism comparison, simulation or fitting study, experiment-derived prediction, or scientific result report. Its step-0 clarification gate runs before package-specific skills; the guard remains the first cross-cutting pass, while this workflow owns clarification, specification, literature gating, implementation order, review, and handoff.
+
 #### Scientific design and researcher interaction
 
 Run a mandatory clarification gate in step 0 after inspecting the request, repository, supplied data, and referenced specifications. Build the decision frontier of unanswered choices that could change the model, data interpretation, reproducibility, validation, or acceptance boundary. Ask one dependent question at a time, include why it matters and a recommended answer, and wait in the current conversation when the researcher has not fixed or delegated a consequential choice. Treat `choose for me` or an explicit default confirmation as delegation; treat `I don't know` as unresolved. Do not open step-1 skills, implement, run experiments, or lock the specification while the frontier is non-empty. Record pending questions in a draft `NeuroSpecification.md` and a blocked step-0 checkpoint; advance only after explicit answers, delegation, and specification approval. A proposed default never silently closes a consequential question.
@@ -1322,6 +1324,7 @@ Do not duplicate these package-specific workflows inside `skills/brainx-visualiz
 #### Purpose and boundary
 
 - Open first for every BrainX modeling, simulation, training, review, debugging, or optimization task.
+- When the request is an end-to-end project (new or changed model, mechanism comparison, simulation or fitting study, experiment-derived prediction, or scientific result report), open `brainx-modeling-loop` immediately after this guard and complete its step-0 clarification gate before opening package-specific skills. Use this guard alone for focused package or API work whose model design is already fixed.
 - Identify every modeling scale explicitly represented, then open only the package skills that own those scales. Keep the guard active as the cross-cutting implementation layer.
 - Follow: classify represented scales → check only whether required packages are present → study the owning package skills and task-relevant example scripts → reconcile examples with the current root workflow → choose owning-package orchestration → compose absolutely simple code → transform only custom stateful execution → validate scientific behavior.
 
