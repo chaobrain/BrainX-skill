@@ -162,7 +162,7 @@ Use the GPU environment from the preceding section for a CUDA run. Do not rewrit
 
 After launch, open `monitor-experiment.md` for liveness, progress, resource health, stopping, retry, collection, and reporting. Pass the run directory and recorded process/scheduler handle. Process completion remains mechanical evidence and never implies scientific acceptance.
 
-Open `skills/package-skills/brainstate/references/simulation-environment.md` only when exact `dt`, `fit`, precision, platform, or isolated-environment behavior needs verification. Open `brainx-install` when the environment is incompatible, and `brainx-acceleration` when OOM, precision, sharding, batching, or performance changes would alter execution semantics.
+Open `brainstate` → `references/simulation-environment.md` only when exact `dt`, `fit`, precision, platform, or isolated-environment behavior needs verification. Open `brainx-install` when the environment is incompatible, and `brainx-acceleration` when OOM, precision, sharding, batching, or performance changes would alter execution semantics.
 
 ## Boundaries and common failures
 

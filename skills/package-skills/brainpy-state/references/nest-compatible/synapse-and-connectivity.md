@@ -8,10 +8,10 @@ Use these APIs to choose realized source-target pairs; choose the synapse spec s
 
 | API | Use when |
 |---|---|
-| `bp.all_to_all` | Use when every source must connect to every target, including the default generator fan-out. |
-| `bp.one_to_one` | Use when source `i` must connect to target `i`; source and target views must have equal-size pairings. |
-| `bp.fixed_indegree(k)` | Use when every target must receive exactly `k` randomly drawn presynaptic edges. |
-| `bp.spatial.spatial_pairwise_bernoulli(p, mask=None, allow_autapses=True)` | Use when connection probability or eligibility depends on distance. |
+| `brainspike.all_to_all` | Use when every source must connect to every target, including the default generator fan-out. |
+| `brainspike.one_to_one` | Use when source `i` must connect to target `i`; source and target views must have equal-size pairings. |
+| `brainspike.fixed_indegree(k)` | Use when every target must receive exactly `k` randomly drawn presynaptic edges. |
+| `brainspike.spatial.spatial_pairwise_bernoulli(p, mask=None, allow_autapses=True)` | Use when connection probability or eligibility depends on distance. |
 
 Set `seed` to reproduce a BrainPy-State random realization. For `fixed_indegree`, set `allow_multapses=True` to match NEST's default and use `comm="sparse"` for large event fan-in. Open `references/nest-compatible/network-building.md` for the remaining rule constructors.
 
@@ -21,10 +21,10 @@ Use these constructors when edge weights do not change through activity-dependen
 
 | Constructor | Use when |
 |---|---|
-| `bp.static_synapse(*args, **kwargs)` | Use the default fixed-weight, fixed-delay synapse spec. |
-| `bp.static_synapse_hom_w(*args, **kwargs)` | Use one homogeneous weight shared across all realized connections. |
-| `bp.bernoulli_synapse(*args, **kwargs)` | Use fixed structural edges with stochastic Bernoulli transmission. |
-| `bp.cont_delay_synapse(*args, **kwargs)` | Use a continuous sub-timestep delay. |
+| `brainspike.static_synapse(*args, **kwargs)` | Use the default fixed-weight, fixed-delay synapse spec. |
+| `brainspike.static_synapse_hom_w(*args, **kwargs)` | Use one homogeneous weight shared across all realized connections. |
+| `brainspike.bernoulli_synapse(*args, **kwargs)` | Use fixed structural edges with stochastic Bernoulli transmission. |
+| `brainspike.cont_delay_synapse(*args, **kwargs)` | Use a continuous sub-timestep delay. |
 
 Pass `synapse=None` to `Simulator.connect()` for the ordinary static event path; instantiate a static spec only when its specialized behavior is required.
 
@@ -34,11 +34,11 @@ Use these constructors for electrical, diffusion, rate, or astrocyte slow-inward
 
 | Constructor | Use when |
 |---|---|
-| `bp.gap_junction(*args, **kwargs)` | Use electrical synaptic coupling with a compatible gap-junction neuron. |
-| `bp.diffusion_connection(*args, **kwargs)` | Use the NEST-compatible diffusion connection. |
-| `bp.rate_connection_instantaneous(*args, **kwargs)` | Use rate coupling without a connection delay. |
-| `bp.rate_connection_delayed(*args, **kwargs)` | Use delayed rate coupling. |
-| `bp.sic_connection(*args, **kwargs)` | Use astrocyte-to-neuron slow inward current coupling. |
+| `brainspike.gap_junction(*args, **kwargs)` | Use electrical synaptic coupling with a compatible gap-junction neuron. |
+| `brainspike.diffusion_connection(*args, **kwargs)` | Use the NEST-compatible diffusion connection. |
+| `brainspike.rate_connection_instantaneous(*args, **kwargs)` | Use rate coupling without a connection delay. |
+| `brainspike.rate_connection_delayed(*args, **kwargs)` | Use delayed rate coupling. |
+| `brainspike.sic_connection(*args, **kwargs)` | Use astrocyte-to-neuron slow inward current coupling. |
 
 ## Short-term plasticity
 
@@ -46,10 +46,10 @@ Use these constructors for transient, reversible efficacy changes on the timesca
 
 | Constructor | Use when |
 |---|---|
-| `bp.tsodyks_synapse(*args, **kwargs)` | Use the Tsodyks-Uziel-Markram short-term-plasticity rule. |
-| `bp.tsodyks_synapse_hom(*args, **kwargs)` | Use the homogeneous shared-parameter Tsodyks form. |
-| `bp.tsodyks2_synapse(*args, **kwargs)` | Use the two-variable Tsodyks form. |
-| `bp.quantal_stp_synapse(*args, **kwargs)` | Use the quantal/binomial short-term-plasticity form. |
+| `brainspike.tsodyks_synapse(*args, **kwargs)` | Use the Tsodyks-Uziel-Markram short-term-plasticity rule. |
+| `brainspike.tsodyks_synapse_hom(*args, **kwargs)` | Use the homogeneous shared-parameter Tsodyks form. |
+| `brainspike.tsodyks2_synapse(*args, **kwargs)` | Use the two-variable Tsodyks form. |
+| `brainspike.quantal_stp_synapse(*args, **kwargs)` | Use the quantal/binomial short-term-plasticity form. |
 
 ## Spike-timing-dependent plasticity
 
@@ -57,15 +57,15 @@ Use these constructors for long-term weight changes driven by pre-post spike tim
 
 | Constructor | Use when |
 |---|---|
-| `bp.stdp_synapse(*args, **kwargs)` | Use pair-based STDP. |
-| `bp.stdp_synapse_hom(*args, **kwargs)` | Use pair-based STDP with homogeneous shared parameters. |
-| `bp.stdp_pl_synapse_hom(*args, **kwargs)` | Use power-law STDP. |
-| `bp.stdp_facetshw_synapse_hom(*args, **kwargs)` | Use the FACETS/BrainScaleS hardware-emulating rule. |
-| `bp.stdp_nn_pre_centered_synapse(*args, **kwargs)` | Use presynaptic-centered nearest-neighbour pairing. |
-| `bp.stdp_nn_restr_synapse(*args, **kwargs)` | Use restricted symmetric nearest-neighbour pairing. |
-| `bp.stdp_nn_symm_synapse(*args, **kwargs)` | Use symmetric nearest-neighbour pairing. |
-| `bp.stdp_triplet_synapse(*args, **kwargs)` | Use triplet STDP. |
-| `bp.stdp_dopamine_synapse(*args, **kwargs)` | Use dopamine-modulated STDP with a `volume_transmitter`. |
+| `brainspike.stdp_synapse(*args, **kwargs)` | Use pair-based STDP. |
+| `brainspike.stdp_synapse_hom(*args, **kwargs)` | Use pair-based STDP with homogeneous shared parameters. |
+| `brainspike.stdp_pl_synapse_hom(*args, **kwargs)` | Use power-law STDP. |
+| `brainspike.stdp_facetshw_synapse_hom(*args, **kwargs)` | Use the FACETS/BrainScaleS hardware-emulating rule. |
+| `brainspike.stdp_nn_pre_centered_synapse(*args, **kwargs)` | Use presynaptic-centered nearest-neighbour pairing. |
+| `brainspike.stdp_nn_restr_synapse(*args, **kwargs)` | Use restricted symmetric nearest-neighbour pairing. |
+| `brainspike.stdp_nn_symm_synapse(*args, **kwargs)` | Use symmetric nearest-neighbour pairing. |
+| `brainspike.stdp_triplet_synapse(*args, **kwargs)` | Use triplet STDP. |
+| `brainspike.stdp_dopamine_synapse(*args, **kwargs)` | Use dopamine-modulated STDP with a `volume_transmitter`. |
 
 Open `references/nest-compatible/divergence-and-parity.md` before porting `tau_minus`, Clopath parameters, dopamine State, or a nearest-neighbour pairing rule.
 
@@ -75,11 +75,11 @@ Use these constructors when the weight update depends on voltage trajectories, d
 
 | Constructor | Use when |
 |---|---|
-| `bp.clopath_synapse(*args, **kwargs)` | Use voltage-based Clopath plasticity with a compatible `_clopath` neuron. |
-| `bp.jonke_synapse(*args, **kwargs)` | Use exponential weight-dependence STDP. |
-| `bp.urbanczik_synapse(*args, **kwargs)` | Use dendritic prediction-error plasticity with `pp_cond_exp_mc_urbanczik`. |
-| `bp.vogels_sprekeler_synapse(*args, **kwargs)` | Use symmetric inhibitory plasticity. |
-| `bp.ht_synapse(*args, **kwargs)` | Use Hill-Tononi vesicle-pool depression. |
+| `brainspike.clopath_synapse(*args, **kwargs)` | Use voltage-based Clopath plasticity with a compatible `_clopath` neuron. |
+| `brainspike.jonke_synapse(*args, **kwargs)` | Use exponential weight-dependence STDP. |
+| `brainspike.urbanczik_synapse(*args, **kwargs)` | Use dendritic prediction-error plasticity with `pp_cond_exp_mc_urbanczik`. |
+| `brainspike.vogels_sprekeler_synapse(*args, **kwargs)` | Use symmetric inhibitory plasticity. |
+| `brainspike.ht_synapse(*args, **kwargs)` | Use Hill-Tononi vesicle-pool depression. |
 
 ## Synapse specification
 
@@ -99,7 +99,7 @@ Use these `Simulator.connect()` arguments to attach a selected rule to realized 
 projection = sim.connect(
     exc,
     exc + inh,
-    rule=bp.fixed_indegree(80),
+    rule=brainspike.fixed_indegree(80),
     weight=0.1 * u.pA,
     delay=1.5 * u.ms,
     seed=1,
@@ -115,7 +115,7 @@ projection = sim.connect(
 Use `synapse=` when the edge needs State or behavior beyond static weight and delay.
 
 ```python
-plasticity = bp.tsodyks2_synapse(
+plasticity = brainspike.tsodyks2_synapse(
     weight=250.0 * u.pA,
     U=0.67,
     tau_rec=450.0 * u.ms,
@@ -148,6 +148,6 @@ assert edge_data["weight"].shape == edge_data["source"].shape
 
 ## Official sources
 
-- https://brainx.chaobrain.com/brainpy-state/apis/nest-synapses.html
-- https://brainx.chaobrain.com/brainpy-state/apis/nest-plasticity.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html
+- https://brainx.chaobrain.com/brainspike/apis/nest-synapses.html
+- https://brainx.chaobrain.com/brainspike/apis/nest-plasticity.html
+- https://brainx.chaobrain.com/brainspike/nest-style/connectivity.html

@@ -4,6 +4,8 @@ https://brainx.chaobrain.com/brainmass/gallery/case_studies/resting_state_meg.ht
 Converted from the official notebook at upstream commit
 293eaeb8948474c645208b68c531b7cb5482d4fb. Notebook outputs are omitted and
 ``%matplotlib inline`` remains commented; code and Markdown cells are preserved.
+
+Requires BrainTools 0.4.0 or newer for functional-connectivity analysis.
 """
 
 # %% tags=["remove-cell"]
@@ -11,7 +13,7 @@ Converted from the official notebook at upstream commit
 # %matplotlib inline
 import brainmass
 import brainstate
-import braintools
+from braintools.analysis.population import functional_connectivity
 import brainunit as u
 import jax
 import jax.numpy as jnp
@@ -209,8 +211,8 @@ target_res = brainmass.Simulator(target_net, dt=0.1 * u.ms).run(
 target_activity = target_res['output']
 
 # --- Functional connectivity: simulated vs target ---
-fc_sim = braintools.metric.functional_connectivity(u.get_magnitude(activity))
-fc_tar = braintools.metric.functional_connectivity(u.get_magnitude(target_activity))
+fc_sim = functional_connectivity(u.get_magnitude(activity))
+fc_tar = functional_connectivity(u.get_magnitude(target_activity))
 
 # (1) Structure-function coupling: does the simulated FC reflect the connectome?
 triu = np.triu_indices(N, k=1)

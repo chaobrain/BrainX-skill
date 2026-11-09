@@ -95,7 +95,7 @@ with brainstate.environ.context(dt=1.0 * u.ms):
     net = SNN(num_in=X_train.shape[-1], num_rec=100, num_out=10)
 
     # encoding inputs as spikes
-    encoder = braintools.LatencyEncoder(tau=100 * u.ms)
+    encoder = braintools.spike.LatencyEncoder(tau=100 * u.ms)
 
 
     @brainstate.transform.jit

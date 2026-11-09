@@ -1,6 +1,6 @@
 # BrainState transformed diagnostics
 
-Use this reference after `skills/package-skills/brainstate/SKILL.md` when runtime values, State
+Use this reference after `SKILL.md` when runtime values, State
 updates, or failures must be inspected from transformed BrainState code. The
 skill owns the core transformation model; this reference only adds diagnostics
 that execute after tracing or turn value-dependent failures into data or

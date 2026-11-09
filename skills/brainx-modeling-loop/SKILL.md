@@ -1,9 +1,33 @@
 ---
 name: brainx-modeling-loop
-description: Use first for an end-to-end BrainX modeling project. Start fresh or resume from brainmodeling-memory.md, write a compact NeuroSpecification.md, optionally research unknown, unverified, or controversial scientific mechanisms, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, restudy the affected BrainX skills when review refuses, and visualize only after review passes.
+description: "Use for any end-to-end BrainX modeling project: a new or changed model, mechanism comparison, simulation or fitting study, experiment-derived prediction, or scientific result report. After brainx-general-guard routes the request here, start fresh or resume from brainmodeling-memory.md, resolve consequential missing decisions through an interactive clarification gate before implementation, write a compact NeuroSpecification.md, optionally research unknown, unverified, or controversial scientific mechanisms, study the relevant BrainX skills deeply, implement and accelerate the model, run experiments, send code and results to Codex through MCP, preserve a status report on every terminal path, restudy the affected BrainX skills when review refuses, and use diagnostic visualization for unaccepted evidence and final visualization only after review passes."
 ---
 
 # BrainX modeling loop
+
+## Activation boundary
+
+Open this workflow when the request combines a scientific question with a new or changed model, a mechanism comparison, simulation or fitting, experiment-derived predictions, or a scientific result report. `brainx-general-guard` remains the first cross-cutting guard, then this workflow must run step 0 before any package-specific modeling skill is opened. A request that asks whether modeling can distinguish competing mechanisms is an end-to-end modeling project even when it does not name a BrainX package.
+
+## Output invariant
+
+Create or update `<project-root>/report.md` when the project starts and complete its specification fields when step 0 locks `NeuroSpecification.md`, before advancing to step 1. Keep this file current on every pause, block, refusal, and completion; a review refusal or missing environment must never leave a modeling project without a report. Keep three fields separate: `Report status` (`draft`, `blocked`, or `final`) describes document lifecycle; `Scientific outcome` (`pending`, `supported`, `partially_supported`, `refuted`, `inconclusive`, or `invalid`) describes the evidence-backed conclusion; `Review outcome` (`pending`, `PASS`, `REFUSE`, or workflow-local `BLOCKED`) describes the Codex gate. A non-final report must label all claims as provisional and link the relevant review, run, test, and result artifacts.
+
+Use this minimum report header as soon as the project starts, then expand it as evidence arrives:
+
+```markdown
+# <research title>
+- Report status: draft | blocked | final
+- Scientific outcome: pending | supported | partially_supported | refuted | inconclusive | invalid
+- Review outcome: pending | PASS | REFUSE | BLOCKED
+- Research question: <original question>
+- Evidence available: <artifact paths or none>
+- Missing evidence: <blocker or none>
+- Current conclusion: <provisional statement>
+- Next action: <exact loop step>
+```
+
+Use diagnostic closure before returning with unaccepted or incomplete work. Enter final visualization only after a step-5 `PASS`.
 
 ## Get started
 
@@ -11,10 +35,13 @@ Read `brainmodeling-memory.md` first when it exists, then choose exactly one ent
 
 | Entry case | Use when | Action |
 |---|---|---|
-| `fresh-new` | `brainmodeling-memory.md` does not exist and no prior loop work must be preserved. | Create the memory file, set the current position to step 0, and start the specification. |
-| `resume` | `brainmodeling-memory.md` or prior loop artifacts exist. | Read the recorded step, verify its referenced artifacts, and continue from the first unfinished action in that step. |
+| `fresh-new` | `brainmodeling-memory.md` does not exist and no prior loop work must be preserved. | Create the memory file and a draft `report.md`, set the current position to step 0, and start the specification. |
+| `resume` | `brainmodeling-memory.md` or prior loop artifacts exist. | Verify the latest checkpoint's artifacts and continue from its `Resume at` target. |
+
 
 Do not create another entry case. Recover missing or inconsistent state inside `resume` by using existing artifacts to locate the earliest unfinished step. Do not repeat a completed experiment or Codex review merely because terminal context was lost.
+
+On `resume`, if a locked `NeuroSpecification.md` exists but `report.md` is missing, create the draft report before continuing. A missing report is an incomplete artifact state to repair, not a reason to skip the reporting closure.
 
 Use this complete append-only memory contract:
 
@@ -24,6 +51,7 @@ Use this complete append-only memory contract:
 ## Checkpoint
 - Iteration: <integer>
 - Step: 0 | 1 | 2 | 3 | 4 | 5 | 6
+- Resume at: <iteration>/<step> | complete
 
 ### Artifacts
 - `<path or stable identifier>`: <contents and status>
@@ -40,21 +68,27 @@ Use this complete append-only memory contract:
 
 For `fresh-new`, create the file with its title, start iteration 1 at step 0, and
 append the first checkpoint after step 0 finishes or blocks. After every step,
-including a blocked step, append a new `## Checkpoint` block. `Iteration` and `Step` are metadata identifying
-the step whose artifacts and milestones the block records; `Artifacts` and
-`Important milestones` are the checkpoint content.
+including a blocked step, append a new `## Checkpoint` block. `Iteration` and
+`Step` identify the work recorded. `Resume at` identifies the next action's
+iteration and step. Use `1/0` while iteration 1 awaits a step-0 answer, `1/6`
+after its review passes, `2/1` after its review refuses, and `complete` after
+final reporting. Record any pending prerequisite beside the target.
 
 Never overwrite an earlier checkpoint. Append corrections as a new checkpoint
 with the same iteration and step and state which earlier record it supersedes.
-For `resume`, read the checkpoints in order, verify the latest artifact pointers,
-and continue from the first unfinished action after the latest valid checkpoint.
+For `resume`, read the checkpoints in order and verify the latest artifact
+pointers. For older checkpoints without `Resume at`, infer the target from
+the recorded milestone and existing artifacts. Preserve the old block and use
+the new field in the next checkpoint.
 
 ```text
-fresh-new -> step 0 -> optional literature gate -> step 1 -> step 2 -> step 3 -> step 4 -> step 5
-                                                           ^                          |
-                                                           |--------- REFUSE ---------|
+fresh-new -> step 0 [clarify + lock] -> optional literature gate -> step 1 -> step 2 -> step 3 -> step 4 -> step 5
+              ^                        |
+              |----- pending answer --|
 
-step 5 PASS -> step 6 -> complete
+step 5 REFUSE  -> diagnostic closure -> step 1 -> ... -> step 5
+step 5 BLOCKED -> diagnostic closure -> paused
+step 5 PASS    -> step 6 -> complete
 ```
 
 Each checkpoint contains the artifacts created or updated by that step and the
@@ -63,9 +97,47 @@ reviews in their owning artifacts and point to them from the checkpoint.
 
 The `bio-neuro-lit` skill may append repeatable `## Literature evidence` blocks when selected papers materially affect the model. Treat these blocks as evidence records, not checkpoints: they do not change the current iteration or step. Read them before step 0 specification decisions and during step 1 study, and preserve their source identifiers, evidence depth, publication version, modeling implications, and limitations.
 
-## Step 0: Write the specification
+## Step 0: Clarify and write the specification
 
-Turn the researcher's request and inspected data into a short `NeuroSpecification.md`. Ask the researcher only for missing decisions that would change the model, data interpretation, or acceptance boundary. Do not infer them.
+Turn the researcher's request and inspected data into a short `NeuroSpecification.md`. Step 0 contains a mandatory clarification gate before any implementation study or model construction. Use the request and supplied artifacts to identify consequential decisions that remain open. Scope questions by the type of unresolved decision described below.
+
+### Clarification gate
+
+Inspect the request, repository, supplied data, and referenced specifications first. Then build the decision frontier: every unanswered choice that can change the model equations or represented scale, parameter values or units, initial or boundary conditions, connectivity, input or intervention protocol, observation mapping, data interpretation, reproducibility, validation, or acceptance boundary.
+
+Apply this gate before opening step-1 package skills. **Hard stop:** if the frontier contains a consequential choice and the researcher has not explicitly fixed it or delegated it, ask the researcher and wait for the answer in the current conversation. Do not invoke step 1, write model or experiment code, run experiments, or silently lock the specification while an answer is pending. The initial request is not approval of choices it leaves open.
+
+Ask one question at a time, ordered by dependency: settle a parent choice before asking decisions that depend on it. Each question must use the researcher's terminology and state why the answer changes the model or the interpretation. Give a recommended answer when a defensible default exists, show the relevant alternatives, and allow the researcher to say `choose for me`, `use the recommended default`, or `I don't know`. Treat the first two replies as explicit delegation or confirmation and record the resulting choice. Treat `I don't know` as unresolved: do not guess or advance; offer a small exploratory branch only when the researcher authorizes it. If a question can be answered by reading the repository or data, inspect them instead of asking.
+
+Draft `NeuroSpecification.md` even when no consequential choice is open. Record each pending decision, question, and proposed default under `Open decisions and handling`, with `Researcher approval: pending`. Lock only after every consequential choice is resolved or explicitly delegated and the researcher authorizes proceeding with the specification. Use existing authorization when it covers the specification. Otherwise show the draft, ask for approval, and preserve the pending state until the researcher responds. Once authorized, set `Status: locked`, record the approval evidence, update `report.md` with `Report status: draft`, and evaluate the literature gate.
+
+Use a compact prompt shape:
+
+```text
+Before I lock the BrainX specification, I need one decision:
+
+<question in the user's terms>
+
+Why it matters: <specific effect on model, data interpretation, or acceptance>
+Recommended: <choice and brief reason>
+Options: <A> | <B> | choose for me | I don't know
+```
+
+While an answer or authorization is pending, append a step-0 checkpoint and set its resume target to step 0 of the same iteration. Resolve the recorded prerequisite before advancing.
+
+| Open decision type | Clarification and design response |
+|---|---|
+| Consequential computational setting missing from a specified model or method | Engage in technical clarification. Ask about omitted parameter values or units, initial conditions, connectivity, or input protocols when they materially change the requested model, interpretation, or reproducibility. Use the supplied terminology and explain why each missing setting matters. |
+| Experimental fact missing from a phenomena-only request | Ask only about observations and experimental conditions that affect model choice or interpretation: measured readouts, compared samples, intervention strength or timing, and relevant controls. Choose and justify the abstraction, parameters, solver, and checks without asking the researcher to supply computational settings. Experimental measurements with numbers alone do not imply a request for technical design discussion. |
+| Computational and experimental decisions both remain open | Apply both approaches to the relevant parts of the request: clarify consequential experimental facts and omitted computational settings while preserving the supplied design. |
+
+Honor explicit collaboration directions: if the user says to choose the remaining parameters, do so; if they ask to discuss the design, collaborate. Inspect supplied files and referenced specifications before asking for missing settings. Ask only for missing decisions that would change the model, data interpretation, or acceptance boundary. A proposed default does not close a consequential question until the researcher confirms it or explicitly delegates the choice. Distinguish a proposed default from a user-confirmed value or a delegated choice.
+
+Distinguish experimental measurements, user-specified modeling assumptions, literature context, and agent choices. A supplied parameter is not automatically an experimental estimate. Keep unanswered experimental facts as conditional interpretations and unanswered computational questions as pending, with any proposed defaults marked provisional. While waiting, perform only read-only inspection that helps resolve the pending question; do not present assumed settings as the user's specified design or an exact reproduction. Do not wait on technical choices the user has explicitly delegated.
+
+When explaining an experimental phenomenon, comparing mechanisms, or deciding whether modeling can distinguish them, open `references/mechanism-comparison.md` before selecting the implementation. It defines causal chains, measurement mapping, distinguishable predictions, and which unmeasured assumptions to test first.
+
+For paper or author-code reproduction, open `references/paper-reproduction.md` before locking the specification, for source reconciliation, exact analysis contracts, claim boundaries, and later source-informed reanalysis.
 
 Use only this core structure:
 
@@ -73,7 +145,8 @@ Use only this core structure:
 # NeuroSpecification
 
 - Status: draft | locked
-- Researcher approval:
+- Clarification gate: pending | complete
+- Researcher approval: <existing authorization or pending decision>
 
 ## Researcher request
 - Brain-modeling question or behavior:
@@ -81,6 +154,7 @@ Use only this core structure:
 - Execution mode: forward-simulation | task-training | parameter-fitting | hybrid
 - Required outputs:
 - Constraints:
+- Open decisions and handling: <pending clarification, delegated, or proposed default>
 
 ## Inspected data contract
 - Data sources and inspected contents:
@@ -88,15 +162,17 @@ Use only this core structure:
 - Required preprocessing and the subset used to fit each transform:
 - Mapping from data to model inputs, targets, and observables:
 - Known data limitations or unresolved mismatches:
+- Conditional interpretations of unanswered experimental questions:
 
 ## Acceptance boundary
 - Evidence required for success, failure, or an inconclusive result:
 - Required baselines and controls:
 - Invalid-result conditions:
 - Allowed claims and explicit non-claims:
+- Model/comparison rationale and decisive assumption checks: <brief rationale or artifact path>
 ```
 
-Inspect supplied data before completing its contract. Keep raw data read-only, preserve units and axis meaning, and prevent preprocessing leakage. Obtain researcher approval for the initial specification, then evaluate the literature gate before proceeding to step 1.
+Inspect supplied data before completing its contract. Keep raw data read-only, preserve units and axis meaning, and prevent preprocessing leakage. Obtain explicit researcher approval or delegation for every consequential open choice, lock the initial specification, then evaluate the literature gate before proceeding to step 1.
 
 ### Optional literature gate after the NeuroSpecification
 
@@ -124,7 +200,7 @@ When the gate triggers:
 
 When the gate does not trigger, record the skip and its reason as a step-0 milestone. Do not perform a broad background review merely to make the study record look comprehensive.
 
-**Step result:** a locked or evidence-reconciled `NeuroSpecification.md`, a resolved or explicitly skipped literature gate, and a memory checkpoint pointing to step 1.
+**Step result:** a locked or evidence-reconciled `NeuroSpecification.md`, a resolved or explicitly skipped literature gate, an initial `report.md`, and a memory checkpoint pointing to step 1.
 
 ## Step 1: Study the relevant BrainX modeling skills
 
@@ -132,8 +208,8 @@ Study before implementing. Understand the selected BrainX abstractions, exact AP
 
 1. Open `brainx-general-guard` and identify every biological scale explicitly represented by `NeuroSpecification.md`.
 2. Read each selected modeling skill completely:
-   - `braincell` for ions, channels, compartments, or morphology;
-   - `brainpy-state` for point neurons, synapses, or spiking networks;
+   - `braincell` for ions, channels, compartments, morphology, or detailed-cell networks with spatially placed synapses;
+   - `brainpy-state` for point neurons, their synapses, or point-neuron spiking networks;
    - `brainmass` for aggregate populations, regions, or whole-brain dynamics.
 3. Open supporting package skills only when the model requires them:
    - `brainunit` for physical quantities and unit-aware boundaries;
@@ -141,15 +217,16 @@ Study before implementing. Understand the selected BrainX abstractions, exact AP
    - `brainevent` for event data, connectivity, and event-driven plasticity;
    - `braintrace` only for temporal training limited by BPTT memory.
 4. Follow every selected skill's routing instructions. Read all references and canonical scripts likely to affect this model.
+   Open `references/multiscale-coupling.md` when represented scales exchange signals. Use it to specify the exchanged observables, units, clocks, and causal update order.
 5. Trace construction, initialization, State and data flow, update order, execution, outputs, and validation through the relevant examples.
 6. Verify unfamiliar API names and signatures in the owning skill or its routed documentation. Do not inspect installed package source for modeling knowledge.
 7. Save the study record as an artifact and record its completion and selected training/fitting coverage as important milestones.
 
 Do not write the implementation during step 1. Finish the study record first.
 
-When step 5 returns `REFUSE`, increment the iteration and return here before changing code. Map every reviewer finding to the owning BrainX package or workflow skill, reopen `brainx-general-guard`, and restudy every affected package skill, routed reference, and canonical script that can change the correction. Recheck high-level BrainX and BrainTools APIs before retaining custom or external infrastructure. Open the active training or fitting reference during this restudy when a finding concerns its objective, architecture, optimizer, input, metric, recovery, or evidence contract.
+After a step-5 `REFUSE`, resume step 1 at the iteration recorded in `Resume at` before changing code. Map every reviewer finding to the owning BrainX package or workflow skill, reopen `brainx-general-guard`, and restudy every affected package skill, routed reference, and canonical script that can change the correction. Recheck high-level BrainX and BrainTools APIs before retaining custom or external infrastructure. Open the active training or fitting reference during this restudy when a finding concerns its objective, architecture, optimizer, input, metric, recovery, or evidence contract.
 
-Preserve the original study artifact. For iteration 1, use `brainx-study-record.md`; after a refusal, write `brainx-study-record-iteration-<N>.md` with the reviewer-finding map, newly studied sources, changed or reaffirmed API decisions, and the resulting implementation design. Append a step-1 memory checkpoint pointing to the new artifact. Do not begin step 2 until this iteration-specific restudy is complete.
+Preserve the original study artifact. For iteration 1, use `brainx-study-record.md`. After a refusal, write `brainx-study-record-iteration-<iteration>.md` using the iteration recorded in `Resume at`. Include the reviewer-finding map, newly studied sources, changed or reaffirmed API decisions, and the resulting implementation design. Append a step-1 memory checkpoint pointing to the new artifact. Do not begin step 2 until this iteration-specific restudy is complete.
 
 **Step result:** a complete BrainX study record and an implementation design grounded in the selected skills, then a memory checkpoint pointing to step 2.
 
@@ -214,10 +291,8 @@ result assessment, claim-evidence matrix, proposed next action, and all evidence
 required by active training/fitting coverage. The returned `content` is the
 reviewer's Markdown report in the calling agent's current turn. Before
 classifying it, save it verbatim as `reviews/iteration-<N>.md`; do not reformat,
-summarize, or mix the main agent's analysis into that file. Then read its verdict,
-update the loop checkpoint with the report path, and report or act on it without
-asking the researcher to open another context. Preserve the returned `threadId`
-in the checkpoint for reviewer follow-up; it is not needed to read the report.
+summarize, or mix the main agent's analysis into that file. Read its verdict and
+follow the transition below in the current conversation.
 
 Before calling, verify that every listed path exists. Set the MCP call's working
 directory to the project root when the tool exposes a working-directory argument,
@@ -275,8 +350,7 @@ scientific outcome.
 
 Do not start an iteration review with `mcp__codex__codex-reply`; only a fresh
 `codex` call receives the injected system prompt. If the configured MCP server is
-unavailable, record step 5 as blocked in `brainmodeling-memory.md` and preserve
-all completed experiment artifacts.
+unavailable, take the `BLOCKED` transition below.
 
 For a non-interactive Codex host, configure the MCP registration with
 `default_tools_approval_mode = "approve"`; otherwise the host cannot present an
@@ -285,23 +359,30 @@ call`. Also set `tool_timeout_sec = 1800`, or another explicit budget longer tha
 the largest expected review. When no `threadId` or response is returned, verify
 approval first and timeout second before treating it as researcher cancellation.
 
-Record the verbatim Markdown report path, `threadId`, and one of two outcomes:
+Collect the records for the applicable outcome, then append a new step-5 checkpoint for iteration `N` before advancing or pausing. Include the verbatim report path and `threadId` when available. Diagnostic closure updates the project report and figure manifest while preserving the evidence-backed scientific outcome.
 
 | Outcome | Transition |
 |---|---|
-| `REFUSE` | Record every finding and required correction, increment the iteration, set the current step to 1, restudy the affected BrainX package and workflow skills, and repeat steps 1-5 with the same optional coverage. |
-| `PASS` | Record the accepted code/result scope and set the current step to 6. |
+| `REFUSE` | Run diagnostic closure, record the findings and required corrections, and set `Resume at` to step 1 of iteration `N+1`. Repeat steps 1-5 with the same optional coverage. |
+| `BLOCKED` | Preserve all artifacts, run diagnostic closure, and set `Report status: blocked` and `Review outcome: BLOCKED`. Record the blocker and available call evidence, set `Resume at` to `N/5`, and pause until the blocker changes. |
+| `PASS` | Record the accepted code/result scope and set `Resume at` to `N/6`. |
 
 Do not argue with a refusal inside step 5 and do not substitute self-review for the MCP Codex call. The next Codex call occurs only after the refusal has passed through package restudy, revised implementation, acceleration, and experiment execution.
 
-**Step result:** a preserved `reviews/iteration-<N>.md` report and either a return to step 1 or a memory checkpoint pointing to step 6.
+**Step result:** a new step-5 checkpoint with its outcome and resume target, a current `report.md`, and a preserved `reviews/iteration-<N>.md` when the reviewer returned a report.
 
-## Step 6: Visualize the accepted result
+## Diagnostic closure for incomplete iterations
 
-Hand the review-passed specification, code, run artifacts, results, and accepted scope to the BrainX visualization workflow.
+Run this closure before returning with unaccepted or incomplete evidence, including a refusal, missing dependency, unavailable reviewer, failed run, or absent raw result. Open `brainx-visualization` → `SKILL.md` and use `diagnostic` mode when the artifacts support a meaningful figure. Update `report.md` with the lifecycle status, scientific outcome, review outcome or blocker, evidence paths, permitted claims, missing evidence, and exact next action. Keep the scientific outcome `pending` until the evidence supports a bounded conclusion. For reportable numeric or event data, render and inspect at least one diagnostic figure, write `FIGURE_MANIFEST.md`, and label the figures as unaccepted. If no plot-worthy data exist, record `Figure status: unavailable` and the failed prerequisite in both files. Never substitute a schematic, invented trace, or placeholder for missing experiment evidence. Record both paths and the closure outcome in the new checkpoint for the step that just finished or paused.
 
-The planned route is `references/visualization-workflow.md`. That instruction will be authored later; do not embed or invent it here. Until it exists, preserve the accepted artifacts and record step 6 as blocked in `brainmodeling-memory.md`.
+## Step 6: Visualize and explain the accepted result
 
-After visualization completes, record the figure paths as artifacts and loop completion as an important milestone, then report the accepted result and remaining limitations.
+Open `brainx-visualization` → `SKILL.md` with the review-passed specification, code, run artifacts, results, and accepted scope.
 
-**Step result:** visualization linked to review-passed evidence and a completed memory checkpoint.
+Finalize the existing `report.md` and set `Report status: final`. Preserve the evidence-backed `Scientific outcome` separately. Answer the original research question using the accepted results, distinguish experimental evidence, assumptions, model-derived conclusions, and predictions, and state the remaining limitations. For mechanism comparisons, explain which mechanisms remain compatible and which measurement could distinguish them.
+
+Embed or link each figure beside its corresponding result and write its explanation directly in the report, following the visualization skill's figure-explanation requirements. Link the supporting run artifacts so the reader can trace the plotted evidence.
+
+After visualization, figure-manifest verification, and the report are complete, record their paths as artifacts and loop completion as an important milestone, then report the accepted result and remaining limitations.
+
+**Step result:** a final `report.md` containing inspected figures and their explanations, a `FIGURE_MANIFEST.md`, links to review-passed evidence, and a completed memory checkpoint.

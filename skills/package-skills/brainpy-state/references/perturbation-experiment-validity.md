@@ -57,7 +57,7 @@ development evidence, not a scientific non-reproduction. A completed formal run
 with adequate observability and support may legitimately fail every requested
 hypothesis.
 
-Open `skills/package-skills/brainstate/references/paired-perturbation-execution.md` for exact
+Open `brainstate` → `references/paired-perturbation-execution.md` for exact
 State branching, fixed-shape batching, resource gates, and execution-status
 classification. Open `references/braintools/input-current.md` when constructing
 the unit-aware intervention waveform.

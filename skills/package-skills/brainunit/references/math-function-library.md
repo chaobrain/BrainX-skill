@@ -332,7 +332,7 @@ The original worked example, extended to cover all eight choices:
 ```python
 import brainunit as u
 
-x = u.math.asarray([1.0, 2.0, 3.0], unit=u.meter)
+x = u.math.asarray([1.0, 2.0, 3.0]) * u.meter
 
 total = u.math.sum(x)
 # Expected: 6 m.
@@ -428,6 +428,6 @@ Use `einrearrange()` and `einrepeat()` through `array-mechanics.md` when element
 
 - https://brainunit.readthedocs.io/apis/brainunit.math.html
 - https://brainunit.readthedocs.io/unit_operations/einstein_operations.html
-- Generated Level A pages under `https://brainunit.readthedocs.io/apis/generated/brainunit.math.<function>.html`
+- Use the module index above to open the generated page for a specific function.
 - https://brainunit.readthedocs.io/apis/generated/brainunit.math.einreduce.html
 - https://brainunit.readthedocs.io/apis/generated/brainunit.math.einsum.html

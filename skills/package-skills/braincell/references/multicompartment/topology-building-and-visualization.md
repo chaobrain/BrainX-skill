@@ -1,6 +1,6 @@
 # Topology building and visualization
 
-Use this reference after `references/multicompartment/multicompartment-cell-workflow.md` when branch topology, CV coverage, runtime nodes, selector placement, or spatial values must be visualized. Keep morphology construction and validation, selector design, CV-policy choice, probe behavior, and simulation in their owning references.
+Use this reference after `references/multicompartment/multicompartment-cell-workflow.md` when branch topology, CV coverage, runtime nodes, selector placement, or spatial values must be visualized. Keep morphology construction and validation, selector design, CV-policy choice, recording behavior, and simulation in their owning references.
 
 ## Choose the view
 
@@ -10,21 +10,21 @@ Morphology branches, CVs, and runtime nodes are different layers of one cell; vi
 |---|---|---|
 | `morphology.topo()` | Check the named parent-child branch tree before discretization. | It does not show CVs or runtime nodes. |
 | `morphology.select(expr)` | Confirm region intervals or locset points before plotting. | Use the filter reference when the selection itself is wrong. |
-| `cell.vis_branch(...)` | Inspect compact branch topology or region coverage. | It supports regions, not locsets or values. |
-| `cell.vis_cv(...)` | Inspect discretization, region coverage, locset ownership, or CV values. | Region/locset highlight mode is exclusive with value mode. |
-| `cell.vis_node(...)` | Inspect the full runtime point graph, lowered placement, or point values. | Call `cell.init_state()` first. |
-| `cell.vis_topology(level=...)` | Dispatch dynamically among `"branch"`, `"cv"`, and `"node"`. | Branch level rejects locset and value arguments. |
+| `braincell.vis.plot_cell_topology(cell, level="branch", ...)` | Inspect compact branch topology or region coverage. | Supports region highlights. |
+| `braincell.vis.plot_cell_topology(cell, level="cv", ...)` | Inspect discretization, region coverage, locset ownership, or CV values. | Initialize before reading runtime values. |
+| `braincell.vis.plot_cell_topology(cell, level="node", ...)` | Inspect the runtime point graph, lowered placement, or point values. | Initialize before rendering runtime nodes. |
 | `braincell.vis.plot2d()` / `plot3d()` | Inspect physical morphology geometry. | Use these instead of topology layouts when length, radius, or 3D position matters. |
 
 The morphology defines continuous cable, the CV policy defines isopotential intervals, and `init_state()` lowers them into the execution-oriented `NodeTree`. Do not equate morphology points, branches, CVs, and runtime nodes.
 
 ## Prepare the visualization context
 
-Reuse the validated morphology, selectors, CV policy, and declarations from the multicompartment workflow. This minimal setup exists only to make the visualization snippets executable.
+Supply a validated `neuron.swc` with a soma and dendrite and use an environment with Matplotlib and NetworkX, available with the BrainCell `vis` extra. Graphviz layouts require PyGraphviz. When a Graphviz layout is unavailable, the plot warns and falls back to `kamada_kawai`. Choose `layout="kamada_kawai"` directly when only NetworkX is available.
 
 ```python
 import braincell
 import braincell.mech as mech
+import braincell.vis as vis
 import brainunit as u
 import matplotlib.pyplot as plt
 from braincell.filter import AllRegion, RootLocation, Terminals, branch_in
@@ -67,39 +67,43 @@ Render one selection across structural levels, then show a locset at runtime lev
 ```python
 fig, axes = plt.subplots(2, 2, figsize=(10, 9), dpi=140)
 
-cell.vis_branch(
+vis.plot_cell_topology(
+    cell,
+    level="branch",
     region=target_region,
     coverage_mode="fraction",
     layout="dot",
     ax=axes[0, 0],
-    show=False,
 )
 axes[0, 0].set_title("Branch region")
 
-cell.vis_cv(
+vis.plot_cell_topology(
+    cell,
+    level="cv",
     region=target_region,
     coverage_mode="fraction",
     layout="dot",
     ax=axes[0, 1],
-    show=False,
 )
 axes[0, 1].set_title(f"CV region: n={cell.n_cv}")
 
-cell.vis_node(
+vis.plot_cell_topology(
+    cell,
+    level="node",
     region=target_region,
     coverage_mode="fraction",
     layout="dot",
     ax=axes[1, 0],
-    show=False,
 )
 axes[1, 0].set_title("Runtime region")
 
-cell.vis_node(
+vis.plot_cell_topology(
+    cell,
+    level="node",
     locset=target_sites,
     highlight_color="#f97316",
     layout="dot",
     ax=axes[1, 1],
-    show=False,
 )
 axes[1, 1].set_title("Runtime locset")
 
@@ -116,25 +120,28 @@ Hold the initialized cell and data fixed while choosing the layout that makes to
 ```python
 fig, axes = plt.subplots(1, 3, figsize=(13, 4), dpi=140)
 
-cell.vis_node(
+vis.plot_cell_topology(
+    cell,
+    level="node",
     preset="dendrotweaks",
     ax=axes[0],
-    show=False,
 )
 axes[0].set_title("dendrotweaks")
 
-cell.vis_node(
+vis.plot_cell_topology(
+    cell,
+    level="node",
     layout="dot",
     ax=axes[1],
-    show=False,
 )
 axes[1].set_title("dot")
 
-cell.vis_node(
+vis.plot_cell_topology(
+    cell,
+    level="node",
     layout="kamada_kawai",
     layout_scale=1.5,
     ax=axes[2],
-    show=False,
 )
 axes[2].set_title("kamada_kawai")
 
@@ -153,23 +160,25 @@ Use value mode on an initialized or already simulated cell. Named selectors avoi
 ```python
 fig, axes = plt.subplots(1, 2, figsize=(10, 4), dpi=140)
 
-cell.vis_node(
+vis.plot_cell_topology(
+    cell,
+    level="node",
     value="V",
     cmap="viridis",
     vmin=-80.0,
     vmax=-40.0,
     value_label="Voltage",
     ax=axes[0],
-    show=False,
 )
 axes[0].set_title("Membrane voltage")
 
-cell.vis_node(
+vis.plot_cell_topology(
+    cell,
+    level="node",
     value=("channel", "IL", "g_max"),
     cmap="magma",
     value_label="IL g_max",
     ax=axes[1],
-    show=False,
 )
 axes[1].set_title("Leak conductance")
 
@@ -212,18 +221,19 @@ assert depth.shape == (len(cell.node_tree.nodes),)
 assert not np.isnan(depth).any()
 
 fig, ax = plt.subplots(figsize=(7, 7), dpi=140)
-cell.vis_node(
+vis.plot_cell_topology(
+    cell,
+    level="node",
     value=depth,
     cmap="magma",
     value_label="Runtime graph depth",
     ax=ax,
-    show=False,
 )
 fig.tight_layout()
 plt.show()
 ```
 
-A point-space array must have length `n_point`. A CV-space array must have length `n_cv`; `vis_node()` scatters it into point space. Other shapes raise `ValueError`.
+Pass one population member as a one-dimensional array of length `n_point` or `n_cv`. In node mode the function scatters CV values into point space. Named runtime selectors handle a singleton population directly.
 
 ## Lookup
 
@@ -248,12 +258,14 @@ A point-space array must have length `n_point`. A CV-space array must have lengt
 | `cmap`, `vmin`, `vmax`, `norm` | Control value normalization. |
 | `value_label`, `show_colorbar` | Control the colorbar. |
 | `node_color`, `edge_color`, `root_color` | Style topology without entering value mode. |
-| `ax=...`, `show=False` | Compose subplots; call `plt.show()` or `fig.savefig(...)` once afterward. |
+| `ax=...` | Compose subplots; call `plt.show()` or `fig.savefig(...)` once afterward. |
 
 Highlight mode and value mode are mutually exclusive. Fix selectors in `filter-function-library.md`, discretization in `cv-policy-reference.md`, morphology geometry in the IO or manual-construction reference, and recorded-trace mismatches in `probe-reference.md`.
 
 ## Sources
 
+- [Cell topology API](https://brainx.chaobrain.com/braincell/apis/vis.html#cell-topology-plots)
+- [BrainCell 0.2.0 migration](https://github.com/chaobrain/braincell/releases/tag/v0.2.0)
 - [Point tree visualization](https://brainx.chaobrain.com/braincell/tutorials/vis.html)
 - [Region and locset filters](https://brainx.chaobrain.com/braincell/tutorials/filter.html)
 - [Morphology](https://brainx.chaobrain.com/braincell/concepts/morphology.html)

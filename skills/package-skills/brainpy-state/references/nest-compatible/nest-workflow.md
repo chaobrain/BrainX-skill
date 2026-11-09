@@ -2,7 +2,17 @@
 
 ## Purpose and boundary
 
-Use this reference for the NEST-compatible `brainpy.state` path: create NEST-named neurons and devices, connect them with NEST-style rules and synapse specs, execute an explicit `Simulator`, inspect results, or port PyNEST code.
+Use this reference for the NEST-compatible `brainspike` path: create NEST-named neurons and devices, connect them with NEST-style rules and synapse specs, execute an explicit `Simulator`, inspect results, or port PyNEST code.
+
+The examples target BrainSpikes `0.2.0` (import `brainspike`), bundled with
+BrainX `2026.10.25`. Use the original skill snapshot for experiments frozen
+on the older `brainpy.state` NEST API.
+
+Enable 64-bit JAX before creating a `Simulator`, for example
+`jax.config.update("jax_enable_x64", True)` or
+`brainstate.environ.set(precision=64)`. With 32-bit JAX, the default
+`poisson_generator` stop sentinel overflows its int64 comparison and simulation
+fails during tracing. The bundled NEST-compatible scripts set this at import.
 
 Canonical path:
 
@@ -18,10 +28,10 @@ Use one explicit `Simulator` instead of PyNEST's global kernel; it owns creation
 
 | API family | Use |
 |---|---|
-| `brainpy.state.Simulator` | Own node creation, connection construction, simulation lifecycle, and result collection. |
-| `brainpy.state` NEST models | Select NEST-compatible neurons, synapses, plasticity rules, generators, recorders, and detectors by NEST-style name. |
-| `brainpy.state.network` | Inspect the underlying `Network`, `Builder`, `NodeView`, `SimulationResult`, projection, connection-rule, and `SynapseCollection` APIs. |
-| `brainpy.state.spatial` | Place populations in 2-D or 3-D space and construct distance-dependent kernels, masks, and connection rules. |
+| `brainspike.Simulator` | Own node creation, connection construction, simulation lifecycle, and result collection. |
+| `brainspike` NEST models | Select NEST-compatible neurons, synapses, plasticity rules, generators, recorders, and detectors by NEST-style name. |
+| `brainspike.network` | Inspect the underlying `Network`, `Builder`, `NodeView`, `SimulationResult`, projection, connection-rule, and `SynapseCollection` APIs. |
+| `brainspike.spatial` | Place populations in 2-D or 3-D space and construct distance-dependent kernels, masks, and connection rules. |
 | `brainunit` | Supply physical time, voltage, current, conductance, capacitance, rate, weight, and delay quantities. |
 
 ### 1. Create the simulator and nodes
@@ -30,18 +40,18 @@ Create every population and device through one `Simulator`; each `create()` call
 
 | API | Description |
 |---|---|
-| `bp.Simulator(dt=...)` | Use to start an independent NEST-compatible network; it owns the timestep, graph, rollout, and results. |
+| `brainspike.Simulator(dt=...)` | Use to start an independent NEST-compatible network; it owns the timestep, graph, rollout, and results. |
 | `sim.create(model, size=1, *, params=None, positions=None, **kwargs)` | Use for neurons and devices; it instantiates the selected NEST-compatible model and returns a `NodeView`. Pass a large parameter set with `params=dict(...)` or individual parameters as keywords. |
 | `left + right` | Use to concatenate `NodeView` objects while preserving their segment boundaries; the result can be passed to one `connect()` call. |
 | `view[slice]` | Use to select a subset of a single population for connectivity or recording without creating another population. |
 
 ```python
 import brainunit as u
-from brainpy import state as bp
+import brainspike
 
-sim = bp.Simulator(dt=0.1 * u.ms)
+sim = brainspike.Simulator(dt=0.1 * u.ms)
 neurons = sim.create(
-    bp.iaf_psc_alpha,
+    brainspike.iaf_psc_alpha,
     100,
     params={"I_e": 350.0 * u.pA},
 )
@@ -57,18 +67,18 @@ Connect source to target with a connection rule plus a unitful synapse spec, and
 | API | Description |
 |---|---|
 | `sim.connect(pre, post, *, rule=..., weight=..., delay=..., ...)` | Use to build a projection, attach a source device, or register a recorder tap; it returns projection handles for realized projections and `None` for recorder taps or current injectors. |
-| `bp.all_to_all` | Use when every source must connect to every target; this is the default generator fan-out rule. |
-| `bp.fixed_indegree(k)` | Use when every target must draw exactly `k` presynaptic edges; set `seed` for reproducible BrainPy-State wiring and `comm="sparse"` for large event fan-in. |
-| `synapse=bp.<synapse_model>(...)` | Use when the edge is plastic or needs behavior beyond static weight and delay; keep rule parameters on the synapse spec. |
+| `brainspike.all_to_all` | Use when every source must connect to every target; this is the default generator fan-out rule. |
+| `brainspike.fixed_indegree(k)` | Use when every target must draw exactly `k` presynaptic edges; set `seed` for reproducible BrainPy-State wiring and `comm="sparse"` for large event fan-in. |
+| `synapse=brainspike.<synapse_model>(...)` | Use when the edge is plastic or needs behavior beyond static weight and delay; keep rule parameters on the synapse spec. |
 | `sim.connect(generator, neuron)` | Use for current and spike sources; generators drive their targets. |
 | `sim.connect(neuron, spike_recorder)` | Use to tap emitted spikes. |
 | `sim.connect(multimeter, neuron)` | Use for analog observation; `multimeter` follows NEST's reversed recorder direction. |
 
 ```python
-drive = sim.create(bp.poisson_generator, rate=8000.0 * u.Hz, rng_seed=0)
-spike_recorder = sim.create(bp.spike_recorder)
+drive = sim.create(brainspike.poisson_generator, rate=8000.0 * u.Hz, rng_seed=0)
+spike_recorder = sim.create(brainspike.spike_recorder)
 meter = sim.create(
-    bp.multimeter,
+    brainspike.multimeter,
     record_from=["V_m"],
     interval=0.1 * u.ms,
 )
@@ -76,7 +86,7 @@ meter = sim.create(
 sim.connect(
     drive,
     neurons,
-    rule=bp.all_to_all,
+    rule=brainspike.all_to_all,
     weight=10.0 * u.pA,
     delay=1.0 * u.ms,
 )
@@ -145,12 +155,12 @@ Use these standalone scripts when the canonical inline workflow is too small for
 
 ## Official sources
 
-- https://brainx.chaobrain.com/brainpy-state/nest-style/models.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/connectivity.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/devices.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/tutorials/03-connect-network.html
-- https://brainx.chaobrain.com/brainpy-state/apis/nest-network.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/index.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/validation-status.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/stdp.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/integration-categories.html
+- https://brainx.chaobrain.com/brainspike/nest-style/models.html
+- https://brainx.chaobrain.com/brainspike/nest-style/connectivity.html
+- https://brainx.chaobrain.com/brainspike/nest-style/devices.html
+- https://brainx.chaobrain.com/brainspike/nest-style/tutorials/03-connect-network.html
+- https://brainx.chaobrain.com/brainspike/apis/nest-network.html
+- https://brainx.chaobrain.com/brainspike/nest-style/divergences/index.html
+- https://brainx.chaobrain.com/brainspike/nest-style/validation-status.html
+- https://brainx.chaobrain.com/brainspike/nest-style/divergences/stdp.html
+- https://brainx.chaobrain.com/brainspike/nest-style/integration-categories.html

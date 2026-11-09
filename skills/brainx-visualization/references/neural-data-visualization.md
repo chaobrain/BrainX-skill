@@ -4,7 +4,7 @@
 
 Use this reference for general neural events, activity, connectivity, low-dimensional dynamics, stimulus response, topology, and spatial 3D data. Preserve the active BrainX package's variable meanings, units, ordering, and recording interval.
 
-Route BrainCell morphology, compartments, runtime nodes, selector placement, or mechanism values directly to `skills/package-skills/braincell/references/multicompartment/topology-building-and-visualization.md`. Route BrainMass-owned trajectories, phase portraits, connectivity, FC/FCD, or spectra directly to `skills/package-skills/brainmass/references/visualization-analysis-api.md`.
+Route BrainCell morphology, compartments, runtime nodes, selector placement, or mechanism values directly to `braincell` → `references/multicompartment/topology-building-and-visualization.md`. Route BrainMass-owned trajectories, phase portraits, connectivity, FC/FCD, or spectra directly to `brainmass` → `references/visualization-analysis-api.md`.
 
 ## Choose the neural family
 

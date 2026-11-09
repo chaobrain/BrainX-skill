@@ -9,7 +9,7 @@ Delay the signal before communication. Choose the API from how the projection re
 | Signal path | Use when | Call contract |
 |---|---|---|
 | `AlignPostProj(..., delay=delay)` | The step pushes a spike/event array directly into an AlignPost projection. | Call `proj(signal)`; the projection delays the supplied presynaptic input before `comm`. |
-| `CurrentProj(..., delay=delay)` | The step pushes a continuous presynaptic value through communication and output conversion without synaptic dynamics. | Call `proj(signal)`; the projection delays the supplied value before `comm`. |
+| `CurrentProj(...)` | The step pushes a continuous presynaptic value through communication and output conversion without synaptic dynamics. | Verify delay support and input shape in the target release's `CurrentProj` contract before using it for delayed input. |
 | `pre.prefetch("V").delay.at(delay)` | The projection pulls from a built-in neuron, which stores membrane potential rather than a separate historical spike State. | Build the projection once with the delayed prefetch and a spike decoder, then call `proj()` with no explicit signal. |
 | General `brainstate.nn.Delay` APIs | The task needs reusable buffers, multiple named taps, manual updates, step-based retrieval, round interpolation, or custom delayed State. | Leave the BrainPy projection path and use the general BrainState protocol. |
 
@@ -17,14 +17,15 @@ Do not combine a delayed prefetch with an explicit signal at update time. The pr
 
 ## Push a delayed signal
 
-Use `delay=` for a direct-input `AlignPostProj` or `CurrentProj`. A scalar time applies one homogeneous delay; an `(N_pre,)` quantity applies one delay per presynaptic neuron.
+Use `delay=` for a direct-input `AlignPostProj`. The [official `delay` parameter reference](https://brainpy.readthedocs.io/apis/generated/brainpy.state.AlignPostProj.html) documents scalar physical time and per-source delays. Use the BrainPy 2.9 documentation for the parameter contract and the release-scoped checks below for measured arrival timing.
 
 | API | Behavior |
 |---|---|
 | `AlignPostProj(..., delay=None)` | Keep the zero-overhead undelayed path. |
 | `AlignPostProj(..., delay=scalar_time)` | Delay every presynaptic element by the same duration. |
 | `AlignPostProj(..., delay=per_pre_time)` | Apply heterogeneous axonal delays; the delay array must have shape `(N_pre,)`. |
-| `CurrentProj(..., delay=...)` | Apply the same scalar or per-presynaptic delay contract to continuous direct input. |
+
+For continuous input, the [BrainPy 2.9 `CurrentProj` API](https://brainpy.readthedocs.io/apis/generated/brainpy.state.CurrentProj.html) documents `delay=None`, a scalar physical time, or a `(N_pre,)` delay array. The BrainPy 2.9.0 delay suite covers the homogeneous delayed `CurrentProj` path; verify the input shape against that contract before use.
 
 ```python
 proj = brainpy.state.AlignPostProj(
@@ -44,7 +45,7 @@ proj = brainpy.state.AlignPostProj(
 proj(pre.get_spike() != 0.0)
 ```
 
-Sub-`dt` delays are linearly interpolated. `init_state()` sizes the buffer from `ceil(max(delay) / dt)`, so establish `dt` before State initialization and do not change it during that initialized run.
+The same official `AlignPostProj` reference documents linear interpolation below `dt` and buffer sizing from `ceil(max(delay) / dt)` during initialization. Establish `dt` before initializing State and keep it fixed for that rollout. Verify off-grid behavior separately before sending interpolated values to binary-event communication.
 
 ## Pull a delayed neuron signal
 
@@ -80,7 +81,13 @@ Keep the projection-before-post order. The delayed signal must be communicated b
 3. Call `brainstate.nn.init_all_states(net)` so neural State and delay buffers are initialized together.
 4. Run time through `brainstate.transform.for_loop`.
 5. For every independent rollout, call `init_all_states()` again.
-6. Compare otherwise identical undelayed, short-delay, and long-delay runs; monitor the presynaptic spike and projection conductance/current to verify the expected arrival-time shift before interpreting postsynaptic spikes.
+6. Inject one event through the production delay path and compare it with an undelayed control. Record the input step, first conductance/current change, and first target-voltage response. For voltage timing, keep the target out of its refractory interval and compare against the quiet baseline with a tolerance. Test off-grid delays separately when the model uses them.
+
+**Release-scoped checks:** In BrainX `2026.8.18` / BrainPy `2.8.2` (`brainx-eval:2026-11-02-login-fix`), a one-edge `AlignPostProj` with instantiated `Expon` and `COBA` received a boolean impulse at step 1 with `dt=0.1 ms`. Conductance and target voltage first changed at step 1 for `delay=None`, and at step 3 for `delay=0.2 ms`.
+
+In BrainX `2026.10.25` / BrainPy `2.9.0` (`brainx-eval:2026.10.25-py312`), the same probe reproduced the conductance onsets at steps 1 and 3, and the installed `brainpy/state/delay_test.py` suite passed all 11 cases. Those cases cover `AlignPostProj` with `delay=None`, a scalar delay, and per-element delays, plus homogeneous delayed `CurrentProj`.
+
+Both checks cover the scalar grid-aligned native path and projection-before-target order. Verify off-grid delays and other projection forms separately; a manual BrainState buffer test does not validate the native projection path.
 
 Do not validate a delay only from postsynaptic spike time. Membrane integration, thresholding, refractory State, and other inputs can shift or suppress the postsynaptic spike even when the transmission delay is correct.
 
@@ -141,7 +148,7 @@ Open the official BrainState [Delay Protocol](https://brainx.chaobrain.com/brain
 
 ## Official sources
 
-- `https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html`
-- `https://brainx.chaobrain.com/brainpy-state/apis/generated/brainpy.state.AlignPostProj.html`
-- `https://brainx.chaobrain.com/brainpy-state/apis/generated/brainpy.state.CurrentProj.html`
-- `https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html`
+- [BrainPy synaptic delays guide](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html)
+- [BrainPy AlignPostProj API](https://brainpy.readthedocs.io/apis/generated/brainpy.state.AlignPostProj.html)
+- [BrainPy CurrentProj API](https://brainpy.readthedocs.io/apis/generated/brainpy.state.CurrentProj.html)
+- [BrainState synaptic delays tutorial](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html)

@@ -2,7 +2,7 @@
 # Copyright 2026 BrainX Ecosystem Limited. Apache 2.0.
 """Brunel (2000) random balanced network with delta synapses — NEST-style port.
 
-Port of NEST's ``brunel_delta_nest.py`` onto brainpy.state's explicit Simulator
+Port of NEST's ``brunel_delta_nest.py`` onto brainspike's explicit Simulator
 API, driving the real ``iaf_psc_delta`` / ``poisson_generator`` / ``spike_recorder``
 models. Unlike the alpha variant, delta synapses deliver an instantaneous
 membrane-voltage jump, so connection weights are voltages (mV) and ``J_ex = J``
@@ -19,10 +19,7 @@ import numpy as np
 import brainunit as u
 import braintools
 
-from brainpy.state import (
-    Simulator, fixed_indegree, all_to_all,
-    iaf_psc_delta, poisson_generator, spike_recorder,
-)
+import brainspike
 
 
 def build(order=2500, simtime=1000.0, comm='sparse'):
@@ -43,19 +40,19 @@ def build(order=2500, simtime=1000.0, comm='sparse'):
                 E_L=0. * u.mV, V_reset=0. * u.mV, V_th=theta * u.mV,
                 V_initializer=braintools.init.Constant(0. * u.mV))
 
-    sim = Simulator(dt=dt * u.ms)
-    ne = sim.create(iaf_psc_delta, NE, params=npar)
-    ni = sim.create(iaf_psc_delta, NI, params=npar)
-    noise = sim.create(poisson_generator, rate=p_rate * u.Hz)
-    esr = sim.create(spike_recorder)
-    isr = sim.create(spike_recorder)
+    sim = brainspike.Simulator(dt=dt * u.ms)
+    ne = sim.create(brainspike.iaf_psc_delta, NE, params=npar)
+    ni = sim.create(brainspike.iaf_psc_delta, NI, params=npar)
+    noise = sim.create(brainspike.poisson_generator, rate=p_rate * u.Hz)
+    esr = sim.create(brainspike.spike_recorder)
+    isr = sim.create(brainspike.spike_recorder)
 
-    sim.connect(noise, ne, weight=J_ex * u.mV, delay=delay * u.ms, rule=all_to_all)
-    sim.connect(noise, ni, weight=J_ex * u.mV, delay=delay * u.ms, rule=all_to_all)
+    sim.connect(noise, ne, weight=J_ex * u.mV, delay=delay * u.ms, rule=brainspike.all_to_all)
+    sim.connect(noise, ni, weight=J_ex * u.mV, delay=delay * u.ms, rule=brainspike.all_to_all)
     sim.connect(ne, ne + ni, weight=J_ex * u.mV, delay=delay * u.ms,
-                rule=fixed_indegree(CE), comm=comm, allow_multapses=True, seed=1)
+                rule=brainspike.fixed_indegree(CE), comm=comm, allow_multapses=True, seed=1)
     sim.connect(ni, ne + ni, weight=J_in * u.mV, delay=delay * u.ms,
-                rule=fixed_indegree(CI), comm=comm, allow_multapses=True, seed=2)
+                rule=brainspike.fixed_indegree(CI), comm=comm, allow_multapses=True, seed=2)
     sim.connect(ne[:N_rec], esr)
     sim.connect(ni[:N_rec], isr)
     return sim, esr, isr, N_rec, simtime
@@ -70,7 +67,7 @@ def main():
     res = sim.simulate(simtime * u.ms)
     erate = res.rate(esr.segments[0].population)
     irate = res.rate(isr.segments[0].population)
-    print("Brunel network (brainpy.state, delta synapses)")
+    print("Brunel network (brainspike, delta synapses)")
     print(f"  Excitatory rate : {erate:.2f} spks/s")
     print(f"  Inhibitory rate : {irate:.2f} spks/s")
 

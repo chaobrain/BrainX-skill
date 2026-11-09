@@ -13,7 +13,7 @@ Follow this path:
 
 `build with braintrace.nn -> choose a trace representation -> compile once -> inspect -> reset both State systems -> accumulate sequence gradients -> update once -> verify`
 
-This skill targets BrainTrace `0.2.4`, bundled by BrainX `v2026.7.9`. Do not use `etrace_grad()`, `etrace_evolve()`, `SequenceDriverMixin`, or `ETraceVmap`; those APIs start in BrainTrace `0.2.5`.
+Use this workflow with BrainTrace `0.2.8`, bundled by BrainX `2026.10.25`.
 
 Route general `State`, `Module`, transformations, mapped lifecycle operations, and optimizers to BrainState. Route neuron and synapse dynamics to BrainPy-State or BrainCell. Use ordinary BrainState training when offline BPTT is acceptable.
 
@@ -86,18 +86,17 @@ Open `references/pre-built-braintrace-layer.md` when selecting another ETP-aware
 
 ## Train and evaluate a sequence
 
-Differentiate exactly one learner call per time step, carry the accumulated gradient through `brainstate.transform.scan`, and update parameters once after the sequence.
+Use the learner to drive time. Each step loss calls the learner once, and the optimizer applies the accumulated gradient after the sequence.
 
 | API | Description |
 |---|---|
 | `brainstate.nn.reset_all_states(model, batch_size=...)` | Use at an independent sequence boundary to reset recurrent State. |
 | `learner.reset_state(batch_size=...)` | Use at the same boundary to reset eligibility State and the running index. |
-| `brainstate.transform.grad(step_loss, weights, ...)` | Use around one learner call; BrainTrace supplies the online parameter gradient from current eligibility State. |
-| `brainstate.transform.scan(body, initial_grads, sequence)` | Use to advance time and sum per-step gradients in an explicit carry. |
+| `learner.etrace_grad(*sequences, step_fn=..., reduction=..., return_value=True)` | Use to advance hidden and eligibility State while accumulating online gradients and returning step losses. Choose the gradient reduction explicitly. |
+| `learner.etrace_evolve(inputs, return_outputs=True)` | Use for evaluation or warm-up. It advances both State systems without accumulating gradients. |
 | `optimizer.update(grads)` | Use once after the complete sequence gradient has been accumulated. |
 
 ```python
-import jax
 import braintools
 
 targets = 0.7 * inputs + 0.2
@@ -115,33 +114,14 @@ def step_loss(x, target):
     return jnp.mean((learner(x) - target) ** 2)
 
 
-loss_grad = brainstate.transform.grad(
-    step_loss,
-    weights,
-    return_value=True,
-)
-
-
 def train_epoch(_):
     reset_sequence()
-    initial_grads = jax.tree.map(
-        jnp.zeros_like,
-        {key: state.value for key, state in weights.items()},
-    )
-
-    def accumulate(grads, sample):
-        step_grads, loss = loss_grad(*sample)
-        grads = jax.tree.map(
-            lambda total, value: total + value,
-            grads,
-            step_grads,
-        )
-        return grads, loss
-
-    grads, losses = brainstate.transform.scan(
-        accumulate,
-        initial_grads,
-        (inputs, targets),
+    grads, losses = learner.etrace_grad(
+        inputs,
+        targets,
+        step_fn=step_loss,
+        reduction='sum',
+        return_value=True,
     )
     optimizer.update(grads)
     return losses.mean()
@@ -149,7 +129,7 @@ def train_epoch(_):
 
 losses = brainstate.transform.for_loop(train_epoch, jnp.arange(5))
 reset_sequence()
-predictions = brainstate.transform.for_loop(learner, inputs)
+predictions = learner.etrace_evolve(inputs, return_outputs=True)
 
 assert losses[-1] < losses[0]
 assert predictions.shape == targets.shape
@@ -164,14 +144,14 @@ Escalate model construction from prebuilt layers to built-in ETP operations, the
 | Reference | Open when | Contains |
 |---|---|---|
 | `references/pre-built-braintrace-layer.md` | Selecting another ETP-aware layer or composing the default model. | Layer families, parameterized-operation choices, and BrainState-owned supporting layers. |
-| `references/Drtrl.md` | Using or validating parameter-shaped D-RTRL traces. | Memory scaling, recurrence, sequence resets, scan accumulation, and the BPTT boundary. |
+| `references/Drtrl.md` | Using or validating parameter-shaped D-RTRL traces. | Memory scaling, recurrence, sequence resets, sequence drivers, and the BPTT boundary. |
 | `references/pp_pprop workflow.md` | Parameter-shaped traces are too costly or a recurrent SNN needs factorized traces. | Input/output factorization, SNN integration, report-window training, and validation. |
-| `references/algorithm selection.md` | Neither canonical memory strategy fits the estimator requirements. | BrainTrace `0.2.4` estimators, guarantees, and configuration options. |
-| `references/batching.md` | Adding a batch axis, mapped model, or multi-step wrapper. | Mapping ownership, batched compilation, mapped resets, and sequence scan shape. |
+| `references/algorithm selection.md` | Neither canonical memory strategy fits the estimator requirements. | Public estimators, guarantees, and configuration options. |
+| `references/batching.md` | Adding a batch axis, mapped model, or multi-step wrapper. | Mapping ownership, batched compilation, mapped resets, and time-major shapes. |
 | `references/ETP operators.md` | A prebuilt layer cannot express the required parameterized operation. | Built-in ETP operations, participation rules, sparse inputs, units, and transform behavior. |
 | `references/custom ETP primitives.md` | No built-in ETP operation can express the computation. | Primitive registration, ETP rules, compiler integration, and validation. |
 | `references/customizing_primitive_transforms.md` | An ETP weight needs masking, constraints, normalization, LoRA, or a bias transform. | Transform hooks and raw-parameter gradient attachment. |
-| `references/custom algorithms.md` | No built-in BrainTrace `0.2.4` algorithm expresses the research method. | Estimator bases, trace lifecycle, solve hooks, and inspection. |
+| `references/custom algorithms.md` | No built-in algorithm expresses the research method. | Estimator bases, trace lifecycle, solve hooks, and inspection. |
 | `references/compiler_internal.md` | Structured report fields cannot explain custom graph behavior. | Discovery, graph execution, control-flow policy, and low-level diagnostics. |
 
 ## Boundaries and common failures
@@ -182,6 +162,5 @@ Escalate model construction from prebuilt layers to built-in ETP operations, the
 - Do not treat every warning or excluded candidate as a failed parameter. Inspect `etrace_weights`, `excluded_weights`, and level-2 diagnostics together.
 - Reset both recurrent State and eligibility State between independent sequences and verify mapped shapes survive a mapped reset.
 - Use exactly one batching owner. Prefer `braintrace.compile(..., vmap=True)` for independent per-sample State or native batched compilation when the model supports it.
-- Do not update the optimizer inside the temporal scan when the intended schedule is one update per sequence.
-- Do not use BrainTrace `0.2.5` sequence-driver APIs with the bundled `0.2.4` release.
+- Update the optimizer after `etrace_grad` returns when the schedule calls for one update per sequence.
 - Use `pp_prop` in new code; `ES_D_RTRL` is its compatibility alias.

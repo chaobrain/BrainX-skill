@@ -130,7 +130,7 @@ feature_extractor = nn.Sequential(
 )
 ```
 
-Open `skills/package-skills/brainstate/scripts/modern_cnn.py` for the full convolution,
+Open `scripts/modern_cnn.py` for the full convolution,
 normalization, pooling, dropout, and dense workflow.
 
 ## Official sources

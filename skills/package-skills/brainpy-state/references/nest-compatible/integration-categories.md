@@ -38,4 +38,4 @@ Examples:
 
 ## Official source
 
-- https://brainx.chaobrain.com/brainpy-state/nest-style/integration-categories.html
+- https://brainx.chaobrain.com/brainspike/nest-style/integration-categories.html

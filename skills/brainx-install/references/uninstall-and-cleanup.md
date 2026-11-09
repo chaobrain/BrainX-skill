@@ -12,6 +12,7 @@ brainunit
 brainstate
 brainpy
 brainpy-state
+brainspikes
 brainevent
 braincell
 braintrace
@@ -83,13 +84,19 @@ Prefer distribution metadata over imports. Use the exact interpreter for read-on
 "<exact-python>" -m pip check
 ```
 
-The placeholder is illustrative. Replace it with the platform-appropriate exact interpreter path. Use `importlib.metadata` or another read-only metadata method to inspect declared requirements and find reverse dependencies. Classify each target before planning removal:
+Replace the placeholder with the platform-appropriate exact interpreter path.
+Verify the environment before classifying its distributions. Compare resolved paths.
 
-- **Local to venv:** its package location is under the virtual environment's `site-packages`; it is eligible for uninstall.
+- For a Python `venv`, verify that `sys.prefix` matches the target and differs from `sys.base_prefix`.
+- For Conda, verify that `sys.prefix` matches the target listed by `conda env list --json`, contains `conda-meta`, and differs from the base path reported by `conda info --base`. A Conda interpreter can have equal `sys.prefix` and `sys.base_prefix`.
+- Stop if the interpreter belongs to Conda base or the evidence establishes neither a `venv` nor a non-base Conda environment.
+
+Use `importlib.metadata` or another read-only metadata method to inspect declared requirements and find reverse dependencies. Classify each target before planning removal:
+
+- **Local to the verified environment.** Its distribution location is under the target's `site-packages`; it is eligible for the uninstall specification.
 - **Visible from external Python:** it is exposed through `--system-site-packages` or another external path; preserve it.
-- **Global interpreter:** `sys.prefix == sys.base_prefix`; stop and do not uninstall.
 
-Only the first case may enter the uninstall specification. If the user asks to uninstall a package visible from external Python or from a global interpreter, explicitly warn that this would modify an external or shared Python environment and stop without uninstalling it. Do not import target packages, upgrade pip, or install a helper merely to inspect the environment.
+Include only local distributions in the uninstall specification. If the user asks to uninstall a package visible from external Python or from a global interpreter, explain which external or shared Python environment owns it and stop. Inspect target packages through metadata using the existing pip and interpreter.
 
 Evaluate reverse dependencies against the final proposed scope. Ignore requirements from distributions that are themselves being removed, but list every remaining distribution that requires a planned BrainX or JAX target. Do not automatically add those dependents to the uninstall command. If the target environment cannot be proven non-global, stop and request a virtual or Conda environment instead.
 

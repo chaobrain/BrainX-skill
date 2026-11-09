@@ -256,15 +256,15 @@ training contract, gates, experiment discipline, and evidence.
 
 | Need | Required route |
 |---|---|
-| Large temporal workloads limited by sequence-length-dependent BPTT activation memory | First open the active package's checkpointed-control-flow reference. When ordinary BPTT remains memory-limited and an online eligibility-trace estimator is scientifically acceptable, open `skills/package-skills/braintrace/SKILL.md` and use BrainTrace as the memory-efficient alternative. Its memory is constant only in sequence length and still scales with batch size, participating parameters, hidden dimensions, and estimator choice. |
+| Large temporal workloads limited by sequence-length-dependent BPTT activation memory | First open the active package's checkpointed-control-flow reference. When ordinary BPTT remains memory-limited and an online eligibility-trace estimator is scientifically acceptable, open `braintrace` → `SKILL.md` and use BrainTrace as the memory-efficient alternative. Its memory is constant only in sequence length and still scales with batch size, participating parameters, hidden dimensions, and estimator choice. |
 
 ### Choose Braintools training components
 
 | Decision | BrainPy-State route | BrainMass route |
 |---|---|---|
-| Loss or neuroscience metric | `skills/package-skills/brainpy-state/references/braintools/metric.md` | `skills/package-skills/brainmass/references/braintools/metric.md` |
-| Optimizer, scheduler, clipping, or update lifecycle | `skills/package-skills/brainpy-state/references/braintools/optimizer.md` | `skills/package-skills/brainmass/references/braintools/optimizer.md` |
-| Parameter initialization | `skills/package-skills/brainpy-state/references/braintools/parameter-initializer.md` | `skills/package-skills/brainmass/references/braintools/parameter-initializer.md` |
-| Input encoding | `skills/package-skills/brainpy-state/references/braintools/data-preprocessing.md` | `skills/package-skills/brainmass/references/braintools/data-preprocessing.md` |
-| Hard-spike backward derivative | `skills/package-skills/brainpy-state/references/braintools/surrogate.md` | `skills/package-skills/brainmass/references/braintools/surrogate.md` |
-| Phase-structured cognitive trials | Open the shared `skills/package-skills/brainmass/references/braintools/cogtask.md`, then preserve the BrainPy-State model's time-major input contract. | `skills/package-skills/brainmass/references/braintools/cogtask.md` |
+| Loss or neuroscience metric | `brainpy-state` → `references/braintools/metric.md` | `brainmass` → `references/braintools/metric.md` |
+| Optimizer, scheduler, clipping, or update lifecycle | `brainpy-state` → `references/braintools/optimizer.md` | `brainmass` → `references/braintools/optimizer.md` |
+| Parameter initialization | `brainpy-state` → `references/braintools/parameter-initializer.md` | `brainmass` → `references/braintools/parameter-initializer.md` |
+| Input encoding | `brainpy-state` → `references/braintools/data-preprocessing.md` | `brainmass` → `references/braintools/data-preprocessing.md` |
+| Hard-spike backward derivative | `brainpy-state` → `references/braintools/surrogate.md` | `brainmass` → `references/braintools/surrogate.md` |
+| Phase-structured cognitive trials | Open the shared `brainmass` → `references/braintools/cogtask.md`, then preserve the BrainPy-State model's time-major input contract. | `brainmass` → `references/braintools/cogtask.md` |

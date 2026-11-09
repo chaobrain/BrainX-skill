@@ -27,8 +27,7 @@ import braintools
 import numpy as np
 import brainunit as u
 
-from brainpy.state import (Simulator, iaf_psc_exp, spike_generator, multimeter,
-                           tsodyks2_synapse)
+import brainspike
 
 #: Resolution (ms).
 DT = 0.1
@@ -48,7 +47,7 @@ REGIMES = {
 def _post(sim):
     """Build the linear, never-spiking ``iaf_psc_exp`` post (V_m == PSC train)."""
     return sim.create(
-        iaf_psc_exp, 1, C_m=250. * u.pF, tau_m=20. * u.ms,
+        brainspike.iaf_psc_exp, 1, C_m=250. * u.pF, tau_m=20. * u.ms,
         tau_syn_ex=3. * u.ms, tau_syn_in=3. * u.ms, t_ref=2. * u.ms,
         E_L=0. * u.mV, V_reset=0. * u.mV, V_th=1e4 * u.mV,
         V_initializer=braintools.init.Constant(0. * u.mV))
@@ -76,13 +75,13 @@ def run(regime="depression", weight=WEIGHT, train=TRAIN, t_sim=T_SIM):
         Post membrane potential (mV) -- the PSC-amplitude train.
     """
     p = REGIMES[regime]
-    sim = Simulator(dt=DT * u.ms)
+    sim = brainspike.Simulator(dt=DT * u.ms)
     post = _post(sim)
-    sg = sim.create(spike_generator, spike_times=np.asarray(train) * u.ms)
-    sim.connect(sg, post, synapse=tsodyks2_synapse(
+    sg = sim.create(brainspike.spike_generator, spike_times=np.asarray(train) * u.ms)
+    sim.connect(sg, post, synapse=brainspike.tsodyks2_synapse(
         weight=weight * u.pA, U=p["U"], u=p["u"], x=p["x"],
         tau_rec=p["tau_rec"] * u.ms, tau_fac=p["tau_fac"] * u.ms))
-    mm = sim.create(multimeter, record_from=["V_m"], interval=DT * u.ms)
+    mm = sim.create(brainspike.multimeter, record_from=["V_m"], interval=DT * u.ms)
     sim.connect(mm, post)              # reversed: the multimeter observes the neuron
     res = sim.simulate(t_sim * u.ms)
     times = np.asarray(u.get_mantissa(res.times / u.ms))
@@ -120,7 +119,7 @@ def burst_peak_ratio(vm, train=TRAIN, dt=DT):
 
 
 def main():
-    print("Tsodyks-2 STP (brainpy.state, iaf_psc_exp post, V_m = PSC train)")
+    print("Tsodyks-2 STP (brainspike, iaf_psc_exp post, V_m = PSC train)")
     traces = {}
     for regime in REGIMES:
         t, v = run(regime)

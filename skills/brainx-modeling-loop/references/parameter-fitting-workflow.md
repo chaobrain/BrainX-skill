@@ -27,7 +27,7 @@ Parameter recovery represents the interpretation gate. A fitted value may suppor
 | Aggregate population, region, or whole-brain fitting | Open `brainmass`. Prefer `brainmass.Fitter` and its routed fitting reference before building a custom optimizer loop. |
 | Physical parameters or observations | Open `brainunit`. Preserve quantities through parameter application, simulation, observation, and unit-compatible comparison. |
 | Constrained parameters or regularization | Open the active package's BrainState parameter reference. Record both the unconstrained optimizer value and constrained physical value. |
-| BrainCell input, objective, or optimizer selection | Open `braincell/references/braintools/input-current.md`, `metric.md`, or `optimizer.md` for the operation being selected. |
+| BrainCell input, objective, or optimizer selection | Open `braincell` → `references/braintools/input-current.md`, `braincell` → `references/braintools/metric.md`, or `braincell` → `references/braintools/optimizer.md` for the operation being selected. |
 | BrainPy-State or BrainMass objective or optimizer selection | Open the active package's routed Braintools metric or optimizer reference. Prefer package-owned BrainMass objectives when they express the scientific comparison. |
 
 Study the selected package skills and their fitting-related examples before implementing. Trace construction, initialization, parameter application, runtime State reset, protocol execution, observation, and reduction end to end.
@@ -239,15 +239,15 @@ Fit observed data only after recovery passes the locked parameter-specific crite
 | Route | Open when |
 |---|---|
 | `parameter-fitting-workflow/scripts/fitting_hh_neuron.py` | Studying the official complete BrainCell HH derivative-free fitting composition: custom channels, unit-bearing bounds, per-candidate cell initialization, time-major rollout, voltage loss, candidate `vmap`, and Nevergrad. Also open the three BrainCell Braintools references below; supply the upstream trace CSVs and reconcile source-version APIs before adapting it. |
-| `braincell` -> `references/braintools/input-current.md` | Generating timed current sections, pulses, waveforms, or stochastic stimulation for a cellular fit. |
-| `braincell` -> `references/braintools/metric.md` | Selecting standard waveform losses or neuroscience metrics while separating custom observation features. |
-| `braincell` -> `references/braintools/optimizer.md` | Selecting gradient optimizers, `ScipyOptimizer`, or `NevergradOptimizer` and checking their lifecycle, unit, and dependency boundaries. |
-| `brainmass` -> `references/fitting-with-objectives-api.md` | Selecting `Fitter` interfaces, objectives, callbacks, `FitResult` fields, or gradient versus gradient-free backends. |
-| `brainmass` -> `references/scripts/eeg-fitting-with-gradients.py` | Studying a complete phase-insensitive EEG fitting and synthetic-recovery example. |
-| `brainmass` -> `references/scripts/gradient-free-fitting.py` | A bounded non-differentiable or black-box BrainMass objective requires Nevergrad or SciPy. |
-| `brainstate` -> gradient and parameter references | Differentiating custom BrainCell or BrainPy-State rollouts, selecting parameter State, or applying constraints and regularization. |
-| Active model package -> Braintools optimizer reference | Selecting gradient optimizers, schedules, SciPy, Nevergrad, or their distinct lifecycle and unit contracts. |
-| Active model package -> Braintools metric reference | Selecting regression, spike-train, spectral, synchronization, FC, or other observation-space metrics. |
+| `braincell` → `references/braintools/input-current.md` | Generating timed current sections, pulses, waveforms, or stochastic stimulation for a cellular fit. |
+| `braincell` → `references/braintools/metric.md` | Selecting standard waveform losses or neuroscience metrics while separating custom observation features. |
+| `braincell` → `references/braintools/optimizer.md` | Selecting gradient optimizers, `ScipyOptimizer`, or `NevergradOptimizer` and checking their lifecycle, unit, and dependency boundaries. |
+| `brainmass` → `references/fitting-with-objectives-api.md` | Selecting `Fitter` interfaces, objectives, callbacks, `FitResult` fields, or gradient versus gradient-free backends. |
+| `brainmass` → `references/scripts/eeg-fitting-with-gradients.py` | Studying a complete phase-insensitive EEG fitting and synthetic-recovery example. |
+| `brainmass` → `references/scripts/gradient-free-fitting.py` | A bounded non-differentiable or black-box BrainMass objective requires Nevergrad or SciPy. |
+| `brainstate` → gradient and parameter references | Differentiating custom BrainCell or BrainPy-State rollouts, selecting parameter State, or applying constraints and regularization. |
+| Active model package → Braintools optimizer reference | Selecting gradient optimizers, schedules, SciPy, Nevergrad, or their distinct lifecycle and unit contracts. |
+| Active model package → Braintools metric reference | Selecting regression, spike-train, spectral, synchronization, FC, or other observation-space metrics. |
 
 ## Boundaries and common failures
 

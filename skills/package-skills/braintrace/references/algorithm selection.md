@@ -1,6 +1,6 @@
 # Algorithm selection
 
-Use this reference when choosing a BrainTrace `0.2.4` estimator beyond the default `D_RTRL`. Use `Drtrl.md` or `pp_pprop workflow.md` for the two canonical training workflows; open `custom algorithms.md` only when no built-in class expresses the method.
+Use this reference when choosing a BrainTrace estimator beyond the default `D_RTRL`. Use `Drtrl.md` or `pp_pprop workflow.md` for the two canonical training workflows; open `custom algorithms.md` only when no built-in class expresses the method.
 
 ## Choose an estimator
 
@@ -16,8 +16,6 @@ Choose by trace representation, recurrence approximation, learning signal, and s
 | `OTPE` | Use for deep SNNs requiring the implemented online temporal-processing estimator. | Requires `leak`; select full or approximate mode explicitly. |
 | `OTTT` | Use for very large SNNs using the implemented presynaptic trace rule. | Requires `leak`; report the selected mode. |
 | `OSTTP` | Use for target-projection learning with supplied per-layer feedback matrices. | Requires `B_list`; declare target timing. |
-
-`SnAp`, `UORO`, `ThreeFactor`, `DNI`, `SyntheticGradient`, and `ETraceConfig` are not public BrainTrace `0.2.4` APIs. Do not select them from newer documentation when targeting BrainX `v2026.7.9`.
 
 ## Compile the chosen algorithm
 
@@ -45,20 +43,17 @@ learner = braintrace.compile(
 learner.module.report.show(2)
 ```
 
-## Drive the sequence in `0.2.4`
-
-BrainTrace `0.2.4` advances hidden and eligibility State on every learner call; BrainState owns the explicit temporal carry and gradient accumulation.
+## Drive the sequence
 
 | API | Description |
 |---|---|
-| `brainstate.transform.grad(step_loss, weights, ...)` | Use around one learner call to obtain the current online gradient. |
-| `brainstate.transform.scan(...)` | Use when an explicit gradient carry must sum across time. |
-| `braintrace.SingleStepData(data)` | Use to mark one current input; a plain array is equivalent. |
+| `learner.etrace_grad(..., step_fn=...)` | Use for online sequence gradients. Call the learner once per step loss. |
+| `learner.etrace_evolve(inputs, ...)` | Use for warm-up or evaluation that advances State without accumulating gradients. |
+| `braintrace.SingleStepData(data)` | Use to mark one current input. |
 | `braintrace.MultiStepData(sequence)` | Use when one learner call intentionally consumes a multi-step window. |
 
-Do not use `etrace_grad`, `etrace_evolve`, `SequenceDriverMixin`, or `ETraceVmap`; they start in BrainTrace `0.2.5`. Open `batching.md` for mapped and native-batch reset patterns.
+Open `batching.md` for mapped and native-batch reset patterns.
 
 ## Sources
 
-- [BrainTrace `v0.2.4` algorithms API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/algorithms.rst)
-- [BrainTrace `v0.2.4` public API](https://github.com/chaobrain/braintrace/blob/v0.2.4/braintrace/__init__.py)
+- [Algorithms API](https://brainx.chaobrain.com/braintrace/apis/algorithms.html)

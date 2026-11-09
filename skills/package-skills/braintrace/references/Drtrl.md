@@ -1,6 +1,6 @@
 # D-RTRL
 
-Use this reference when implementing or validating the parameter-dimensional D-RTRL workflow in BrainTrace `0.2.4`. Open `algorithm selection.md` when choosing another estimator and `batching.md` before adding a batch axis.
+Use this reference when implementing or validating the parameter-dimensional D-RTRL workflow. Open `algorithm selection.md` when choosing another estimator and `batching.md` before adding a batch axis.
 
 ## Understand the approximation
 
@@ -10,8 +10,7 @@ Use this reference when implementing or validating the parameter-dimensional D-R
 |---|---|
 | `braintrace.D_RTRL` | Use when parameter-shaped trace memory is feasible; it computes approximate online gradients without retaining the full sequence graph. |
 | `braintrace.compile(model, braintrace.D_RTRL, example_step, ...)` | Use once to initialize State, construct the learner, and compile the ETP graph from a representative step. |
-| `brainstate.transform.grad(step_loss, weights, ...)` | Use around exactly one learner call to obtain the current online parameter gradient. |
-| `brainstate.transform.scan(body, initial_grads, sequence)` | Use to carry the summed gradient across time while the learner advances hidden and eligibility State. |
+| `learner.etrace_grad(..., step_fn=..., reduction=...)` | Use to accumulate online gradients across one sequence. |
 
 Trace memory scales as `O(B * |theta|)`, where `B` is batch size and `theta` is the participating parameter set. Do not describe D-RTRL as generally identical to BPTT; equality depends on the recurrence and mathematical regime being tested.
 
@@ -25,11 +24,10 @@ Reset recurrent and eligibility State together, accumulate gradients across the 
 | 2. Compile | Call `braintrace.compile(...)` once with one real per-step input. | The graph and State layout are reused. |
 | 3. Inspect | Show report level 2 and inspect structured participation fields. | Intended recurrent weights are confirmed rather than inferred from warning text. |
 | 4. Reset | Reset model State and learner State at every independent sequence. | Hidden State, eligibility traces, and running index share one boundary. |
-| 5. Accumulate | Differentiate one learner call inside a `scan` with an explicit gradient carry. | Every time step advances online State while gradients sum across time. |
-| 6. Update | Clip if needed and call the optimizer once after the scan. | The printed sequence count matches the optimizer schedule. |
+| 5. Accumulate | Call `etrace_grad` with one learner call per step loss. | Every time step advances online State while gradients sum across time. |
+| 6. Update | Clip if needed and call the optimizer once after the sequence. | The printed sequence count matches the optimizer schedule. |
 
 ```python
-import jax
 import jax.numpy as jnp
 import brainstate
 import braintrace
@@ -71,25 +69,10 @@ def step_loss(x, target):
     return jnp.mean((learner(x) - target) ** 2)
 
 
-loss_grad = brainstate.transform.grad(step_loss, weights, return_value=True)
-
-
 def train_sequence():
     reset_sequence()
-    initial_grads = jax.tree.map(
-        jnp.zeros_like,
-        {key: state.value for key, state in weights.items()},
-    )
-
-    def accumulate(grads, sample):
-        step_grads, loss = loss_grad(*sample)
-        grads = jax.tree.map(lambda x, y: x + y, grads, step_grads)
-        return grads, loss
-
-    grads, losses = brainstate.transform.scan(
-        accumulate,
-        initial_grads,
-        (inputs, targets),
+    grads, losses = learner.etrace_grad(
+        inputs, targets, step_fn=step_loss, reduction='sum', return_value=True,
     )
     optimizer.update(grads)
     return losses.mean()
@@ -99,7 +82,7 @@ loss = train_sequence()
 assert jnp.isfinite(loss)
 ```
 
-Hoist `loss_grad` outside the scan body. Apply a temporal loss mask inside `step_loss` when only selected steps produce learning signals; still call the learner on every step so hidden and eligibility State advance throughout the sequence.
+Pass a time-major `mask` to `etrace_grad` when only selected steps contribute to the loss. The learner still advances both State systems at masked steps.
 
 ## Reset both State domains
 
@@ -129,5 +112,5 @@ Use a reduced matched task as a BPTT oracle only when the estimator's documented
 
 ## Sources
 
-- [BrainTrace `v0.2.4` D-RTRL examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/drtrl)
-- [BrainTrace `v0.2.4` algorithms API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/algorithms.rst)
+- [D-RTRL tutorial](https://brainx.chaobrain.com/braintrace/tutorials/drtrl.html)
+- [Algorithms API](https://brainx.chaobrain.com/braintrace/apis/algorithms.html)

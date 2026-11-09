@@ -29,7 +29,7 @@ BrainPy-State evaluates plasticity kernels every time step on an event-driven su
 
 ```python
 # Port tau_minus from the NEST postsynaptic neuron to the synapse spec.
-plasticity = bp.stdp_synapse(
+plasticity = brainspike.stdp_synapse(
     tau_plus=20.0 * u.ms,
     tau_minus=20.0 * u.ms,
 )
@@ -43,10 +43,10 @@ Use these constructors when the port requires a specific nearest-neighbour or ha
 
 | Constructor | Use when |
 |---|---|
-| `bp.stdp_nn_symm_synapse(*args, **kwargs)` | Use when each spike must pair only with the nearest preceding spike on the opposite side. |
-| `bp.stdp_nn_restr_synapse(*args, **kwargs)` | Use symmetric nearest-neighbour pairing with a one-pairing-per-spike availability restriction. |
-| `bp.stdp_nn_pre_centered_synapse(*args, **kwargs)` | Use when a postsynaptic spike must consume all presynaptic spikes accumulated since the preceding postsynaptic spike, while a presynaptic spike pairs with the nearest preceding postsynaptic spike. |
-| `bp.stdp_facetshw_synapse_hom(*args, **kwargs)` | Use when causal and acausal charge must accumulate before quantized LUT readout on the configured cycle. |
+| `brainspike.stdp_nn_symm_synapse(*args, **kwargs)` | Use when each spike must pair only with the nearest preceding spike on the opposite side. |
+| `brainspike.stdp_nn_restr_synapse(*args, **kwargs)` | Use symmetric nearest-neighbour pairing with a one-pairing-per-spike availability restriction. |
+| `brainspike.stdp_nn_pre_centered_synapse(*args, **kwargs)` | Use when a postsynaptic spike must consume all presynaptic spikes accumulated since the preceding postsynaptic spike, while a presynaptic spike pairs with the nearest preceding postsynaptic spike. |
+| `brainspike.stdp_facetshw_synapse_hom(*args, **kwargs)` | Use when causal and acausal charge must accumulate before quantized LUT readout on the configured cycle. |
 
 Do not replace one nearest-neighbour variant with another because their class names look similar; the pairing convention changes the weight trajectory.
 
@@ -96,7 +96,7 @@ Validation categories describe how parity is asserted. They are related to, but 
 Run the live-NEST harness when the package source and NEST are available:
 
 ```bash
-python -m pytest brainpy_state/_nest_validation/ -m requires_nest -q
+python -m pytest brainspike/_nest_validation/ -m requires_nest -q
 ```
 
 Tests marked `requires_nest` skip when NEST cannot be imported; harness unit tests still run without NEST.
@@ -109,6 +109,6 @@ Tests marked `requires_nest` skip when NEST cannot be imported; harness unit tes
 
 ## Official sources
 
-- https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/index.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/validation-status.html
-- https://brainx.chaobrain.com/brainpy-state/nest-style/divergences/stdp.html
+- https://brainx.chaobrain.com/brainspike/nest-style/divergences/index.html
+- https://brainx.chaobrain.com/brainspike/nest-style/validation-status.html
+- https://brainx.chaobrain.com/brainspike/nest-style/divergences/stdp.html

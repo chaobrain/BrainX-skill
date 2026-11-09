@@ -70,7 +70,7 @@ Overlapping slices are normalized in the materialized mask. Inspect `morphology.
 
 ## Locset selectors
 
-Use locsets for clamps, probes, synapses, junctions, and other point declarations.
+Use locsets for clamps, synapses, and spatial recording views.
 
 | API | Use when | Important behavior and result |
 |---|---|---|
@@ -125,11 +125,11 @@ cell.paint(
         E=-65.0 * u.mV,
     ),
 )
-cell.place(terminal_sites, mech.StateProbe())
+cell.loc(terminal_sites).record("terminal_v", braincell.observe.state("v"))
 cell.init_state()
 ```
 
-Use a region only with `paint()` and a locset only with `place()`. A selector that resolves correctly against `Morphology` can still map unexpectedly after discretization; open `references/multicompartment/topology-building-and-visualization.md` to inspect CV ownership and runtime placement.
+Use a region for `paint()` and a locset for `place()` or `cell.loc()`. A selector that resolves correctly against `Morphology` can still map unexpectedly after discretization. Open `references/multicompartment/topology-building-and-visualization.md` to inspect CV ownership and runtime placement.
 
 ## Exported but unavailable selectors
 

@@ -248,44 +248,38 @@ assert prediction.shape == (64, 1)
 
 The first compatible call traces and compiles the complete forward pass; later compatible calls reuse it while BrainState handles State effects.
 
-#### Gradient and parameter update example
+#### Compiled gradient and parameter update
 
-`grad` differentiates with respect to a State collection and returns gradients keyed by the same State paths. `return_value=True` returns the loss from the same pass.
+`grad` returns gradients with the same State paths and value PyTrees as the selected parameters. A single State can hold several leaves, such as a `Linear` layer's weight and bias. Register the parameter collection once and pass the matching gradient tree to the optimizer.
 
 ```python
+import braintools
+
+optimizer = braintools.optim.SGD(lr=0.1)
+optimizer.register_trainable_weights(params)
+
+
 def loss_fn():
     return jnp.mean((model(x_train) - y_train) ** 2)
 
 
-grads, loss = brainstate.transform.grad(
+grad_fn = brainstate.transform.grad(
     loss_fn,
-    params,
+    grad_states=params,
     return_value=True,
-)()
+)
 
-for key in params:
-    params[key].value -= 0.1 * grads[key]
-```
-
-#### Composed training-step transform
-
-```python
 @brainstate.transform.jit
 def train_step():
-    grads, loss = brainstate.transform.grad(
-        loss_fn,
-        params,
-        return_value=True,
-    )()
-    for key in params:
-        params[key].value -= 0.1 * grads[key]
+    grads, loss = grad_fn()
+    optimizer.update(grads)
     return loss
 
 
 loss = train_step()
 ```
 
-Use `jit(grad(...))` as the default compiled training-step backbone. Open the optimizer reference when manual updates should become optimizer-managed updates.
+Compile the forward, loss, gradient, and optimizer update together. Open `references/braintools-optimizer-reference.md` when choosing an optimizer, scheduling the learning rate, or checking optimizer State ownership.
 
 #### State-aware `vmap`
 

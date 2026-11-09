@@ -154,27 +154,38 @@ assert not fast_path.applicable(
 
 ## Exactness validation
 
-Validate both the forward transform and its online gradient. The development oracle compares a sequence gradient from the online algorithm with the BPTT gradient for the same model factory and loss.
+Validate both the forward transform and its online gradient. Compute the reference gradient with BrainState BPTT on a fresh model from the same factory: initialize State, sum one loss per step, and differentiate the sequence total once with `brainstate.transform.grad`. Compare it with `learner.etrace_grad(..., reduction="sum")` from an identically initialized model and input.
 
 ```python
-from braintrace._algorithm.oracle import (
-    assert_param_gradients_close,
-    bptt_param_gradients,
-    online_param_gradients,
-)
+import jax
+import jax.numpy as jnp
 
-bptt = bptt_param_gradients(model_factory, inputs)
-online = online_param_gradients(
-    model_factory,
-    inputs,
-    algo_factory=lambda model: braintrace.D_RTRL(
-        model, vjp_method="multi-step"
-    ),
+
+def bptt_grads(model_factory, inputs, targets, batch_size=1):
+    model = model_factory()
+    weights = model.states(brainstate.ParamState)
+    brainstate.nn.init_all_states(model, batch_size=batch_size)
+
+    def total_loss():
+        return sum(
+            jnp.mean((model(x) - target) ** 2)
+            for x, target in zip(inputs, targets)
+        )
+
+    return brainstate.transform.grad(total_loss, weights)()
+
+
+bptt = bptt_grads(Model, inputs, targets)
+online = learner.etrace_grad(
+    inputs, targets, step_fn=step_loss, reduction="sum"
 )
-assert_param_gradients_close(online, bptt, atol=1e-4)
+gap = max(
+    float(jnp.max(jnp.abs(a - b) / (jnp.abs(b) + 1e-8)))
+    for a, b in zip(jax.tree.leaves(online), jax.tree.leaves(bptt))
+)
 ```
 
-Use the private oracle for development tests, not as an application API. Choose a reduced model whose recurrent Jacobian lies in the estimator's documented exactness regime; a general D-RTRL model is not automatically BPTT-equivalent.
+Use this comparison only in development tests, not as an application API. Choose a reduced model whose recurrent Jacobian lies in the estimator's documented exactness regime; a general D-RTRL model is not automatically BPTT-equivalent. A nonzero `gap` on an approximate estimator indicates regime mismatch, not a failed forward transform; validate the forward transform separately before attributing the difference to the gradient rule.
 
 Check these failures explicitly:
 

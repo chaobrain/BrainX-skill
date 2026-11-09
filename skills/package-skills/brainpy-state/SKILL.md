@@ -9,7 +9,7 @@ description: Use for point-neuron modeling, from individual neurons to spiking n
 
 Use this skill for the native `brainpy.state` modeling path: compose point neurons, synapses, communication operators, synaptic outputs, projections, inputs, plasticity, and readouts into simulations or trainable spiking neural networks.
 
-Route NEST-compatible work to `references/nest-compatible/nest-workflow.md`, and online-learning execution to BrainTrace.
+Route NEST-compatible work in BrainX `2026.10.25` to the BrainSpikes workflow in `references/nest-compatible/nest-workflow.md`. Enable 64-bit JAX before constructing `brainspike.Simulator`; without it the default `poisson_generator` window raises `OverflowError`. Route online-learning execution to BrainTrace.
 
 Open `references/brainPy(legacy)/brainpy legacy workflow.md` only when the workspace already contains legacy `brainpy` code, contains no BrainUnit quantities, unit-aware APIs, and when the user explicitly asks to preserve old BrainPy. Use native BrainPy-State for new project is HIGHLY RECOMMENDED; use BrainPy-State with BrainCell for all cellular modeling.
 
@@ -160,7 +160,7 @@ assert post_voltage.shape == (2000, 10)
 assert conductance.shape == (2000, 10)
 ```
 
-Open `references/braintools/connectivity.md` first when geometry, distance, degree, modules, or another named topology determines which neuron pairs connect; generate the topology before choosing its BrainEvent representation. Open `references/projection-patterns.md` before implementing recurrent excitation, mutual inhibition, or other spike-driven connectivity; it owns AlignPre versus AlignPost, communication, delays, direct/delta input, short-term plasticity, and electrical coupling. Open `skills/package-skills/brainevent/references/scripts/coba_ei_teaching.py` when a BrainPy network should use BrainEvent for efficient event-driven communication; it keeps BrainPy neuron and synapse dynamics while replacing the communication step with `BinaryArray @ connectivity` over fixed-degree, CSR, or dense storage.
+Open `references/braintools/connectivity.md` first when geometry, distance, degree, modules, or another named topology determines which neuron pairs connect; generate the topology before choosing its BrainEvent representation. Open `references/projection-patterns.md` before implementing recurrent excitation, mutual inhibition, or other spike-driven connectivity; it owns AlignPre versus AlignPost, communication, delays, direct/delta input, short-term plasticity, and electrical coupling. Open `brainevent` → `references/scripts/coba_ei_teaching.py` when a BrainPy network should use BrainEvent for efficient event-driven communication; it keeps BrainPy neuron and synapse dynamics while replacing the communication step with `BinaryArray @ connectivity` over fixed-degree, CSR, or dense storage.
 
 ### 3. Train a spiking network
 
@@ -231,8 +231,8 @@ Open only the smallest reference that owns the decision.
 | `references/perturbation-experiment-validity.md` | Estimating baseline tuning or features before matched point-neuron perturbations, calibrating delivered target dose, or deciding whether activity and analysis support justify a formal causal run |
 | `references/nest-compatible/nest-workflow.md` | Using NEST/PyNEST model names, `Simulator`, devices, connection rules, spatial networks, parity, porting, or the bundled NEST-compatible full scripts |
 | `references/brainPy(legacy)/brainpy legacy workflow.md` | Use as the only first-level legacy entry when existing legacy `brainpy` has no BrainUnit, unit-aware, or BrainTrace code and the user explicitly requests it; this workflow routes all second-level legacy references |
-| `skills/package-skills/brainevent/SKILL.md` | Selecting sparse event representations, connectivity formats, event operators, plasticity kernels, or custom kernels |
-| `skills/package-skills/brainevent/references/scripts/coba_ei_teaching.py` | Learning how to incorporate efficient BrainEvent communication into a complete BrainPy COBA E/I network while preserving BrainPy dynamics and BrainState execution |
+| `brainevent` → `SKILL.md` | Selecting sparse event representations, connectivity formats, event operators, plasticity kernels, or custom kernels |
+| `brainevent` → `references/scripts/coba_ei_teaching.py` | Learning how to incorporate efficient BrainEvent communication into a complete BrainPy COBA E/I network while preserving BrainPy dynamics and BrainState execution |
 
 
 ## Application script examples

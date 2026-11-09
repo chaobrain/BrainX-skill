@@ -2,21 +2,22 @@
 
 Purpose: choose the official BrainTrace HTML page that directly supports an online-learning concept, model-building workflow, algorithm decision, compiler diagnostic, batching strategy, example, or API question.
 
-## Supported release boundary
+## Table of contents
 
-This repository targets BrainX `v2026.7.9`, which bundles BrainTrace `0.2.4`. Use the tagged `v0.2.4` sources below for exact APIs and executable composition. The live documentation routes later in this file describe BrainTrace `0.2.5` and must not be used to introduce `etrace_grad`, `etrace_evolve`, `SequenceDriverMixin`, `ETraceVmap`, `ETraceConfig`, or other post-`0.2.4` APIs into the supported skills.
-
-- [BrainTrace `v0.2.4` public API](https://github.com/chaobrain/braintrace/blob/v0.2.4/braintrace/__init__.py) - Public algorithms, compiler types, ETP operators, and input wrappers available in the bundled release.
-- [BrainTrace `v0.2.4` one-call compiler](https://github.com/chaobrain/braintrace/blob/v0.2.4/braintrace/_compile.py) - Exact `compile(...)` contract, native batching, compile-owned vmap, report behavior, and options.
-- [BrainTrace `v0.2.4` pp-prop examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/pp_prop) - SNN composition, working-memory and delayed-match tasks, scan gradient accumulation, and batching paths.
-- [BrainTrace `v0.2.4` D-RTRL examples](https://github.com/chaobrain/braintrace/tree/v0.2.4/examples/drtrl) - Parameter-dimensional online gradients, mapped and native batching, and VJP modes.
-- [BrainTrace `v0.2.4` algorithms API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/algorithms.rst) - Estimator classes and guarantees in the bundled release.
-- [BrainTrace `v0.2.4` compiler API source](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/apis/compiler.rst) - Compilation reports, structured diagnostics, graph types, and executor contracts.
-- [BrainTrace release notes](https://brainx.chaobrain.com/braintrace/changelog.html) - Use only to identify release boundaries; sequence drivers begin in `0.2.5`.
+- [Root](#root)
+- [Get Started](#get-started)
+- [Online Training Tutorials](#online-training-tutorials)
+- [Algorithm Tutorials](#algorithm-tutorials)
+- [Model-Building Tutorials](#model-building-tutorials)
+- [Compiler and Runtime Tutorials](#compiler-and-runtime-tutorials)
+- [Advanced Guides](#advanced-guides)
+- [Examples](#examples)
+- [Central API Reference Pages](#central-api-reference-pages)
 
 ## Root
 
 - [BrainTrace Documentation](https://brainx.chaobrain.com/braintrace/) — Main BrainTrace landing page for eligibility-trace online learning in stateful recurrent and spiking neural networks.
+- [Release notes](https://brainx.chaobrain.com/braintrace/changelog.html) — Records BrainTrace releases, additions, fixes, and compatibility changes.
 
 ## Get Started
 
@@ -35,6 +36,9 @@ This repository targets BrainX `v2026.7.9`, which bundles BrainTrace `0.2.4`. Us
 - [Algorithm Tutorials](https://brainx.chaobrain.com/braintrace/tutorials/algorithm_tutorials.html) — Introduces the algorithm-learning path and compares parameter-dimensional and input/output-factorized trace estimators on a shared task.
 - [D-RTRL: Diagonal Online Gradient Learning](https://brainx.chaobrain.com/braintrace/tutorials/drtrl.html) — Develops the D-RTRL estimator, sequence workflow, trace reset behavior, memory scaling, and relationship to BPTT.
 - [pp-prop: Input/Output-Factorized Online Gradients](https://brainx.chaobrain.com/braintrace/tutorials/pp_prop.html) — Explains pp-prop factorization, `decay_or_rank`, its sequence workflow, and its memory-versus-approximation tradeoff.
+- [e-prop: Local Eligibility and Learning Signals](https://brainx.chaobrain.com/braintrace/tutorials/eprop.html) — Separates a synapse-local eligibility trace from a readout-broadcast learning signal and shows the e-prop workflow.
+- [OSTL: With-H and Without-H Regimes](https://brainx.chaobrain.com/braintrace/tutorials/ostl.html) — Contrasts recurrent with-H and feedforward without-H OSTL classes and when each regime applies.
+- [SnAp: Sparse n-Step Recurrent Influence](https://brainx.chaobrain.com/braintrace/tutorials/snap.html) — Retains recurrent influence inside an n-step dependency neighborhood, demonstrated on sparse connectivity.
 
 ## Model-Building Tutorials
 
@@ -46,8 +50,7 @@ This repository targets BrainX `v2026.7.9`, which bundles BrainTrace `0.2.4`. Us
 ## Compiler and Runtime Tutorials
 
 - [Compiler & Runtime](https://brainx.chaobrain.com/braintrace/tutorials/compiler_runtime.html) — Routes the workflow for compilation, hidden-group inspection, traced and excluded weights, relation diagnostics, and structural validation.
-- [Graph Compilation](https://brainx.chaobrain.com/braintrace/tutorials/graph_compilation.html) — Shows the high-level `braintrace.compile()` path, lower-level graph compilation, and construction of the `ETraceGraph` relation graph.
-- [Visualization](https://brainx.chaobrain.com/braintrace/tutorials/visualization.html) — Uses learner reports, graphs, and `show_graph()` to inspect hidden groups, traced parameters, exclusions, and diagnostic reasons.
+- [RNN Compiler Walkthrough](https://brainx.chaobrain.com/braintrace/tutorials/rnn_compiler.html) — End-to-end compile path for single- and two-layer RNNs: `braintrace.compile()`, `compile_etrace_graph`, `learner.report` / `CompilationReport`, `ETraceGraph` / `show_graph()` inspection of hidden groups, traced and excluded weights, and diagnostics. Replaces the retired `graph_compilation.html` and `visualization.html` pages.
 
 ## Advanced Guides
 
@@ -67,7 +70,6 @@ This repository targets BrainX `v2026.7.9`, which bundles BrainTrace `0.2.4`. Us
 
 ## Central API Reference Pages
 
-- [Release Notes](https://brainx.chaobrain.com/braintrace/changelog.html) — Records BrainTrace releases, additions, fixes, and compatibility changes.
 - [ETP Operators & Core Types](https://brainx.chaobrain.com/braintrace/apis/concepts.html) — Documents public ETP operators, sequence-data wrappers, eligibility-trace state, gradient helpers, and compiler error types.
 - [Compiler, Executor & Diagnostics](https://brainx.chaobrain.com/braintrace/apis/compiler.html) — Documents graph compilation, hidden groups, parameter-operation relations, perturbations, executors, diagnostics, and compilation reports.
 - [Online-Learning Algorithms](https://brainx.chaobrain.com/braintrace/apis/algorithms.html) — Documents `braintrace.compile()`, sequence drivers, algorithm configuration, estimator base classes, and the built-in online-learning algorithms.
