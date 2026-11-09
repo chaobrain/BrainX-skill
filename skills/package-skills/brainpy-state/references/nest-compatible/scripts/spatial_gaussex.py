@@ -9,13 +9,13 @@ source->target distance,
 
 clipped to a circular mask of ``radius``. This is
 ``spatial.spatial_pairwise_bernoulli(p=spatial.gaussian(spatial.distance, std=...),
-mask=spatial.circular(...))`` riding the ordinary :meth:`~brainpy.state.Simulator.connect`
+mask=spatial.circular(...))`` riding the ordinary :meth:`~brainspike.Simulator.connect`
 -- the same call any non-spatial rule uses. The realized footprint of the central source
-neuron is read back with :func:`~brainpy.state.spatial.target_positions` (NEST
+neuron is read back with :func:`~brainspike.spatial.target_positions` (NEST
 ``GetTargetPositions``).
 
 The per-distance connection probability is a fixed law, so the validation
-(``brainpy_state/_nest_validation/spatial_gaussian_kernel_test.py``) asserts the empirical
+(``brainspike/_nest_validation/spatial_gaussian_kernel_test.py``) asserts the empirical
 ``p(d)`` follows the Gaussian (NEST-free) and matches live NEST's empirical curve within a
 distributional band (PRNG draws diverge sample-by-sample; the law does not).
 
@@ -30,7 +30,7 @@ brainstate.environ.set(precision=64)
 import numpy as np
 import brainunit as u
 
-from brainpy import state as bp
+import brainspike
 
 
 def run(shape=(30, 30), extent=(3.0, 3.0), std=0.5, radius=3.0, seed=0):
@@ -68,18 +68,18 @@ def run(shape=(30, 30), extent=(3.0, 3.0), std=0.5, radius=3.0, seed=0):
         >>> bool(tgt.shape[0] >= 1)        # the centre connects to at least itself-at-distance-0
         True
     """
-    sim = bp.Simulator(dt=0.1 * u.ms)
-    pos = bp.spatial.grid(list(shape), extent=list(extent))
-    a = sim.create(bp.iaf_psc_alpha, positions=pos)
-    b = sim.create(bp.iaf_psc_alpha, positions=pos)
+    sim = brainspike.Simulator(dt=0.1 * u.ms)
+    pos = brainspike.spatial.grid(list(shape), extent=list(extent))
+    a = sim.create(brainspike.iaf_psc_alpha, positions=pos)
+    b = sim.create(brainspike.iaf_psc_alpha, positions=pos)
     sim.connect(
         a, b,
-        rule=bp.spatial.spatial_pairwise_bernoulli(
-            p=bp.spatial.gaussian(bp.spatial.distance, std=std),
-            mask=bp.spatial.circular(radius)),
+        rule=brainspike.spatial.spatial_pairwise_bernoulli(
+            p=brainspike.spatial.gaussian(brainspike.spatial.distance, std=std),
+            mask=brainspike.spatial.circular(radius)),
         weight=1.0 * u.pA, delay=1.0 * u.ms, seed=seed)
-    ctr = bp.spatial.center_element(pos)
-    target_pos = bp.spatial.target_positions(sim, a[ctr], b)[0]
+    ctr = brainspike.spatial.center_element(pos)
+    target_pos = brainspike.spatial.target_positions(sim, a[ctr], b)[0]
     return sim.get_position(a), ctr, target_pos
 
 
@@ -87,7 +87,7 @@ def main():
     coords, ctr, target_pos = run()
     xy = np.asarray(u.get_magnitude(coords.to(u.um)))
     tgt = np.asarray(u.get_magnitude(target_pos.to(u.um)))
-    print('spatial_gaussex (brainpy.state)')
+    print('spatial_gaussex (brainspike)')
     print(f'  {xy.shape[0]} nodes; centre node {ctr} has {tgt.shape[0]} realized targets')
     try:
         import matplotlib.pyplot as plt
@@ -102,7 +102,7 @@ def main():
     plt.axis([-2.0, 2.0, -2.0, 2.0])
     plt.grid(True)
     plt.legend(loc='upper right')
-    plt.title('Connection targets, Gaussian kernel (brainpy.state)')
+    plt.title('Connection targets, Gaussian kernel (brainspike)')
     plt.tight_layout()
     plt.savefig('examples/nest_like/spatial_gaussex.png', dpi=100)
     print('  wrote examples/nest_like/spatial_gaussex.png')

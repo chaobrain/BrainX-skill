@@ -79,7 +79,7 @@ from braincell.io import NeuroMlReader
 morphology = NeuroMlReader().read("neuron.cell.nml")
 ```
 
-Declare ions, channels, clamps, probes, and network structure separately. BrainCell does not import those NeuroML2 definitions automatically.
+Declare ions, channels, clamps, recordings, and network structure separately. BrainCell does not import those NeuroML2 definitions automatically.
 
 ### NeuroMorpho.Org
 

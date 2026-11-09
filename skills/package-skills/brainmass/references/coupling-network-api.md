@@ -224,6 +224,8 @@ assert traces.shape == (2, 200, 3)
 
 Keep `max_delay` static. Constructing `Network` or `Delay` with a mapped delay can make buffer capacity depend on a tracer and fail during shape allocation. Map the complete independent condition, vary only the integer retrieval step, and preserve the same `dt` across construction, initialization, and execution.
 
+This hand-written mapped rollout exists only because each lane owns a different delay and coupling value. Run one custom `brainstate.nn.Module` through `brainmass.Simulator(model, dt=...).run(...)`; do not rebuild initialization, the time loop, or monitoring for a single run.
+
 Lock the phase convention with an impulse check before interpreting neural output:
 
 ```python
@@ -247,7 +249,7 @@ If retrieval occurs before insertion, the buffer still ends at the previous simu
 
 ## Application script
 
-Open `scripts/resting-state-meg-whole-brain-pipeline.py` when the task needs the complete connectome-to-network-to-MEG-to-functional-connectivity workflow.
+Open `references/scripts/resting-state-meg-whole-brain-pipeline.py` when the task needs the complete connectome-to-network-to-MEG-to-functional-connectivity workflow. The script requires BrainTools 0.4.0 or newer.
 
 ## Diagnose network failures
 

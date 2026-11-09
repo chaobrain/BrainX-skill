@@ -22,11 +22,11 @@ Use these constructors when the device must inject a current rather than deliver
 
 | Constructor | Use when |
 |---|---|
-| `sim.create(bp.dc_generator, size=1, params=parameters)` | Use a constant current over a `start`/`stop` window. |
-| `sim.create(bp.ac_generator, size=1, params=parameters)` | Use a sinusoidal current. |
-| `sim.create(bp.noise_generator, size=1, params=parameters)` | Use Gaussian white-noise current with independent target realizations. |
-| `sim.create(bp.step_current_generator, size=1, params=parameters)` | Use a piecewise-constant current schedule. |
-| `sim.create(bp.step_rate_generator, size=1, params=parameters)` | Use a piecewise-constant rate schedule. |
+| `sim.create(brainspike.dc_generator, size=1, params=parameters)` | Use a constant current over a `start`/`stop` window. |
+| `sim.create(brainspike.ac_generator, size=1, params=parameters)` | Use a sinusoidal current. |
+| `sim.create(brainspike.noise_generator, size=1, params=parameters)` | Use Gaussian white-noise current with independent target realizations. |
+| `sim.create(brainspike.step_current_generator, size=1, params=parameters)` | Use a piecewise-constant current schedule. |
+| `sim.create(brainspike.step_rate_generator, size=1, params=parameters)` | Use a piecewise-constant rate schedule. |
 
 Current generators inject through the target's current ring buffer. Do not treat them as weighted spike-event sources.
 
@@ -36,9 +36,9 @@ Use these constructors for explicit spike schedules, supplied trains, or spike d
 
 | Constructor | Use when |
 |---|---|
-| `sim.create(bp.spike_generator, size=1, params=parameters)` | Use explicit `spike_times`. |
-| `sim.create(bp.spike_train_injector, size=1, params=parameters)` | Use a supplied spike train as an event source. |
-| `sim.create(bp.spike_dilutor, size=1, params=parameters)` | Use NEST-compatible spike dilution. |
+| `sim.create(brainspike.spike_generator, size=1, params=parameters)` | Use explicit `spike_times`. |
+| `sim.create(brainspike.spike_train_injector, size=1, params=parameters)` | Use a supplied spike train as an event source. |
+| `sim.create(brainspike.spike_dilutor, size=1, params=parameters)` | Use NEST-compatible spike dilution. |
 
 ## Poisson generators
 
@@ -46,10 +46,10 @@ Use these constructors when spike times follow a constant, precise, scheduled, o
 
 | Constructor | Use when |
 |---|---|
-| `sim.create(bp.poisson_generator, size=1, params=parameters)` | Use a constant-rate Poisson train over a configured window. |
-| `sim.create(bp.poisson_generator_ps, size=1, params=parameters)` | Use precise-time Poisson spikes with dead time. |
-| `sim.create(bp.inhomogeneous_poisson_generator, size=1, params=parameters)` | Use a time-varying Poisson schedule. |
-| `sim.create(bp.sinusoidal_poisson_generator, size=1, params=parameters)` | Use a sinusoidally modulated Poisson rate. |
+| `sim.create(brainspike.poisson_generator, size=1, params=parameters)` | Use a constant-rate Poisson train over a configured window. |
+| `sim.create(brainspike.poisson_generator_ps, size=1, params=parameters)` | Use precise-time Poisson spikes with dead time. |
+| `sim.create(brainspike.inhomogeneous_poisson_generator, size=1, params=parameters)` | Use a time-varying Poisson schedule. |
+| `sim.create(brainspike.sinusoidal_poisson_generator, size=1, params=parameters)` | Use a sinusoidally modulated Poisson rate. |
 
 ## Other generators
 
@@ -57,11 +57,11 @@ Use these constructors for gamma-process, correlated, dead-time, or pulse-packet
 
 | Constructor | Use when |
 |---|---|
-| `sim.create(bp.gamma_sup_generator, size=1, params=parameters)` | Use a superposition of independent gamma processes. |
-| `sim.create(bp.sinusoidal_gamma_generator, size=1, params=parameters)` | Use a sinusoidally modulated gamma source. |
-| `sim.create(bp.mip_generator, size=1, params=parameters)` | Use correlated trains from a multiple-interaction process. |
-| `sim.create(bp.ppd_sup_generator, size=1, params=parameters)` | Use a superposition of Poisson processes with dead time. |
-| `sim.create(bp.pulsepacket_generator, size=1, params=parameters)` | Use a Gaussian pulse packet. |
+| `sim.create(brainspike.gamma_sup_generator, size=1, params=parameters)` | Use a superposition of independent gamma processes. |
+| `sim.create(brainspike.sinusoidal_gamma_generator, size=1, params=parameters)` | Use a sinusoidally modulated gamma source. |
+| `sim.create(brainspike.mip_generator, size=1, params=parameters)` | Use correlated trains from a multiple-interaction process. |
+| `sim.create(brainspike.ppd_sup_generator, size=1, params=parameters)` | Use a superposition of Poisson processes with dead time. |
+| `sim.create(brainspike.pulsepacket_generator, size=1, params=parameters)` | Use a Gaussian pulse packet. |
 
 A generator fans out to one independent train per target neuron. For a multi-channel generator, pass one signed connection weight per channel.
 
@@ -71,9 +71,9 @@ Use these constructors to capture spikes, named analog State, or per-edge plasti
 
 | Constructor | Use when |
 |---|---|
-| `sim.create(bp.spike_recorder, size=1)` | Use to record emitted spikes, event counts, or mean population rate. |
-| `sim.create(bp.multimeter, size=1, record_from=recordables, interval=interval)` | Use to sample named analog recordables such as `V_m`. |
-| `sim.create(bp.weight_recorder, size=1, params=parameters)` | Use the NEST-compatible weight-recorder device. |
+| `sim.create(brainspike.spike_recorder, size=1)` | Use to record emitted spikes, event counts, or mean population rate. |
+| `sim.create(brainspike.multimeter, size=1, record_from=recordables, interval=interval)` | Use to sample named analog recordables such as `V_m`. |
+| `sim.create(brainspike.weight_recorder, size=1, params=parameters)` | Use the NEST-compatible weight-recorder device. |
 
 ## Recorder readback
 
@@ -95,10 +95,10 @@ Use these constructors to compute correlation or binary-State statistics from re
 
 | Constructor | Use when |
 |---|---|
-| `sim.create(bp.correlation_detector, size=1, params=parameters)` | Use pairwise correlation statistics. |
-| `sim.create(bp.correlomatrix_detector, size=1, params=parameters)` | Use a correlation matrix. |
-| `sim.create(bp.correlospinmatrix_detector, size=1, params=parameters)` | Use spin-based correlation matrices. |
-| `sim.create(bp.spin_detector, size=1, params=parameters)` | Use binary-State decoding from spikes. |
+| `sim.create(brainspike.correlation_detector, size=1, params=parameters)` | Use pairwise correlation statistics. |
+| `sim.create(brainspike.correlomatrix_detector, size=1, params=parameters)` | Use a correlation matrix. |
+| `sim.create(brainspike.correlospinmatrix_detector, size=1, params=parameters)` | Use spin-based correlation matrices. |
+| `sim.create(brainspike.spin_detector, size=1, params=parameters)` | Use binary-State decoding from spikes. |
 
 Obtain spike data before driving a detector that uses NumPy randomness or a Python host loop; do not force imperative detector logic into the compiled simulation loop.
 
@@ -108,7 +108,7 @@ Use this constructor when dopamine-modulated plasticity needs one shared broadca
 
 | Constructor | Use when |
 |---|---|
-| `sim.create(bp.volume_transmitter, size=1, params=parameters)` | Use to broadcast dopamine State to `stdp_dopamine_synapse`. |
+| `sim.create(brainspike.volume_transmitter, size=1, params=parameters)` | Use to broadcast dopamine State to `stdp_dopamine_synapse`. |
 
 ## Device direction
 
@@ -123,13 +123,13 @@ Use device role to determine the `connect()` direction.
 
 ```python
 import brainunit as u
-from brainpy import state as bp
+import brainspike
 
-sim = bp.Simulator(dt=0.1 * u.ms)
-neuron = sim.create(bp.iaf_psc_exp, 1)
-drive = sim.create(bp.poisson_generator, rate=8000.0 * u.Hz, rng_seed=0)
-spike_recorder = sim.create(bp.spike_recorder)
-meter = sim.create(bp.multimeter, record_from=["V_m"], interval=0.1 * u.ms)
+sim = brainspike.Simulator(dt=0.1 * u.ms)
+neuron = sim.create(brainspike.iaf_psc_exp, 1)
+drive = sim.create(brainspike.poisson_generator, rate=8000.0 * u.Hz, rng_seed=0)
+spike_recorder = sim.create(brainspike.spike_recorder)
+meter = sim.create(brainspike.multimeter, record_from=["V_m"], interval=0.1 * u.ms)
 
 sim.connect(drive, neuron, weight=10.0 * u.pA, delay=1.0 * u.ms)
 sim.connect(neuron, spike_recorder)
@@ -153,5 +153,5 @@ voltage = result.trace(meter, "V_m")
 
 ## Official sources
 
-- https://brainx.chaobrain.com/brainpy-state/nest-style/devices.html
-- https://brainx.chaobrain.com/brainpy-state/apis/nest-devices.html
+- https://brainx.chaobrain.com/brainspike/nest-style/devices.html
+- https://brainx.chaobrain.com/brainspike/apis/nest-devices.html

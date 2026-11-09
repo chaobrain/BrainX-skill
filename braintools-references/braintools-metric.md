@@ -1,9 +1,13 @@
-# Braintools metrics
+# BrainTools losses and analysis
 
 Use this reference to select supervised losses and neuroscience metrics for
 classification, regression, spike trains, local field potentials, correlation,
 connectivity, and pairwise comparison. Verify input orientation, units, and
 reduction before treating any returned array as a scalar objective.
+
+Use `braintools.metric` for training losses and vector comparisons. Use
+`braintools.analysis` for neuroscience analysis. The analysis examples require
+BrainTools 0.4.0 or newer.
 
 ## Choose a metric family
 
@@ -11,26 +15,26 @@ reduction before treating any returned array as a scalar objective.
 |---|---|---|
 | Independent binary or multilabel classification | Sigmoid binary cross entropy or focal loss | Logits and labels must have broadcast-compatible class structure. |
 | Mutually exclusive classes | Softmax cross entropy | Choose one-hot/probability labels or the integer-label variant explicitly. |
-| Continuous fitting | Squared, absolute, Huber, log-cosh, or cosine losses | Set `reduction` rather than assuming a scalar result. |
+| Continuous fitting | Squared, absolute, Huber, log-cosh, or cosine losses | Check the function-specific reduction and reduce explicitly when a scalar is required. |
 | Spike timing | Victor-Purpura or van Rossum distance | Inputs are spike-time trains, not dense spike matrices. |
 | Population spiking | Firing-rate and synchrony metrics | Dense spike matrices are time-major unless the API says otherwise. |
-| LFP spectrum or coupling | PSD, coherence, PAC, CSD, entropy, or phase coherence | Pass the sample interval as `dt`, not sampling frequency as `fs`. |
+| LFP spectrum or coupling | PSD, coherence, PAC, CSD, entropy, or phase coherence | For spectral routines with `dt`, pass the sample interval. CSD takes electrode spacing. |
 | Functional connectivity | Correlation and connectivity functions | Time series use `(num_time, num_signals)`. |
 
-## Classification losses
+## Classification losses (`braintools.metric`)
 
 | API | Description |
 |---|---|
 | `sigmoid_binary_cross_entropy(logits, labels)` | Use for independent binary classes; returns element-wise sigmoid cross entropy. |
 | `softmax_cross_entropy(logits, labels)` | Use for mutually exclusive classes represented by one-hot or probability labels. |
-| `softmax_cross_entropy_with_integer_labels(logits, labels)` | Use the more direct integer-index form for mutually exclusive classes. Validate every label yourself. |
+| `softmax_cross_entropy_with_integer_labels(logits, labels)` | Use the more direct integer-index form for mutually exclusive classes. |
 | `hinge_loss(...)` | Use for binary margin classification. |
 | `perceptron_loss(...)` | Use for the binary perceptron objective. |
 | `multiclass_hinge_loss(...)` | Use for a multiclass margin objective. |
 | `multiclass_perceptron_loss(...)` | Use for a multiclass perceptron objective. |
 | `poly_loss_cross_entropy(...)` | Use when the specified method requires PolyLoss cross entropy. |
-| `kl_divergence(...)` | Compare probability distributions. |
-| `kl_divergence_with_log_targets(...)` | Use when predictions and targets are already in log space. |
+| `kl_divergence(log_predictions, targets)` | Compare target probabilities with predicted log probabilities. |
+| `kl_divergence_with_log_targets(...)` | Use when both predicted and target probabilities are supplied in log space. |
 | `convex_kl_divergence(...)` | Use when the convex KL variant is required. |
 | `ctc_loss(...)` | Use for sequence alignment without frame-level labels. |
 | `ctc_loss_with_forward_probs(...)` | Use when the CTC forward probabilities are also needed. |
@@ -54,19 +58,18 @@ loss = jnp.mean(per_example)
 assert loss.ndim == 0
 ```
 
-**Critical exception:** JAX gather silently clamps out-of-range integer labels
-in `softmax_cross_entropy_with_integer_labels`. Validate
-`0 <= labels < logits.shape[-1]`; the function does not raise for invalid
-labels.
+Validate integer labels against `0 <= labels < logits.shape[-1]` before
+computing the loss. Invalid indices can select a different class or return
+`NaN` without raising.
 
-## Regression and pairwise metrics
+## Regression and pairwise metrics (`braintools.metric`)
 
 | API | Description |
 |---|---|
-| `squared_error(predictions, targets=None, axis=None, reduction='none')` | Use for element-wise squared error; choose `mean` or another supported reduction explicitly when a scalar is required. |
+| `squared_error(predictions, targets=None, axis=None, reduction='none')` | Use for element-wise squared error. Targets must match prediction shape; choose `reduction="mean"` for a scalar MSE with `axis=None`. |
 | `absolute_error(...)` | Use for element-wise absolute error. |
-| `l1_loss(...)` | Use for mean absolute-error behavior according to its axis/reduction options. |
-| `l2_loss(...)` | Use for squared L2 loss. |
+| `l1_loss(logits, targets, reduction="mean")` | Average absolute error over non-batch axes first; use `reduction="none"` to keep one value per sample. |
+| `l2_loss(...)` | Use for half the squared error. |
 | `l2_norm(...)` | Return the L2 norm of prediction error. |
 | `safe_norm(...)` | Use when a differentiable lower bound must prevent an unstable zero norm. |
 | `huber_loss(predictions, targets=None, delta=1.0, axis=None, reduction='none')` | Use for quadratic small residuals and linear large residuals; tune `delta` in target units. |
@@ -80,38 +83,42 @@ Do not conflate element-wise loss with final optimization reduction. Preserve
 batch and time axes until the scientific loss definition determines how to
 reduce them.
 
-## Correlation and functional connectivity
+## Correlation and functional connectivity (`braintools.analysis`)
 
 | API | Description |
 |---|---|
-| `cross_correlation(spikes, bin, dt)` | Calculate a cross-correlation synchrony index from a time-major spike matrix. |
-| `voltage_fluctuation(voltages)` | Estimate synchrony from population voltage variance. |
-| `matrix_correlation(a, b)` | Correlate upper-triangular entries of two square matrices. |
-| `weighted_correlation(x, y, weights)` | Compute weighted Pearson correlation for two one-dimensional series. |
-| `functional_connectivity(activities)` | Return the pairwise Pearson correlation matrix for `(num_time, num_signals)` data; NaNs are replaced with zero. |
-| `functional_connectivity_dynamics(activities, window_size, step_size)` | Compare sliding-window connectivity matrices to produce functional-connectivity dynamics. |
+| `spike.cross_correlation(spikes, bin, dt=None, ...)` | Calculate a cross-correlation synchrony index from a time-major spike matrix. |
+| `population.voltage_fluctuation(potentials, ...)` | Estimate synchrony from population voltage variance. |
+| `stats.matrix_correlation(x, y)` | Correlate the strict upper triangles of two matching connectivity matrices. |
+| `stats.weighted_correlation(x, y, w)` | Compute weighted Pearson correlation for two one-dimensional series. |
+| `population.functional_connectivity(activities)` | Return the pairwise Pearson correlation matrix for `(num_time, num_signals)` data; NaNs are replaced with zero. |
+| `population.functional_connectivity_dynamics(activities, window_size, step_size)` | Correlate the strict upper triangles of windowed FC matrices. Specify window size and step in samples. |
 
 ## Spike-train metrics
 
+Pass physical time quantities on BrainTools 0.4. Bare `dt` values are in
+seconds for `firing_rate`, `phase_locking_value`, and spectral functions.
+Most other spike-matrix routines use milliseconds.
+
 | API | Description |
 |---|---|
-| `raster_plot(spikes, times)` | Extract neuron indices and spike times from a dense spike matrix; this is a metric/data helper, not the visualization API. |
-| `firing_rate(spikes, width, dt=None)` | Average across neurons and smooth population rate with a rectangular window of physical width. |
-| `victor_purpura_distance(spike_times_1, spike_times_2, cost_factor=1.0)` | Measure edit cost from insertions, deletions, and temporal shifts. |
-| `van_rossum_distance(spike_times_1, spike_times_2, tau=...)` | Compare exponentially filtered spike trains. |
-| `spike_train_synchrony(spikes, window_size, dt=None)` | Compute SPIKE-style synchronization on a population matrix. |
-| `burst_synchrony_index(spikes, dt=None, ...)` | Measure co-occurring burst events. |
-| `phase_locking_value(spikes, reference_freq, dt=None, ...)` | Measure spike phase locking to a reference oscillation. |
-| `spike_time_tiling_coefficient(spikes, dt=None, tau=...)` | Compute STTC within a temporal tolerance. |
-| `correlation_index(spikes, window_size, dt=None)` | Compute a windowed spike-train correlation index. |
+| `spike.firing_rate(spikes, width, dt=None)` | Return a time series of population rate in Hz. Pass physical time quantities for `width` and `dt` to make units explicit. |
+| `spike.victor_purpura_distance(spike_times_1, spike_times_2, cost_factor=1.0)` | Measure edit cost from insertions, deletions, and temporal shifts. |
+| `spike.van_rossum_distance(spike_times_1, spike_times_2, tau=1.0, t_max=None)` | Compare exponentially filtered spike trains. |
+| `spike.spike_train_synchrony(spike_matrix, window_size, dt=None)` | Average pairwise spike coincidences within a time window. Silent-neuron pairs are omitted; check activity before interpreting the score. |
+| `spike.burst_synchrony_index(spike_matrix, burst_threshold=3, max_isi=100.0, dt=None)` | Measure co-occurring burst events. |
+| `spike.phase_locking_value(spike_matrix, reference_freq, dt=None)` | Measure spike phase locking at a specified reference frequency; this score does not give a signed phase lag. |
+| `spike.spike_time_tiling_coefficient(spike_matrix, dt=None, tau=5.0)` | Compute STTC within a temporal tolerance. |
+| `spike.correlation_index(spike_matrix, window_size, dt=None)` | Compute a windowed spike-train correlation index. |
 
 ```python
 import brainunit as u
-from braintools.metric import firing_rate, spike_train_synchrony
+import braintools
+import jax.numpy as jnp
 
-# Shape: (num_time, num_neurons)
-rate = firing_rate(spikes, width=10 * u.ms, dt=1 * u.ms)
-synchrony = spike_train_synchrony(
+spikes = jnp.zeros((200, 5)).at[50:53, :].set(1.0)
+rate = braintools.analysis.spike.firing_rate(spikes, width=10 * u.ms, dt=1 * u.ms)
+synchrony = braintools.analysis.spike.spike_train_synchrony(
     spikes,
     window_size=5 * u.ms,
     dt=1 * u.ms,
@@ -120,26 +127,40 @@ synchrony = spike_train_synchrony(
 
 Keep dense spike matrices and lists of spike times distinct. Distance metrics
 consume event times; population rate and synchrony metrics consume matrices.
+Use [`braintools.spike.SpikeTrains.from_dense`](https://brainx.chaobrain.com/braintools/apis/generated/braintools.spike.SpikeTrains.html#braintools.spike.SpikeTrains.from_dense)
+to convert a regularly sampled matrix to spike trains; use
+[`braintools.visualize.spike_raster`](https://brainx.chaobrain.com/braintools/apis/generated/braintools.visualize.spike_raster.html)
+to draw a raster.
 
 ## Local field potential analysis
 
 | API | Description |
 |---|---|
-| `unitary_LFP(times, spikes, neuron_type, seed=None, ...)` | Construct unitary LFP contributions from spikes; use the documented `'exc'` or `'inh'` neuron type. |
-| `power_spectral_density(lfp, dt, nperseg=None, noverlap=None, freq_range=None)` | Return one-sided Welch frequencies and PSD. |
-| `coherence_analysis(signal1, signal2, dt, ...)` | Return frequency-resolved magnitude-squared coherence. |
-| `phase_amplitude_coupling(lfp, dt, phase_freq_range, amplitude_freq_range, ...)` | Return Tort modulation index plus phase-bin details. |
-| `theta_gamma_coupling(lfp, dt, ...)` | Return theta-gamma coupling using standard bands. |
-| `current_source_density(lfp, electrode_spacing, axis=0, ...)` | Estimate laminar CSD along the electrode axis. |
-| `spectral_entropy(lfp, dt, ...)` | Return normalized spectral entropy. |
-| `lfp_phase_coherence(lfp, dt, freq_band, ...)` | Compute pairwise phase coherence across channels. |
+| `field.unitary_LFP(times, spikes, spike_type, ...)` | Construct unitary LFP contributions from spikes. Supply times in milliseconds and choose `'exc'` or `'inh'`. |
+| `spectral.power_spectral_density(lfp, dt, nperseg=None, noverlap=None, freq_range=None)` | Return one-sided Welch frequencies in Hz and PSD for `(time,)` or `(time, channels)` input. |
+| `spectral.spectrogram(x, dt, nperseg, noverlap=None, window='hann', detrend='constant')` | Use when segment spectra or explicit window/detrending controls are required; returns frequencies, segment centers and PSD shaped `(frequency, segment, ...)`. |
+| `spectral.coherence_analysis(lfp1, lfp2, dt, ...)` | Return frequency-resolved magnitude-squared coherence. |
+| `spectral.phase_amplitude_coupling(lfp, dt, phase_freq_range, amplitude_freq_range, ...)` | Return Tort modulation index plus phase-bin details. |
+| `spectral.theta_gamma_coupling(lfp, dt)` | Return theta-gamma coupling using standard bands. |
+| `field.current_source_density(lfp_laminar, electrode_spacing, conductivity=1.0, axis=-1)` | Estimate laminar CSD using electrode spacing. Set `axis` explicitly when electrodes are not on the last axis. |
+| `spectral.spectral_entropy(lfp, dt, ...)` | Return normalized spectral entropy. |
+| `spectral.lfp_phase_coherence(lfp_signals, dt, freq_band=(8, 12))` | Compute pairwise phase coherence across channels. |
+
+Use `power_spectral_density` when its estimator defaults match the protocol.
+For a fixed Welch estimator requiring explicit window and detrending controls,
+use [`spectral.spectrogram`](https://brainx.chaobrain.com/braintools/apis/generated/braintools.analysis.spectral.spectrogram.html)
+and take `u.math.mean(segment_psd, axis=1)` over segments. Set `noverlap`
+explicitly: its default is `nperseg // 8`, not 50%. `window='hann'` selects
+a periodic Hann window; `detrend='constant'` removes each segment's mean.
+For a Quantity signal with unit `U`, the segment PSD and its mean retain
+`U**2 / Hz`. Preserve the frozen estimator when comparing implementations.
 
 `power_spectral_density(..., freq_range=...)` uses boolean-mask indexing and
 therefore has a data-dependent output length; that path is not JIT-compatible.
 Compute the full spectrum inside JIT and filter outside when compilation is
 required.
 
-## Structured, ranking, and smoothing losses
+## Structured, ranking, and smoothing losses (`braintools.metric`)
 
 | API | Description |
 |---|---|
@@ -147,6 +168,11 @@ required.
 | `ranking_softmax_loss(scores, labels, ...)` | Use for list-wise learning-to-rank objectives. |
 | `smooth_labels(labels, alpha=...)` | Apply label smoothing to one-hot targets. |
 
-## Official source
+## Official sources
 
-- `https://brainx.chaobrain.com/braintools/apis/metric.html`
+Open the [analysis API](https://brainx.chaobrain.com/braintools/apis/analysis.html)
+for PSTH, interspike-interval statistics, or band power. Open the
+[fitting API](https://brainx.chaobrain.com/braintools/apis/fit.html) when firing
+rate, PSD, or FC is a fitting objective.
+
+- [Training losses and deprecated alias routing](https://brainx.chaobrain.com/braintools/apis/metric.html)

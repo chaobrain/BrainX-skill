@@ -8,14 +8,14 @@ distributions, retrieves the connections with ``nest.GetConnections()`` (a
 ``SynapseCollection``), and reads / sets ``.source``, ``.target``, ``.weight`` to
 build weight matrices. This port reproduces every idiom with
 :meth:`Simulator.get_connections` and
-:class:`~brainpy.state.SynapseCollection`:
+:class:`~brainspike.SynapseCollection`:
 
 * ``get(['source', 'target', 'weight'])`` — read several attributes at once;
 * ``set('weight', values)`` — per-edge write-back, round-tripped through ``get``;
 * ``get_connections()`` — every edge; ``get_connections(src, tgt)`` — a
   source/target slice; ``get_connections(synapse=model)`` — one synapse model.
 
-Three faithful adaptations to ``brainpy.state``:
+Three faithful adaptations to ``brainspike``:
 
 * **one_to_one is per-edge here.** NEST's ``one_to_one`` uses the per-edge-settable
   default ``static_synapse``; the homogeneous ``one_to_one`` *EventProjection*
@@ -24,7 +24,7 @@ Three faithful adaptations to ``brainpy.state``:
   (same realized connectivity, per-edge weights).
 * **Distributional weights are sampled at connect on the static path.** The
   ``all_to_all`` block draws ``Uniform(0.5, 4.5)`` pA with the ``dist`` API (the
-  brainpy.state ``Parameter`` analogue, sampled once at ``connect``). The plastic
+  brainspike ``Parameter`` analogue, sampled once at ``connect``). The plastic
   ``stdp_synapse`` connects take a concrete initial weight (the rule evolves it
   during ``simulate``), so the complex block uses fixed initial weights there.
 * **Population-local indices.** ``source`` / ``target`` index within their
@@ -42,10 +42,7 @@ brainstate.environ.set(precision=64)
 import numpy as np
 import brainunit as u
 
-from brainpy.state import (Simulator, iaf_psc_alpha, one_to_one, all_to_all,
-                           pairwise_bernoulli, fixed_total_number, fixed_indegree,
-                           static_synapse, stdp_synapse)
-from brainpy.state import dist
+import brainspike
 
 DT = 0.1            # resolution [ms]
 
@@ -91,10 +88,10 @@ def build_one_to_one(n=10):
     plastic path (not the homogeneous ``one_to_one`` EventProjection), so the
     upstream's per-edge weight ``set`` round-trips.
     """
-    sim = Simulator(dt=DT * u.ms)
-    nrns = sim.create(iaf_psc_alpha, n)
-    sim.connect(nrns, nrns, rule=one_to_one,
-                synapse=static_synapse(weight=1. * u.pA))
+    sim = brainspike.Simulator(dt=DT * u.ms)
+    nrns = sim.create(brainspike.iaf_psc_alpha, n)
+    sim.connect(nrns, nrns, rule=brainspike.one_to_one,
+                synapse=brainspike.static_synapse(weight=1. * u.pA))
     return sim, nrns
 
 
@@ -104,11 +101,11 @@ def build_all_to_all(n_pre=10, n_post=5, seed=0):
     Returns ``(sim, pre, post)``. Weights are drawn once at ``connect`` from the
     ``dist`` Parameter API (the static path samples distributions eagerly).
     """
-    sim = Simulator(dt=DT * u.ms)
-    pre = sim.create(iaf_psc_alpha, n_pre)
-    post = sim.create(iaf_psc_alpha, n_post)
-    sim.connect(pre, post, rule=all_to_all,
-                weight=dist.Uniform(0.5 * u.pA, 4.5 * u.pA), comm='sparse', seed=seed)
+    sim = brainspike.Simulator(dt=DT * u.ms)
+    pre = sim.create(brainspike.iaf_psc_alpha, n_pre)
+    post = sim.create(brainspike.iaf_psc_alpha, n_post)
+    sim.connect(pre, post, rule=brainspike.all_to_all,
+                weight=brainspike.dist.Uniform(0.5 * u.pA, 4.5 * u.pA), comm='sparse', seed=seed)
     return sim, pre, post
 
 
@@ -120,23 +117,23 @@ def build_complex(n=15, seed=0):
     ``fixed_total_number`` static block, an ``all_to_all`` ``stdp_synapse``, and a
     ``fixed_indegree`` static block.
     """
-    sim = Simulator(dt=DT * u.ms)
-    nrns = sim.create(iaf_psc_alpha, n)
-    sim.connect(nrns[:5], nrns[:5], rule=one_to_one,
-                synapse=stdp_synapse(weight=5. * u.pA))
-    sim.connect(nrns[:10], nrns[5:12], rule=pairwise_bernoulli(0.4),
+    sim = brainspike.Simulator(dt=DT * u.ms)
+    nrns = sim.create(brainspike.iaf_psc_alpha, n)
+    sim.connect(nrns[:5], nrns[:5], rule=brainspike.one_to_one,
+                synapse=brainspike.stdp_synapse(weight=5. * u.pA))
+    sim.connect(nrns[:10], nrns[5:12], rule=brainspike.pairwise_bernoulli(0.4),
                 weight=4. * u.pA, comm='sparse', seed=seed)
-    sim.connect(nrns[5:10], nrns[:5], rule=fixed_total_number(5),
+    sim.connect(nrns[5:10], nrns[:5], rule=brainspike.fixed_total_number(5),
                 weight=3. * u.pA, comm='sparse', seed=seed)
-    sim.connect(nrns[10:], nrns[:12], rule=all_to_all,
-                synapse=stdp_synapse(weight=4. * u.pA))
-    sim.connect(nrns, nrns[12:], rule=fixed_indegree(3),
+    sim.connect(nrns[10:], nrns[:12], rule=brainspike.all_to_all,
+                synapse=brainspike.stdp_synapse(weight=4. * u.pA))
+    sim.connect(nrns, nrns[12:], rule=brainspike.fixed_indegree(3),
                 weight=1. * u.pA, comm='sparse', seed=seed)
     return sim, nrns
 
 
 def main():
-    print("synapsecollection: SynapseCollection introspection tour (brainpy.state)")
+    print("synapsecollection: SynapseCollection introspection tour (brainspike)")
 
     # 1. one_to_one: identity, then a per-edge weight set.
     sim, nrns = build_one_to_one(10)

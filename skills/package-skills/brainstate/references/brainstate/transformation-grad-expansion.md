@@ -1,6 +1,6 @@
 # BrainState gradient and autodiff expansion
 
-Use this reference after `skills/package-skills/brainstate/SKILL.md` when a task needs gradient targets beyond the main skill's minimal parameter update, exact `return_value`/`has_aux` destructuring, state discovery in an arbitrary function, vector- or matrix-valued sensitivities, second derivatives, or an optimizer-integrated fitting step. The main skill owns the canonical `ParamState` collection and manual update; the parameter reference owns the choice between `ParamState` and `nn.Param`.
+Use this reference after the BrainState skill's `SKILL.md` when a task needs gradient targets beyond the canonical training step, exact `return_value`/`has_aux` destructuring, state discovery in an arbitrary function, vector- or matrix-valued sensitivities, second derivatives, or an optimizer-integrated fitting step. The parameter reference owns the choice between `ParamState` and `nn.Param`.
 
 These three sources do not establish BrainCell solver, reset, or conductance-fitting semantics. Specialized dynamics belongs to the matching BrainCell or BrainPy-State skill; use this reference only for the source-supported autodiff contract around that computation.
 
@@ -440,7 +440,7 @@ def train_step(x, y):
     return loss
 ```
 
-Return to `skills/package-skills/brainstate/SKILL.md` for the general training structure. Open `references/braintools-optimizer-reference.md` only for optimizer or scheduler selection.
+Return to `SKILL.md` for the general training structure. Open `references/braintools-optimizer-reference.md` only for optimizer or scheduler selection.
 
 Official source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 

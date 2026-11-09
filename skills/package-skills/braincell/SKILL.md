@@ -13,7 +13,7 @@ Use BrainCell for cellular biophysics at either of its two supported spatial sca
 - Use `Cell` when soma, dendrite, axon, branch geometry, spatial channel distribution, or location-specific stimulation and recording affect the result.
 
 
-Keep network wiring, projections, and network training outside this skill. Open `skills/package-skills/brainpy-state/SKILL.md` when multiple cells must communicate.
+Use `braincell.Network` when events must reach synapses placed on detailed cells. Open `brainpy-state` → `SKILL.md` for point-neuron networks.
 
 ## Underlying principle of BrainCell
 
@@ -34,7 +34,8 @@ Keep network wiring, projections, and network training outside this skill. Open 
 | `braincell.ion` | Choose sodium, potassium, and calcium ion models and their reversal-potential or concentration dynamics. |
 | `braincell.channel` | Choose built-in membrane-channel dynamics for calcium, HCN, leak, potassium, potassium-calcium, and sodium currents. |
 | `braincell.synapse` | Choose built-in AMPA, GABAa, and NMDA Markov synapse models. |
-| `braincell.mech` | Declare what a multicompartment `Cell` installs: cable properties, density ions and channels, point mechanisms, and probes. |
+| `braincell.mech` | Declare what a multicompartment `Cell` installs: cable properties, density ions and channels, and point mechanisms. |
+| `braincell.observe` | Select State, currents, or mechanism fields for named recordings. |
 | `braincell.filter` | Build regions for `paint()` and locsets for `place()`, including composed spatial selections. |
 | `braincell.io` | Load, validate, checkpoint, and retrieve morphologies from supported file formats and NeuroMorpho.Org. |
 | `braincell.quad` | Define differential-equation modules and choose, inspect, or register numerical integrators. |
@@ -113,7 +114,7 @@ Open `references/braintools/input-current.md` when generating timed sections, pu
 
 ## Build and run a multicompartment cell
 
-A `Cell` lowers morphology, spatial selectors, and declarative mechanisms into coupled control-volume State, then returns only the traces defined by placed probes.
+A `Cell` lowers morphology and declarative mechanisms into coupled control-volume State. The voltage layout is `pop_size + (n_cv,)` before any separate trial batch axis, including a leading size-one population axis for one cell.
 
 | API | Description |
 |---|---|
@@ -121,19 +122,25 @@ A `Cell` lowers morphology, spatial selectors, and declarative mechanisms into c
 | `braincell.Cell(morpho, cv_policy=..., solver=...)` | Use when spatial structure matters; it clones the morphology, applies a CV policy, and owns distinct declaration and initialized runtime phases. |
 | `braincell.CVPolicy` | Use to control spatial resolution; it divides branches into isopotential control volumes, trading accuracy against State size and computation. |
 | `cell.paint(region, *mechanisms)` | Use for cable properties and density mechanisms; it records declarations over a cable region and returns the cell for chaining. |
-| `cell.place(locset, *mechanisms)` | Use for clamps, probes, and other point mechanisms; it records declarations at selected locations and returns the cell for chaining. |
-| `cell.init_state()` | Use after all `paint()` and `place()` calls; it lowers declarations and allocates runtime State, and it raises if the cell is already initialized. |
-| `cell.run(dt=..., duration=...)` | Use to advance the initialized cell and collect probe traces; it initializes on first use when needed and requires at least one placed probe. |
+| `cell.place(locset, *mechanisms)` | Use for clamps and other point mechanisms at selected locations; it returns the cell for chaining. |
+| `cell.loc(locset).record(name, observable)` | Use before initialization to sample a named observable at the selected locations, such as `braincell.observe.state("v")` for membrane voltage. |
+| `cell.init_state()` | Use after declaring mechanisms and recordings to allocate runtime State explicitly. It raises if the cell is already initialized. |
+| `cell.run(dt=..., duration=...)` | Use for a standalone cell. It initializes on first use and returns named recording blocks in `result.samples`. |
 | `cell.reset_state()` / `cell.reset()` | Use `reset_state()` to reseed State while remaining initialized; use `reset()` to discard runtime State and return to the declaration phase before changing `paint()` or `place()` rules. |
 
 ```python
 import braincell
 import braincell.mech as mech
 import brainunit as u
-from braincell.filter import AllRegion, RootLocation, at, branch_in
+from braincell.filter import AllRegion, RootLocation, branch_in
 
 
-morphology = braincell.Morphology.from_swc("neuron.swc")
+soma = braincell.Branch.from_points(
+    points=[[0.0, 0.0, 0.0], [20.0, 0.0, 0.0]] * u.um,
+    radii=[5.0, 5.0] * u.um,
+    type="soma",
+)
+morphology = braincell.Morphology.from_root(soma, name="soma")
 cell = braincell.Cell(
     morphology,
     cv_policy=braincell.CVPerBranch(cv_per_branch=2),
@@ -154,25 +161,26 @@ cell.paint(
     mech.Channel("Na_HH1952", g_max=120.0 * u.mS / u.cm**2),
     mech.Channel("K_HH1952", g_max=36.0 * u.mS / u.cm**2),
 )
+soma_midpoint = RootLocation(x=0.5)
 cell.place(
-    RootLocation(x=0.5),
+    soma_midpoint,
     mech.CurrentClamp(
         delay=20.0 * u.ms,
         durations=60.0 * u.ms,
         amplitudes=0.2 * u.nA,
     ),
 )
-cell.place(at("soma", 0.5), mech.StateProbe())
+cell.loc(soma_midpoint).record("soma_v", braincell.observe.state("v"))
 
 cell.init_state()
 result = cell.run(dt=0.1 * u.ms, duration=100.0 * u.ms)
 
-assert "soma(0.5)_v" in result.traces
+assert result.samples["soma_v"].values.shape == (1000, 1)
 ```
 
-Use `paint()` only with regions and density mechanisms. Use `place()` only with locsets and point mechanisms. Declare all mechanisms before `init_state()`; call `reset()` before altering the declaration of an initialized cell.
+Use regions for `paint()` and locsets for `place()`. Declare mechanisms and recordings before `init_state()`. Call `reset()` before changing a declaration on an initialized cell.
 
-Open `references/multicompartment/multicompartment-cell-workflow.md` for the complete advanced morphology-to-simulation path. Let that workflow select the exclusive morphology, filter, CV-policy, probe, or topology reference; do not open those leaves directly from this root skill.
+Open `references/multicompartment/multicompartment-cell-workflow.md` for the complete advanced morphology-to-simulation path. Let that workflow select the exclusive morphology, filter, CV-policy, recording, or topology reference.
 
 ## Reference routing
 
@@ -190,4 +198,5 @@ Open only the smallest reference that owns the non-canonical decision.
 | `references/ion-library.md` | Choosing fixed, Nernst-initialized, or dynamic ions and their concentration behavior. |
 | `references/mixions-for-adaptation.md` | Adding calcium-dependent adaptation, AHP/KCa currents, rebound, dynamic calcium, or multi-ion channel dependencies. |
 | `references/multicompartment/multicompartment-cell-workflow.md` | Extending the canonical `Morphology -> Cell -> paint/place -> run` path and selecting the exclusive multicompartment references. |
+| `references/multicompartment/network-workflow.md` | Connecting event sources to spatially placed synapses on detailed cells, managing the network lifecycle, or reading population results. |
 | `references/solver-library-with-effects.md` | Comparing registered integrators, stability, accuracy, and solver-dependent trace effects. |

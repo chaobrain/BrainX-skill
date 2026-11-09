@@ -87,4 +87,4 @@ Examples use concise `Quantity(..., "unit")` results; the exact displayed repres
 ## Sources mirrored
 
 - https://brainunit.readthedocs.io/apis/brainunit.math.html
-- Generated function pages linked from the module index: `https://brainunit.readthedocs.io/apis/generated/brainunit.math.<function>.html`
+- Use the module index above to open the generated page for a specific function.

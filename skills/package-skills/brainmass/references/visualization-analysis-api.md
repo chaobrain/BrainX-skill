@@ -1,6 +1,6 @@
 # Visualization and analysis
 
-Use this reference when plotting BrainMass results or computing time-series, functional-connectivity, functional-connectivity-dynamics, and spectral summaries. Keep scientific metric computation in Braintools and use `brainmass.viz` as the thin optional plotting layer.
+Use this reference when plotting BrainMass results or computing sample-by-signal Pearson similarity, time-series, functional-connectivity, functional-connectivity-dynamics, and spectral summaries. Keep scientific metric computation in Braintools and use `brainmass.viz` as the thin optional plotting layer.
 
 ## Plot results
 
@@ -18,15 +18,22 @@ Every helper accepts `ax=` and returns the `matplotlib.axes.Axes` it drew on. Pa
 
 ## Compute standard summaries
 
+The FC, FCD, and PSD examples require BrainTools 0.4.0 or newer and use
+`braintools.analysis`.
+
 Strip units explicitly before a metric that operates on scale-free raw arrays. Keep the sampling interval and labels separately.
 
 | API | Description |
 |---|---|
-| `braintools.metric.functional_connectivity(signal)` | Compute pairwise correlation across regions from a `(time, regions)` trajectory. |
-| `braintools.metric.functional_connectivity_dynamics(signal, window_size, step_size)` | Slide an FC window and correlate windowed FC matrices to return an `(n_window, n_window)` FCD matrix. |
-| `braintools.metric.power_spectral_density(signal, dt, nperseg=None, noverlap=None, freq_range=None)` | Use for a one-sided Welch PSD of a `(time,)` or `(time, channels)` signal; pass `dt` as a time `Quantity` or a float in seconds, and it returns frequencies in Hz plus PSD shaped `(frequency,)` or `(frequency, channels)`. |
+| `braintools.analysis.population.functional_connectivity(activities)` | Compute the square pairwise Pearson matrix across columns of a `(time, signals)` array; check axes and undefined values before use. |
+| `braintools.analysis.population.functional_connectivity_dynamics(activities, window_size=30, step_size=5)` | Correlate windowed FC matrices to return an `(n_window, n_window)` FCD matrix; specify the window and step in recorded samples. |
+| `braintools.analysis.spectral.power_spectral_density(lfp, dt, nperseg=None, noverlap=None, freq_range=None)` | Use for a one-sided Welch PSD of a `(time,)` or `(time, channels)` signal; pass `dt` as a time `Quantity` or a float in seconds, and it returns frequencies in Hz plus PSD shaped `(frequency,)` or `(frequency, channels)`. |
 | `brainmass.objectives.fc_corr()` | Score correlation between prediction and target FC without manually recomputing the comparison logic. |
 | `brainmass.objectives.fcd_distribution(fcd_matrix, ...)` | Estimate the off-diagonal FCD value distribution used by distributional FCD objectives. |
+
+For columnwise Pearson similarity over other observations, such as stimulus responses, evaluate this same API before writing a generic correlation implementation. This extends the documented time-series layout algebraically: verify the required centering, precision and reduction axis, and label the result by its actual observable rather than implying temporal or causal connectivity. A host-side data-generation boundary does not by itself exclude an applicable BrainTools metric.
+
+Check finite inputs and positive column variances before correlation when undefined Pearson values must remain undefined. The API replaces NaNs with zeros; reject invalid columns or preserve an explicit validity mask under the scientific missing-value policy. Verify parity on a small witness before substituting it into a source-defined analysis. See the [official Pearson matrix contract](https://brainx.chaobrain.com/braintools/apis/generated/braintools.analysis.population.functional_connectivity.html) for shapes and NaN handling.
 
 ## Canonical analysis workflow
 
@@ -70,8 +77,8 @@ result = brainmass.Simulator(network, dt=dt).run(
 )
 
 signal = u.get_magnitude(result["output"])
-fc = braintools.metric.functional_connectivity(signal)
-fcd = braintools.metric.functional_connectivity_dynamics(
+fc = braintools.analysis.population.functional_connectivity(signal)
+fcd = braintools.analysis.population.functional_connectivity_dynamics(
     signal,
     window_size=100,
     step_size=20,
@@ -104,7 +111,7 @@ Use one channel at a time unless the metric explicitly accepts multichannel inpu
 
 ```python
 record_dt = result["ts"][1] - result["ts"][0]
-frequencies, power = braintools.metric.power_spectral_density(
+frequencies, power = braintools.analysis.spectral.power_spectral_density(
     signal[:, 0],
     record_dt,
 )
@@ -126,5 +133,6 @@ Freeze a signal-amplitude or in-band-power floor before inspecting condition out
 
 ## Official sources
 
-- `https://brainx.chaobrain.com/brainmass/reference/viz.html`
-- `https://brainx.chaobrain.com/brainmass/howto/analyze_results.html`
+- [BrainTools analysis API](https://brainx.chaobrain.com/braintools/apis/analysis.html)
+- [BrainMass visualization API](https://brainx.chaobrain.com/brainmass/reference/viz.html)
+- [BrainMass results analysis guide](https://brainx.chaobrain.com/brainmass/howto/analyze_results.html)

@@ -115,7 +115,7 @@ Do not reconstruct the same sections with comparisons against `t` inside
 `step`. For a mapped parameter sweep that shares this protocol, keep the
 per-step current sample unmapped (`in_axes=None`) while mapping the independent
 condition parameters and dynamical State. Open
-`skills/package-skills/brainstate/references/brainstate/transformation-vmap-expansion.md` for
+`brainstate` → `references/brainstate/transformation-vmap-expansion.md` for
 the mapped-State contract.
 
 ## Basic currents

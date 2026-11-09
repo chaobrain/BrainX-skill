@@ -137,7 +137,7 @@ matching value permutation separately. If the topology has no generated
 weights, supply an intentional scalar or edge-aligned weight array before
 constructing `CSR`.
 
-Open `skills/package-skills/brainevent/references/sparse-formats.md` when choosing among CSR,
+Open `brainevent` → `references/sparse-formats.md` when choosing among CSR,
 CSC, dense, generated, or fixed-degree event representations after topology is
 defined.
 

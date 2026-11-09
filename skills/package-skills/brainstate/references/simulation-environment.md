@@ -12,13 +12,13 @@ Sources:
 
 Put values that describe the run, rather than one Module, in `brainstate.environ`. The environment is a stack of settings:
 
-- `set()` installs a persistent default that remains active until changed or reset.
-- `context()` pushes temporary values and restores the previous values on exit, including exceptional exit.
+- In BrainState `0.6.0`, `set()` installs a persistent default on the selected environment object. Every thread using that object sees the default until it changes or resets.
+- `context()` pushes temporary overrides for the calling thread and restores the previous values on exit, including exceptional exit.
 - `get(key, default=...)` searches the active context before persistent settings; it returns the value or explicit default and otherwise raises `KeyError`.
 - Typed accessors such as `get_dt()`, `get_precision()`, and `get_platform()` enforce the corresponding setting contract.
 - A nested context inherits its outer context and overrides only the keys it supplies.
 
-Do not treat `EnvironmentState` as model `State`. It stores thread-local environment configuration and does not belong in a Module graph or State collection.
+Keep `EnvironmentState` outside Module graphs and State collections. A separate object has its own defaults and per-thread override stack.
 
 Choose the narrowest lifetime:
 
@@ -27,9 +27,9 @@ Choose the narrowest lifetime:
 | One simulation, training phase, evaluation phase, or step | `brainstate.environ.context(...)` |
 | A persistent default in the selected environment | `brainstate.environ.set(...)` |
 | The same context on every call to one Module | Use `brainstate.nn.EnvironContext(layer, **context)`; the wrapper executes the Module with the stored settings, merges optional call-specific settings, and returns the Module's result |
-| Configuration isolated from the default environment | Create `brainstate.environ.EnvironmentState()` and pass it through every `env=` argument; operations then use its independent thread-local setting stack instead of the default environment |
+| Configuration isolated from the default environment | Create `brainstate.environ.EnvironmentState()` and pass it through every `env=` argument so operations use that object's defaults and overrides. |
 
-Prefer `context()` for normal simulation and training. Use `set()` only when later code should intentionally inherit the setting.
+Prefer `context()` for normal simulation and training. Set a separate context inside each worker when concurrent runs need different `dt` values.
 
 ## Advanced environment configuration
 

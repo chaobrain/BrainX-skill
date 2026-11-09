@@ -27,8 +27,7 @@ import numpy as np
 import brainunit as u
 import braintools
 
-from brainpy.state import (Simulator, spike_generator, clopath_synapse,
-                           static_synapse, aeif_psc_delta_clopath)
+import brainspike
 
 # -- canonical cluster-07 spike-pairing protocol (NEST pynest example) ------------
 DT = 0.1            # ms, resolution
@@ -75,7 +74,7 @@ LTP_TRAINS = range(5, 10)
 def clopath_neuron(sim, n=1):
     """Create ``n`` ``aeif_psc_delta_clopath`` neurons with the canonical parameters."""
     return sim.create(
-        aeif_psc_delta_clopath, n,
+        brainspike.aeif_psc_delta_clopath, n,
         E_L=-70.6 * u.mV, V_peak=33.0 * u.mV, C_m=281.0 * u.pF, theta_minus=-70.6 * u.mV,
         theta_plus=-45.3 * u.mV, A_LTD=14.0e-5, A_LTP=8.0e-5, tau_u_bar_minus=10.0 * u.ms,
         tau_u_bar_plus=7.0 * u.ms, delay_u_bars=DELAY_UBARS * u.ms, a=4.0 * u.nS,
@@ -91,13 +90,13 @@ def pairing_weight(s_pre, s_post):
     clamps the post with an 80 mV ``spike_generator`` at the postsynaptic times, and
     reads the final stored weight with ``res.weight_trace``.
     """
-    sim = Simulator(dt=DT * u.ms)
+    sim = brainspike.Simulator(dt=DT * u.ms)
     post = clopath_neuron(sim)
-    sg_pre = sim.create(spike_generator, spike_times=np.asarray(s_pre) * u.ms)
-    sg_post = sim.create(spike_generator, spike_times=np.asarray(s_post) * u.ms)
-    sim.connect(sg_post, post, synapse=static_synapse(weight=DRIVE_W * u.mV),
+    sg_pre = sim.create(brainspike.spike_generator, spike_times=np.asarray(s_pre) * u.ms)
+    sg_post = sim.create(brainspike.spike_generator, spike_times=np.asarray(s_post) * u.ms)
+    sim.connect(sg_post, post, synapse=brainspike.static_synapse(weight=DRIVE_W * u.mV),
                 delay=RELAY_D * u.ms)
-    proj = sim.connect(sg_pre, post, synapse=clopath_synapse(weight=INIT_W * u.mV),
+    proj = sim.connect(sg_pre, post, synapse=brainspike.clopath_synapse(weight=INIT_W * u.mV),
                        delay=RELAY_D * u.ms)
     sim.record_weight(proj)
     res = sim.simulate((10.0 + max(s_pre[-1], s_post[-1])) * u.ms)
@@ -149,7 +148,7 @@ def run():
 
 def main():
     rho, post_pre, pre_post, weights = run()
-    print("Clopath spike-pairing (brainpy.state, aeif_psc_delta_clopath, w in mV)")
+    print("Clopath spike-pairing (brainspike, aeif_psc_delta_clopath, w in mV)")
     for r, a, b in zip(rho, post_pre, pre_post):
         print(f"  {r:4.0f} Hz: post-pre {a:7.2f} %   pre-post {b:7.2f} %")
 

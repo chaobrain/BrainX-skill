@@ -111,7 +111,7 @@ Choose projection alignment before adding a delay. Open `references/brain-dynami
 
 ## Communication boundary
 
-Use `brainstate.nn.EventFixedProb` for the canonical probabilistic sparse-spike connection shown in BrainPy-State tutorials. Open `skills/package-skills/brainevent/SKILL.md` when the decision involves `EventLinear`, fixed-number event connectivity, sparse formats, plasticity operators, custom kernels, or dense-to-event performance conversion.
+Use `brainstate.nn.EventFixedProb` for the canonical probabilistic sparse-spike connection shown in BrainPy-State tutorials. Open `brainevent` → `SKILL.md` when the decision involves `EventLinear`, fixed-number event connectivity, sparse formats, plasticity operators, custom kernels, or dense-to-event performance conversion.
 
 Open `references/scripts/103_COBA_2005.py` for a complete E/I COBA projection workflow. Open `references/scripts/109_fast_global_oscillation.py` when the projection uses `DeltaProj` with delayed recurrent input.
 

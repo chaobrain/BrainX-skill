@@ -1,6 +1,6 @@
 # Batching
 
-Use this reference when adding a batch axis to BrainTrace `0.2.4`, selecting native batched execution or independent mapped lanes, resetting mapped State, or scanning time-major data.
+Use this reference when adding a batch axis, selecting native batched execution or independent mapped lanes, resetting mapped State, or scanning time-major data.
 
 ## Choose one batching owner
 
@@ -25,7 +25,6 @@ Compile-owned vmap creates per-lane State and returns a `brainstate.nn.Vmap`; it
 | `brainstate.transform.vmap(in_states=mapped_states)` | Use to map reset over exactly the State created by compile-owned vmap. |
 
 ```python
-import jax
 import jax.numpy as jnp
 import brainstate
 import braintrace
@@ -34,7 +33,7 @@ import braintrace
 class SimpleGRU(brainstate.nn.Module):
     def __init__(self, n_in, n_rec, n_out):
         super().__init__()
-        self.rnn = braintrace.nn.GRUCell(n_in, n_rec)
+        self.rnn = braintrace.nn.MiniGRU(in_size=n_in, out_size=n_rec)
         self.out = braintrace.nn.Linear(n_rec, n_out)
 
     def update(self, x):
@@ -82,40 +81,22 @@ Reset native batched execution with `brainstate.nn.reset_all_states(model, batch
 
 ## Accumulate time-major gradients
 
-Keep time on axis 0 and batch on axis 1. The scan owns time; compilation owns batch.
+Keep time on axis 0 and batch on axis 1. The sequence driver owns time. Compilation owns the batch axis.
 
 ```python
-weights = model.states(brainstate.ParamState)
-
-
-def step_loss(inp, target, mask):
+def step_loss(inp, target):
     prediction = mapped_learner(inp)
-    loss = jnp.mean((prediction - target) ** 2)
-    return loss * mask, prediction
+    return jnp.mean((prediction - target) ** 2), prediction
 
 
-step_grad = brainstate.transform.grad(
-    step_loss,
-    weights,
+grads, losses, outputs = mapped_learner.etrace_grad(
+    inputs,
+    targets,
+    step_fn=step_loss,
     has_aux=True,
+    mask=loss_mask,
+    reduction='sum',
     return_value=True,
-)
-
-
-def accumulate(grads, sample):
-    current, loss, prediction = step_grad(*sample)
-    grads = jax.tree.map(lambda total, value: total + value, grads, current)
-    return grads, (loss, prediction)
-
-
-initial_grads = jax.tree.map(
-    jnp.zeros_like,
-    {key: state.value for key, state in weights.items()},
-)
-grads, (losses, outputs) = brainstate.transform.scan(
-    accumulate,
-    initial_grads,
-    (inputs, targets, loss_mask),
 )
 optimizer.update(grads)
 ```
@@ -129,12 +110,11 @@ Every step must call the learner exactly once, including masked cue and delay st
 | `braintrace.SingleStepData(data)` | Use to mark `data` as one step; a plain array has the same interpretation. |
 | `braintrace.MultiStepData(sequence)` | Use when one learner call should consume axis 0 as a multi-step window. |
 
-Do not use `MultiStepData` as a substitute for the explicit scan when the workflow needs per-step masks, outputs, losses, or a gradient sum followed by one optimizer update.
+Use `etrace_grad` for a sequence with per-step masks, outputs, or a single accumulated gradient update.
 
-Open `Drtrl.md` or `pp_pprop workflow.md` for estimator-specific training. Open `skills/package-skills/brainstate/references/collective_model_operations.md` when an explicit mapped lifecycle is unavoidable.
+Open `Drtrl.md` or `pp_pprop workflow.md` for estimator-specific training. Open `brainstate` → `references/collective_model_operations.md` when an explicit mapped lifecycle is unavoidable.
 
 ## Sources
 
-- [BrainTrace `v0.2.4` compile modes](https://github.com/chaobrain/braintrace/blob/v0.2.4/examples/tests/test_compile_modes.py)
-- [BrainTrace `v0.2.4` mapped batching example](https://github.com/chaobrain/braintrace/blob/v0.2.4/examples/pp_prop/05-batching-vmap.py)
-- [BrainTrace `v0.2.4` native batching example](https://github.com/chaobrain/braintrace/blob/v0.2.4/examples/pp_prop/06-batching-batched.py)
+- [Batching strategies](https://brainx.chaobrain.com/braintrace/advanced/batching.html)
+- [Algorithms API](https://brainx.chaobrain.com/braintrace/apis/algorithms.html)

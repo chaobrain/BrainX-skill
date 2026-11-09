@@ -1,13 +1,24 @@
 ---
 name: brainx-general-guard
-description: Use first for every BrainX modeling, simulation, training, review, debugging, or optimization task. Identify every modeling scale explicitly represented, open only the BrainX package skills that own those scales, and keep the implementation BrainX-native.
+description: Use first for every BrainX modeling, simulation, training, review, debugging, or optimization task. For an end-to-end project involving a new model, mechanism comparison, simulation, fitting, or experimental predictions, immediately route to brainx-modeling-loop before selecting package skills; use this skill alone for focused package or API work with the model design fixed.
 ---
 
 # BrainX general guard
 
 ## Purpose and boundary
 
-Use this guard first to identify the represented modeling scales, open their owning package skills, and keep package orchestration ahead of lower-level infrastructure. Keep it active for cross-cutting API selection, execution, interoperability, and validation decisions.
+Use this guard first to identify the represented modeling scales, route end-to-end scientific work to `brainx-modeling-loop`, open the owning package skills, and keep package orchestration ahead of lower-level infrastructure. Keep it active for cross-cutting API selection, execution, interoperability, and validation decisions.
+
+### Workflow routing
+
+Treat workflow ownership separately from biological-scale ownership. This guard is the mandatory first pass; it does not replace the modeling workflow.
+
+| Request shape | Next route |
+|---|---|
+| A new or changed model, mechanism comparison, simulation or fitting study, experiment-derived prediction, or scientific result report | Open `brainx-modeling-loop` immediately after this guard. Complete its step-0 clarification gate before opening package-specific modeling skills. |
+| A focused implementation, API, debugging, or optimization task with the model design and acceptance criteria already fixed | Continue with this guard and the package skill that owns the represented scale. |
+
+Do not route an end-to-end project directly from this guard to `brainmass`, `brainpy-state`, `braincell`, or other package skills. The modeling loop owns clarification, specification, literature gating, implementation order, review, and handoff; package skills own the selected biological scale after step 0.
 
 ## Check package presence without inspecting installed BrainX
 
@@ -28,15 +39,18 @@ Select every row supported by the user's task. A single-scale task opens one mod
 
 | The task explicitly represents | Open |
 |---|---|
-| Point neurons, synapses, or point-neuron spiking networks | BrainPy-State |
+| Point neurons, their synapses, or point-neuron spiking networks | BrainPy-State |
 | Ions, channels, compartments, or cellular morphology | BrainCell |
 | Aggregate neural populations, local circuits, brain regions, or whole-brain dynamics | BrainMass |
-| Detailed cells connected into a spiking network | BrainCell + BrainPy-State |
+| Detailed cells connected through spatially placed synapses | BrainCell |
+| Detailed cells coupled to point neurons | BrainCell + BrainPy-State |
 | Point-neuron spiking networks coupled to aggregate regional dynamics | BrainPy-State + BrainMass |
 | Cellular mechanisms coupled to aggregate neural-mass dynamics | BrainCell + BrainMass |
 | Cellular biophysics, point-neuron networks, and aggregate population dynamics interacting in one workflow | BrainCell + BrainPy-State + BrainMass |
 
 Keep the implementation at the selected scale. Do not introduce aggregate population-rate State into a point-neuron model, or point neurons into an aggregate model, merely to simplify execution. When both mechanisms are scientifically represented, treat the task as multiscale and open both owning skills.
+
+When represented scales exchange signals, open `brainx-modeling-loop` → `references/multiscale-coupling.md` for exchanged observables, units, axes, clocks, and causal order.
 
 ## Write BrainX-native code
 
@@ -95,6 +109,8 @@ An unavailable optional backend does not establish a general BrainTools gap when
 
 Derive claims from observables that distinguish the claimed mechanism; validate the baseline and mechanism before calibration, and mark unsourced calibrated regimes as phenomenological.
 
+- Before production, verify that the model preserves the differences required by the original question. Prioritize unmeasured assumptions whose plausible alternatives could change the main conclusion; constrain claims to the supported measurement and tested conditions. For phenomenon-driven mechanism comparisons, open `brainx-modeling-loop` → `references/mechanism-comparison.md` for causal-chain design, structural distinguishability, and decisive assumption checks.
+
 - Freeze parameters, evaluation seeds, metrics or scores, thresholds or windows, and displayed cases before viewing intervention outcomes; otherwise calibrate separately and report held-out or nearby sensitivity.
 - Validate each matched control independently, then compare and save control and intervention evidence at every nuisance setting and aligned physical time or event landmark; a normalized summary is not a substitute for those paired observables.
 - At each causal branch, verify and save every relevant State and protocol input, vary only the declared intervention, and preserve per-condition evidence plus its aggregation. State causality at the intervention level; claim event mediation only when a mediator-specific manipulation and per-condition event dose agree with the outcome.
@@ -126,9 +142,9 @@ Use the owning package's orchestrator for workflows it already implements. When 
 
 Do not add a transform only to construct parameter axes or satisfy a named-API checklist. When the owning package already represents independent conditions through a native batch or `size` axis, use that path and reserve `vmap` for a callable the owning package does not already batch.
 
-Map only independent operations. If trial N mutates weights or other State that trial N+1 consumes, keep those trials sequential; batch only independent evaluation trials or ensembles, with separate dynamical State and deliberately shared read-only State. Mapping input construction or offline scoring does not batch the stateful simulation itself. Open `skills/package-skills/brainstate/references/brainstate/transformation-vmap-expansion.md` when a complete mapped operation reads or writes State, for the State-axis contracts and independent-lane pattern.
+Map only independent operations. If trial N mutates weights or other State that trial N+1 consumes, keep those trials sequential; batch only independent evaluation trials or ensembles, with separate dynamical State and deliberately shared read-only State. Mapping input construction or offline scoring does not batch the stateful simulation itself. Open `brainstate` → `references/brainstate/transformation-vmap-expansion.md` when a complete mapped operation reads or writes State, for the State-axis contracts and independent-lane pattern.
 
-A mapped complete per-step transition called inside one `for_loop` is a stateful simulation batch: the mapping owns independent conditions and the loop owns time. Select mapped State by semantic role, such as `Any(OfType(HiddenState), OfType(ShortTermState))`; do not infer State ownership from array rank, shape, or a coincidental leading size. Open `skills/package-skills/brainstate/references/brainstate/transformation-vmap-expansion.md` for the canonical initialization, mapping, and loop composition.
+A mapped complete per-step transition called inside one `for_loop` is a stateful simulation batch: the mapping owns independent conditions and the loop owns time. Select mapped State by semantic role, such as `Any(OfType(HiddenState), OfType(ShortTermState))`; do not infer State ownership from array rank, shape, or a coincidental leading size. Open `brainstate` → `references/brainstate/transformation-vmap-expansion.md` for the canonical initialization, mapping, and loop composition.
 
 Describe the transform that actually runs. Native batched State, vmapped input construction, and vmapped host scoring are not stateful `vmap`. When the user explicitly requires `vmap`, map the complete independent operation or report why the requirement cannot be met.
 

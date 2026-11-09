@@ -186,7 +186,7 @@ elementary_charge = u.constants.elementary_charge
 
 ## Normalize inputs and create ranges
 
-Use `u.math.asarray()` to normalize plain data and quantities. Without `unit`, it returns an array for plain data or preserves the input unit; with `unit=target`, it returns a `Quantity` converted to `target`. Incompatible quantity inputs raise `UnitMismatchError`. `u.math.array` is an alias.
+Use `u.math.asarray()` to normalize plain data and quantities. Without `unit`, it returns a plain array for plain data or preserves the input unit. With `unit=target`, it converts an existing quantity to `target`; a plain or dimensionless input raises `UnitMismatchError`, because `unit` selects a conversion rather than attaching a unit. `u.math.array` is an alias.
 
 Use `u.math.arange()` to create half-open intervals `[start, stop)`, returning an array for plain arguments or a `Quantity` for unit-bearing arguments. Unit-bearing `start`, `stop`, and `step` must share one unit. At least one of `start` or `stop` is required.
 
@@ -204,6 +204,8 @@ times = u.math.arange(0.0 * u.ms, 10.0 * u.ms, 0.1 * u.ms)
 # Expected: 100 values from 0.0 through 9.9 ms; array precision follows JAX.
 ```
 
+Attach a unit to plain data by multiplication (`u.math.asarray(values) * u.mm`) or with a constructor that accepts `unit=` for new values (`u.math.ones`, `u.math.zeros`, `u.math.from_numpy`).
+
 Do not strip units before normalization or attach a unit to an unchecked plain range afterward.
 
 ## Type and validate quantity boundaries
@@ -214,7 +216,10 @@ Annotations alone describe the contract. Apply `@u.typing.validate_units` when c
 
 ```python
 def normalize(values: u.typing.QuantityLike, unit: u.typing.UnitLike = None):
-    return u.math.asarray(values, unit=unit)
+    data = u.math.asarray(values)
+    if unit is not None and isinstance(data, u.Quantity):
+        data = u.math.asarray(data, unit=unit)
+    return data
 
 
 @u.typing.validate_units

@@ -8,8 +8,10 @@ Use this reference when a BrainMass run needs driven inputs, custom observables,
 
 | API | Description |
 |---|---|
-| `brainmass.Simulator(model, dt=...)` | Use to bind a model or `Network` to an integration step for the standard run path. |
+| `brainmass.Simulator(model, dt=...)` | Use to bind any `brainstate.nn.Module` model or `Network` to an integration step for the standard run path. |
 | `Simulator.run(duration, *, inputs=None, monitors=None, transient=None, sample_every=None, batch_size=None, init_states=True, jit=True)` | Use to execute a duration and return a dict of time-major monitored values plus unit-aware `ts`. It initializes State and JIT-compiles by default. |
+
+`model` may be any `brainstate.nn.Module`, including a custom aggregate model you define. A model missing from the public catalogue does not justify rebuilding the initializer, time loop, or monitors.
 
 Do not manually derive the number of steps, initialize State, scope `dt`, build a transformed loop, downsample, or reconstruct timestamps when these controls express the run.
 

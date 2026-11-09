@@ -2,7 +2,7 @@
 # Copyright 2026 BrainX Ecosystem Limited. Apache 2.0.
 """Brette et al. 2007 (Vogels-Abbott) COBA + CUBA benchmarks — NEST-style port.
 
-Port of NEST's ``brette_et_al_2007/{coba,cuba}.py`` onto brainpy.state's explicit
+Port of NEST's ``brette_et_al_2007/{coba,cuba}.py`` onto brainspike's explicit
 ``Simulator`` API. Both are the Vogels & Abbott (2005) [1]_ sparse self-sustained
 excitatory/inhibitory network — the FACETS simulator-review benchmarks [2]_:
 
@@ -44,10 +44,7 @@ import numpy as np
 import brainunit as u
 import braintools
 
-from brainpy.state import (
-    Simulator, fixed_indegree, one_to_one,
-    iaf_cond_exp, iaf_psc_exp, poisson_generator, spike_recorder,
-)
+import brainspike
 
 # --- Shared Vogels-Abbott architecture -------------------------------------------
 NE, NI = 3200, 800          # excitatory / inhibitory population sizes
@@ -162,25 +159,25 @@ def build_coba(seed, *, ne=NE, ni=NI, dt=DT, comm='sparse'):
         tau_syn_ex=COBA_PARAMS['tau_syn_ex'] * u.ms, tau_syn_in=COBA_PARAMS['tau_syn_in'] * u.ms,
         V_initializer=braintools.init.Constant(COBA_PARAMS['E_L'] * u.mV))
 
-    sim = Simulator(dt=dt * u.ms)
-    e = sim.create(iaf_cond_exp, ne, params=params)
-    i = sim.create(iaf_cond_exp, ni, params=params)
-    kick = sim.create(poisson_generator, NSTIM, rate=KICK_RATE * u.Hz,
+    sim = brainspike.Simulator(dt=dt * u.ms)
+    e = sim.create(brainspike.iaf_cond_exp, ne, params=params)
+    i = sim.create(brainspike.iaf_cond_exp, ni, params=params)
+    kick = sim.create(brainspike.poisson_generator, NSTIM, rate=KICK_RATE * u.Hz,
                       start=KICK_START * u.ms, stop=KICK_STOP * u.ms, rng_seed=seed)
-    esr = sim.create(spike_recorder)
-    isr = sim.create(spike_recorder)
+    esr = sim.create(brainspike.spike_recorder)
+    isr = sim.create(brainspike.spike_recorder)
 
     # Recurrent: every neuron gets CE excitatory (receptor 1 -> g_ex) and CI
     # inhibitory (receptor 2 -> g_in) inputs; inhibitory weight is a positive nS.
     sim.connect(e, e + i, weight=COBA_W_E * u.nS, delay=DELAY * u.ms,
-                rule=fixed_indegree(ce), comm=comm, receptor_type=1,
+                rule=brainspike.fixed_indegree(ce), comm=comm, receptor_type=1,
                 allow_multapses=True, seed=10 * seed + 1)
     sim.connect(i, e + i, weight=COBA_W_I * u.nS, delay=DELAY * u.ms,
-                rule=fixed_indegree(ci), comm=comm, receptor_type=2,
+                rule=brainspike.fixed_indegree(ci), comm=comm, receptor_type=2,
                 allow_multapses=True, seed=10 * seed + 2)
     # Ignition kick: independent 300 Hz trains -> first NSTIM excitatory neurons.
     sim.connect(kick, e[:NSTIM], weight=COBA_W_E * u.nS, delay=DELAY * u.ms,
-                rule=one_to_one, receptor_type=1)
+                rule=brainspike.one_to_one, receptor_type=1)
     sim.connect(e[:NREC], esr)
     sim.connect(i[:NREC], isr)
     return sim, esr, isr
@@ -217,21 +214,21 @@ def build_cuba(seed, *, ne=NE, ni=NI, dt=DT, comm='sparse'):
         tau_syn_in=CUBA_PARAMS['tau_syn_in'] * u.ms, t_ref=CUBA_PARAMS['t_ref'] * u.ms,
         V_initializer=braintools.init.Constant(CUBA_VINIT * u.mV))
 
-    sim = Simulator(dt=dt * u.ms)
-    e = sim.create(iaf_psc_exp, ne, params=params)
-    i = sim.create(iaf_psc_exp, ni, params=params)
-    kick = sim.create(poisson_generator, NSTIM, rate=KICK_RATE * u.Hz,
+    sim = brainspike.Simulator(dt=dt * u.ms)
+    e = sim.create(brainspike.iaf_psc_exp, ne, params=params)
+    i = sim.create(brainspike.iaf_psc_exp, ni, params=params)
+    kick = sim.create(brainspike.poisson_generator, NSTIM, rate=KICK_RATE * u.Hz,
                       start=KICK_START * u.ms, stop=KICK_STOP * u.ms, rng_seed=seed)
-    esr = sim.create(spike_recorder)
-    isr = sim.create(spike_recorder)
+    esr = sim.create(brainspike.spike_recorder)
+    isr = sim.create(brainspike.spike_recorder)
 
     # Recurrent: excitatory weight positive, inhibitory weight negative (sign-routed).
     sim.connect(e, e + i, weight=CUBA_W_E * u.pA, delay=DELAY * u.ms,
-                rule=fixed_indegree(ce), comm=comm, allow_multapses=True, seed=10 * seed + 1)
+                rule=brainspike.fixed_indegree(ce), comm=comm, allow_multapses=True, seed=10 * seed + 1)
     sim.connect(i, e + i, weight=CUBA_W_I * u.pA, delay=DELAY * u.ms,
-                rule=fixed_indegree(ci), comm=comm, allow_multapses=True, seed=10 * seed + 2)
+                rule=brainspike.fixed_indegree(ci), comm=comm, allow_multapses=True, seed=10 * seed + 2)
     sim.connect(kick, e[:NSTIM], weight=CUBA_W_E * u.pA, delay=DELAY * u.ms,
-                rule=one_to_one)
+                rule=brainspike.one_to_one)
     sim.connect(e[:NREC], esr)
     sim.connect(i[:NREC], isr)
     return sim, esr, isr

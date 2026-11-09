@@ -71,17 +71,15 @@ The projection uses current units so `I * R` is voltage-compatible with membrane
 
 ## Train a batched spike sequence
 
-Compile one-step behavior with per-sample mapped State, reset both State domains, accumulate masked step gradients through a scan, and update once per sequence.
+Compile one-step behavior with per-sample mapped State, reset both State domains, accumulate masked step gradients with the sequence driver, and update once per sequence.
 
 | API | Description |
 |---|---|
 | `braintrace.compile(..., braintrace.pp_prop, batch_size=B, vmap=True, decay_or_rank=...)` | Use to create independent recurrent and trace State for each batch lane. |
-| `brainstate.transform.grad(step_loss, weights, has_aux=True, return_value=True)` | Use around one learner call to return the online gradient, masked loss, and output. |
-| `brainstate.transform.scan(...)` | Use to advance every time step and carry the summed gradient. |
+| `learner.etrace_grad(..., mask=..., has_aux=True, return_value=True)` | Use to advance every step, accumulate masked gradients, and return the loss and step outputs. |
 | `brainstate.nn.clip_grad_norm(...)` | Use after accumulation when gradient clipping is required. |
 
 ```python
-import jax
 import jax.numpy as jnp
 
 n_steps, batch_size = 60, 16
@@ -114,43 +112,30 @@ with brainstate.environ.context(dt=1. * u.ms):
     def reset_sequence():
         brainstate.nn.reset_all_states(learner)
 
-    def step_loss(cue, mask):
+    def step_loss(cue):
         output = learner(cue)
         loss = braintools.metric.softmax_cross_entropy_with_integer_labels(
             output,
             labels,
         ).mean()
-        return loss * mask, output
-
-    step_grad = brainstate.transform.grad(
-        step_loss,
-        weights,
-        has_aux=True,
-        return_value=True,
-    )
+        return loss, output
 
     def train_sequence():
         reset_sequence()
-        initial_grads = jax.tree.map(
-            jnp.zeros_like,
-            {key: state.value for key, state in weights.items()},
-        )
-
-        def accumulate(grads, sample):
-            current, loss, output = step_grad(*sample)
-            grads = jax.tree.map(lambda x, y: x + y, grads, current)
-            return grads, (loss, output)
-
-        grads, (losses, outputs) = brainstate.transform.scan(
-            accumulate,
-            initial_grads,
-            (inputs, loss_mask),
+        grads, loss, outputs = learner.etrace_grad(
+            inputs,
+            step_fn=step_loss,
+            has_aux=True,
+            mask=loss_mask,
+            reduction='sum',
+            loss_output='scalar',
+            return_value=True,
         )
         optimizer.update(brainstate.nn.clip_grad_norm(grads, 1.0))
-        return losses.sum() / loss_mask.sum(), outputs
+        return loss / loss_mask.sum(), outputs
 ```
 
-`step_loss` calls the learner on every cue, delay, and report step. The zero mask removes the loss signal before the report window without freezing hidden or eligibility State. Do not put `optimizer.update()` inside the scan unless the intended experiment explicitly uses per-timestep parameter changes and reports that schedule.
+`step_loss` calls the learner on every cue, delay, and report step. The zero mask removes the loss signal before the report window without freezing hidden or eligibility State. Do not put `optimizer.update()` inside the sequence driver unless the intended experiment explicitly uses per-timestep parameter changes and reports that schedule.
 
 ## Validate silent-delay memory
 
@@ -162,7 +147,7 @@ A lower training loss does not prove that the first cue survived the delay; use 
 | Frozen evaluation | Fix evaluation trials, seeds, masks, and metrics before viewing the trained result. |
 | First-cue ablation | Replace or permute only the first cue and rerun the same mapped rollout; accuracy should fall materially relative to intact trials. |
 | Robustness | Prefer held-out stochastic cue realizations or a nearby longer delay when the task permits them. |
-| Schedule | Report sequences and optimizer updates separately; one scan followed by one update means one optimizer update per sequence. |
+| Schedule | Report sequences and optimizer updates separately; one sequence-driver call followed by one update means one optimizer update per sequence. |
 
 For a deterministic two-cue task with only four combinations, first-cue ablation is the minimum discriminating control. Perfect accuracy on the same four training combinations is insufficient by itself.
 
@@ -174,6 +159,5 @@ Open `compiler_internal.md` only when structured report records cannot explain t
 
 ## Sources
 
-- [BrainTrace `v0.2.4` pp-prop tutorial](https://github.com/chaobrain/braintrace/blob/v0.2.4/docs/tutorials/pp_prop.md)
-- [BrainTrace `v0.2.4` delayed-match example](https://github.com/chaobrain/braintrace/blob/v0.2.4/examples/pp_prop/02-neurons-alif-dms.py)
-- [BrainTrace `v0.2.4` working-memory example](https://github.com/chaobrain/braintrace/blob/v0.2.4/examples/pp_prop/03-neurons-gif-working-memory.py)
+- [pp-prop tutorial](https://brainx.chaobrain.com/braintrace/tutorials/pp_prop.html)
+- [SNN online learning](https://brainx.chaobrain.com/braintrace/tutorials/snn_online_learning.html)

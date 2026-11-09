@@ -11,7 +11,7 @@ Use this skill to answer a biology, neuroscience, or computational-neuroscience 
 
 `interpret question -> decompose terminology -> search Europe PMC -> optionally expand with Exa -> normalize, deduplicate, and rank -> deep-read selected papers -> compare evidence -> persist modeling-relevant evidence when applicable -> answer the question`
 
-Use Europe PMC as the primary academic discovery database and the existing Full-Text Resolver as the default reader. Use Exa only to expand recall and DeepXiv only when progressive reading of a known arXiv-compatible paper is useful. Do not add generic arXiv, Semantic Scholar, Gemini, standalone OpenAlex, Zotero, Obsidian, or local-PDF workflows.
+Use Europe PMC as the primary academic discovery database and the existing Full-Text Resolver as the default reader. Use Exa only to expand recall and DeepXiv only when progressive reading of a known arXiv-compatible paper is useful. Do not add generic arXiv, Semantic Scholar, Gemini, standalone OpenAlex, Zotero, Obsidian, or local-PDF library-management workflows.
 
 ## Underlying mental model
 
@@ -116,7 +116,9 @@ Full text is evidence depth, not a requirement for retaining a relevant paper.
 }
 ```
 
-Prefer the Full-Text Resolver for ordinary PMC and journal biology papers. Use DeepXiv mainly for computational neuroscience or ML-neuroscience papers with arXiv IDs. If the resolver returns no usable Markdown, including a PDF-only location, retain the paper's abstract and metadata, set `full_text_status` to `abstract-only`, preserve the retrieval note or source URL, and limit claims to what the abstract supports.
+Prefer the Full-Text Resolver for ordinary PMC and journal biology papers. Use DeepXiv mainly for computational neuroscience or ML-neuroscience papers with arXiv IDs. For an ordinary review, if the resolver returns no usable Markdown, including a PDF-only location, retain the paper's abstract and metadata, set `full_text_status` to `abstract-only`, preserve the retrieval note or source URL, and limit claims to what the abstract supports.
+
+When reproduction requires an original supplement or source artifact absent from the reader, open `references/required-supplements.md` for targeted official retrieval, version/hash verification and inspection of source definitions. This supplements the default reader; it does not replace academic discovery or permit unsupported full-text claims.
 
 ## Extract and compare evidence
 

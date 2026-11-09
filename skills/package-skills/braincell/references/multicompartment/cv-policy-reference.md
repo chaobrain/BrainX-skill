@@ -114,7 +114,7 @@ Treat CV policy as a numerical assumption, not a visualization preference.
 1. Choose a policy from the spatial question and inspect `cell.n_cv` and `cell.cvs`.
 2. Run the scientific protocol with fixed morphology, mechanisms, stimulus, solver, and `dt`.
 3. Refine only the CV policy: increase `cv_per_branch`, reduce `max_cv_len`, or reduce `d_lambda`.
-4. Compare the relevant traces, spike timing, peaks, attenuation, or other spatial observable at the same probe locations.
+4. Compare the relevant traces, spike timing, peaks, attenuation, or other spatial observable at the same recording locations.
 5. Accept the coarser policy only when the observable remains within the task's stated tolerance.
 
 Do not change `dt`, solver, and CV policy in the same convergence comparison. A stable CV count does not establish time-step or solver convergence.
