@@ -137,6 +137,8 @@ Distinguish experimental measurements, user-specified modeling assumptions, lite
 
 When explaining an experimental phenomenon, comparing mechanisms, or deciding whether modeling can distinguish them, open `references/mechanism-comparison.md` before selecting the implementation. It defines causal chains, measurement mapping, distinguishable predictions, and which unmeasured assumptions to test first.
 
+For paper or author-code reproduction, open `references/paper-reproduction.md` before locking the specification, for source reconciliation, exact analysis contracts, claim boundaries, and later source-informed reanalysis.
+
 Use only this core structure:
 
 ```markdown

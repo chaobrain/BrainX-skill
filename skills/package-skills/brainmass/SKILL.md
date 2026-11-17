@@ -40,11 +40,13 @@ A noise process represents unresolved fluctuations or stochastic drive. It is at
 
 Every public regional model follows the same `*Step` contract, so choose by scientific observable and dynamical regime, then let `Simulator` own initialization and the transformed time loop.
 
+Separate the catalog's scientific abstraction from the runner's compatibility. For a custom continuous-rate `brainstate.nn.Module`, evaluate `Simulator` against its initialization/update contract before choosing a manual rollout; using the runner does not pool individual units or replace their equations. Reject it for a concrete contract limitation, not merely because the custom model differs from the population-model catalog.
+
 | API | Description |
 |---|---|
 | `brainmass.list_models()` | Use before choosing a model; it returns `ModelInfo` records with name, category, state-variable count, and use case. |
 | `brainmass.<Model>Step(in_size, **params)` | Use after selecting a model family; `in_size` sets the number of regions or parallel units and parameters broadcast to that shape. |
-| `brainmass.Simulator(model, dt=...)` | Use for the default run path; it stores the model and integration step without changing the model equations. |
+| `brainmass.Simulator(model, dt=...)` | Use for the default run path, including compatible custom Modules; it stores the model and integration step without changing the model equations. |
 | `Simulator.run(duration, *, inputs=None, monitors=None, transient=None, sample_every=None, batch_size=None, init_states=True, jit=True)` | Use to drive and observe the model through the standard runner; it initializes State by default, executes the complete State-aware loop with JIT by default, applies transient removal and post-update sampling, and returns time-major trajectories plus unit-aware `ts`. |
 
 ```python
@@ -265,7 +267,7 @@ Choose the workflow category first, then open only the smallest reference that o
 | `references/datasets-api.md` | Loading, inspecting, generating, or registering BrainMass data containers. |
 | `references/coupling-network-api.md` | Selecting or configuring coupling, delays, connectivity conventions, direct coupling objects, or trainable network parameters. |
 | `references/forward-observation-api.md` | Selecting BOLD, HRF kernels, temporal averaging, EEG/MEG lead fields, or trainable readouts. |
-| `references/visualization-analysis-api.md` | Plotting or computing time-series, FC, FCD, and spectral summaries. |
+| `references/visualization-analysis-api.md` | Plotting or computing sample-by-signal Pearson similarity, time-series, FC, FCD, and spectral summaries. |
 
 ### Fitting and regime exploration
 
