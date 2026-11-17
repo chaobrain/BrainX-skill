@@ -75,7 +75,7 @@ skills/
 
 #### Progressive disclosure
 
-Keep the source roles, canonical workflow, candidate contract, selection rules, evidence discipline, modeling-memory handoff, output structure, and costly failures in `skills/bio-neuro-lit/SKILL.md`. Keep exact Europe PMC and Full-Text Resolver schemas plus optional-helper commands in `skills/bio-neuro-lit/references/tool-contracts.md`. Keep reusable Exa and DeepXiv integrations in `skills/bio-neuro-lit/scripts/` and preserve their upstream MIT attribution in `skills/bio-neuro-lit/THIRD_PARTY_NOTICES.md`.
+Keep the source roles, canonical workflow, candidate contract, selection rules, evidence discipline, modeling-memory handoff, output structure, and costly failures in `skills/bio-neuro-lit/SKILL.md`. Keep exact Europe PMC and Full-Text Resolver schemas plus optional-helper commands in `skills/bio-neuro-lit/references/tool-contracts.md`. Route explicitly required original supplements missing from the reader to `references/required-supplements.md` for targeted official retrieval and provenance verification; this is not a local-PDF library workflow or replacement discovery engine. Keep reusable Exa and DeepXiv integrations in `skills/bio-neuro-lit/scripts/` and preserve their upstream MIT attribution in `skills/bio-neuro-lit/THIRD_PARTY_NOTICES.md`.
 
 ### brainx-modeling-loop
 
@@ -180,6 +180,7 @@ step-1 refusal restudy, not standalone stages:
 ```text
 brainx-modeling-loop/references/
 ├── mechanism-comparison.md
+├── paper-reproduction.md
 ├── multiscale-coupling.md
 ├── training-workflow.md
 ├── parameter-fitting-workflow.md
@@ -191,6 +192,7 @@ brainx-modeling-loop/references/
 ```
 
 Keep experiment-execution and visualization mechanics out of the root skill. Route
+paper/code reproduction during step 0 to `references/paper-reproduction.md` for source reconciliation, complete analysis contracts and later source-informed reanalysis. Route
 step 4 to `references/run-experiment.md` and then `references/monitor-experiment.md`; keep the review contract only in
 `mcp-servers/codex/system-prompt.md`; the MCP adapter injects it into fresh and resumed `codex`
 calls. Keep the exact `mcp__codex__codex` invocation and required artifact-path
@@ -823,6 +825,7 @@ All five required Markdown references are skill-local and already exist. Use Bra
 - BrainMass implements neural mass models with BrainState for differentiable, JAX-based whole-brain modeling.
 - A `*Step` model defines regional dynamics; use `list_models()` for discovery and model selection.
 - `Simulator` is the canonical runner: use callable or time-major `inputs`, named/callable/dict monitors, transient removal, post-update sampling, State initialization, and JIT controls before writing custom execution.
+- Assess runner compatibility separately from catalog model scale: a compatible custom continuous-rate Module retains individual unit identity and equations; reject Simulator only for a concrete contract limitation.
 - `in_size` is each realization's region or decision-unit shape; `Simulator.run(batch_size=...)` adds independent State realizations and returns `(time, batch, in_size...)` trajectories.
 - For `WongWangStep`, choose thresholded `get_decision()` with an undecided state or explicit final `S1 - S2` dominance according to the scientific decision rule; do not treat them as equivalent.
 - `Network` couples regional nodes, forward models map hidden activity to BOLD/EEG/MEG signals, and `Fitter` tunes trainable parameters to data.
@@ -898,7 +901,7 @@ Route them through four workflow categories:
 | `skills/package-skills/brainmass/references/forward-observation-api.md` | HRFBold, kernels, TemporalAverage, BOLDSignal, EEG/MEG, and lead fields | [Forward API](https://brainx.chaobrain.com/brainmass/reference/forward.html), [observation API](https://brainx.chaobrain.com/brainmass/reference/observation.html), [forward-model tutorial](https://brainx.chaobrain.com/brainmass/tutorials/05_forward_models.html) |
 | `skills/package-skills/brainmass/references/fitting-with-objectives-api.md` | Simulator, Network, Fitter/FitResult, objective functions, and backend boundaries | [Orchestration API](https://brainx.chaobrain.com/brainmass/reference/orchestration.html), [gradient fitting](https://brainx.chaobrain.com/brainmass/tutorials/06_fitting_with_gradients.html), [gradient-free fitting](https://brainx.chaobrain.com/brainmass/tutorials/07_gradient_free_fitting.html), [custom objective](https://brainx.chaobrain.com/brainmass/howto/custom_objective.html) |
 | `skills/package-skills/brainmass/references/datasets-api.md` | Dataset registration/loading, Connectome, Signal, and task containers | [Datasets API](https://brainx.chaobrain.com/brainmass/reference/datasets.html) |
-| `skills/package-skills/brainmass/references/visualization-analysis-api.md` | Plotting, FC/FCD, and spectral analysis | [Visualization API](https://brainx.chaobrain.com/brainmass/reference/viz.html), [analysis how-to](https://brainx.chaobrain.com/brainmass/howto/analyze_results.html) |
+| `skills/package-skills/brainmass/references/visualization-analysis-api.md` | Plotting, sample-by-signal Pearson similarity with validity/axis checks, FC/FCD, and spectral analysis | [Visualization API](https://brainx.chaobrain.com/brainmass/reference/viz.html), [analysis how-to](https://brainx.chaobrain.com/brainmass/howto/analyze_results.html), [Pearson matrix API](https://brainx.chaobrain.com/braintools/apis/generated/braintools.analysis.population.functional_connectivity.html) |
 | `skills/package-skills/brainmass/references/batch-transform-acceleration.md` | JIT, transformed loops, `scan`, `vmap`, checkpointing, batched initial conditions, and sweeps | [BrainMass batch and accelerate](https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html), with [BrainTrace release notes on per-sample vmap](https://brainx.chaobrain.com/braintrace/changelog.html) only for the vmap-per-sample comparison already used by the skill |
 | `skills/package-skills/brainmass/references/horn-task-training.md` | HORN components, task datasets, direct optimizer loops, and held-out metrics | [HORN API](https://brainx.chaobrain.com/brainmass/reference/horn.html), [task-training tutorial](https://brainx.chaobrain.com/brainmass/tutorials/08_training_on_tasks.html), [HORN case study](https://brainx.chaobrain.com/brainmass/gallery/case_studies/horn_cognitive_task.html) |
 | `skills/package-skills/brainmass/references/parameter-sweeps-and-regime-analysis.md` | Regime exploration and sensitivity analysis distinct from fitting | [Parameter-sweeps how-to](https://brainx.chaobrain.com/brainmass/howto/parameter_sweeps.html) |
