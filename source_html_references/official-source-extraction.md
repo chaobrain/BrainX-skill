@@ -1,8 +1,15 @@
-# Official Source Extraction
+# Official source extraction
 
 Use this reference after the raw draft has been inventoried and relevant official HTML pages have been selected from the matching package-specific inventory or `brainx_install_spec.md`. Apply it when the user gives a concept title plus official HTML, or when a draft contains explanations that need replacement with official wording.
 
-Process:
+## Verify the source
+
+Follow redirects and confirm that the destination still documents the intended
+package, symbol, and section. Use a release-tagged page or source file for
+version-sensitive claims. When a rendered page is unavailable, use the
+official source and record which rendered link still needs verification.
+
+## Extract the relevant contract
 
 1. Open or parse only the selected relevant HTML before writing.
 2. Identify the page title, heading hierarchy, nearby code blocks, and the paragraph closest to the requested concept.

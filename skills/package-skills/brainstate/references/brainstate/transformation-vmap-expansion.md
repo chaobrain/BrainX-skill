@@ -1,7 +1,7 @@
 # BrainState vmap expansion
 
 Use this reference after the minimal `brainstate.transform.vmap` example in
-`skills/package-skills/brainstate/SKILL.md` when argument axes, State axes, random-key policy,
+`SKILL.md` when argument axes, State axes, random-key policy,
 nested mappings, or unexpected State writes require explicit control.
 
 This reference covers only behavior demonstrated by these routed official tutorials:

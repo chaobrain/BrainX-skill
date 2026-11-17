@@ -2,13 +2,13 @@
 
 ## Purpose and boundary
 
-Use this reference when a BrainCell simulation depends on geometry, axial current, regional biophysics, or location-specific stimulation and recording. Keep isopotential cells in `skills/package-skills/braincell/SKILL.md` and cross-cell connections or training in `skills/package-skills/brainpy-state/SKILL.md`; never model compartments with `SingleCompartment.size`.
+Use this reference when a BrainCell simulation depends on geometry, axial current, regional biophysics, or location-specific stimulation and recording. Use `SingleCompartment` for isopotential cells. Keep independent cells on the population axis and resolve compartments through the morphology and CV policy.
 
 ## Underlying principle of BrainCell multicompartment cells
 
 `braincell.filter` expressions represent spatial targets. Regions select cable for `paint()`; locsets select points for `place()`.
 
-`braincell.mech` declarations represent cellular biophysics and point processes. Paint cable properties, ions, and channels over regions; place clamps and probes at locsets.
+`braincell.mech` declarations represent cellular biophysics and point processes. Paint cable properties, ions, and channels over regions. Place clamps and synapses at locsets. Declare recordings on the cell or a spatial view.
 
 ## Workflow map
 
@@ -133,7 +133,7 @@ for cv in cell.cvs[:3]:
 
 Validate every policy by refining it and comparing the target observable. Resolve cable properties before `DLambda`; split capacitance or axial-resistivity changes at branch boundaries.
 
-Open `references/multicompartment/cv-policy-reference.md` for by-type or composite policies, probe mapping, and convergence.
+Open `references/multicompartment/cv-policy-reference.md` for by-type or composite policies, recording-site mapping, and convergence.
 
 ## Declare distributed biophysics
 
@@ -174,9 +174,9 @@ BrainCell area-scales capacitance and conductance densities during lowering; kee
 
 Open `references/multicompartment/filter-function-library.md` for composed or geometry-based regions, `references/ion-library.md` or `references/channel-library.md` for non-canonical mechanisms, and `references/mixions-for-adaptation.md` for calcium-dependent or multi-ion coupling.
 
-## Place stimuli and probes
+## Place stimuli and declare recordings
 
-Point declarations define where current enters and what the simulation exposes; use locsets for both and place at least one probe before `run()`.
+Place current clamps at locsets. Register observables on a selected view before initialization.
 
 | API | Description |
 |---|---|
@@ -184,9 +184,7 @@ Point declarations define where current enters and what the simulation exposes; 
 | `braincell.filter.at(branch, position)` | Use for one named branch position; the branch argument identifies a branch, not an anatomical type. |
 | `braincell.filter.Terminals()` | Use when a point declaration must resolve at every terminal tip. |
 | `braincell.mech.CurrentClamp(...)` | Use for piecewise current injection; declare delay, durations, and amplitudes with time and current units. Currents from clamps at the same runtime point add. |
-| `braincell.mech.StateProbe(field="v")` | Use to record cell-owned membrane voltage; `v` is the current multicompartment State field. |
-| `braincell.mech.MechanismProbe(mechanism=..., field=...)` | Use to record a real runtime State field on a named channel or ion; do not request a static parameter or derived property. |
-| `braincell.mech.CurrentProbe(...)` | Use to record one mechanism current or the total current owned by a named ion. |
+| `cell.loc(locset).record(name, observable)` | Use to record over the CVs selected by a locset. Select membrane voltage with `braincell.observe.state("v")`. |
 | `cell.place(locset, *point_mechanisms)` | Use only in DECLARING; it records point declarations at every resolved location and returns the cell for chaining. |
 
 ```python
@@ -202,12 +200,10 @@ cell.place(
         amplitudes=0.2 * u.nA,
     ),
 )
-cell.place(soma_midpoint, mech.StateProbe())
+cell.loc(soma_midpoint).record("soma_v", braincell.observe.state("v"))
 ```
 
-A multi-point locset creates one probe per resolved point. Inspect `sample_probes()` for keys; assign unique names only when stable keys are required.
-
-Open `references/multicompartment/filter-function-library.md` for composed locsets and `references/multicompartment/probe-reference.md` for probe selection or missing and ambiguous keys.
+Open `references/multicompartment/filter-function-library.md` for composed locsets and `references/multicompartment/probe-reference.md` for observable selection, sample schedules, result schemas, or legacy probe migration.
 
 ## Initialize and inspect the lowered runtime
 
@@ -215,35 +211,32 @@ Open `references/multicompartment/filter-function-library.md` for composed locse
 
 | API | Description |
 |---|---|
-| `cell.init_state(batch_size=None)` | Use after every `paint()` and `place()` call; it lowers declarations, allocates evolving model State, materializes clamp and probe layouts, and raises if the cell is already initialized. |
+| `cell.init_state(batch_size=None)` | Use after declaring mechanisms and recordings. It lowers declarations, allocates evolving model State, and raises if the cell is already initialized. |
 | `cell.node_tree` | Use after initialization to inspect the point-and-edge execution topology derived from the CV tree. |
 | `cell.layouts` | Use after initialization to inspect each lowered mechanism layout, including its kind, target, active count, source CVs, and runtime point indices. |
-| `cell.sample_probe(name)` | Use after initialization to read the current value of one probe by its resolved name. |
-| `cell.sample_probes()` | Use after initialization to read all current probe values and discover the exact probe-key surface. |
 
 ```python
 cell.init_state()
 
-samples = cell.sample_probes()
-print("probe keys:", sorted(samples))
+assert cell.V.value.shape == cell.pop_size + (cell.n_cv,)
 print("runtime nodes:", len(cell.node_tree.nodes))
 for layout in cell.layouts:
     print(layout.kind, layout.target, layout.n_active)
 ```
 
-Inspect `cell.cvs` before initialization; inspect `cell.node_tree`, `cell.layouts`, and probes afterward. Runtime surfaces raise in DECLARING; call `reset()` before changing `paint()` or `place()` rules.
+Inspect `cell.cvs` before initialization and runtime voltage and mechanism layouts afterward. In BrainCell 0.2.0 the unbatched voltage has population axes followed by the CV axis, even for a singleton population.
 
 Open `references/multicompartment/topology-building-and-visualization.md` to visualize CV, branch, node, or placement topology; open `references/multicompartment/probe-reference.md` for sampling failures.
 
 ## Run and interpret the result
 
-`run()` advances the initialized cell from its current time and samples every placed probe at each step, so repeated calls continue the same simulation unless State is reset.
+`run()` advances from the current cell time. Each recording block carries the times for its own sample schedule.
 
 | API | Description |
 |---|---|
-| `cell.run(dt=..., duration=...)` | Use with positive time quantities to advance the cell; it calls `init_state()` only when still DECLARING and raises `ValueError` when no probe is placed. |
+| `cell.run(dt=..., duration=...)` | Use with positive time quantities and a duration divisible by `dt`. It initializes a standalone cell on first use. |
 | `braincell.RunResult.time` | Use as the unit-aware `(n_steps,)` time axis spanning `[start_t, start_t + duration)`. |
-| `braincell.RunResult.traces` | Use as the probe-name to trace mapping; every trace has the same leading time dimension as `RunResult.time`. |
+| `braincell.RunResult.samples` | Look up a named recording block and use its `time`, `values`, and `schema` together. |
 | `cell.current_time` | Use after a run to inspect the endpoint from which the next `run()` call will continue. |
 | `Quantity.to_decimal(unit)` | Use only at plotting, serialization, or external-library boundaries to obtain values in an explicit compatible unit. |
 
@@ -253,12 +246,10 @@ result = cell.run(
     duration=100.0 * u.ms,
 )
 
-voltage_key = next(key for key in result.traces if key.endswith("_v"))
-voltage = result.traces[voltage_key]
-
-assert result.time.shape[0] == voltage.shape[0]
-times_ms = result.time.to_decimal(u.ms)
-voltage_mV = voltage.to_decimal(u.mV)
+voltage = result.samples["soma_v"]
+assert voltage.values.shape == (voltage.time.size, 1)
+times_ms = voltage.time.to_decimal(u.ms)
+voltage_mV = voltage.values[:, 0].to_decimal(u.mV)
 ```
 
 Keep quantities unit-aware and convert only at external boundaries. Validate `dt` by comparing the target observable at `dt / 2`.
@@ -267,7 +258,7 @@ Open `references/solver-library-with-effects.md` for cable-solver choice or meth
 
 ## Canonical end-to-end workflow
 
-This current-clamp pattern uses an explicit passive baseline, `DLambda` with staggered integration, somatic active channels, runtime target checks, and one voltage probe.
+This current-clamp pattern uses an explicit passive baseline, `DLambda` with staggered integration, somatic active channels, runtime target checks, and one voltage recording. Supply a valid SWC file containing a soma at `neuron.swc`.
 
 ```python
 import braincell
@@ -331,7 +322,7 @@ cell.place(
         amplitudes=0.2 * u.nA,
     ),
 )
-cell.place(soma_midpoint, mech.StateProbe())
+cell.loc(soma_midpoint).record("soma_v", braincell.observe.state("v"))
 
 # 5. Inspect the final spatial layout before allocating runtime State.
 print("n_cv:", cell.n_cv)
@@ -340,25 +331,21 @@ for cv in cell.cvs[:3]:
 
 # 6. Lower declarations, verify resolved targets, and run.
 cell.init_state()
-initial_samples = cell.sample_probes()
-assert len(initial_samples) == 1
-voltage_key = next(iter(initial_samples))
-assert voltage_key.endswith("_v")
+assert cell.V.value.shape == (1, cell.n_cv)
 
 for layout in cell.layouts:
     print(layout.kind, layout.target, layout.n_active)
 
 result = cell.run(dt=0.05 * u.ms, duration=100.0 * u.ms)
-voltage = result.traces[voltage_key]
-
-assert result.time.shape[0] == voltage.shape[0]
-times_ms = result.time.to_decimal(u.ms)
-voltage_mV = voltage.to_decimal(u.mV)
+voltage = result.samples["soma_v"]
+assert voltage.values.shape == (voltage.time.size, 1)
+times_ms = voltage.time.to_decimal(u.ms)
+voltage_mV = voltage.values[:, 0].to_decimal(u.mV)
 ```
 
 Replace the example morphology, mechanisms, stimulus, readout, `dt`, and CV policy, then validate the target observable under numerical refinement.
 
-Open `references/scripts/cell_multicompartment_reference.py` for the full tutorial with CV, node-tree, layout, policy, and plotting inspection.
+Open `references/scripts/cell_multicompartment_reference.py` for the full tutorial with CV, node-tree, layout, policy, and plotting inspection. Pass the path to a soma-and-dendrite SWC as the script's first argument.
 
 ## Reset, continue, or revise
 
@@ -368,20 +355,21 @@ Use continuation, State reset, declaration reset, or a new cell according to wha
 |---|---|---|
 | Continue the same trajectory | Call `cell.run(...)` again. | The next run starts at `cell.current_time`; the cell is not reinitialized. |
 | Repeat the same declaration from reset State | Call `cell.reset_state()`, then `cell.run(...)`. | The cell remains INITIALIZED while voltage, spike, time, and mechanism State are reseeded through their reset hooks. |
-| Change mechanisms, regions, locsets, or probes | Call `cell.reset()`, edit with `paint()` or `place()`, then call `init_state()`. | Runtime State is discarded and the cell returns to DECLARING while its declaration rules remain available for revision. |
+| Change the declaration | Call `cell.reset()` to reopen declaration before adding mechanisms or recordings. Build a fresh cell when replacing an existing recording name. | Runtime State is discarded. Existing declarations are retained. |
 | Compare CV policies or independent numerical trials | Construct separate cells from one model-building function. | Each comparison has independent declarations, runtime State, and time. |
 
 ## Reference routing
 
-Open the smallest child for the next decision; `skills/package-skills/braincell/SKILL.md` routes multicompartment work here before these children.
+Open the smallest child for the next decision.
 
 | Reference | Open when |
 |---|---|
 | `references/multicompartment/morphology-io-loading-validation.md` | Loading SWC, ASC, NeuroML2, NeuroMorpho.Org, or checkpoint data; configuring validation; or checking loaded geometry. |
 | `references/multicompartment/braincell-manual-morphology-construction.md` | Constructing branches, points, radii, types, and parent-child topology without an existing morphology file. |
 | `references/multicompartment/filter-function-library.md` | Selecting or composing non-canonical regions and locsets for `paint()` and `place()`. |
-| `references/multicompartment/cv-policy-reference.md` | Selecting advanced CV policies or evaluating spatial resolution, cost, probe mapping, and convergence. |
-| `references/multicompartment/probe-reference.md` | Selecting State, mechanism, or current probes; stabilizing trace keys; or resolving empty and ambiguous traces. |
+| `references/multicompartment/cv-policy-reference.md` | Selecting advanced CV policies or evaluating spatial resolution, cost, recording-site mapping, and convergence. |
+| `references/multicompartment/probe-reference.md` | Selecting voltage, mechanism State, or current, checking sampling schedules and result rows, or migrating legacy probes. |
+| `references/multicompartment/network-workflow.md` | Delivering events to spatially placed synapses, registering populations, or running and resetting connected cells. |
 | `references/multicompartment/topology-building-and-visualization.md` | Inspecting and visualizing morphology, branch, CV, node, region, locset, or runtime topology. |
 | `references/ion-library.md` | Choosing fixed, Nernst, or dynamic ion declarations and concentration behavior. |
 | `references/channel-library.md` | Choosing registered sodium, potassium, calcium, leak, HCN, or mixed-ion density channels. |

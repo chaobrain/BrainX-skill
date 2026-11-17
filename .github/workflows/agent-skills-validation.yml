@@ -3,16 +3,34 @@ name: Agent Skills validation
 on:
   push:
     paths:
+      - ".agents/skills/brainx-doc-sync/**"
       - ".github/scripts/agent-skills-workflow.test.mjs"
+      - ".github/scripts/check_skill_examples.py"
+      - ".github/scripts/test_brainspike_migration.py"
+      - ".github/scripts/test_brainspike_native_patterns.py"
+      - ".github/scripts/test_brainspike_boundaries.py"
+      - ".github/scripts/test_nest_simulator_training.py"
+      - ".github/scripts/test_point_neuron_routing.py"
+      - ".github/scripts/test_audit_links.py"
       - ".github/workflows/agent-skills-validation.yml"
       - "manifest.json"
+      - "mcp-servers/codex/skills.json"
       - "package.json"
       - "skills/**"
   pull_request:
     paths:
+      - ".agents/skills/brainx-doc-sync/**"
       - ".github/scripts/agent-skills-workflow.test.mjs"
+      - ".github/scripts/check_skill_examples.py"
+      - ".github/scripts/test_brainspike_migration.py"
+      - ".github/scripts/test_brainspike_native_patterns.py"
+      - ".github/scripts/test_brainspike_boundaries.py"
+      - ".github/scripts/test_nest_simulator_training.py"
+      - ".github/scripts/test_point_neuron_routing.py"
+      - ".github/scripts/test_audit_links.py"
       - ".github/workflows/agent-skills-validation.yml"
       - "manifest.json"
+      - "mcp-servers/codex/skills.json"
       - "package.json"
       - "skills/**"
   workflow_dispatch:
@@ -38,6 +56,17 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
+
+      - name: Test the documentation link auditor
+        run: python .github/scripts/test_audit_links.py
+
+      - name: Check point-neuron skill routing
+        run: python .github/scripts/test_point_neuron_routing.py -v
+
+      - name: Check published skill routes
+        run: |
+          python .agents/skills/brainx-doc-sync/scripts/audit_links.py --scope skills > skill-routes.json
+          jq -e '.missing_local_targets + .missing_skill_routes | if length == 0 then true else error(tostring) end' skill-routes.json
 
       - name: Install the Agent Skills reference validator
         run: python -m pip install --disable-pip-version-check skills-ref==0.1.1
@@ -103,3 +132,13 @@ jobs:
           for skill_dir in "${skill_dirs[@]}"; do
             python -c 'from skills_ref.cli import main; main()' validate "$skill_dir"
           done
+
+      - name: Run pinned BrainX CPU examples
+        run: |
+          python -m pip install --disable-pip-version-check 'BrainX[cpu]==2026.10.25' 'jax==0.12.0.1' 'networkx==3.7'
+          python skills/package-skills/brainspike/scripts/lif_smoke.py
+          python .github/scripts/check_skill_examples.py -v
+          python .github/scripts/test_brainspike_migration.py -v
+          python .github/scripts/test_brainspike_native_patterns.py -v
+          python .github/scripts/test_brainspike_boundaries.py -v
+          python .github/scripts/test_nest_simulator_training.py -v

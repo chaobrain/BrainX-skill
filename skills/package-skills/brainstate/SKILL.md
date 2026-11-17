@@ -13,7 +13,7 @@ Canonical path:
 
 `classify State roles -> construct Modules -> register State and children -> initialize -> set the run environment -> transform the whole operation -> validate State and outputs`
 
-Open the routed reference for specialized variants; route specialized neuronal or network dynamics to the matching BrainCell or BrainPy-State skill.
+Open the routed reference for specialized variants; route specialized neuronal or network dynamics to the matching BrainCell or BrainSpike skill.
 
 ## Underlying principle of BrainState
 
@@ -248,44 +248,38 @@ assert prediction.shape == (64, 1)
 
 The first compatible call traces and compiles the complete forward pass; later compatible calls reuse it while BrainState handles State effects.
 
-#### Gradient and parameter update example
+#### Compiled gradient and parameter update
 
-`grad` differentiates with respect to a State collection and returns gradients keyed by the same State paths. `return_value=True` returns the loss from the same pass.
+`grad` returns gradients with the same State paths and value PyTrees as the selected parameters. A single State can hold several leaves, such as a `Linear` layer's weight and bias. Register the parameter collection once and pass the matching gradient tree to the optimizer.
 
 ```python
+import braintools
+
+optimizer = braintools.optim.SGD(lr=0.1)
+optimizer.register_trainable_weights(params)
+
+
 def loss_fn():
     return jnp.mean((model(x_train) - y_train) ** 2)
 
 
-grads, loss = brainstate.transform.grad(
+grad_fn = brainstate.transform.grad(
     loss_fn,
-    params,
+    grad_states=params,
     return_value=True,
-)()
+)
 
-for key in params:
-    params[key].value -= 0.1 * grads[key]
-```
-
-#### Composed training-step transform
-
-```python
 @brainstate.transform.jit
 def train_step():
-    grads, loss = brainstate.transform.grad(
-        loss_fn,
-        params,
-        return_value=True,
-    )()
-    for key in params:
-        params[key].value -= 0.1 * grads[key]
+    grads, loss = grad_fn()
+    optimizer.update(grads)
     return loss
 
 
 loss = train_step()
 ```
 
-Use `jit(grad(...))` as the default compiled training-step backbone. Open the optimizer reference when manual updates should become optimizer-managed updates.
+Compile the forward, loss, gradient, and optimizer update together. Open `references/braintools-optimizer-reference.md` when choosing an optimizer, scheduling the learning rate, or checking optimizer State ownership.
 
 #### State-aware `vmap`
 
@@ -394,6 +388,7 @@ The remaining nested reference has one inbound route:
 | `references/brainstate/transformation-jit-expansion.md` | Controlling State write-back, raw `jax.jit` boundaries, caching, or static specialization |
 | `references/brainstate/transformation-grad-expansion.md` | Controlling `argnums`, `grad_states`, gradient returns, higher-order transforms, or fitting overlays |
 | `references/brainstate/transformation-vmap-expansion.md` | Mapping or sharing State across batches, ensembles, or sweeps, including State axes and randomness |
+| `references/brainstate/delay-buffers.md` | Preserving explicit signal history, choosing write/read order, resetting named delay taps, or checking mapped-buffer State ownership |
 | `references/brainstate/brainstate-control-flow-patterns.md` | Choosing transform-safe loops, scans, branches, checkpointed control flow, or memory-efficient training through long rollouts |
 | `references/brainstate/brainstate-transformed-diagnostics.md` | Debugging runtime values or enforcing invariants inside transformed stateful code |
 

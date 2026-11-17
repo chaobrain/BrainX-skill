@@ -1,6 +1,6 @@
 ---
 name: brainmass
-description: Use for neural-mass modeling of aggregate population activity at the local-circuit, brain-region, multi-region, or whole-brain scale. Use alone for mass-model studies or together with BrainPy-State and/or BrainCell when aggregate dynamics participate in a multiscale model.
+description: Use for neural-mass modeling of aggregate population activity at the local-circuit, brain-region, multi-region, or whole-brain scale. Use alone for mass-model studies or together with BrainSpike and/or BrainCell when aggregate dynamics participate in a multiscale model.
 ---
 
 # BrainMass

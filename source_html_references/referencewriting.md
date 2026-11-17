@@ -1,7 +1,11 @@
-# Reference Writing Style
+# Reference writing style
 
 Use this guide to turn mirrored source material into an operational reference that
 helps an agent make decisions and execute correctly.
+
+Use the [official source extraction guide](official-source-extraction.md) to
+check migrated links and record version-specific evidence before rewriting a
+reference.
 
 A reference should teach an agent:
 

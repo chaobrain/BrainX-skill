@@ -10,7 +10,7 @@ teach coding agents (Claude, Codex, Cursor) the BrainX ecosystem, plus the npm
 installer that deploys them.
 
 - `skills/package-skills/<name>/` — one skill per BrainX package (`brainunit`,
-  `brainstate`, `braincell`, `brainevent`, `brainmass`, `brainpy-state`, and
+  `brainstate`, `braincell`, `brainevent`, `brainmass`, `brainspike`, and
   `braintrace`).
 - `skills/<name>/` — cross-package and workflow skills such as
   `brainx-general-guard`, `brainx-install`, `brainx-acceleration`, and

@@ -1,8 +1,23 @@
 # BrainMass Central Documentation Sitemap
 
+Purpose: choose the official BrainMass HTML page that directly supports a neural-mass model, simulation, fitting, analysis, or example task.
+
+## Table of contents
+
+- [Root](#root)
+- [Get Started](#get-started)
+- [Tutorials](#tutorials)
+- [How-To Guides](#how-to-guides)
+- [Concepts](#concepts)
+- [Data-Driven Modeling](#data-driven-modeling)
+- [Gallery — Model Zoo](#gallery--model-zoo)
+- [Gallery — Case Studies](#gallery--case-studies)
+- [Central API Reference Pages](#central-api-reference-pages)
+
 ## Root
 
 - [brainmass documentation](https://brainx.chaobrain.com/brainmass/) — Main BrainMass landing page; introduces the package, installation, features, and learning paths.
+- [Release notes](https://brainx.chaobrain.com/brainmass/changelog.html) — Check release-specific changes before reusing simulation or fitting examples.
 
 ## Get Started
 

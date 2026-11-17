@@ -263,6 +263,3 @@ Verify `postsynaptic_input.shape == connectivity.shape[1:]` for vector input and
 ## Application script examples
 | Reference | Open when |
 |---|---|
-| `references/scripts/coba_ei_teaching.py` | Open for the shared BrainEvent and BrainPy teaching example; it uses `BinaryArray` with interchangeable `FixedNumPerPre`, `CSR`, and dense connectivity for efficient event-driven communication into BrainPy `LIFRef`, `Expon`, and `COBA` dynamics inside one compiled BrainState loop. |
-| `references/scripts/102_EI_net_1996.py` | Open for a complete high-level E/I network already using `brainpy.state.AlignPostProj` and `brainstate.nn.EventFixedProb`; it preserves unit-aware weights, initialization, compiled time loops, and visualization. |
-| `references/scripts/204_joglekar_2018_propagation.py` | Open for delayed spikes, area mapping, and vmapped `JITCScalarC` communication; it preserves delays, seeds, external-data assumptions, and BrainPy compatibility details. |

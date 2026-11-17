@@ -132,6 +132,10 @@ Create or update `FIGURE_MANIFEST.md` with one entry per figure:
 - Render and source-value checks:
 ```
 
+## Explain the figures
+
+Write each figure's explanation beside the figure in the research report, or in the accompanying response for a standalone visualization request. Name the plotted quantity, axes and units, compared conditions, and meaning of uncertainty; explain the main pattern and the conclusion it supports. State transformations such as normalization or smoothing when they affect interpretation. Distinguish observed data from model predictions, retain the name of any proxy, and state the assumptions or unresolved alternatives that limit interpretation. Adapt technical detail to the researcher's prompt.
+
 ## Reference routing
 
 | Route | Open when | Contains |
@@ -139,8 +143,8 @@ Create or update `FIGURE_MANIFEST.md` with one entry per figure:
 | `references/neural-data-visualization.md` | Selecting neural event, activity, connectivity, dynamical, topology, tuning, spatial, or general 3D figures. | Data contracts, family selection, concrete BrainTools helpers, 3D boundaries, workflows, and comparison rules. |
 | `references/statistical-and-model-visualization.md` | Inspecting distributions or assumptions, comparing groups, diagnosing regression, or evaluating classification and learning behavior. | Statistical helper selection, raw-data and uncertainty rules, residual diagnostics, ROC-versus-precision-recall decisions, and learning-curve interpretation. |
 | `references/interactive-and-visualization-styling.md` | Adding interactive exploration, dashboards, styles, palettes, colormaps, export, or animation. | Plotly return behavior, stable encodings, scoped Matplotlib styles, output decisions, animation data contracts, and performance boundaries. |
-| `skills/package-skills/braincell/references/multicompartment/topology-building-and-visualization.md` | Visualizing BrainCell morphology branches, CVs, runtime nodes, selector placement, topology layouts, or node and mechanism values. | Branch/CV/node decisions, initialization, physical-versus-topological views, selector coverage, value coloring, and canonical compositions. |
-| `skills/package-skills/brainmass/references/visualization-analysis-api.md` | Computing or plotting BrainMass trajectories, phase portraits, connectivity, FC/FCD, or spectra. | `brainmass.viz`, BrainTools metric selection, time-major and sampling rules, unit boundaries, canonical analysis, and failures. |
+| `braincell` → `references/multicompartment/topology-building-and-visualization.md` | Visualizing BrainCell morphology branches, CVs, runtime nodes, selector placement, topology layouts, or node and mechanism values. | Branch/CV/node decisions, initialization, physical-versus-topological views, selector coverage, value coloring, and canonical compositions. |
+| `brainmass` → `references/visualization-analysis-api.md` | Computing or plotting BrainMass trajectories, phase portraits, connectivity, FC/FCD, or spectra. | `brainmass.viz`, BrainTools metric selection, time-major and sampling rules, unit boundaries, canonical analysis, and failures. |
 
 ## Boundaries and common failures
 

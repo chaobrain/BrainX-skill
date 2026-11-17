@@ -100,7 +100,7 @@ Official sources:
 
 Official sources:
 
-- https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html
+- https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html#standard-regularizations
 - https://brainx.chaobrain.com/brainstate/apis/generated/brainstate.nn.Regularization.html
 - https://brainx.chaobrain.com/brainstate/apis/generated/brainstate.nn.ChainedReg.html
 - https://github.com/chaobrain/brainstate/blob/main/brainstate/nn/_regularization.py
@@ -124,7 +124,7 @@ Official sources:
 
 Use the generated class page for exact axes, reduction behavior, weights, and initialization arguments; these differ by regularizer and should not be inferred from neighboring classes.
 
-Official source: https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html
+Official source: https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html#standard-regularizations
 
 ## Prior-distribution regularizer selection
 
@@ -146,7 +146,7 @@ Prior regularizers encode distributional assumptions for Bayesian-inspired param
 | Variable selection | `SpikeAndSlabReg` |
 | Probability simplex | `DirichletReg` |
 
-Official source: https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html
+Official source: https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html#prior-distribution-based-regularizations
 
 ## Interaction safeguards
 
@@ -163,7 +163,7 @@ Official source: https://brainx.chaobrain.com/brainstate/apis/nn/regularization.
 ## Mirror source urls
 
 - https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html
-- https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html
+- https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html#standard-regularizations
 - https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
 - https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
 - https://github.com/chaobrain/brainstate/blob/main/brainstate/nn/_param.py
