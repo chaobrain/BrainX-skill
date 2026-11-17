@@ -1,6 +1,6 @@
 # BrainMass model library
 
-Use this reference when selecting a public BrainMass model, comparing dynamical cost, identifying its primary observable, or distinguishing variants with similar names. Return to `skills/package-skills/brainmass/SKILL.md` after selection for the canonical `Simulator` workflow.
+Use this reference when selecting a public BrainMass model, comparing dynamical cost, identifying its primary observable, or distinguishing variants with similar names. Return to `SKILL.md` after selection for the canonical `Simulator` workflow.
 
 ## Inspect the public catalogue
 
@@ -81,7 +81,9 @@ Match the intervention to the model's equations; similarly named inhibitory para
 | API | Description |
 |---|---|
 | `JansenRitStep(Ai=...)` | Use for inhibitory postsynaptic gain in an alpha/EEG cortical column; `Ai` is measured in mV and scales the inhibitory-population filter, so lowering it weakens the inhibitory postsynaptic potential represented in `eeg() = E - I`. |
-| `WilsonCowanStep(wEI=...)` | Use for inhibitory feedback onto the excitatory rate population; `wEI` is dimensionless I-to-E coupling and enters the excitatory equation subtractively, so lowering it weakens that coupling. |
+| `WilsonCowanStep(wIE=...)` | Use for inhibitory feedback onto the excitatory population in BrainMass `0.1.1` (BrainX `2026.10.25`). Lower `wIE` to weaken the dimensionless, subtractive I→E coupling. `wEI` controls E→I in this release. |
+
+Verify the keyword mapping with unequal cross weights before porting a Wilson–Cowan intervention. Compare both derivatives or a short integration step with the intended equations. The published equations and gallery use the opposite keyword convention.
 
 Change only the selected inhibitory parameter in a matched causal comparison. Treat defaults and source-documented estimation ranges as context, not as evidence for a chosen intervention magnitude. Label an unsourced, outcome-tuned, or outside-range value as phenomenological and show nearby sensitivity before claiming a robust regime change.
 
@@ -167,14 +169,14 @@ Open only the script that matches the selected model or scientific regime.
 
 | Script | Open when |
 |---|---|
-| `scripts/hopf-bifurcation-single-node.py` | Demonstrating oscillation onset across the Hopf bifurcation or checking settled amplitude against `sqrt(a)`. |
-| `scripts/wilson-cowan-ei-dynamics.py` | Simulating E/I population rates, their phase portrait, or an excitatory-drive sweep. |
-| `scripts/jansen-rit-eeg-proxy.py` | Simulating the Jansen-Rit EEG proxy, its spectrum, or an input-rate sweep. |
-| `scripts/seizure-epileptor-case-study.py` | Comparing healthy and seizure-like Epileptor regimes across epileptogenicity `x0`. |
-| `scripts/wong-wang-decision-making.py` | Running stochastic competing-population decisions or estimating a psychometric curve. |
-| `scripts/kuramoto-synchronization.py` | Measuring synchronization through the Kuramoto order parameter while varying coupling strength. |
-| `scripts/wong-wang-dmf-resting-state.py` | Inspecting resting excitatory rate and gating in the Wong-Wang excitatory-inhibitory dynamic mean-field model. |
-| `scripts/linear-baseline-node.py` | Checking integration against the analytical linear decay before diagnosing a more complex model. |
+| `references/scripts/hopf-bifurcation-single-node.py` | Demonstrating oscillation onset across the Hopf bifurcation or checking settled amplitude against `sqrt(a)`. |
+| `references/scripts/wilson-cowan-ei-dynamics.py` | Simulating E/I population rates, their phase portrait, or an excitatory-drive sweep. |
+| `references/scripts/jansen-rit-eeg-proxy.py` | Simulating the Jansen-Rit EEG proxy, its spectrum, or an input-rate sweep. |
+| `references/scripts/seizure-epileptor-case-study.py` | Comparing healthy and seizure-like Epileptor regimes across epileptogenicity `x0`. |
+| `references/scripts/wong-wang-decision-making.py` | Running stochastic competing-population decisions or estimating a psychometric curve. |
+| `references/scripts/kuramoto-synchronization.py` | Measuring synchronization through the Kuramoto order parameter while varying coupling strength. |
+| `references/scripts/wong-wang-dmf-resting-state.py` | Inspecting resting excitatory rate and gating in the Wong-Wang excitatory-inhibitory dynamic mean-field model. |
+| `references/scripts/linear-baseline-node.py` | Checking integration against the analytical linear decay before diagnosing a more complex model. |
 
 ## Common selection failures
 

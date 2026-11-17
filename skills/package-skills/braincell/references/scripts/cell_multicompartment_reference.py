@@ -8,6 +8,7 @@ All BrainCell reference scripts live in this directory.
 
 # 1. Imports and CPU/JAX setup.
 # Set the platform before importing JAX-backed BrainCell/BrainState packages.
+import argparse
 import os
 
 os.environ.setdefault("JAX_PLATFORMS", "cpu")
@@ -20,13 +21,13 @@ import matplotlib.pyplot as plt
 from braincell import Cell, Morphology
 from braincell import CVPerBranch, MaxCVLen
 from braincell.filter import BranchSlice, RootLocation, at
-from braincell.mech import CableProperty, Channel, CurrentClamp, StateProbe
+from braincell.mech import CableProperty, Channel, CurrentClamp
 
 
 # 2. Load morphology from SWC.
-# Canonical tutorial path. Adjust this path only if your repository layout differs.
-MORPHOLOGY_PATH = "../../data/morphology/example_tree.swc"
-morpho = Morphology.from_swc(MORPHOLOGY_PATH)
+parser = argparse.ArgumentParser(description="Run the multicompartment cell example.")
+parser.add_argument("swc", help="Path to an SWC containing a soma and at least one dendrite")
+morpho = Morphology.from_swc(parser.parse_args().swc)
 
 print("Morphology topology:")
 print(morpho.topo())
@@ -142,20 +143,18 @@ channel_cell.paint(
 
 channel_cell.init_state()
 layout = channel_cell.layouts[0]
-point_id = int(layout.point_index[0])
 
 print("\nDensity mechanism layout:")
 print("layout.kind:", layout.kind)
 print("layout.target:", layout.target)
 print("layout.n_active:", layout.n_active)
 print("layout.source_cv_ids:", layout.source_cv_ids)
-print("layout.point_index:", layout.point_index.tolist())
-print("sample g_max at one active point:", channel_cell.get_point_state(point_id)[layout.id]["g_max"])
-print("sample E at one active point:", channel_cell.get_point_state(point_id)[layout.id]["E"])
+print("g_max on the density layout:", channel_cell.get_state(layout.id, "g_max"))
+print("E on the density layout:", channel_cell.get_state(layout.id, "E"))
 
 
 # 10. place(...): point mechanisms.
-# place(locset, mechanism) attaches point mechanisms such as clamps and probes.
+# place(locset, mechanism) attaches point mechanisms such as clamps.
 place_cell = Cell(morpho, cv_policy=CVPerBranch(2))
 place_cell.place(
     RootLocation(x=0.5),
@@ -173,12 +172,11 @@ print("layout.n_active:", layout.n_active)
 print("layout.point_index:", layout.point_index.tolist())
 print("amplitudes:", place_cell.get_state(layout.id, "amplitudes"))
 print("durations:", place_cell.get_state(layout.id, "durations"))
-print("start:", place_cell.get_state(layout.id, "start"))
 
 
 # 11. Minimal runnable multicompartment simulation.
 # This is the canonical Cell(morpho) simulation shape: choose CV policy and solver,
-# paint density mechanisms, place point mechanisms/probes, initialize, reset, run.
+# paint density mechanisms, place the clamp, register voltage, initialize, and run.
 sim_cell = Cell(
     morpho,
     cv_policy=CVPerBranch(cv_per_branch=2),
@@ -197,10 +195,7 @@ sim_cell.place(
     CurrentClamp(delay=20.0 * u.ms, durations=60.0 * u.ms, amplitudes=0.2 * u.nA),
 )
 
-sim_cell.place(
-    at("soma", 0.5),
-    StateProbe(),
-)
+sim_cell.loc(at("soma", 0.5)).record("soma_v", braincell.observe.state("v"))
 
 sim_cell.init_state()
 sim_cell.reset_state()
@@ -209,8 +204,9 @@ dt = 0.1 * u.ms
 duration = 100.0 * u.ms
 result = sim_cell.run(dt=dt, duration=duration)
 
-times_ms = u.math.concatenate([result.time])
-soma_v_mV = u.math.concatenate([result.traces["soma(0.5)_v"]])
+voltage = result.samples["soma_v"]
+times_ms = voltage.time.to_decimal(u.ms)
+soma_v_mV = voltage.values[:, 0].to_decimal(u.mV)
 
 plt.figure(figsize=(6, 4))
 plt.plot(times_ms, soma_v_mV, label="soma(0.5)_v")

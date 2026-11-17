@@ -19,6 +19,8 @@ test('validates the repository with grouped package skills', async () => {
   const result = await validateBundle(repositoryRoot);
 
   assert.equal(result.skills.length, 13);
+  assert.ok(result.skills.some((skill) => skill.name === 'brainspike'));
+  assert.ok(!result.skills.some((skill) => skill.name === 'brainpy-state'));
   assert.match(
     result.skills.find((skill) => skill.name === 'brainstate').sourcePath,
     /skills[/\\]package-skills[/\\]brainstate$/,

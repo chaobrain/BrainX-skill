@@ -1,6 +1,6 @@
 # BrainCell manual morphology construction
 
-Use this reference after opening `references/multicompartment/multicompartment-cell-workflow.md` when no existing reconstruction should be loaded and the task requires explicit branch geometry, anatomical types, or parent-child topology. Return to the workflow before choosing CVs, mechanisms, probes, or a solver.
+Use this reference after opening `references/multicompartment/multicompartment-cell-workflow.md` when no existing reconstruction should be loaded and the task requires explicit branch geometry, anatomical types, or parent-child topology. Return to the workflow before choosing CVs, mechanisms, recordings, or a solver.
 
 ## Mental model
 

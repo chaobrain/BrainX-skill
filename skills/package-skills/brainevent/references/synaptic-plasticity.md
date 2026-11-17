@@ -125,5 +125,5 @@ Open the official Synaptic Plasticity tutorial when choosing trace equations, up
 
 ## Sources
 
-- Tutorial 5: Synaptic Plasticity Modeling - Foundation of Learning and Memory: https://brainx.chaobrain.com/brainevent/tutorials/data-structures/05_synaptic_plasticity.html
+- [Event-driven synaptic plasticity tutorial](https://brainx.chaobrain.com/brainevent/tutorials/events/synaptic-plasticity.html)
 - Apply event-driven synaptic plasticity: https://brainx.chaobrain.com/brainevent/how-to/data-structures/synaptic-plasticity.html

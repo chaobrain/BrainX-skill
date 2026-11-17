@@ -114,7 +114,7 @@ The graph executor runs the compiled forward graph and produces the hidden-to-we
 | `ETraceGraphExecutor` | Use as the base executor when developing a custom algorithm that consumes an `ETraceGraph`. It runs the forward graph and exposes its Jacobian calculations. |
 | `ETraceVjpGraphExecutor` | Use for algorithms in the `ETraceVjpAlgorithm` family. It provides the VJP-based executor used by the built-in estimators. |
 
-Keep executor calls inside the algorithm lifecycle. Application code should call the compiled learner inside a BrainState loop or scan rather than driving the executor directly. In BrainTrace `0.2.4`, use `brainstate.transform.grad` around one learner call and carry accumulated gradients through `brainstate.transform.scan`; sequence-driver methods begin in `0.2.5`.
+Keep executor calls inside the algorithm lifecycle. Application code should use the compiled learner’s sequence drivers. Use `etrace_grad` to accumulate online gradients and `etrace_evolve` to advance State without accumulating gradients.
 
 ## Control-flow policy
 

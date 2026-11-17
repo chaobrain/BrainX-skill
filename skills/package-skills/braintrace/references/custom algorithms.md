@@ -191,12 +191,11 @@ assert int(learner.running_index.value) == 0
 ## Execution and validation rules
 
 - Compile the custom algorithm once for a stable model structure; do not rebuild it per step.
-- Differentiate exactly one learner call per step and use `brainstate.transform.scan` when gradients must be accumulated across a sequence. Apply the optimizer after the scan.
+- Call the learner exactly once per step and accumulate online gradients with `learner.etrace_grad`. Apply the optimizer once after the sequence.
 - Compare an unmodified subclass against its parent before testing the new rule.
 - Verify trace shapes, finite values, reset-to-zero behavior, parameter-gradient keys, and parameter updates.
 - Use a reduced BPTT oracle only in a regime where the parent estimator documents equivalence. `D_RTRL` uses a diagonal recurrent-Jacobian approximation and is not generally equal to BPTT.
 - Do not reimplement graph tracing, hidden grouping, Jacobian calculation, or State write-back unless the research method genuinely requires a new base engine.
-- This reference targets BrainTrace `0.2.4`; do not use sequence-driver methods introduced in `0.2.5`.
 
 ## Sources
 

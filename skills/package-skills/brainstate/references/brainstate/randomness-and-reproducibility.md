@@ -1,6 +1,6 @@
 # Brainstate randomness and reproducibility
 
-Use this reference after `skills/package-skills/brainstate/SKILL.md` for advanced randomness. It covers independent streams, stochastic transforms, key control, parallel keys, replay, and checkpointing.
+Use this reference after `SKILL.md` for advanced randomness. It covers independent streams, stochastic transforms, key control, parallel keys, replay, and checkpointing.
 
 The root skill owns `brainstate.random.DEFAULT` and ordinary seeding. This reference owns advanced stream and key control.
 
@@ -10,7 +10,7 @@ Use one `RandomState` per independent concern. Calls consume successive keys fro
 
 | API | Description |
 |---|---|
-| `RandomState(seed=...)` | Create an independent stateful random stream. |
+| `RandomState(seed_or_key=None)` | Create an independent stateful random stream from a seed or key; pass a seed positionally, as below. |
 | `rng.seed(seed)` | Restart a custom stream from a seed. |
 | `rng.value` | Inspect the custom stream's current key. |
 
@@ -18,14 +18,16 @@ Use one `RandomState` per independent concern. Calls consume successive keys fro
 import brainstate
 import jax.numpy as jnp
 
-init_rng = brainstate.random.RandomState(seed=42)
-augment_rng = brainstate.random.RandomState(seed=123)
+init_rng = brainstate.random.RandomState(42)
+augment_rng = brainstate.random.RandomState(123)
 
 initial_weights = init_rng.randn(5)
 augmented_values = augment_rng.randn(5)
 
 assert not jnp.allclose(initial_weights, augmented_values)
 ```
+
+Use the [generated `RandomState` constructor contract](https://brainx.chaobrain.com/brainstate/apis/generated/brainstate.random.RandomState.html), which names `seed_or_key`; do not copy `seed=` from the module-overview example.
 
 Do not pass a custom stream to the global `set_key(...)`. The sources document `rng.value` inspection and `rng.seed(...)` reseeding. They do not document restoring a saved custom-stream key.
 

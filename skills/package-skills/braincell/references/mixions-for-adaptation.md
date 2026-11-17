@@ -2,7 +2,7 @@
 
 Use this reference when adding a calcium-activated potassium current, calcium-dependent afterhyperpolarization, spike-frequency adaptation, or a thalamic/rebound variant that needs dynamic calcium plus a K/Ca mixed current.
 
-In single-compartment models, use the class pattern below directly. In multicompartment `Cell` work, use this reference for ion/channel composition choices, but keep morphology, targeting, `paint`, `place`, CV policy, clamps, and probes in `references/multicompartment/multicompartment-cell-workflow.md`.
+In single-compartment models, use the class pattern below directly. In multicompartment `Cell` work, use this reference for ion/channel composition choices, but keep morphology, targeting, `paint`, `place`, CV policy, clamps, and recordings in `references/multicompartment/multicompartment-cell-workflow.md`.
 
 ## Rule
 

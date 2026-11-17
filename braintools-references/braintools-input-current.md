@@ -60,6 +60,8 @@ with brainstate.environ.context(dt=0.1 * u.ms):
 **Invariant:** set or scope `brainstate.environ.dt` before constructing and
 generating the protocol. A different `dt` changes the number of samples.
 
+Normalize generated current to the consuming model's declared buffered-State unit before a transformed native rollout. Physical compatibility alone does not preserve a State PyTree whose unit metadata is fixed; the BrainSpike `iaf_psc_alpha` integration uses `pA`. Keep model-specific buffering order in the consuming skill.
+
 ## Feed a protocol into a BrainPy-State rollout
 
 A generated protocol is time-major data: construct it under the rollout `dt`,

@@ -24,14 +24,18 @@ preserve.
 
 ## Spike encoders
 
+Import encoders from `braintools.spike`. The examples require BrainTools
+0.4.0 or newer.
+
 All encoder objects are reusable callables. Pass the input as the first argument
-and the number of encoded timesteps as `n_time=`.
+and the number of encoded timesteps as `n_time=`. Set the BrainState
+sampling interval before encoding.
 
 | API | Description |
 |---|---|
 | `LatencyEncoder(min_val=None, max_val=None, method='log', threshold=0.01, clip=False, tau=1 * u.ms, normalize=False, first_spk_time=0 * u.ms, epsilon=1e-7)` | Use for time-to-first-spike coding. Normalize inputs when they are not already in `[0, 1]`; larger values produce earlier spikes. |
 | `RateEncoder(gain=100.0, method='linear', min_rate=0.0, max_rate=None, normalize=False, min_val=None, max_val=None)` | Use when firing rate should vary with input intensity. Select the mapping with `method` and constrain rates deliberately. |
-| `PoissonEncoder(time_window=1000.0, normalize=False, max_rate=100.0)` | Use when an input rate should generate Poisson-distributed spikes. Increase the observation window before judging whether empirical counts match the requested rate. |
+| `PoissonEncoder(normalize=False, max_rate=100.0)` | Use when an input rate should generate Poisson-distributed spikes. Increase the observation window before judging whether empirical counts match the requested rate. |
 | `PopulationEncoder(n_neurons, min_val=0.0, max_val=1.0, sigma=None, max_rate=100.0)` | Use to encode each scalar with overlapping population receptive fields. Set the represented range and population width explicitly. |
 | `BernoulliEncoder(scale=1.0, normalize=True, min_val=None, max_val=None)` | Use for independent Bernoulli sampling at every time step. Ensure the resulting probabilities remain valid after scaling. |
 | `DeltaEncoder(threshold=0.1, positive_only=False, absolute=False, normalize=True)` | Use for change detection in a temporal signal. Configure sign handling so negative changes are either retained, suppressed, or folded by absolute value. |
@@ -41,12 +45,15 @@ and the number of encoded timesteps as `n_time=`.
 | `RankOrderEncoder(use_values=True, normalize=True, invert=False)` | Use when feature rank determines spike order. Use `invert=True` only when low-valued features must spike first. |
 
 ```python
+import brainstate
+import brainunit as u
 import jax.numpy as jnp
-from braintools import LatencyEncoder
+from braintools.spike import LatencyEncoder
 
 values = jnp.array([0.02, 0.5, 1.0])
-encoder = LatencyEncoder(method="linear", normalize=True)
-spikes = encoder(values, n_time=5)
+encoder = LatencyEncoder(method="linear", normalize=True, tau=4 * u.ms)
+with brainstate.environ.context(dt=1 * u.ms):
+    spikes = encoder(values, n_time=5)
 
 assert spikes.shape == (5, 3)
 assert jnp.argmax(spikes[:, 2]) < jnp.argmax(spikes[:, 1])
@@ -74,6 +81,7 @@ tensors with broadcast-compatible shapes.
 Do not use these helpers as fuzzy arithmetic on rates or arbitrary continuous
 arrays; their formulas assume binary values.
 
-## Official source
+## Official sources
 
-- `https://brainx.chaobrain.com/braintools/apis/braintools.html`
+- [BrainTools 0.4 encoder migration](https://github.com/chaobrain/braintools/releases/tag/v0.4.0)
+- [Spike encoders and operations API](https://brainx.chaobrain.com/braintools/apis/spike.html)

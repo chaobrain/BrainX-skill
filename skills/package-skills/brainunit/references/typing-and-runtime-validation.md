@@ -14,7 +14,7 @@ Use this reference when a BrainUnit interface needs precise annotations, reusabl
 | `HAS_UNIT` | Any `Quantity`, regardless of dimension | Only the presence of a unit-aware value matters |
 | `LENGTH`, `TIME`, `SPEED`, and other pre-built aliases | A reusable named physical dimension | Repeated signatures should share a short domain term |
 
-`QuantityLike` is intentionally broad and does not require a unit. Normalize it with `u.math.asarray()` before relying on array or unit properties.
+`QuantityLike` is intentionally broad and does not require a unit. Normalize it with `u.math.asarray()` before relying on array or unit properties. Passing `unit=target` converts an existing quantity and raises `UnitMismatchError` for plain data, so attach a unit to plain values first when one is required.
 
 ```python
 import brainunit as u
@@ -22,7 +22,10 @@ from brainunit.typing import QuantityLike, UnitLike
 
 
 def normalize(values: QuantityLike, unit: UnitLike = None):
-    return u.math.asarray(values, unit=unit)
+    data = u.math.asarray(values)
+    if unit is not None and isinstance(data, u.Quantity):
+        data = u.math.asarray(data, unit=unit)
+    return data
 ```
 
 ## Array and structural aliases

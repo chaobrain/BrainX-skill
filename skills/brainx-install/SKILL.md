@@ -17,7 +17,7 @@ For installation, upgrade, downgrade, migration, device-target, or compatibility
 
 ## Core Rules
 
-1. BrainX package must use a Python interpreter at version `>=3.11`.
+1. Match the interpreter to the selected release's `Requires-Python` metadata. BrainX `2026.10.25`, the target for the skill examples, requires Python `>=3.12`. Some historical releases support Python 3.11.
 2. For a clean environment with no requested version, prefer to use the unpinned BrainX install matching the confirmed device, but resolve and name the current latest Python-compatible BrainX date-style release before confirmation. Critically, if a BrainX component already exists in the environment, or a requested version is specified, you must open [compatibility-and-release-matching.md](references/compatibility-and-release-matching.md), use it as the primary release source, and select one non-separated release. Never mix component versions from different rows.
 3. Require the user to explicitly choose `cpu`, `cuda12`, `cuda13`, or `tpu`. Detection is evidence, not consent.
 4. Before any mutation, must present the complete specification to the user clearly, show the run location, interpreter, venv path, device extra, release, complete component set, existing packages, expected results, and exact commands.
@@ -53,7 +53,7 @@ Collect enough evidence to identify:
 - visible NVIDIA or TPU hardware and the driver, toolkit, container, or runtime evidence needed to distinguish `cuda12`, `cuda13`, and `tpu`;
 - the active Python executable and version, environment-manager state, pip version, and viable candidate interpreters;
 - existing `.venv`, `.venv-brainx`, or user-designated target environments without creating or activating them;
-- installed versions of BrainX, BrainUnit, BrainState, BrainEvent, BrainTools, BrainTrace or BrainScale, BrainCell, BrainPy, BrainPy-State, BrainMass, PINNx, JAX, JAXlib, and Optax in every environment relevant to the request;
+- installed versions of BrainX, BrainUnit, BrainState, BrainEvent, BrainTools, BrainTrace or BrainScale, BrainCell, BrainPy, BrainPy-State, BrainSpikes (`brainspikes`), BrainMass, PINNx, JAX, JAXlib, and Optax in every environment relevant to the request;
 - for a clean unpinned install, the exact latest BrainX release compatible with the proposed interpreter, resolved from read-only official package-index metadata.
 
 Prefer package metadata and platform-native tools over imports or newly installed helpers. Record missing evidence explicitly as `unknown`, `not_detected`, or a command error rather than guessing. Organize the result in whatever concise structured form best fits the task.
@@ -89,7 +89,7 @@ Critically, for the second case, when BrainX packages are already installed or t
 
 ## 4. Choose the Venv
 
-Prefer reusing an existing relevant Python virtual environment whose interpreter is Python `>=3.11`. This includes environments managed by `venv`, Conda, or another environment manager; inspect the environment before proposing reuse.
+Prefer reusing an existing relevant Python virtual environment only when its interpreter satisfies the selected release. This includes environments managed by `venv`, Conda, or another environment manager. If a clean install can use either Python 3.11 or a compatible newer interpreter, compare the resolved releases before proposing reuse.
 
 - If no suitable existing environment is available, propose creating a fresh virtual environment.
 - Never delete, rebuild, overwrite, or silently repurpose an existing environment.

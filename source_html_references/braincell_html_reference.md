@@ -2,9 +2,27 @@
 
 Purpose: choose the official BrainCell HTML page that directly supports a modeling concept, workflow, example, solver decision, or file-format task.
 
+## Table of contents
+
+- [Root](#root)
+- [Get Started](#get-started)
+- [Concepts](#concepts)
+- [Modeling Tutorials](#modeling-tutorials)
+- [Numerical Integration](#numerical-integration)
+- [Examples](#examples)
+- [File Formats and IO](#file-formats-and-io)
+- [API Reference](#api-reference)
+
 ## Root
 
 - [BrainCell Documentation](https://brainx.chaobrain.com/braincell/) — Main BrainCell landing page for biophysically detailed single- and multicompartment neuron modeling.
+- [Release notes](https://brainx.chaobrain.com/braincell/apis/changelog.html) — Check when a cellular model, solver, or public API changed before applying a live example to a pinned release.
+
+## Get Started
+
+- [Installation](https://brainx.chaobrain.com/braincell/getting_started/installation.html) — Installs BrainCell on JAX/brainstate for CPU, GPU, or TPU and states the Python version requirement.
+- [Overview & Roadmap](https://brainx.chaobrain.com/braincell/getting_started/overview.html) — Maps what BrainCell does, how the pieces fit, and where to go next by task.
+- [First Steps](https://brainx.chaobrain.com/braincell/getting_started/first_steps.html) — Runs a first complete Hodgkin–Huxley simulation with constant-current stimulation and spike plotting.
 
 ## Concepts
 
@@ -29,6 +47,16 @@ Purpose: choose the official BrainCell HTML page that directly supports a modeli
 - [Mechanisms in BrainCell](https://brainx.chaobrain.com/braincell/tutorials/mech.html) — Covers density and point mechanisms, clamps, probes, `paint`, and `place`.
 - [Cell in BrainCell](https://brainx.chaobrain.com/braincell/tutorials/cell.html) — Turns morphologies into cells with CV policies and mechanism placement.
 - [Point Tree Visualization](https://brainx.chaobrain.com/braincell/tutorials/vis.html) — Visualizes node trees, control volumes, and branch topology.
+- [Single-cell Frontend](https://brainx.chaobrain.com/braincell/tutorials/single_cell_frontend.html) — Summarizes morphology ingestion, geometry/topology views, declarative regions, mechanisms, and model datasheets for the single-cell frontend.
+
+## Numerical Integration
+
+> Operational solver path. Distinct from the conceptual [Integration](https://brainx.chaobrain.com/braincell/concepts/integration.html) page under Concepts.
+
+- [Integration Overview](https://brainx.chaobrain.com/braincell/integration/overview.html) — Explains how BrainCell turns channels, point neurons, and cables into stepped differential-equation systems.
+- [Defining Differential Equations](https://brainx.chaobrain.com/braincell/integration/diffeq.html) — Expresses ODE systems with `DiffEqState` and `DiffEqModule`.
+- [Choosing and Using Solvers](https://brainx.chaobrain.com/braincell/integration/solvers.html) — Discovers, selects, and applies `braincell.quad` integrators for stiff biophysical dynamics.
+- [Advanced Integration](https://brainx.chaobrain.com/braincell/integration/advanced.html) — Covers advanced define-and-step topics beyond the basic solver workflow.
 
 ## Examples
 
@@ -53,4 +81,13 @@ Purpose: choose the official BrainCell HTML page that directly supports a modeli
 
 ## API Reference
 
-- [BrainCell Module](https://brainx.chaobrain.com/braincell/apis/braincell.html) — Generated public API hub for BrainCell classes and functions; use only after choosing the relevant concept or tutorial page.
+- [BrainCell Module](https://brainx.chaobrain.com/braincell/apis/braincell.html) — Generated public API hub for core BrainCell classes and functions; use only after choosing the relevant concept or tutorial page.
+- [`braincell.morph` Module](https://brainx.chaobrain.com/braincell/apis/morphology.html) — Morphology, branch, and typed-section APIs.
+- [`braincell.ion` Module](https://brainx.chaobrain.com/braincell/apis/braincell.ion.html) — Ion-species APIs.
+- [`braincell.channel` Module](https://brainx.chaobrain.com/braincell/apis/braincell.channel.html) — Channel-model APIs.
+- [`braincell.synapse` Module](https://brainx.chaobrain.com/braincell/apis/braincell.synapse.html) — Synapse APIs for detailed cells.
+- [`braincell.mech` Module](https://brainx.chaobrain.com/braincell/apis/braincell.mech.html) — Declarative mechanism, clamp, and probe APIs.
+- [`braincell.filter` Module](https://brainx.chaobrain.com/braincell/apis/filter.html) — Region and locset filter APIs.
+- [`braincell.io` Module](https://brainx.chaobrain.com/braincell/apis/io.html) — Morphology IO and checkpoint APIs.
+- [`braincell.quad` Module](https://brainx.chaobrain.com/braincell/apis/integration.html) — Numerical integrator / solver registry APIs.
+- [`braincell.vis` Module](https://brainx.chaobrain.com/braincell/apis/vis.html) — Morphology and tree visualization APIs.

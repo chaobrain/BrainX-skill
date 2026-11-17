@@ -1,9 +1,9 @@
-"""Reference script mirrored from:
+"""Reference script adapted from:
 https://brainx.chaobrain.com/brainmass/gallery/model_zoo/wilson_cowan.html
 
 Converted from the official notebook at upstream commit
-293eaeb8948474c645208b68c531b7cb5482d4fb. Notebook outputs are omitted and
-``%matplotlib inline`` remains commented; code and Markdown cells are preserved.
+293eaeb8948474c645208b68c531b7cb5482d4fb. The cross-population weights use
+BrainMass 0.1.1 keyword names while preserving the notebook's directional gains.
 """
 
 # %% tags=["remove-cell"]
@@ -22,7 +22,11 @@ brainstate.environ.set(dt=0.1 * u.ms)
 #
 # The **Wilson-Cowan model** describes the coupled dynamics of an excitatory population rate $r_E$ and an inhibitory population rate $r_I$ through sigmoidal firing-rate functions:
 #
-# $$\tau_E\dot r_E = -r_E + S_E(w_{EE} r_E - w_{EI} r_I + I_E),\qquad \tau_I\dot r_I = -r_I + S_I(w_{IE} r_E - w_{II} r_I + I_I).$$
+# $$\tau_E\dot r_E = -r_E + (1-r\,r_E) S_E(w_{EE} r_E - w_{IE} r_I + I_E),$$
+# $$\tau_I\dot r_I = -r_I + (1-r\,r_I) S_I(w_{EI} r_E - w_{II} r_I + I_I).$$
+#
+# In BrainMass 0.1.1, WilsonCowanStep uses source-to-target subscripts.
+# Its refractory coefficient r defaults to 1.
 #
 # Depending on the synaptic weights and inputs the model exhibits a stable low-activity state, multistability, or sustained oscillations from the excitatory-inhibitory loop. It is the classic two-population mean-field model of cortical dynamics.
 #
@@ -36,7 +40,7 @@ brainstate.environ.set(dt=0.1 * u.ms)
 # %%
 node = brainmass.WilsonCowanStep(
     in_size=1, tau_E=2.5 * u.ms, tau_I=3.75 * u.ms,
-    wEE=16.0, wEI=12.0, wIE=15.0, wII=3.0)
+    wEE=16.0, wEI=15.0, wIE=12.0, wII=3.0)
 node
 
 # %% [markdown]
@@ -75,7 +79,7 @@ fig, ax = plt.subplots(figsize=(8, 4))
 for drive in [0.0, 1.0, 2.5]:
     m = brainmass.WilsonCowanStep(
         in_size=1, tau_E=2.5 * u.ms, tau_I=3.75 * u.ms,
-        wEE=16.0, wEI=12.0, wIE=15.0, wII=3.0)
+        wEE=16.0, wEI=15.0, wIE=12.0, wII=3.0)
     r = brainmass.Simulator(m, dt=0.1 * u.ms).run(
         300. * u.ms, inputs=lambda i, t, d=drive: (d, 0.0),
         monitors=['rE'], transient=50. * u.ms)

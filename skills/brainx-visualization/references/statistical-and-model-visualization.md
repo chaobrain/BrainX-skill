@@ -4,7 +4,7 @@
 
 Use this reference to inspect distributions and assumptions, compare groups, explore associations, diagnose regression, and evaluate classification or learning behavior. Plot the sampling structure that supports the scientific claim; a visual summary does not replace the statistical analysis.
 
-Route BrainMass-owned FC/FCD, spectral, or dynamical summaries to `skills/package-skills/brainmass/references/visualization-analysis-api.md` before plotting them here.
+Route BrainMass-owned FC/FCD, spectral, or dynamical summaries to `brainmass` → `references/visualization-analysis-api.md` before plotting them here.
 
 ## Choose the statistical family
 

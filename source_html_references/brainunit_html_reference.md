@@ -1,5 +1,29 @@
+# BrainUnit Central Documentation Sitemap
+
+Use the guides for unit conventions and transformations. Open the API
+reference for the exact signature, return unit, or backend requirement.
+
+## Table of contents
+
+- [Root](#root)
+- [Getting started](#getting-started)
+- [Physical units](#physical-units)
+- [Unit-aware operations](#unit-aware-operations)
+- [Advanced guides](#advanced-guides)
+- [API reference](#api-reference)
+
+## Root
+
+- [BrainUnit documentation](https://brainx.chaobrain.com/brainunit/) — Main landing page for physical units, quantities, conversions, and unit-aware computation.
+- [Release notes](https://brainx.chaobrain.com/brainunit/apis/changelog.html) — Records BrainUnit releases, additions, fixes, and compatibility changes.
+
+## Getting started
+
 - [Installation](https://brainx.chaobrain.com/brainunit/getting_started/installation.html) — Installs BrainUnit and configures its NumPy, JAX, and optional array backends.
 - [Quickstart Guide](https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html) — Introduces quantities, arithmetic, conversions, unit-aware functions, JAX transformations, and unit validation.
+- [Backend overview](https://brainx.chaobrain.com/brainunit/backends/overview.html) — Check which operations dispatch across backends and which require JAX.
+
+## Physical units
 
 - [Quantity](https://brainx.chaobrain.com/brainunit/physical_units/quantity.html) — Explains numerical values carrying physical units and the core behavior of `Quantity`.
 - [Math Operations](https://brainx.chaobrain.com/brainunit/physical_units/math_operations.html) — Explains arithmetic rules, dimensional compatibility, and unit propagation.
@@ -7,6 +31,8 @@
 - [Constants](https://brainx.chaobrain.com/brainunit/physical_units/constants.html) — Provides predefined physical constants as unit-aware quantities.
 - [Unit Conversion](https://brainx.chaobrain.com/brainunit/physical_units/conversion.html) — Converts quantities between compatible physical units.
 - [Temperature Conversions](https://brainx.chaobrain.com/brainunit/physical_units/temperature.html) — Converts temperatures between scales with offsets and scaling.
+
+## Unit-aware operations
 
 - [Array Creation](https://brainx.chaobrain.com/brainunit/unit_operations/array_creation.html) — Creates unit-aware arrays with NumPy- and JAX-style constructors.
 - [NumPy Functions](https://brainx.chaobrain.com/brainunit/unit_operations/numpy_functions.html) — Applies common array and mathematical operations while preserving units.
@@ -23,12 +49,15 @@
 - [Matplotlib Integration](https://brainx.chaobrain.com/brainunit/unit_operations/matplotlib_integration.html) — Plots quantities with unit conversion and unit-aware labeling.
 - [Unit-Aware Type Annotations](https://brainx.chaobrain.com/brainunit/unit_operations/type_annotations.html) — Expresses expected physical dimensions through Python type annotations.
 
+## Advanced guides
+
 - [Combining and Defining Unit](https://brainx.chaobrain.com/brainunit/advanced_tutorials/combining_and_defining.html) — Combines existing units and defines custom derived units.
 - [Mechanism of Quantity](https://brainx.chaobrain.com/brainunit/advanced_tutorials/mechanism.html) — Explains the internal relationship among quantities, units, dimensions, and mantissas.
 - [Unit-Aware Computation with CustomArray](https://brainx.chaobrain.com/brainunit/advanced_tutorials/custom_array.html) — Integrates custom array containers with BrainUnit operations.
 - [FAQs](https://brainx.chaobrain.com/brainunit/FAQs.html) — Answers common questions about units, conversions, compatibility, and JAX behavior.
 
-- [Release Notes](https://brainx.chaobrain.com/brainunit/apis/changelog.html) — Records BrainUnit releases, additions, fixes, and compatibility changes.
+## API reference
+
 - [brainunit Module](https://brainx.chaobrain.com/brainunit/apis/brainunit.html) — Documents the main namespace containing core units, quantities, dimensions, and validation utilities.
 - [Quantity API](https://brainx.chaobrain.com/brainunit/apis/generated/brainunit.Quantity.html) — Documents the core class representing numerical values associated with units.
 - [Unit API](https://brainx.chaobrain.com/brainunit/apis/generated/brainunit.Unit.html) — Documents the class representing a physical unit, scale, dimension, and optional offset.

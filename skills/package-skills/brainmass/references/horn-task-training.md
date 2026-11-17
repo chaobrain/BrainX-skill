@@ -46,9 +46,9 @@ assert targets.shape == (320,)
 
 Create train and held-out splits before optimization. Do not report the training metric as generalization.
 
-Open `braintools/cogtask.md` when a pre-built or custom phase-structured
+Open `references/braintools/cogtask.md` when a pre-built or custom phase-structured
 cognitive paradigm should generate the trials. Open
-`braintools/data-preprocessing.md` only when custom inputs must be encoded before
+`references/braintools/data-preprocessing.md` only when custom inputs must be encoded before
 they enter HORN; the ordinary feature sequences above need no spike encoder.
 
 ## Build the classifier and reset hidden State
@@ -81,7 +81,7 @@ weights = network.states(brainstate.ParamState)
 
 **Invariant:** reset hidden State for training and evaluation. A held-out evaluation that begins from training State is invalid.
 
-Open `braintools/parameter-initializer.md` when HORN weights or model parameters
+Open `references/braintools/parameter-initializer.md` when HORN weights or model parameters
 need a reusable variance-scaling, orthogonal, bounded, or unit-aware
 initialization policy.
 
@@ -111,7 +111,7 @@ def loss_and_accuracy(batch_inputs, batch_targets):
 def train_step(batch_inputs, batch_targets):
     gradient = brainstate.transform.grad(
         lambda: loss_and_accuracy(batch_inputs, batch_targets),
-        weights,
+        grad_states=weights,
         has_aux=True,
         return_value=True,
     )
@@ -126,8 +126,8 @@ def evaluate(batch_inputs, batch_targets):
 
 If the installed Braintools release exposes `optimizer.update(grads)` instead
 of `step(grads)`, use the installed optimizer contract consistently; do not mix
-methods in one loop. Open `braintools/optimizer.md` for optimizer and scheduler
-selection, and `braintools/metric.md` for supervised loss, reduction, and
+methods in one loop. Open `references/braintools/optimizer.md` for optimizer and scheduler
+selection, and `references/braintools/metric.md` for supervised loss, reduction, and
 held-out metric selection.
 
 ## Run epochs and evaluate held-out data
@@ -166,7 +166,7 @@ for epoch in range(n_epoch):
 
 Validate that chance-level accuracy, label balance, loss reduction, and held-out improvement are all consistent with the task. A final accuracy alone does not reveal leakage or class imbalance.
 
-Open `scripts/horn-cognitive-task-training.py` when the task needs the complete delayed-match dataset, HORN network, compiled training loop, held-out evaluation, and learning curves.
+Open `references/scripts/horn-cognitive-task-training.py` when the task needs the complete delayed-match dataset, HORN network, compiled training loop, held-out evaluation, and learning curves.
 
 ## Choose task-training variations
 
@@ -176,9 +176,9 @@ Open `scripts/horn-cognitive-task-training.py` when the task needs the complete 
 - Clip gradients only after confirming large or non-finite gradients.
 - Tune oscillator `alpha`, `omega`, damping, and hidden size one decision at a time.
 - Use direct Braintools metrics when the held-out criterion is not accuracy.
-- Open `brainstate/parameter-constraints-regularization.md` when a directly
+- Open `references/brainstate/parameter-constraints-regularization.md` when a directly
   trained oscillator parameter needs a valid domain, penalty, or prior.
-- Open `braintools/surrogate.md` only when a custom path introduces a hard
+- Open `references/braintools/surrogate.md` only when a custom path introduces a hard
   threshold or spike; canonical HORN training does not need a surrogate.
 
 ## Common failures
