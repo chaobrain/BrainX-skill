@@ -57,6 +57,7 @@ skills/
 
 - Use `npx brainx-skill mcp install` as the canonical one-command Codex setup.
 - Install Europe PMC search as `europepmc`, the Full-Text Resolver as `fulltext_resolver`, and the BrainX reviewer as `codex`.
+- Run the reviewer through Codex App Server stdio. Keep `codex` and `codex-reply` on the MCP side and verify fresh and resumed reviews with the real CLI against the loopback fixture.
 - Keep managed runtimes and the ownership receipt under `~/.brainx/mcp`; preserve the reviewer server's relative bundle layout with its required `skills/` tree.
 - Refuse to overwrite or remove user-owned MCP registrations. Keep installation idempotent and roll back registrations added during a failed run.
 - Use `npx brainx-skill mcp remove` to remove only BrainX-owned registrations and runtime files.
