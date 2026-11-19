@@ -55,6 +55,7 @@ jobs:
             if [ "${npm_exists}" != "true" ]; then
               (
                 cd "${recovery_dir}"
+                npm install --ignore-scripts --no-audit --no-fund
                 npm publish --provenance --access public
               )
             fi

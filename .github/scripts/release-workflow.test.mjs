@@ -54,6 +54,10 @@ test('release recovery only runs when the GitHub Release is missing', () => {
   assert.match(recovery, /id: recovery/);
   assert.match(recovery, /! gh release view/);
   assert.match(recovery, /npm-registry\.mjs exists/);
+  assert.match(
+    recovery,
+    /cd "\$\{recovery_dir\}"\s+npm install --ignore-scripts --no-audit --no-fund\s+npm publish --provenance --access public/,
+  );
   assert.ok(recovery.indexOf('npm publish') < recovery.indexOf('gh release create'));
   assert.match(recovery, /recovered=true/);
   assert.equal(
