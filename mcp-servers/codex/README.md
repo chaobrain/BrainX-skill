@@ -1,24 +1,34 @@
 # BrainX Codex MCP server
 
-This server preserves the open-source Codex CLI MCP implementation while specializing fresh sessions for independent BrainX scientific review. It delegates execution and persistence to `codex mcp-server`, so `codex-reply` continues the same native thread with its existing context.
+This adapter exposes the `codex` and `codex-reply` MCP tools for independent
+BrainX scientific review and runs them through `codex app-server --listen
+stdio://`. Codex owns native thread history and persistence; the adapter returns
+the completed Markdown report and native thread ID to the MCP caller.
 
-The proxy changes only fresh `codex` calls:
+Use `codex` for a fresh thread and `codex-reply` for `thread/resume` followed by
+another turn in that thread, including after the adapter restarts. Both paths
+enforce the BrainX system prompt, allowed skills, `read-only` sandbox and
+`never` approval policy. Caller settings cannot replace these constraints.
+The reviewer disables the MCP registrations in the effective workspace
+configuration to prevent recursive startup. Tool callers cannot add MCP
+registrations through `config`. When the host uses a custom `CODEX_HOME` or
+environment credentials, list those variable names in the MCP registration's
+`env_vars`; the Codex MCP host filters unlisted environment variables.
 
-- `base-instructions` receives `system-prompt.md`;
-- `developer-instructions` identifies the allowed BrainX domain skills and the
-  exact training and fitting review-reference paths;
-- `skills.config` exposes the skill directories listed in `skills.json`.
+`system-prompt.md` supplies the scientific review contract. `skills.json` selects
+the exposed domain skills. The developer instructions identify the exact
+training and fitting review references; the modeling-loop workflow itself is
+not exposed as a reviewer skill.
 
-The modeling-loop skill is not exposed to the reviewer. The reviewer opens only
-`training-workflow.md` and/or `parameter-fitting-workflow.md` when the supplied
-`ACTIVE_COVERAGE` requires them.
-
-All `codex-reply` calls and other MCP messages pass through unchanged.
+The adapter waits for native turn completion, excludes commentary from the
+report, surfaces failed/interrupted/empty turns as MCP tool errors, and
+translates MCP cancellation to `turn/interrupt`. Interactive approval requests
+are declined; unsupported interactive requests return protocol errors.
 
 ## Requirements
 
 - Node.js 18 or later
-- Codex CLI with `codex mcp-server` support
+- Codex CLI with App Server stdio support (tested on 0.166.0 and 0.170.0)
 - a working Codex login
 
 ## Register
@@ -58,11 +68,13 @@ review commonly exceeds Codex's default MCP tool-call budget; when the host
 cancels that call, the caller may report `user cancelled MCP tool call` even
 though no user cancelled it.
 
-The proxy forces fresh reviews to `sandbox = "read-only"` and
-`approval-policy = "never"` before forwarding them upstream. Auto-approving the
-MCP tool therefore does not grant the reviewer write access or command approval.
+The adapter forces fresh and resumed reviews to `sandbox = "read-only"` and
+`approvalPolicy = "never"`. Auto-approving the MCP tool does not grant the
+reviewer write access or command approval.
 
 Set `BRAINX_CODEX_BIN` only when `codex` is not on `PATH` for the MCP host.
+On Windows, npm `.cmd`/`.ps1` shims resolve to the package JavaScript entry and
+run through Node without a shell. Custom wrappers should expose an executable.
 
 ## Use
 
@@ -70,13 +82,27 @@ Start a review with `mcp__codex__codex`. Its returned `content` is the reviewer
 response available to the calling agent in the same turn. The response is a
 complete Markdown document; the reviewer remains read-only and does not create
 the file. The calling modeling agent saves `content` verbatim as
-`reviews/iteration-<N>.md`, records that path and the returned `threadId`, and
+`reviews/iteration-<N>.md`, records that path and `structuredContent.threadId`, and
 uses `codex-reply` only for a follow-up that must continue the reviewer's context.
+
+The successful tool result contains `content: [{type: "text", text: report}]`
+and `structuredContent: {threadId, content: report}`. `codex-reply` accepts
+`{threadId, prompt}`. Fresh calls accept `prompt`, optional `model`, `cwd`, and
+`config`; the former `profile` option now returns an explicit unsupported-option
+error. Review constraints always override legacy instruction/permission options.
 
 Edit `system-prompt.md` to change the reviewer contract. Edit `skills.json` to change the BrainX skills exposed to fresh reviewer sessions.
 
 ## Verify
 
 ```bash
-node --test mcp-servers/codex/test/*.test.mjs
+npm test
+node .github/scripts/smoke-reviewer.mjs
 ```
+
+The transport is dependency-free and uses JSONL stdio on both sides. MCP
+`initialize` initializes the real App Server before advertising the tools.
+The smoke test uses a real Codex CLI, an isolated Codex home and a loopback
+Responses fixture. It verifies the handshake, a fresh review, and continued
+history after restarting the reviewer. Run `npm install` first. Pass a path to
+an extracted package's `server.mjs` to verify the shipped files.

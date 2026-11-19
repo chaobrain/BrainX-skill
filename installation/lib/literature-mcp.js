@@ -4,6 +4,7 @@ const childProcess = require('node:child_process');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const { codexInvocation, npmInvocation } = require('../../mcp-servers/codex/cli-invocation.cjs');
 
 const EUROPE_PMC_NAME = 'europepmc';
 const FULLTEXT_NAME = 'fulltext_resolver';
@@ -483,13 +484,18 @@ async function runLiteratureMcp(command, options = {}) {
   const pathApi = options.pathApi || path;
   const homeDir = options.homeDir || os.homedir();
   const packageRoot = options.packageRoot || path.resolve(__dirname, '../..');
-  const runner = options.runner || defaultRunner;
   const stdout = options.stdout || process.stdout;
   const stderr = options.stderr || process.stderr;
   const codexBin = options.codexBin || 'codex';
   const npmBin = options.npmBin || 'npm';
   const uvBin = options.uvBin || 'uv';
   const platform = options.platform || process.platform;
+  const runner = options.runner || ((binary, args, runOptions) => {
+    let invocation = { binary, prefixArgs: args };
+    if (binary === codexBin) invocation = codexInvocation(binary, args);
+    if (binary === npmBin) invocation = npmInvocation(binary, args);
+    return defaultRunner(invocation.binary, invocation.prefixArgs, runOptions);
+  });
   const paths = runtimePaths(homeDir, pathApi, platform);
   const expected = expectedServers(paths, options.nodeBin || process.execPath);
 

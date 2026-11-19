@@ -5,7 +5,7 @@ import test from 'node:test';
 const workflow = readFileSync(
   new URL('../workflows/release-notes.yml', import.meta.url),
   'utf8',
-);
+).replace(/\r\n/g, '\n');
 const packageJson = JSON.parse(
   readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
 );

@@ -14,7 +14,10 @@ on:
       - ".github/scripts/test_audit_links.py"
       - ".github/workflows/agent-skills-validation.yml"
       - "manifest.json"
-      - "mcp-servers/codex/skills.json"
+      - ".github/scripts/*.mjs"
+      - "adapters/**"
+      - "installation/**"
+      - "mcp-servers/**"
       - "package.json"
       - "skills/**"
   pull_request:
@@ -30,7 +33,10 @@ on:
       - ".github/scripts/test_audit_links.py"
       - ".github/workflows/agent-skills-validation.yml"
       - "manifest.json"
-      - "mcp-servers/codex/skills.json"
+      - ".github/scripts/*.mjs"
+      - "adapters/**"
+      - "installation/**"
+      - "mcp-servers/**"
       - "package.json"
       - "skills/**"
   workflow_dispatch:
@@ -39,6 +45,25 @@ permissions:
   contents: read
 
 jobs:
+  node:
+    name: Test installer and reviewer (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: npm install --global @openai/codex@0.170.0 --no-audit --no-fund
+      - run: node .github/scripts/smoke-reviewer.mjs
+
   validate:
     name: Validate Agent Skills
     runs-on: ubuntu-latest
